@@ -1,17 +1,16 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
   <title>Feelings Wheel</title>
   <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" type="text/css" href="components/FeelingsWheel/styles.css">
+  <link rel="stylesheet" type="text/css" href="components/FeelingSegment/styles.css">
 </head>
 
 <body>
 
   <feelings-wheel>
-    <!-- <feeling-segment style="--i: 0;">
-      <feeling-segment>Happy</feeling-segment>
-      <feeling-segment>Sad</feeling-segment>
-    </feeling-segment> -->
     <feeling-segment style="--bg-color: orange;">Happy</feeling-segment>
     <feeling-segment style="--bg-color: indigo;">Sad</feeling-segment>
     <feeling-segment style="--bg-color: brown;">Disgusted</feeling-segment>
@@ -23,6 +22,6 @@
 
 </body>
 
-<script src="main.js"></script>
+<script type="module" src="main.js"></script>
 
 </html>

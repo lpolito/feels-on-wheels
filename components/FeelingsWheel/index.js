@@ -16,11 +16,6 @@ class FeelingsWheel extends HTMLElement {
        <slot></slot>
     `;
 
-    const dividerCircle = document.createElement("span");
-    dividerCircle.classList.add("dividerCircle");
-    dividerCircle.id = "dividerCircle";
-    container.appendChild(dividerCircle);
-
     const shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.adoptedStyleSheets = [styles];
     shadowRoot.appendChild(container);
@@ -33,40 +28,12 @@ class FeelingsWheel extends HTMLElement {
       const segments = slot.assignedElements();
       const numberOfSegments = segments.length;
 
-      const dividerCircle = this.shadowRoot.querySelector("#dividerCircle");
-      dividerCircle.style.setProperty("--total", numberOfSegments);
-
-      const divider = document.createElement("span");
-      divider.classList.add("divider");
-
       segments.forEach((child, idx) => {
         // data attributes (child.dataset) don't seem to propogate
         // set inline style vars to ensure css has access to these values
         child.style.setProperty("--i", idx);
         child.style.setProperty("--total", numberOfSegments);
-
-        const dividerClone = divider.cloneNode(true);
-        dividerClone.style.setProperty("--i", idx);
-        dividerCircle.appendChild(dividerClone);
       });
-
-      // Array.from({ length: numberOfSegments }, (_, i) => {
-      //   const dividerClone = divider.cloneNode(true);
-      //   dividerClone.style.setProperty("--i", idx);
-      //   // dividerCircle.appendChild()
-      // });
-
-      // add the segment dividers
-      // <span class="circle" :style="{ transform: `rotate(-${angle / 2}deg)` }">
-      //     <span
-      //       class="line"
-      //       v-for="(_, key) in sectors"
-      //       :key="key"
-      //       :style="getItemAngle(key)"
-      //     />
-      //   </span>
-
-
     });
   }
 }

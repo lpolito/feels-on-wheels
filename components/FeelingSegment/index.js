@@ -11,19 +11,40 @@ class FeelingSegment extends HTMLElement {
   constructor() {
     super();
 
+    const contents = document.createElement("div");
+    contents.classList.add("contents");
+
+    const label = document.createElement("span");
+    label.classList.add("label");
+    contents.appendChild(label);
+
+    const slot = document.createElement("slot");
+    contents.appendChild(slot);
+
     const segmentContainer = document.createElement("div");
     segmentContainer.classList.add("segment");
-
-    const innerSpan = document.createElement("span");
-    innerSpan.innerHTML = `
-       <slot></slot>
-    `;
-
-    segmentContainer.appendChild(innerSpan);
+    segmentContainer.appendChild(contents);
 
     const shadowRoot = this.attachShadow({ mode: "open" });
     shadowRoot.adoptedStyleSheets = [styles];
     shadowRoot.appendChild(segmentContainer);
+  }
+
+  connectedCallback() {
+    const label = this.getAttribute('label') || '';
+    const labelSpan = this.shadowRoot.querySelector('.label');
+    labelSpan.textContent = label;
+
+    const slot = this.shadowRoot.querySelector('slot');
+
+    slot.addEventListener('slotchange', () => {
+      const level = Number.parseInt(this.dataset.level, 0) || 0;
+
+      const nestedSegments = slot.assignedElements();
+      nestedSegments.forEach(segment => {
+        segment.dataset.level = level + 1;
+      });
+    });
   }
 }
 

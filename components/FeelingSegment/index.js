@@ -38,7 +38,10 @@ class FeelingSegment extends HTMLElement {
     const slot = this.shadowRoot.querySelector('slot');
 
     slot.addEventListener('slotchange', () => {
-      const level = Number.parseInt(this.dataset.level, 0) || 0;
+      if (this.dataset.level === undefined) {
+        this.dataset.level = 1;
+      }
+      const level = Number.parseInt(this.dataset.level, 0);
 
       const nestedSegments = slot.assignedElements();
       nestedSegments.forEach(segment => {

@@ -25,17 +25,43 @@ class FeelingsWheel extends HTMLElement {
     const slot = this.shadowRoot.querySelector('slot');
 
     slot.addEventListener('slotchange', () => {
-      const segments = slot.assignedElements();
-      const numberOfSegments = segments.length;
+      const totalLeafSegments = countLeafSegments(this);
 
+      const segments = slot.assignedElements();
+      const leafCountBySegment = segments.map(segment => {
+        const count = countLeafSegments(segment);
+        // if count comes back 0, assume it is a leaf
+        return count || 1;
+      });
+
+      let accumulatedDegrees = 0;
       segments.forEach((child, idx) => {
+        const segmentRatio = leafCountBySegment[idx] / totalLeafSegments;
+        const segmentDegrees = segmentRatio * 360;
+        // Calculate the midpoint angle of this specific slice
+        const midpointDegrees = accumulatedDegrees + (segmentDegrees / 2);
+
         // data attributes (child.dataset) don't seem to propogate
         // set inline style vars to ensure css has access to these values
-        child.style.setProperty("--i", idx);
-        child.style.setProperty("--total", numberOfSegments);
+        child.style.setProperty("--segment-ratio", segmentRatio);
+        child.style.setProperty("--segment-rotation", `${midpointDegrees}deg`);
+
+        accumulatedDegrees += segmentDegrees;
       });
     });
   }
+}
+
+function countLeafSegments(node) {
+  // I have no idea how bad of an idea this is.
+  // I don't really know how the shadow dom plays with the light dom, so this could be fragile.
+  const segments = Array.from(node.querySelectorAll('feeling-segment'));
+
+  const totalLeafs = segments.reduce((acc, segment) => {
+    return segment.children.length > 0 ? acc : (acc + 1);
+  }, 0);
+
+  return totalLeafs;
 }
 
 export default FeelingsWheel;

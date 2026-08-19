@@ -11,31 +11,32 @@ class FeelingsWheel extends HTMLElement {
   constructor() {
     super();
 
+    const shadowRoot = this.attachShadow({ mode: "open" });
+    shadowRoot.adoptedStyleSheets = [styles];
+
     const container = document.createElement("div");
     container.innerHTML = `
        <slot></slot>
     `;
-
-    const shadowRoot = this.attachShadow({ mode: "open" });
-    shadowRoot.adoptedStyleSheets = [styles];
     shadowRoot.appendChild(container);
   }
 
   connectedCallback() {
     const slot = this.shadowRoot.querySelector('slot');
+    wrapElements(slot);
 
     slot.addEventListener('slotchange', () => {
       const totalLeafSegments = countLeafSegments(this);
 
-      const segments = slot.assignedElements();
-      const leafCountBySegment = segments.map(segment => {
+      const assignedElements = slot.assignedElements();
+      const leafCountBySegment = assignedElements.map(segment => {
         const count = countLeafSegments(segment);
         // if count comes back 0, assume it is a leaf
         return count || 1;
       });
 
       let accumulatedDegrees = 0;
-      segments.forEach((child, idx) => {
+      assignedElements.forEach((element, idx) => {
         const segmentRatio = leafCountBySegment[idx] / totalLeafSegments;
         const segmentDegrees = segmentRatio * 360;
         // Calculate the midpoint angle of this specific slice
@@ -43,8 +44,8 @@ class FeelingsWheel extends HTMLElement {
 
         // data attributes (child.dataset) don't seem to propogate
         // set inline style vars to ensure css has access to these values
-        child.style.setProperty("--segment-ratio", segmentRatio);
-        child.style.setProperty("--segment-rotation", `${midpointDegrees}deg`);
+        element.style.setProperty("--segment-ratio", segmentRatio);
+        element.style.setProperty("--segment-rotation", `${midpointDegrees}deg`);
 
         accumulatedDegrees += segmentDegrees;
       });
@@ -62,6 +63,21 @@ function countLeafSegments(node) {
   }, 0);
 
   return totalLeafs;
+}
+
+function wrapElements(slot) {
+  slot.assignedElements().forEach(el => {
+    // prevent double wrapping on slotchange
+    if (el.parentElement.classList.contains('wedge')) {
+      return;
+    };
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'wedge';
+
+    el.replaceWith(wrapper);
+    wrapper.appendChild(el);
+  });
 }
 
 export default FeelingsWheel;

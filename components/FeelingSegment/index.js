@@ -11,8 +11,12 @@ class FeelingSegment extends HTMLElement {
   constructor() {
     super();
 
+    const shadowRoot = this.attachShadow({ mode: "open" });
+    shadowRoot.adoptedStyleSheets = [styles];
+
     const contents = document.createElement("div");
     contents.classList.add("contents");
+    shadowRoot.appendChild(contents);
 
     const label = document.createElement("span");
     label.classList.add("label");
@@ -20,14 +24,6 @@ class FeelingSegment extends HTMLElement {
 
     const slot = document.createElement("slot");
     contents.appendChild(slot);
-
-    const segmentContainer = document.createElement("div");
-    segmentContainer.classList.add("segment");
-    segmentContainer.appendChild(contents);
-
-    const shadowRoot = this.attachShadow({ mode: "open" });
-    shadowRoot.adoptedStyleSheets = [styles];
-    shadowRoot.appendChild(segmentContainer);
   }
 
   connectedCallback() {

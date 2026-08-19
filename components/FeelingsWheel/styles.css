@@ -6,3 +6,33 @@
   overflow: hidden;
   background: #eee;
 }
+
+.wedge {
+  position: absolute;
+  display: block;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  pointer-events: none;
+  transform: translate(0, -50%);
+}
+
+.wedge>* {
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+  /* position: relative; */
+  /* width: 100%; */
+  /* box-sizing: border-box; */
+  transform-origin: 0 50%;
+  /* pointer-events: all; */
+  z-index: 2;
+  background-color: var(--bg-color);
+
+  --pi-fraction: pi * var(--segment-ratio);
+  --clip-position: calc(cos(var(--pi-fraction)) * 100%);
+
+  height: calc(sin(var(--pi-fraction)) * 100cqw);
+  clip-path: polygon(100% 0px, var(--clip-position) 0px, 0px 50%, var(--clip-position) 100%, 100% 100%);
+  transform: rotate(var(--segment-rotation));
+}

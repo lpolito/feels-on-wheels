@@ -3,6 +3,8 @@ export interface Palette {
   fg: string;
   gap: string;
   focus: string;
+  /** Selection outline colour: ink in light, white in dark, Highlight in forced colours. */
+  outline: string;
   hues: Record<string, string>;
   /** Windows high-contrast mode: values are CSS system color keywords, not hex. */
   forced?: boolean;
@@ -14,14 +16,14 @@ const HUE_NAMES = ['fearful', 'angry', 'disgusted', 'sad', 'happy', 'surprised',
 export function readPalette(el: Element): Palette {
   if (typeof matchMedia !== 'undefined' && matchMedia('(forced-colors: active)').matches) {
     return {
-      bg: 'Canvas', fg: 'CanvasText', gap: 'CanvasText', focus: 'Highlight', forced: true,
+      bg: 'Canvas', fg: 'CanvasText', gap: 'CanvasText', focus: 'Highlight', outline: 'Highlight', forced: true,
       hues: Object.fromEntries(HUE_NAMES.map((h) => [h, 'Canvas'])),
     };
   }
   const cs = getComputedStyle(el);
   const v = (name: string) => cs.getPropertyValue(name).trim().toLowerCase();
   return {
-    bg: v('--bg'), fg: v('--fg'), gap: v('--gap'), focus: v('--focus'),
+    bg: v('--bg'), fg: v('--fg'), gap: v('--gap'), focus: v('--focus'), outline: v('--outline'),
     hues: Object.fromEntries(HUE_NAMES.map((h) => [h, v(HUE_PREFIX + h)])),
   };
 }
@@ -94,11 +96,21 @@ export interface FillTable {
 }
 
 const WHITE = '#ffffff';
-const BLACK = '#000000';
-const bestText = (bg: string): string => (contrast(WHITE, bg) >= contrast(BLACK, bg) ? WHITE : BLACK);
 
-/** Ring lightness steps (spec §3.5): core is the base hue, outer rings step lighter (light) or darker (dark). */
-const RING_STEP = { light: 0.06, dark: -0.05 } as const;
+/** Darken `base` in OKLab-L steps until white text on it reaches `min` (spec §4.1). */
+export function fitWhite(base: string, min = 4.8): string {
+  let c = shade(base, 0);
+  for (let dL = 0; contrast(WHITE, c) < min && dL > -1; ) {
+    dL -= 0.004;
+    c = shade(base, dL);
+  }
+  return c;
+}
+
+/** Per-ring OKLab-L shift after fitting (core, middle, outer). */
+const RING_SHIFT = [-0.07, -0.035, 0];
+const FADE_GREY = { light: '#8d8a93', dark: '#3a383e' } as const;
+const FADE = 0.72;
 
 export function buildFillTable(
   p: Palette, rings: number, theme: 'light' | 'dark', o: { moreContrast: boolean } = { moreContrast: false },
@@ -113,16 +125,18 @@ export function buildFillTable(
   const fills = new Map<string, string[]>();
   const labels = new Map<string, string[]>();
   for (const [hue, base] of Object.entries(p.hues)) {
+    const fitted = fitWhite(base);
     const f: string[] = [];
     const l: string[] = [];
     for (let ring = 0; ring < rings; ring++) {
-      const lit = shade(base, RING_STEP[theme] * ring);
-      const faded = mix(lit, p.bg, o.moreContrast ? 0.55 : 0.75);
-      const fadedText = bestText(faded);
+      const lit = shade(fitted, RING_SHIFT[Math.min(ring, RING_SHIFT.length - 1)]!);
+      const mixed = mix(lit, FADE_GREY[theme], FADE);
+      // More contrast: faded labels are plain white, so the faded fill is darkened just enough for 4.5:1.
+      const faded = o.moreContrast ? fitWhite(mixed, 4.5) : mixed;
       f[ring * 2] = faded;
       f[ring * 2 + 1] = lit;
-      l[ring * 2] = o.moreContrast ? fadedText : mix(fadedText, faded, 0.4);
-      l[ring * 2 + 1] = bestText(lit);
+      l[ring * 2] = o.moreContrast ? WHITE : mix(WHITE, faded, 0.2);
+      l[ring * 2 + 1] = WHITE;
     }
     fills.set(hue, f);
     labels.set(hue, l);

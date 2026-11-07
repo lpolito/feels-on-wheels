@@ -12,7 +12,7 @@ const layout = buildLayout(wheel);
 beforeAll(() => setLocale(locale));
 
 const palette: Palette = {
-  bg: '#ffffff', fg: '#111111', gap: '#ffffff', focus: '#1a5fd0',
+  bg: '#ffffff', fg: '#111111', gap: '#ffffff', focus: '#1a5fd0', outline: '#1c1b1f',
   hues: { fearful: '#c2257f', angry: '#c62835', disgusted: '#a4532a', sad: '#3b3470', happy: '#d9730d', surprised: '#3e7b5e', bad: '#5e3a87' },
 };
 const table = buildFillTable(palette, 3, 'light');

@@ -6,6 +6,7 @@
   --surface: #f6f5f8;
   --gap: #ffffff;
   --focus: #1a5fd0;
+  --outline: #1c1b1f;
 
   --hue-fearful: #C2257F;
   --hue-angry: #C62835;
@@ -25,6 +26,7 @@
     --surface: #1e1c22;
     --gap: #121114;
     --focus: #7fb0ff;
+  --outline: #ffffff;
 
     --hue-fearful: #E0559E;
     --hue-angry: #E0525C;
@@ -44,6 +46,7 @@
   --surface: #1e1c22;
   --gap: #121114;
   --focus: #7fb0ff;
+  --outline: #ffffff;
 
   --hue-fearful: #E0559E;
   --hue-angry: #E0525C;

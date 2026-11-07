@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
-import { buildFillTable, contrast, mix, shade, type Palette } from '../../src/render/colors';
+import { buildFillTable, contrast, fitWhite, mix, shade, type Palette } from '../../src/render/colors';
 
 const css = readFileSync(new URL('../../src/styles/tokens.css', import.meta.url), 'utf8');
 
@@ -12,7 +12,7 @@ function block(selector: string): Record<string, string> {
 
 function palette(vars: Record<string, string>): Palette {
   const hues = Object.fromEntries(Object.entries(vars).filter(([k]) => k.startsWith('hue-')).map(([k, v]) => [k.slice(4), v]));
-  return { bg: vars['bg']!, fg: vars['fg']!, gap: vars['gap']!, focus: vars['focus']!, hues };
+  return { bg: vars['bg']!, fg: vars['fg']!, gap: vars['gap']!, focus: vars['focus']!, outline: vars['outline']!, hues };
 }
 
 const themes = [
@@ -55,12 +55,13 @@ describe('palette contrast floors', () => {
     }
   });
 
-  test('for both themes, every hue × ring: lit label ≥ 4.5 and faded label ≥ 3 against its fill', () => {
+  test('for both themes, every hue × ring: lit label is white at ≥ 4.5, faded label ≥ 3', () => {
     for (const [theme, p] of themes) {
       const table = buildFillTable(p, 3, theme);
       for (const hue of Object.keys(p.hues)) {
         for (let ring = 0; ring < 3; ring++) {
           const where = `${theme} ${hue} ring ${ring}`;
+          expect(table.label(hue, ring, true), where).toBe('#ffffff');
           expect(contrast(table.label(hue, ring, true), table.fill(hue, ring, true)), where).toBeGreaterThanOrEqual(4.5);
           expect(contrast(table.label(hue, ring, false), table.fill(hue, ring, false)), where).toBeGreaterThanOrEqual(3);
         }
@@ -68,16 +69,41 @@ describe('palette contrast floors', () => {
     }
   });
 
-  test('moreContrast: faded label contrast ≥ 4.5 for every hue × ring × theme', () => {
+  test('moreContrast: faded label is white at ≥ 4.5 for every hue × ring × theme', () => {
     for (const [theme, p] of themes) {
       const table = buildFillTable(p, 3, theme, { moreContrast: true });
       for (const hue of Object.keys(p.hues)) {
         for (let ring = 0; ring < 3; ring++) {
-          expect(contrast(table.label(hue, ring, false), table.fill(hue, ring, false)), `${theme} ${hue} ${ring}`)
-            .toBeGreaterThanOrEqual(4.5);
+          const where = `${theme} ${hue} ${ring}`;
+          expect(table.label(hue, ring, false), where).toBe('#ffffff');
+          expect(contrast(table.label(hue, ring, false), table.fill(hue, ring, false)), where).toBeGreaterThanOrEqual(4.5);
         }
       }
     }
+  });
+
+  test('fitWhite darkens happy orange just enough for 4.8:1', () => {
+    const c = contrast('#ffffff', fitWhite('#D9730D'));
+    expect(c).toBeGreaterThanOrEqual(4.8);
+    expect(c).toBeLessThan(5.2);
+  });
+
+  test('ring 0 fill is darker than ring 2 fill', () => {
+    for (const [theme, p] of themes) {
+      const table = buildFillTable(p, 3, theme);
+      for (const hue of Object.keys(p.hues)) {
+        expect(contrast('#ffffff', table.fill(hue, 0, true)), `${theme} ${hue}`)
+          .toBeGreaterThan(contrast('#ffffff', table.fill(hue, 2, true)));
+      }
+    }
+  });
+
+  test("forced palette: fill 'Canvas', label 'CanvasText'/'GrayText'", () => {
+    const forced: Palette = { bg: 'Canvas', fg: 'CanvasText', gap: 'CanvasText', focus: 'Highlight', outline: 'Highlight', forced: true, hues: { angry: 'Canvas' } };
+    const table = buildFillTable(forced, 3, 'light');
+    expect(table.fill('angry', 1, true)).toBe('Canvas');
+    expect(table.label('angry', 1, true)).toBe('CanvasText');
+    expect(table.label('angry', 1, false)).toBe('GrayText');
   });
 
   test('fill and label return the same string instance on repeat calls (no per-call allocation)', () => {

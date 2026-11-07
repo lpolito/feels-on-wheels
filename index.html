@@ -1,198 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-
+<!doctype html>
+<html lang="en" dir="ltr">
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
   <title>Feelings Wheel</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
-  <link rel="stylesheet" type="text/css" href="components/FeelingsWheel/styles.css">
-  <link rel="stylesheet" type="text/css" href="components/FeelingSegment/styles.css">
+  <link rel="stylesheet" href="/src/styles/tokens.css">
+  <link rel="stylesheet" href="/src/styles/app.css">
 </head>
-
 <body>
-
-  <feelings-wheel>
-    <feeling-segment label="Happy">
-      <feeling-segment label=" Optimistic">
-        <feeling-segment label="Inspired"></feeling-segment>
-        <feeling-segment label="Hopeful"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Trusting">
-        <feeling-segment label="Intimate"></feeling-segment>
-        <feeling-segment label="Sensitive"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Peaceful">
-        <feeling-segment label="Thankful"></feeling-segment>
-        <feeling-segment label="Loving"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Powerful">
-        <feeling-segment label="Creative"></feeling-segment>
-        <feeling-segment label="Courageous"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Accepted">
-        <feeling-segment label="Valued"></feeling-segment>
-        <feeling-segment label="Respected"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Proud">
-        <feeling-segment label="Confident"></feeling-segment>
-        <feeling-segment label="Successful"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Interested">
-        <feeling-segment label="Inquisitive"></feeling-segment>
-        <feeling-segment label="Curious"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Content">
-        <feeling-segment label="Joyful"></feeling-segment>
-        <feeling-segment label="Free"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Playful">
-        <feeling-segment label="Cheeky"></feeling-segment>
-        <feeling-segment label="Aroused"></feeling-segment>
-      </feeling-segment>
-    </feeling-segment>
-    <feeling-segment label="Surprised">
-      <feeling-segment label="Excited">
-        <feeling-segment label="Energetic"></feeling-segment>
-        <feeling-segment label="Eager"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Amazed">
-        <feeling-segment label="Awe"></feeling-segment>
-        <feeling-segment label="Astonished"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Confused">
-        <feeling-segment label="Perplexed"></feeling-segment>
-        <feeling-segment label="Disillusioned"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Startled">
-        <feeling-segment label="Dismayed"></feeling-segment>
-        <feeling-segment label="Shocked"></feeling-segment>
-      </feeling-segment>
-    </feeling-segment>
-    <feeling-segment label="Bad">
-      <feeling-segment label="Tired">
-        <feeling-segment label="Unfocused"></feeling-segment>
-        <feeling-segment label="Sleepy"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Stressed">
-        <feeling-segment label="Out of Control"></feeling-segment>
-        <feeling-segment label="Overwhelmed"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Busy">
-        <feeling-segment label="Rushed"></feeling-segment>
-        <feeling-segment label="Pressured"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Bored">
-        <feeling-segment label="Apathetic"></feeling-segment>
-        <feeling-segment label="Indifferent"></feeling-segment>
-      </feeling-segment>
-    </feeling-segment>
-    <feeling-segment label="Fearful">
-      <feeling-segment label="Scared">
-        <feeling-segment label="Helpless"></feeling-segment>
-        <feeling-segment label="Frightened"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Anxious">
-        <feeling-segment label="Overwhelmed"></feeling-segment>
-        <feeling-segment label="Worried"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Insecure">
-        <feeling-segment label="Inadequate"></feeling-segment>
-        <feeling-segment label="Inferior"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Weak">
-        <feeling-segment label="Worthless"></feeling-segment>
-        <feeling-segment label="Insignificant"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Rejected">
-        <feeling-segment label="Excluded"></feeling-segment>
-        <feeling-segment label="Persecuted"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Threatened">
-        <feeling-segment label="Nervous"></feeling-segment>
-        <feeling-segment label="Exposed"></feeling-segment>
-      </feeling-segment>
-    </feeling-segment>
-    <feeling-segment label="Angry">
-      <feeling-segment label="Let Down">
-        <feeling-segment label="Betrayed"></feeling-segment>
-        <feeling-segment label="Resentful"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Humiliated">
-        <feeling-segment label="Disrespected"></feeling-segment>
-        <feeling-segment label="Ridiculed"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Bitter">
-        <feeling-segment label="Indignant"></feeling-segment>
-        <feeling-segment label="Violated"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Mad">
-        <feeling-segment label="Furious"></feeling-segment>
-        <feeling-segment label="Jealous"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Aggressive">
-        <feeling-segment label="Provoked"></feeling-segment>
-        <feeling-segment label="Hostile"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Frustrated">
-        <feeling-segment label="Infuriated"></feeling-segment>
-        <feeling-segment label="Annoyed"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Distant">
-        <feeling-segment label="Withdrawn"></feeling-segment>
-        <feeling-segment label="Numb"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Critical">
-        <feeling-segment label="Skeptical"></feeling-segment>
-        <feeling-segment label="Dismissive"></feeling-segment>
-      </feeling-segment>
-    </feeling-segment>
-    <feeling-segment label="Disgusted">
-      <feeling-segment label="Disapproving">
-        <feeling-segment label="Judgemental"></feeling-segment>
-        <feeling-segment label="Embarrassed"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Disappointed">
-        <feeling-segment label="Appalled"></feeling-segment>
-        <feeling-segment label="Revolted"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Awful">
-        <feeling-segment label="Nauseated"></feeling-segment>
-        <feeling-segment label="Detestable"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Repelled">
-        <feeling-segment label="Horrified"></feeling-segment>
-        <feeling-segment label="Hesitant"></feeling-segment>
-      </feeling-segment>
-    </feeling-segment>
-    <feeling-segment label="Sad">
-      <feeling-segment label="Hurt">
-        <feeling-segment label="Embarrassed"></feeling-segment>
-        <feeling-segment label="Disappointed"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Depressed">
-        <feeling-segment label="Inferior"></feeling-segment>
-        <feeling-segment label="Empty"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Guilty">
-        <feeling-segment label="Remorseful"></feeling-segment>
-        <feeling-segment label="Ashamed"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Despair">
-        <feeling-segment label="Powerless"></feeling-segment>
-        <feeling-segment label="Grief"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Vulnerable">
-        <feeling-segment label="Fragile"></feeling-segment>
-        <feeling-segment label="Victimized"></feeling-segment>
-      </feeling-segment>
-      <feeling-segment label="Lonely">
-        <feeling-segment label="Abandoned"></feeling-segment>
-        <feeling-segment label="Isolated"></feeling-segment>
-      </feeling-segment>
-    </feeling-segment>
-  </feelings-wheel>
-
+  <main id="app" data-mode="overview">
+    <fw-path></fw-path>
+    <div id="stage">
+      <canvas id="wheel" aria-hidden="true"></canvas>
+      <div id="a11y-tree"></div>
+    </div>
+    <fw-panel></fw-panel>
+    <fw-toolbar></fw-toolbar>
+    <div id="announcer" aria-live="polite" class="visually-hidden"></div>
+  </main>
+  <script type="module" src="/src/main.ts"></script>
 </body>
-
-<script type="module" src="main.js"></script>
-
 </html>

@@ -1,8 +1,0 @@
-/* :host {
-  --total: attr(data-total type(<number>));
-  --i: attr(data-idx type(<number>));
-} */
-
-:host {}
-
-.contents {}

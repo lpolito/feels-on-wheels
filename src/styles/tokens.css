@@ -1,0 +1,55 @@
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --fg: #1c1b1f;
+  --muted: #5f5d66;
+  --surface: #f6f5f8;
+  --gap: #ffffff;
+  --focus: #1a5fd0;
+
+  --hue-fearful: #C2257F;
+  --hue-angry: #C62835;
+  --hue-disgusted: #A4532A;
+  --hue-sad: #3B3470;
+  --hue-happy: #D9730D;
+  --hue-surprised: #3E7B5E;
+  --hue-bad: #5E3A87;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121114;
+    --fg: #ecebf0;
+    --muted: #a9a6b2;
+    --surface: #1e1c22;
+    --gap: #121114;
+    --focus: #7fb0ff;
+
+    --hue-fearful: #E0559E;
+    --hue-angry: #E0525C;
+    --hue-disgusted: #C77A4F;
+    --hue-sad: #7A70C2;
+    --hue-happy: #E8933A;
+    --hue-surprised: #5FA383;
+    --hue-bad: #8E6BC0;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121114;
+  --fg: #ecebf0;
+  --muted: #a9a6b2;
+  --surface: #1e1c22;
+  --gap: #121114;
+  --focus: #7fb0ff;
+
+  --hue-fearful: #E0559E;
+  --hue-angry: #E0525C;
+  --hue-disgusted: #C77A4F;
+  --hue-sad: #7A70C2;
+  --hue-happy: #E8933A;
+  --hue-surprised: #5FA383;
+  --hue-bad: #8E6BC0;
+}

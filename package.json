@@ -1,0 +1,22 @@
+{
+  "name": "feelings-wheel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "build:test": "vite build --mode test --outDir dist-test",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:e2e": "playwright test tests/e2e"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.65.0",
+    "happy-dom": "21.0.4",
+    "typescript": "7.0.2",
+    "vite": "8.3.6",
+    "vitest": "5.1.0"
+  }
+}

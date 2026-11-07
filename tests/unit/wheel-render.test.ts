@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
-import { setLocale } from '../../src/i18n';
+import { label, setLocale } from '../../src/i18n';
 import { buildLayout, litMask } from '../../src/model/layout';
 import { overviewCamera, ringFocusCamera } from '../../src/camera';
 import { buildFillTable, type Palette } from '../../src/render/colors';
@@ -17,21 +17,30 @@ const palette: Palette = {
 };
 const table = buildFillTable(palette, 3, 'light');
 
-interface Rec { fills: string[]; strokes: string[]; texts: string[] }
+interface Rec { fills: string[]; strokes: string[]; texts: string[]; fonts: string[]; shadowSets: number }
 
 function fakeCanvas(): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D; rec: Rec } {
-  const rec: Rec = { fills: [], strokes: [], texts: [] };
-  const state = { fillStyle: '', strokeStyle: '', font: '10px sans-serif', globalAlpha: 1, lineWidth: 1, textAlign: 'start', textBaseline: 'alphabetic' };
+  const rec: Rec = { fills: [], strokes: [], texts: [], fonts: [], shadowSets: 0 };
+  const state = {
+    fillStyle: '', strokeStyle: '', font: '10px sans-serif', globalAlpha: 1, lineWidth: 1, textAlign: 'start', textBaseline: 'alphabetic',
+    lineJoin: 'miter', lineCap: 'butt', shadowBlur: 0, shadowColor: 'transparent', shadowOffsetX: 0, shadowOffsetY: 0,
+  };
   const noop = () => {};
   const ctx = {
     ...Object.fromEntries(['beginPath', 'closePath', 'arc', 'moveTo', 'lineTo', 'setTransform', 'clearRect', 'fillRect'].map((k) => [k, noop])),
     fill: () => rec.fills.push(state.fillStyle),
     stroke: () => rec.strokes.push(state.strokeStyle),
-    fillText: (t: string) => rec.texts.push(t),
+    fillText: (t: string) => { rec.texts.push(t); rec.fonts.push(state.font); },
     measureText: (t: string) => ({ width: t.length * Number(/([\d.]+)px/.exec(state.font)![1]) * 0.6 }),
   } as Record<string, unknown>;
   for (const k of Object.keys(state) as (keyof typeof state)[]) {
-    Object.defineProperty(ctx, k, { get: () => state[k], set: (v) => { (state as Record<string, unknown>)[k] = v; } });
+    Object.defineProperty(ctx, k, {
+      get: () => state[k],
+      set: (v) => {
+        if (k === 'shadowBlur' && v > 0) rec.shadowSets++;
+        (state as Record<string, unknown>)[k] = v;
+      },
+    });
   }
   const canvas = { width: 0, height: 0 } as HTMLCanvasElement;
   return { canvas, ctx: ctx as unknown as CanvasRenderingContext2D, rec };
@@ -41,7 +50,7 @@ function frame(vp: Viewport, overrides: Partial<Frame> = {}): Frame {
   const all = litMask(layout, null);
   return {
     cam: overviewCamera(vp, 0), vp, lit: all, prevLit: all, fadeT: 1,
-    focused: null, showFocus: false, mode: 'overview', remPx: 16, ...overrides,
+    selected: null, opened: false, pulseT: 1, mode: 'wheel', remPx: 16, ...overrides,
   };
 }
 
@@ -101,35 +110,77 @@ describe('wheel renderer', () => {
     expect(rec.fills).not.toContain(table.fill('sad', 0, true));
   });
 
-  test('focus outline only when showFocus', () => {
+  const draw = (vp: Viewport, o: Partial<Frame>, pal: Palette = palette, tbl = table) => {
+    const { canvas, ctx, rec } = fakeCanvas();
+    const r = createWheelRenderer(canvas, layout, ctx);
+    r.setColors(tbl, pal);
+    r.resize(vp.width, vp.height, 1);
+    r.draw(frame(vp, o));
+    return { r, rec };
+  };
+  const pxOf = (font: string): number => Number(/([\d.]+)px/.exec(font)![1]);
+
+  test('selected not opened: outline drawn in palette.outline, chevron drawn, no shadow', () => {
     const angry = layout.byPath.get('angry')!;
-    for (const showFocus of [false, true]) {
-      const { canvas, ctx, rec } = fakeCanvas();
-      const r = createWheelRenderer(canvas, layout, ctx);
-      r.setColors(table, palette);
-      r.resize(1000, 1000, 1);
-      r.draw(frame(desk, { focused: angry, showFocus }));
-      expect(rec.strokes.filter((s) => s === palette.focus).length).toBe(showFocus ? 1 : 0);
-    }
+    const none = draw(desk, {}).rec;
+    const sel = draw(desk, { selected: angry }).rec;
+    expect(none.strokes).not.toContain(palette.outline);
+    expect(sel.strokes.filter((x) => x === palette.outline).length).toBeGreaterThanOrEqual(1);
+    // outline ring, inner gap line, chevron
+    expect(sel.strokes.length - none.strokes.length).toBe(3);
+    expect(sel.shadowSets).toBe(0);
   });
 
-  test('focus outline includes a ring in the segment label color, which contrasts ≥3:1 with every fill', async () => {
-    const { contrast } = await import('../../src/render/colors');
-    for (const path of ['angry', 'happy/proud', 'sad/lonely/isolated']) {
-      const i = layout.byPath.get(path)!;
-      const s = layout.segments[i]!;
-      const ring = table.label(s.hue, s.ring, true);
-      expect(contrast(ring, table.fill(s.hue, s.ring, true))).toBeGreaterThanOrEqual(3);
-      const counts = [false, true].map((showFocus) => {
-        const { canvas, ctx, rec } = fakeCanvas();
-        const r = createWheelRenderer(canvas, layout, ctx);
-        r.setColors(table, palette);
-        r.resize(1000, 1000, 1);
-        r.draw(frame(desk, { focused: i, showFocus }));
-        return rec.strokes.filter((x) => x === ring).length;
-      });
-      expect(counts[1]! - counts[0]!, path).toBe(1);
-    }
+  test('opened: shadowBlur set exactly once per frame', () => {
+    const hostile = layout.byPath.get('angry/aggressive/hostile')!;
+    const sel = layout.segments[hostile]!;
+    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, anchorY: 0.5 });
+    const lit = litMask(layout, hostile);
+    const { rec } = draw(desk, { cam, mode: 'ring', selected: hostile, opened: true, lit, prevLit: lit, pulseT: 0.5 });
+    expect(rec.shadowSets).toBe(1);
+    expect(rec.strokes).toContain(palette.outline);
+  });
+
+  test('opened label uses weight 800 and a larger px than its neighbours', () => {
+    const hostile = layout.byPath.get('angry/aggressive/hostile')!;
+    const sel = layout.segments[hostile]!;
+    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, anchorY: 0.5 });
+    const lit = litMask(layout, hostile);
+    const { rec } = draw(desk, { cam, mode: 'ring', selected: hostile, opened: true, lit, prevLit: lit });
+    const at = (t: string) => rec.fonts[rec.texts.lastIndexOf(t)]!;
+    const hostileFont = at(label('hostile'));
+    const provokedFont = at(label('provoked'));
+    expect(hostileFont.startsWith('800 ')).toBe(true);
+    expect(provokedFont.startsWith('600 ')).toBe(true);
+    expect(pxOf(hostileFont)).toBeGreaterThan(pxOf(provokedFont));
+  });
+
+  test('thin cell gets the chevron outside in the outline colour; wide cell gets it inside in white', () => {
+    const wide = draw(desk, { selected: layout.byPath.get('angry')! }).rec;
+    expect(wide.strokes.at(-1)).toBe('#ffffff');
+    const small: Viewport = { width: 300, height: 300, radius: 140 };
+    const thin = draw(small, { selected: layout.byPath.get('angry/aggressive/hostile')! }).rec;
+    expect(thin.strokes.at(-1)).toBe(palette.outline);
+  });
+
+  test('forced palette outlines in Highlight', () => {
+    const forced: Palette = { ...palette, bg: 'Canvas', fg: 'CanvasText', gap: 'CanvasText', focus: 'Highlight', outline: 'Highlight', forced: true };
+    const tbl = buildFillTable(forced, 3, 'light');
+    const { rec } = draw(desk, { selected: layout.byPath.get('angry')! }, forced, tbl);
+    expect(rec.strokes).toContain('Highlight');
+    expect(rec.strokes).not.toContain('#ffffff');
+  });
+
+  test('pinch: redrawing at a scale 0.3% larger reuses label fits', () => {
+    const { canvas, ctx } = fakeCanvas();
+    const r = createWheelRenderer(canvas, layout, ctx);
+    r.setColors(table, palette);
+    r.resize(1000, 1000, 1);
+    r.draw(frame(desk));
+    expect(r.stats.labelFits).toBeGreaterThan(100);
+    const cam = { ...overviewCamera(desk, 0), scale: 1.003 };
+    r.draw(frame(desk, { cam }));
+    expect(r.stats.labelFits).toBe(0);
   });
 
   test('repeat draws at the same camera reuse label layouts', () => {

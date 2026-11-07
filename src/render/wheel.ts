@@ -11,9 +11,12 @@ export interface Frame {
   prevLit: Uint8Array;
   /** 0..1 cross-fade progress from prevLit to lit. */
   fadeT: number;
-  focused: number | null;
-  showFocus: boolean;
-  mode: 'overview' | 'ring';
+  selected: number | null;
+  /** The selection is opened: drawn lifted, with a shadow and a larger label. */
+  opened: boolean;
+  /** 0..1 progress of the open pulse (1 = done). */
+  pulseT: number;
+  mode: 'wheel' | 'ring';
   remPx: number;
   /** prefers-contrast: more → thicker gaps. */
   moreContrast?: boolean;
@@ -23,7 +26,7 @@ export interface WheelRenderer {
   resize(cssW: number, cssH: number, dpr: number): void;
   setColors(t: FillTable, p: Palette): void;
   draw(f: Frame): void;
-  stats: { segmentsDrawn: number; labelsDrawn: number };
+  stats: { segmentsDrawn: number; labelsDrawn: number; labelFits: number };
 }
 
 const FONT_STACK = 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
@@ -32,10 +35,24 @@ const LABEL_PAD = 6;
 const LINE_HEIGHT = 1.15;
 const GAP_PX = 1.5;
 const GAP_PX_MORE = 2.5;
-const FOCUS_PX = 1.5;
-const FOCUS_RING_PX = 4;
+/** Spec §4.2 selection treatments. */
+const OUTLINE_PX = 4;
+const OUTLINE_INNER_PX = 2;
+const LIFT_RADIAL_PX = 10;
+const LIFT_SIDE_PX = 2;
+const LIFT_LABEL = 1.15;
+const SHADOW = { blur: 12, color: 'rgba(0,0,0,.35)', offsetY: 3 } as const;
+const PULSE_FROM = 0.96;
+const CHEVRON_INSIDE_MIN_ARC = 22;
+const CHEVRON_HALF = 4;
+const CHEVRON_OFFSET = 9;
+/** Label fits are reused while the box stays within this many px (pinch frames). */
+const FIT_TOLERANCE = 1;
+const WHITE = '#ffffff';
 
 interface LabelCache { w: number; h: number; min: number; max: number; result: { lines: string[]; px: number } | null }
+
+const easeOut = (t: number): number => 1 - (1 - t) ** 3;
 
 export function createWheelRenderer(canvas: HTMLCanvasElement, layout: Layout, ctx?: CanvasRenderingContext2D): WheelRenderer {
   const g = ctx ?? canvas.getContext('2d', { alpha: false })!;
@@ -49,13 +66,15 @@ export function createWheelRenderer(canvas: HTMLCanvasElement, layout: Layout, c
   let dpr = 1;
   let table: FillTable | null = null;
   let palette: Palette | null = null;
-  const stats = { segmentsDrawn: 0, labelsDrawn: 0 };
+  const stats = { segmentsDrawn: 0, labelsDrawn: 0, labelFits: 0 };
+  const boldFonts = new Map<number, string>();
 
-  const font = (px: number): string => {
-    let f = fonts.get(px);
+  const font = (px: number, bold = false): string => {
+    const cache = bold ? boldFonts : fonts;
+    let f = cache.get(px);
     if (f === undefined) {
-      f = `600 ${px}px ${FONT_STACK}`;
-      fonts.set(px, f);
+      f = `${bold ? 800 : 600} ${px}px ${FONT_STACK}`;
+      cache.set(px, f);
     }
     return f;
   };
@@ -77,13 +96,60 @@ export function createWheelRenderer(canvas: HTMLCanvasElement, layout: Layout, c
   }
 
   function fitted(i: number, w: number, h: number, min: number, max: number): LabelCache['result'] {
-    const qw = Math.round(w * 2) / 2;
-    const qh = Math.round(h * 2) / 2;
     const c = labelCache[i];
-    if (c && c.w === qw && c.h === qh && c.min === min && c.max === max) return c.result;
-    const result = fitLabel(texts[i]!, measure, { width: qw, height: qh }, { min, max });
-    labelCache[i] = { w: qw, h: qh, min, max, result };
+    if (c && Math.abs(c.w - w) <= FIT_TOLERANCE && Math.abs(c.h - h) <= FIT_TOLERANCE && c.min === min && c.max === max) {
+      return c.result;
+    }
+    stats.labelFits++;
+    const result = fitLabel(texts[i]!, measure, { width: w, height: h }, { min, max });
+    labelCache[i] = { w, h, min, max, result };
     return result;
+  }
+
+  function drawLabel(lines: string[], px: number, bold: boolean, x: number, y: number, angle: number, scale: number, color: string): void {
+    const rot = labelRotation(angle);
+    const cos = Math.cos(rot) * scale;
+    const sin = Math.sin(rot) * scale;
+    g.setTransform(dpr * cos, dpr * sin, -dpr * sin, dpr * cos, dpr * x, dpr * y);
+    g.fillStyle = color;
+    g.font = font(px, bold);
+    const lineGap = px * LINE_HEIGHT;
+    const top = -((lines.length - 1) * lineGap) / 2;
+    for (let l = 0; l < lines.length; l++) g.fillText(lines[l]!, 0, top + l * lineGap);
+    stats.labelsDrawn++;
+  }
+
+  /** Two-tone outline: ink on the edge, a gap-coloured line just inside it. */
+  function outline(cx: number, cy: number, r0: number, r1: number, a0: number, a1: number, ink: string, gap: string): void {
+    sector(cx, cy, r0, r1, a0, a1);
+    g.lineWidth = OUTLINE_PX;
+    g.strokeStyle = ink;
+    g.stroke();
+    const inset = OUTLINE_PX / 2 + OUTLINE_INNER_PX / 2;
+    const rIn = r0 + inset;
+    const rOut = r1 - inset;
+    if (rOut > rIn) {
+      const da = inset / Math.max(rIn, 1);
+      sector(cx, cy, rIn, rOut, a0 + da, Math.max(a0 + da, a1 - da));
+      g.lineWidth = OUTLINE_INNER_PX;
+      g.strokeStyle = gap;
+      g.stroke();
+    }
+  }
+
+  /** A small outward-pointing chevron at radius r on the cell's mid angle (decoration only). */
+  function chevron(cx: number, cy: number, r: number, angle: number, color: string): void {
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const at = (dr: number, dt: number): [number, number] => [cx + (r + dr) * cos - dt * sin, cy + (r + dr) * sin + dt * cos];
+    g.beginPath();
+    g.moveTo(...at(-CHEVRON_HALF / 2, -CHEVRON_HALF));
+    g.lineTo(...at(CHEVRON_HALF / 2, 0));
+    g.lineTo(...at(-CHEVRON_HALF / 2, CHEVRON_HALF));
+    g.lineWidth = 2;
+    g.lineCap = 'round';
+    g.strokeStyle = color;
+    g.stroke();
   }
 
   return {
@@ -102,12 +168,15 @@ export function createWheelRenderer(canvas: HTMLCanvasElement, layout: Layout, c
     draw(f) {
       stats.segmentsDrawn = 0;
       stats.labelsDrawn = 0;
+      stats.labelFits = 0;
       if (!table || !palette) return;
       const { cam, vp } = f;
       const R = vp.radius * cam.scale;
       const k = f.remPx / 16;
       const minPx = (f.mode === 'ring' ? 12 : 8) * k;
-      const maxPx = Math.min(Math.max(16 * k * cam.scale, 16 * k), 24 * k);
+      // Quantised so pinch frames keep reusing label fits.
+      const maxPx = Math.floor(Math.min(Math.max(16 * k * cam.scale, 16 * k), 24 * k) * 2) / 2;
+      const lifted = f.opened ? f.selected : null;
       viewWindow(cam, vp, win);
 
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -120,7 +189,7 @@ export function createWheelRenderer(canvas: HTMLCanvasElement, layout: Layout, c
 
       for (const s of layout.segments) {
         const ring = layout.rings[s.ring]!;
-        if (!inWindow(s, ring, win)) continue;
+        if (s.index === lifted || !inWindow(s, ring, win)) continue;
         const a0 = s.start + cam.rotation;
         const a1 = s.end + cam.rotation;
         sector(cam.cx, cam.cy, ring.inner * R, ring.outer * R, a0, a1);
@@ -145,45 +214,61 @@ export function createWheelRenderer(canvas: HTMLCanvasElement, layout: Layout, c
       g.textBaseline = 'middle';
       for (const s of layout.segments) {
         const ring = layout.rings[s.ring]!;
-        if (!inWindow(s, ring, win)) continue;
+        if (s.index === lifted || !inWindow(s, ring, win)) continue;
         const rMid = ((ring.inner + ring.outer) / 2) * R;
-        const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, minPx, maxPx);
-        if (!fit) continue;
         const angle = s.mid + cam.rotation;
         const x = cam.cx + rMid * Math.cos(angle);
         const y = cam.cy + rMid * Math.sin(angle);
         if (x < -rMid || y < -rMid || x > cssW + rMid || y > cssH + rMid) continue;
-        const rot = labelRotation(angle);
-        const cos = Math.cos(rot);
-        const sin = Math.sin(rot);
-        g.setTransform(dpr * cos, dpr * sin, -dpr * sin, dpr * cos, dpr * x, dpr * y);
+        const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, minPx, maxPx);
+        if (!fit) continue;
         const lit = f.fadeT >= 0.5 ? f.lit[s.index] === 1 : f.prevLit[s.index] === 1;
-        g.fillStyle = table.label(s.hue, s.ring, lit);
-        g.font = font(fit.px);
-        const lineGap = fit.px * LINE_HEIGHT;
-        const top = -((fit.lines.length - 1) * lineGap) / 2;
-        for (let l = 0; l < fit.lines.length; l++) g.fillText(fit.lines[l]!, 0, top + l * lineGap);
-        stats.labelsDrawn++;
+        drawLabel(fit.lines, fit.px, false, x, y, angle, 1, table.label(s.hue, s.ring, lit));
       }
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      if (f.showFocus && f.focused !== null) {
-        const s = layout.segments[f.focused]!;
-        const ring = layout.rings[s.ring]!;
-        if (inWindow(s, ring, win)) {
-          const inset = FOCUS_RING_PX / 2;
-          sector(cam.cx, cam.cy, ring.inner * R + inset, ring.outer * R - inset,
-            s.start + cam.rotation + inset / (ring.outer * R), s.end + cam.rotation - inset / (ring.outer * R));
-          // Two-tone ring: the segment's label color is ≥4.5:1 against its fill, so the indicator always
-          // shows (WCAG 1.4.11); the thin --focus line on top keeps the familiar focus color.
-          g.lineWidth = FOCUS_RING_PX;
-          g.strokeStyle = table.label(s.hue, s.ring, true);
-          g.stroke();
-          g.lineWidth = FOCUS_PX;
-          g.strokeStyle = palette.focus;
-          g.stroke();
+      if (f.selected === null) return;
+      const s = layout.segments[f.selected]!;
+      const ring = layout.rings[s.ring]!;
+      if (!inWindow(s, ring, win)) return;
+      const ink = palette.outline;
+      const a0 = s.start + cam.rotation;
+      const a1 = s.end + cam.rotation;
+      const angle = s.mid + cam.rotation;
+
+      if (!f.opened) {
+        outline(cam.cx, cam.cy, ring.inner * R, ring.outer * R, a0, a1, ink, palette.gap);
+        const outerArc = (s.end - s.start) * ring.outer * R;
+        if (outerArc >= CHEVRON_INSIDE_MIN_ARC) {
+          chevron(cam.cx, cam.cy, ring.outer * R - CHEVRON_OFFSET, angle, palette.forced ? ink : WHITE);
+        } else {
+          chevron(cam.cx, cam.cy, ring.outer * R + CHEVRON_OFFSET, angle, ink);
         }
+        return;
       }
+
+      // Opened: lifted past its ring, with one shadow, pulsing in about its centre.
+      const r0 = Math.max(0, ring.inner * R - LIFT_RADIAL_PX);
+      const r1 = ring.outer * R + LIFT_RADIAL_PX;
+      const rMid = ((ring.inner + ring.outer) / 2) * R;
+      const side = LIFT_SIDE_PX / Math.max(rMid, 1);
+      const p = PULSE_FROM + (1 - PULSE_FROM) * easeOut(Math.min(Math.max(f.pulseT, 0), 1));
+      const x = cam.cx + rMid * Math.cos(angle);
+      const y = cam.cy + rMid * Math.sin(angle);
+      g.setTransform(dpr * p, 0, 0, dpr * p, dpr * (x - p * x), dpr * (y - p * y));
+      sector(cam.cx, cam.cy, r0, r1, a0 - side, a1 + side);
+      g.shadowColor = SHADOW.color;
+      g.shadowBlur = SHADOW.blur;
+      g.shadowOffsetY = SHADOW.offsetY;
+      g.fillStyle = table.fill(s.hue, s.ring, true);
+      g.fill();
+      g.shadowBlur = 0;
+      g.shadowOffsetY = 0;
+      g.shadowColor = 'transparent';
+      outline(cam.cx, cam.cy, r0, r1, a0 - side, a1 + side, ink, palette.gap);
+      const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, minPx, maxPx);
+      if (fit) drawLabel(fit.lines, fit.px * LIFT_LABEL, true, x, y, angle, p, table.label(s.hue, s.ring, true));
+      g.setTransform(dpr, 0, 0, dpr, 0, 0);
     },
   };
 }

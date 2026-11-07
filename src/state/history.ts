@@ -1,18 +1,4 @@
-import { shouldStartZoomed } from '../camera';
-import type { Layout } from '../model/layout';
-import type { Viewport } from '../model/geometry';
-import { initialState, type Action, type State } from './store';
-
-/**
- * The state at the base URL (spec §3.2): on phones a uniformly random core word, selected and centred in the core
- * ring view; on large screens the whole wheel with nothing selected.
- */
-export function startState(layout: Layout, vp: Viewport, random: () => number): State {
-  if (!shouldStartZoomed(layout, vp)) return initialState;
-  const core = layout.rings[0]!.segments;
-  const k = Math.min(core.length - 1, Math.floor(random() * core.length));
-  return { selected: core[k]!, opened: false, view: { mode: 'ring', ring: 0 }, hinted: true };
-}
+import type { Action, State } from './store';
 
 const sameHash = (a: State, b: State): boolean =>
   a.opened === b.opened && (!a.opened || a.selected === b.selected);

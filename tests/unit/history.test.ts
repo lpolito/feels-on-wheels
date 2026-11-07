@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { buildLayout } from '../../src/model/layout';
-import { createHistoryWriter, historyOp, startState } from '../../src/state/history';
+import { createHistoryWriter, historyOp } from '../../src/state/history';
 import { initialState, reduce, type Action, type State } from '../../src/state/store';
 
 const layout = buildLayout(loadData().wheel);
@@ -67,22 +67,6 @@ describe('history writer', () => {
     };
     const w = createHistoryWriter(throwing, () => 0);
     expect(() => w.replace('#/core/angry')).not.toThrow();
-  });
-});
-
-describe('startState', () => {
-  const phone = { width: 375, height: 400, radius: 179.5 };
-  const desktop = { width: 1440, height: 900, radius: 442 };
-
-  test('startState: phone picks a core word via random(), selected not opened, ring 0', () => {
-    expect(startState(layout, phone, () => 0.99)).toEqual({
-      selected: layout.rings[0]!.segments[6], opened: false, view: { mode: 'ring', ring: 0 }, hinted: true,
-    });
-    expect(startState(layout, phone, () => 0).selected).toBe(layout.rings[0]!.segments[0]);
-  });
-
-  test('startState: desktop is initialState', () => {
-    expect(startState(layout, desktop, () => 0.5)).toBe(initialState);
   });
 });
 

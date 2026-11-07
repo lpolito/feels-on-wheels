@@ -8,7 +8,6 @@ declare global {
     __fw: {
       segmentScreenPoint(path: string): { x: number; y: number };
       state(): FwState;
-      startState(): FwState;
       camera(): { scale: number; rotation: number; cx: number; cy: number };
       moving(): boolean;
       pathOf(i: number | null): string | null;

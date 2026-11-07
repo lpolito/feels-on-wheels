@@ -140,22 +140,23 @@ describe('<fw-card>', () => {
 });
 
 describe('<fw-toolbar>', () => {
-  test('toolbar shows Whole wheel only when opened and emits close', () => {
+  test('toolbar shows Zoom out only when opened, emits close then fw-focus-lost', () => {
     document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
     const el = document.querySelector<FwToolbar>('fw-toolbar')!;
     const actions: unknown[] = [];
     const themes: unknown[] = [];
     el.addEventListener('fw-action', (e) => actions.push((e as CustomEvent).detail));
+    el.addEventListener('fw-focus-lost', () => actions.push('fw-focus-lost'));
     el.addEventListener('fw-theme', (e) => themes.push((e as CustomEvent).detail));
     el.opened = false;
-    const btn = el.querySelector<HTMLButtonElement>('button')!;
+    const btn = el.querySelector<HTMLButtonElement>('button.fw-zoom-out')!;
     expect(btn.hidden).toBe(true);
     el.opened = true;
     expect(btn.hidden).toBe(false);
-    expect(btn.textContent).toBe('Whole wheel');
+    expect(btn.textContent).toBe('Zoom out');
     expect(btn.hasAttribute('aria-pressed')).toBe(false);
     btn.click();
-    expect(actions).toEqual([{ type: 'close' }]);
+    expect(actions).toEqual([{ type: 'close' }, 'fw-focus-lost']);
     const select = el.querySelector('select')!;
     el.theme = 'dark';
     expect(select.value).toBe('dark');

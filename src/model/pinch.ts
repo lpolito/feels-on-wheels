@@ -18,10 +18,7 @@ export function resolvePinch(_layout: Layout, s: State, ratio: number, hit: numb
     if (s.opened && hit === s.selected) return { type: 'toChild' };
     return { type: 'open', segment: hit };
   }
-  if (ratio < PINCH_STEP_OUT) {
-    if (s.opened) return ratio < PINCH_CLOSE ? { type: 'close' } : { type: 'toParent' };
-    // Phone start: back to the whole wheel, selection kept.
-    if (s.view.mode === 'ring') return { type: 'restore', state: { ...s, view: { mode: 'wheel' } } };
-  }
+  // Pinching out of the whole wheel springs back (spec v1.2 §3.1: there is no zoomed start view to leave).
+  if (ratio < PINCH_STEP_OUT && s.opened) return ratio < PINCH_CLOSE ? { type: 'close' } : { type: 'toParent' };
   return null;
 }

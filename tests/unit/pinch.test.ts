@@ -7,7 +7,6 @@ import { initialState, reduce, type State } from '../../src/state/store';
 const layout = buildLayout(loadData().wheel);
 const idx = (p: string): number => layout.byPath.get(p)!;
 const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { mode: 'ring', ring: layout.segments[idx(p)]!.ring }, hinted: false });
-const phoneStart: State = { selected: idx('angry'), opened: false, view: { mode: 'ring', ring: 0 }, hinted: true };
 
 describe('resolvePinch', () => {
   test('thresholds match the spec', () => {
@@ -51,11 +50,11 @@ describe('resolvePinch', () => {
     expect(resolvePinch(layout, opened('angry/aggressive'), 0.54, null)).toEqual({ type: 'close' });
   });
 
-  test('pinch out in phone-start view returns to the wheel keeping the selection', () => {
-    for (const ratio of [0.7, 0.3]) {
-      const a = resolvePinch(layout, phoneStart, ratio, null);
-      expect(a).toEqual({ type: 'restore', state: { ...phoneStart, view: { mode: 'wheel' } } });
-    }
+  test('pinch out on the whole wheel with a selection does nothing', () => {
+    const sel: State = { ...initialState, selected: idx('angry'), hinted: false };
+    for (const ratio of [0.7, 0.3]) expect(resolvePinch(layout, sel, ratio, null), String(ratio)).toBeNull();
+    // A ring view that isn't opened no longer occurs; even so, pinching out of it does nothing.
+    expect(resolvePinch(layout, { ...sel, view: { mode: 'ring', ring: 0 } }, 0.5, null)).toBeNull();
   });
 
   test('pinch out on the whole wheel does nothing (snap back)', () => {

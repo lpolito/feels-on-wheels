@@ -57,7 +57,7 @@ fw-toolbar {
   gap: 0.5rem;
 }
 fw-toolbar button, fw-toolbar select { min-width: 44px; min-height: 44px; padding: 0 0.9rem; font-size: 1rem; }
-fw-toolbar .fw-whole[hidden] { display: none; }
+fw-toolbar .fw-zoom-out[hidden] { display: none; }
 
 /* ── Floating hint and card (spec §5) ───────────────────────────────── */
 #app { --column: min(24rem, 34vw); }

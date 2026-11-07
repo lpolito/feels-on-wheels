@@ -15,9 +15,8 @@
     "inPath": "{label}. In {path}.",
     "path": "Path",
     "labelOnly": "{label}.",
-    "hintSpin": "Spin to explore.",
-    "hintChoose": "How are you feeling? Tap a feeling.",
-    "wholeWheel": "Whole wheel",
+    "hint": "How are you feeling? Tap a feeling or spin to explore.",
+    "zoomOut": "Zoom out",
     "opened": "{label}, opened. In {path}.",
     "openedCore": "{label}, opened.",
     "closed": "{label}, closed."

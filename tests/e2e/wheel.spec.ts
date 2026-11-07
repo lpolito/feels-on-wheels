@@ -65,7 +65,7 @@ test.describe('desktop', () => {
     await idle(page);
     expect((await state(page)).opened).toBe(true);
     const before = (await page.evaluate(() => window.__fw.camera())).rotation;
-    await page.getByRole('button', { name: 'Whole wheel' }).click();
+    await page.getByRole('button', { name: 'Zoom out' }).click();
     await idle(page);
     const after = await page.evaluate(() => window.__fw.camera());
     expect(after.scale).toBe(1);
@@ -129,6 +129,12 @@ test.describe('desktop', () => {
     await expect(picker).toHaveValue('dark');
   });
 
+  test('the hint reads the same on desktop', async ({ page }) => {
+    await open(page);
+    expect((await state(page)).selected).toBeNull();
+    await expect(hint(page)).toHaveText('How are you feeling? Tap a feeling or spin to explore.');
+  });
+
   test('the card never moves the wheel', async ({ page }) => {
     await open(page);
     const none = await wheelBox(page);
@@ -154,18 +160,15 @@ test.describe('desktop', () => {
 test.describe('phone', () => {
   test.beforeEach(({ isMobile }) => test.skip(!isMobile, 'phone-only behaviour'));
 
-  test('phone: base URL spins to a random core word, selected, URL empty, hint "Spin to explore."', async ({ page }) => {
+  test('phone: base URL starts with nothing selected and the hint "How are you feeling? Tap a feeling or spin to explore."', async ({ page }) => {
     await open(page);
     const s = await state(page);
-    expect(s.view).toEqual({ mode: 'ring', ring: 0 });
+    expect(s.selected).toBeNull();
     expect(s.opened).toBe(false);
-    expect(s.selected).not.toBeNull();
-    expect(s.selected).toBe((await page.evaluate(() => window.__fw.startState())).selected);
+    expect(s.view.mode).toBe('wheel');
     expect(await page.evaluate(() => location.hash)).toBe('');
     await expect(hint(page)).toBeVisible();
-    await expect(hint(page)).toHaveText('Spin to explore.');
-    const path = (await selectedPath(page))!;
-    expect(await page.evaluate((p) => window.__fw.offCenter(p), path)).toBeLessThan(1e-6);
+    await expect(hint(page)).toHaveText('How are you feeling? Tap a feeling or spin to explore.');
   });
 
   test('phone: first drag hides the hint and keeps the URL', async ({ page }) => {
@@ -185,26 +188,25 @@ test.describe('phone', () => {
 
   test('phone: opened word sits above the card', async ({ page }) => {
     await open(page);
-    const path = (await selectedPath(page))!;
-    await tapPath(page, path);
+    await tapPath(page, 'angry');
+    await tapPath(page, 'angry');
     expect((await state(page)).opened).toBe(true);
     await expect(page.locator('fw-card .fw-card-body')).toBeVisible();
-    const p = await page.evaluate((x) => window.__fw.segmentScreenPoint(x), path);
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
     const card = (await page.locator('fw-card').boundingBox())!;
     expect(p.y).toBeLessThan(card.y);
   });
 
-  test('phone: Back to the base restores the same start word', async ({ page }) => {
+  test('phone: Back from an opened word returns to the whole wheel with it selected', async ({ page }) => {
     await open(page);
-    const start = await page.evaluate(() => window.__fw.startState());
-    const path = (await selectedPath(page))!;
-    await tapPath(page, path);
-    expect(await page.evaluate(() => location.hash)).toBe(`#/core/${path}`);
+    await tapPath(page, 'angry');
+    await tapPath(page, 'angry');
+    expect(await page.evaluate(() => location.hash)).toBe('#/core/angry');
     await page.goBack();
     await idle(page);
     const s = await state(page);
-    expect(s.selected).toBe(start.selected);
-    expect(s.view).toEqual({ mode: 'ring', ring: 0 });
+    expect(await selectedPath(page)).toBe('angry');
+    expect(s.view).toEqual({ mode: 'wheel' });
     expect(s.opened).toBe(false);
   });
 
@@ -213,7 +215,7 @@ test.describe('phone', () => {
     await page.goto('/');
     await page.waitForFunction(() => window.__fw !== undefined);
     expect(await page.evaluate(() => window.__fw.moving())).toBe(false);
-    expect((await state(page)).view).toEqual({ mode: 'ring', ring: 0 });
+    expect((await state(page)).view).toEqual({ mode: 'wheel' });
   });
 });
 
@@ -243,7 +245,7 @@ test('resizing never paints a cleared (black) canvas frame', async ({ page }) =>
   expect(corner).not.toEqual([0, 0, 0]);
 });
 
-test('a late stylesheet still gives the themed palette and the right start layout', async ({ page, isMobile }) => {
+test('a late stylesheet still gives the themed palette and the right start layout', async ({ page }) => {
   // WebKit can run the module before the stylesheets apply when the machine is busy; force that order.
   await page.route('**/*.css', async (route) => {
     await new Promise((r) => setTimeout(r, 600));
@@ -255,5 +257,5 @@ test('a late stylesheet still gives the themed palette and the right start layou
     return [px[0], px[1], px[2]];
   });
   expect(corner).not.toEqual([0, 0, 0]);
-  expect((await state(page)).view.mode).toBe(isMobile ? 'ring' : 'wheel');
+  expect(await state(page)).toMatchObject({ selected: null, view: { mode: 'wheel' } });
 });

@@ -420,12 +420,13 @@ describe('pinch and zoom', () => {
     expect(offCenter(idx('angry/aggressive/hostile'))).toBeLessThan(1e-9);
   });
 
-  test('pinch out in phone-start view goes to the whole wheel, selection kept', () => {
-    setup(phoneStart('happy'));
+  test('pinch out on the whole wheel with a selection changes nothing and springs back', () => {
+    store.dispatch({ type: 'select', segment: idx('happy') });
     step(1000);
+    const before = store.get();
     ctl.handle([{ type: 'pinch', scale: 0.5, cx: 500, cy: 450 }, { type: 'pinchEnd' }]);
-    step(1000);
-    expect(store.get()).toMatchObject({ selected: idx('happy'), opened: false, view: { mode: 'wheel' } });
+    step(2000);
+    expect(store.get()).toBe(before);
     expect(camera.current.scale).toBe(1);
   });
 });

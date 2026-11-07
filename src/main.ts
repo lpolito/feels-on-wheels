@@ -1,7 +1,7 @@
 import { data } from './boot';
 import { createAnnouncer } from './a11y/announce';
 import { announceFor, createA11yTree } from './a11y/tree';
-import { createCameraController, type CameraOpts } from './camera';
+import { createCameraController, shouldStartZoomed, type CameraOpts } from './camera';
 import { createController } from './controller';
 import { t } from './i18n';
 import { attachGestures } from './input/gestures';
@@ -12,7 +12,7 @@ import { buildFillTable, readPalette } from './render/colors';
 import { createSpriteCache } from './render/sprites';
 import { createWheelRenderer, labelFont } from './render/wheel';
 import { createStore, initialState, type Action, type State } from './state/store';
-import { createHistoryWriter, historyOp, startState } from './state/history';
+import { createHistoryWriter, historyOp } from './state/history';
 import { fromHash, toHash } from './state/url';
 import { cardModel, type FwCard } from './ui/card';
 import type { FwHint } from './ui/hint';
@@ -67,13 +67,10 @@ function measure(): { vp: Viewport; opts: CameraOpts } {
 
 let { vp, opts } = measure();
 
-// ── State (spec §3.2) ────────────────────────────────────────────────────
+// ── State (spec v1.2 §3.1: every screen starts with nothing selected) ────
 const fromUrl = fromHash(layout, location.hash);
-/** The base-URL state for this page load; Back to the base restores it on phones. */
-const start = startState(layout, vp, Math.random);
-const phoneStart = start !== initialState;
 const beganAtBase = fromUrl === null;
-const store = createStore(layout, fromUrl ?? start);
+const store = createStore(layout, fromUrl ?? initialState);
 
 const camera = createCameraController({
   now: () => performance.now(),
@@ -180,8 +177,7 @@ canvas.addEventListener('pointerup', (e) => {
   if (e.pointerType === 'mouse') tree.focusSelected();
 });
 
-const hintText = (s: State): string | null =>
-  s.hinted ? t(beganAtBase && phoneStart ? 'hintSpin' : 'hintChoose') : null;
+const hintText = (s: State): string | null => (s.hinted ? t('hint') : null);
 
 function renderUi(s: State): void {
   card.model = cardModel(layout, feelings, s);
@@ -215,8 +211,8 @@ store.subscribe((s, prev, a) => {
 
 addEventListener('popstate', () => {
   const cur = store.get();
-  const restored = fromHash(layout, location.hash)
-    ?? (beganAtBase && phoneStart ? start : { ...cur, opened: false, view: { mode: 'wheel' } as const });
+  // Back to the base URL: the whole wheel, keeping the last selection (spec v1.2 §3.1).
+  const restored = fromHash(layout, location.hash) ?? { ...cur, opened: false, view: { mode: 'wheel' } as const };
   // The hint never comes back once dismissed.
   store.dispatch({ type: 'restore', state: { ...restored, hinted: cur.hinted && restored.hinted } });
 });
@@ -235,7 +231,7 @@ new ResizeObserver(() => {
 renderer.resize(vp.width, vp.height, devicePixelRatio || 1);
 refreshColors();
 renderUi(store.get());
-if (beganAtBase && phoneStart && !reducedMotion.matches) controller.playIntro();
+if (beganAtBase && shouldStartZoomed(layout, vp) && !reducedMotion.matches) controller.playIntro();
 drawNow();
 
 // ── Offline support (spec §6.5) ─────────────────────────────────────────
@@ -263,7 +259,6 @@ if (TEST) {
     __fw: {
       segmentScreenPoint: pointOf,
       state: () => store.get(),
-      startState: () => start,
       camera: () => ({ ...camera.current }),
       moving: () => camera.moving,
       drawTimes: () => drawTimes.slice(),

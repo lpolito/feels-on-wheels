@@ -1,7 +1,7 @@
 import { data } from './boot';
 import { createAnnouncer } from './a11y/announce';
 import { announceFor, createA11yTree } from './a11y/tree';
-import { createCameraController, shouldStartZoomed, type CameraOpts } from './camera';
+import { createCameraController, openedHalfHeight, shouldStartZoomed, type CameraOpts } from './camera';
 import { createController } from './controller';
 import { t } from './i18n';
 import { attachGestures } from './input/gestures';
@@ -24,8 +24,6 @@ import './ui/toolbar';
 
 const FADE_MS = 150;
 const PULSE_MS = 180;
-/** Spec §5.3: on phones the card is capped at 45dvh, so ring views centre in the 55% above it. */
-const PHONE_ANCHOR_Y = 0.275;
 
 const $ = <T extends Element>(sel: string): T => document.querySelector<T>(sel)!;
 const media = (q: string): MediaQueryList => matchMedia(q);
@@ -58,12 +56,13 @@ function measure(): { vp: Viewport; opts: CameraOpts } {
   const { width, height } = stage.getBoundingClientRect();
   const whole = app.getBoundingClientRect();
   const remPx = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-  const portrait = whole.width < 720 || whole.height > whole.width;
+  // Spec v1.2 §4.3: the one portrait rule, matching the stylesheet's container query.
+  const portrait = whole.width < 720 || whole.height >= whole.width;
   const vp = { width, height, radius: Math.max(Math.min(width, height) / 2 - 8, 1) };
   // Spec v1.2 §3.2: the half-wheel where the full wheel's labels would be too small; a phone turned sideways
   // (not portrait) gets the full wheel back.
   const half = portrait && shouldStartZoomed(layout, vp);
-  return { vp, opts: { remPx, portrait, anchorY: portrait ? PHONE_ANCHOR_Y : 0.5, half } };
+  return { vp, opts: { remPx, portrait, half } };
 }
 
 let { vp, opts } = measure();
@@ -180,7 +179,14 @@ canvas.addEventListener('pointerup', (e) => {
 
 const hintText = (s: State): string | null => (s.hinted ? t('hint') : null);
 
+/** Spec v1.2 §4.2: the phone card's height cap keeps it below the opened cell. */
+function setOpenedHalf(s: State): void {
+  const half = s.opened && s.selected !== null ? openedHalfHeight(layout, s.selected, vp, opts) : 0;
+  app.style.setProperty('--opened-half', `${half}px`);
+}
+
 function renderUi(s: State): void {
+  setOpenedHalf(s);
   card.model = cardModel(layout, feelings, s);
   hint.text = hintText(s);
   toolbar.opened = s.opened;
@@ -225,6 +231,7 @@ new ResizeObserver(() => {
   ({ vp, opts } = measure());
   renderer.resize(vp.width, vp.height, devicePixelRatio || 1);
   controller.setViewport(vp, opts);
+  setOpenedHalf(store.get());
   drawNow();
 }).observe(stage);
 
@@ -261,6 +268,7 @@ if (TEST) {
       segmentScreenPoint: pointOf,
       state: () => store.get(),
       camera: () => ({ ...camera.current }),
+      viewport: () => ({ ...vp }),
       moving: () => camera.moving,
       drawTimes: () => drawTimes.slice(),
       pathOf: (i: number | null) => (i === null ? null : layout.segments[i]!.path),

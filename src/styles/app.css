@@ -60,7 +60,8 @@ fw-toolbar button, fw-toolbar select { min-width: 44px; min-height: 44px; paddin
 fw-toolbar .fw-zoom-out[hidden] { display: none; }
 
 /* ── Floating hint and card (spec §5) ───────────────────────────────── */
-#app { --column: min(24rem, 34vw); }
+/* Spec v1.2 §4.1: the card's column; the card sits 1.5rem in from each side of it. */
+#app { --column: min(30rem, 40vw); }
 #stage { inset: 0 var(--column) 0 0; }
 
 #float {
@@ -69,8 +70,8 @@ fw-toolbar .fw-zoom-out[hidden] { display: none; }
   /* Centred in the reserved column, below the toolbar. */
   top: calc(max(1rem, env(safe-area-inset-top)) + 44px + 1rem);
   bottom: max(1rem, env(safe-area-inset-bottom));
-  right: max(1rem, env(safe-area-inset-right));
-  width: calc(var(--column) - 2rem);
+  right: max(1.5rem, env(safe-area-inset-right));
+  width: min(27rem, calc(var(--column) - 3rem));
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -188,7 +189,8 @@ fw-card[data-open] .fw-card-chevron { rotate: 90deg; }
     right: calc(12px + env(safe-area-inset-right));
     bottom: calc(12px + env(safe-area-inset-bottom));
     width: auto;
-    max-height: 45dvh;
+    /* Spec v1.2 §4.2: ends 12px below the opened cell, which main.ts measures into --opened-half. */
+    max-height: calc(50dvh - var(--opened-half, 0px) - 24px - env(safe-area-inset-bottom));
     justify-content: flex-end;
   }
 }

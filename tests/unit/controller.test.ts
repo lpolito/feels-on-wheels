@@ -9,7 +9,7 @@ import { createController, type Controller } from '../../src/controller';
 const layout = buildLayout(loadData().wheel);
 const idx = (p: string): number => layout.byPath.get(p)!;
 const desk: Viewport = { width: 1200, height: 900, radius: 442 };
-const opts = { remPx: 16, portrait: false, anchorY: 0.5, half: false };
+const opts = { remPx: 16, portrait: false, half: false };
 
 let now = 0;
 let queue: Map<number, FrameRequestCallback>;
@@ -56,7 +56,7 @@ function setup(initial = initialState): void {
 beforeEach(() => setup());
 
 const phoneVp: Viewport = { width: 390, height: 844, radius: 187 };
-const phoneOpts = { remPx: 16, portrait: true, anchorY: 0.275, half: true };
+const phoneOpts = { remPx: 16, portrait: true, half: true };
 const halfScale = (0.95 * phoneVp.width) / phoneVp.radius;
 
 /** A phone (spec v1.2 §3.2): the whole-wheel view is the half-wheel. */
@@ -574,7 +574,7 @@ describe('half-wheel (phone)', () => {
     const rot = camera.current.rotation;
     const before = store.get();
     const land: Viewport = { width: 844, height: 390, radius: 187 };
-    ctl.setViewport(land, { remPx: 16, portrait: false, anchorY: 0.5, half: false });
+    ctl.setViewport(land, { remPx: 16, portrait: false, half: false });
     step(2000);
     expect(store.get()).toBe(before);
     expect(before).toMatchObject({ selected: idx('angry'), opened: false, view: { mode: 'wheel' } });
@@ -593,7 +593,7 @@ describe('viewport', () => {
   test('setViewport while opened keeps the same word centred at angle 0', () => {
     setup(opened('angry/aggressive/hostile'));
     step(1000);
-    ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true, anchorY: 0.275, half: false });
+    ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true, half: false });
     step(1000);
     expect(offCenter(idx('angry/aggressive/hostile'))).toBeLessThan(1e-9);
     expect(camera.current.cx + 0.81 * 342 * camera.current.scale).toBeCloseTo(350, 6);
@@ -632,10 +632,10 @@ describe('viewport', () => {
       caf: (id) => { queue.delete(id); },
       reducedMotion: () => false,
     });
-    ctl = createController(layout, store, camera, phone, { remPx: 16, portrait: true, anchorY: 0.275, half: false });
+    ctl = createController(layout, store, camera, phone, { remPx: 16, portrait: true, half: false });
     step(1000);
-    expect(camera.current.cy).toBeCloseTo(0.275 * 844, 6);
-    ctl.setViewport({ width: 844, height: 390, radius: 187 }, { remPx: 16, portrait: false, anchorY: 0.5, half: false });
+    expect(camera.current.cy).toBeCloseTo(0.5 * 844, 6);
+    ctl.setViewport({ width: 844, height: 390, radius: 187 }, { remPx: 16, portrait: false, half: false });
     step(1000);
     expect(store.get()).toEqual(phoneStart('surprised'));
     expect(offCenter(idx('surprised'))).toBeLessThan(1e-9);

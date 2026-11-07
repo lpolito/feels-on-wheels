@@ -1,11 +1,10 @@
 import type { Layout } from './model/layout';
-import { normAngle, ringAt, snapRotation, toPolar, type Camera, type Viewport } from './model/geometry';
+import { normAngle, snapRotation, type Camera, type Viewport } from './model/geometry';
 
 export interface CameraOpts {
   remPx: number;
+  /** The stage is portrait (spec v1.2 §4.3: width < 720 or height ≥ width): ring views centre the ring. */
   portrait: boolean;
-  /** Ring-view vertical anchor as a fraction of stage height: 0.275 on phones (above the card's 45dvh cap), else 0.5. */
-  anchorY: number;
   /** The whole-wheel view is the half-wheel (spec v1.2 §3.2): phones, where the full wheel's labels would be too small. */
   half: boolean;
 }
@@ -17,6 +16,10 @@ const MIN_TARGET_PX = 44;
 const MIN_RING_SCALE = 1.25;
 const START_ZOOMED_BELOW_PX = 12;
 const LABEL_HEIGHT_RATIO = 0.55;
+/** The opened cell's lift past its ring, its side lift and the outline outside its edge (render/wheel.ts). */
+const LIFT_RADIAL_PX = 10;
+const LIFT_SIDE_PX = 2;
+const OUTLINE_OUTSIDE_PX = 2;
 /** Spring stiffness (spec v1.2 §3.5): about 90% of a move done in 270ms. */
 const OMEGA = 14;
 const FLING_TAU = 0.325;
@@ -30,7 +33,6 @@ function typicalWidth(layout: Layout, ring: number): number {
 }
 
 const ringMid = (layout: Layout, ring: number): number => (layout.rings[ring]!.inner + layout.rings[ring]!.outer) / 2;
-const anchorX = (vp: Viewport, o: CameraOpts): number => (o.portrait ? 0.5 : 0.4) * vp.width;
 
 export function overviewCamera(vp: Viewport, rotation: number): Camera {
   return { scale: 1, rotation, cx: vp.width / 2, cy: vp.height / 2 };
@@ -60,7 +62,27 @@ export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rota
     MIN_TARGET_PX / arcAtScale1,
     MIN_RING_SCALE,
   );
-  return { scale, rotation, cx: anchorX(vp, o) - rMid * vp.radius * scale, cy: o.anchorY * vp.height };
+  const R = vp.radius * scale;
+  // Spec v1.2 §4.1–§4.2: phones centre the ring's middle; elsewhere the wheel's outer edge meets the stage's right
+  // edge (the card's column), unless that would start the opened cell (with its lift) within 1rem of the left.
+  const cx = o.portrait
+    ? 0.5 * vp.width - rMid * R
+    : Math.max(vp.width - R, o.remPx - (r.inner * R - LIFT_RADIAL_PX));
+  return { scale, rotation, cx, cy: vp.height / 2 };
+}
+
+/**
+ * Half the opened cell's on-screen height in CSS px: its chord across the outer edge plus the 10px lift, the 2px
+ * side lift and 2px of outline.
+ */
+export function openedHalfHeight(layout: Layout, index: number, vp: Viewport, o: CameraOpts): number {
+  const seg = layout.segments[index]!;
+  const r = layout.rings[seg.ring]!;
+  const R = vp.radius * ringFocusCamera(layout, seg.ring, vp, 0, o).scale;
+  const rOut = r.outer * R + LIFT_RADIAL_PX;
+  const side = LIFT_SIDE_PX / (ringMid(layout, seg.ring) * R);
+  const half = Math.min((seg.end - seg.start) / 2 + side, Math.PI / 2);
+  return rOut * Math.sin(half) + OUTLINE_OUTSIDE_PX;
 }
 
 /** Spec §4.6: start zoomed when overview would draw outer labels under 12 CSS px. */
@@ -68,21 +90,6 @@ export function shouldStartZoomed(layout: Layout, vp: Viewport): boolean {
   const outer = layout.rings.length - 1;
   const arc = typicalWidth(layout, outer) * ringMid(layout, outer) * vp.radius;
   return arc * LABEL_HEIGHT_RATIO < START_ZOOMED_BELOW_PX;
-}
-
-export function nearestRestingState(
-  layout: Layout, cam: Camera, vp: Viewport, o: CameraOpts,
-): { mode: 'overview' } | { mode: 'ring'; ring: number } {
-  const { r } = toPolar(anchorX(vp, o), vp.height / 2, cam, vp);
-  let ring = ringAt(layout, r);
-  if (ring === null) {
-    ring = 0;
-    for (const candidate of layout.rings) {
-      if (Math.abs(ringMid(layout, candidate.index) - r) < Math.abs(ringMid(layout, ring) - r)) ring = candidate.index;
-    }
-  }
-  const ringScale = ringFocusCamera(layout, ring, vp, cam.rotation, o).scale;
-  return cam.scale < (1 + ringScale) / 2 ? { mode: 'overview' } : { mode: 'ring', ring };
 }
 
 export interface CameraController {

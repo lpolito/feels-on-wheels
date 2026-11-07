@@ -135,6 +135,39 @@ test.describe('desktop', () => {
     await expect(hint(page)).toHaveText('How are you feeling? Tap a feeling or spin to explore.');
   });
 
+  test("desktop: opened view's wheel edge meets the column", async ({ page }) => {
+    for (const path of ['angry', 'angry/aggressive', 'angry/aggressive/hostile']) {
+      await open(page, `#/core/${path}`);
+      const { cam, vp } = await page.evaluate(() => ({ cam: window.__fw.camera(), vp: window.__fw.viewport() }));
+      expect(Math.abs(cam.cx + vp.radius * cam.scale - vp.width), path).toBeLessThanOrEqual(1);
+    }
+  });
+
+  test('desktop 1024×768: an opened core word is fully on screen', async ({ page }) => {
+    await page.setViewportSize({ width: 1024, height: 768 });
+    // The middle ring is where the 1rem safeguard takes over at this size.
+    for (const [path, ring] of [['angry', [0.12, 0.32]], ['angry/aggressive', [0.32, 0.62]]] as const) {
+      await open(page, `#/core/${path}`);
+      const { p, cam, vp } = await page.evaluate((x) => ({
+        p: window.__fw.segmentScreenPoint(x), cam: window.__fw.camera(), vp: window.__fw.viewport(),
+      }), path);
+      const band = (ring[1] - ring[0]) * vp.radius * cam.scale;
+      // The cell's inner edge, less its 10px lift, is at least 1rem from the left.
+      expect(p.x - band / 2 - 10, path).toBeGreaterThanOrEqual(15.5);
+    }
+  });
+
+  test('square 900×900 window uses the phone layout and camera', async ({ page }) => {
+    await page.setViewportSize({ width: 900, height: 900 });
+    await open(page, '#/core/angry');
+    const card = (await page.locator('fw-card').boundingBox())!;
+    expect(card.y + card.height).toBeGreaterThan(900 - 12 - 2);
+    expect(card.x).toBeLessThan(20);
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
+    expect(Math.abs(p.y - 450)).toBeLessThanOrEqual(2);
+    expect(Math.abs(p.x - 450)).toBeLessThanOrEqual(2);
+  });
+
   test('the card never moves the wheel', async ({ page }) => {
     await open(page);
     const none = await wheelBox(page);
@@ -214,15 +247,19 @@ test.describe('phone', () => {
     expect((await state(page)).opened).toBe(false);
   });
 
-  test('phone: opened word sits above the card', async ({ page }) => {
+  test('phone: opened word is centred vertically and above the card', async ({ page }) => {
     await open(page);
     await tapPath(page, 'angry');
     await tapPath(page, 'angry');
     expect((await state(page)).opened).toBe(true);
     await expect(page.locator('fw-card .fw-card-body')).toBeVisible();
     const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
+    const stage = (await wheelBox(page))!;
+    expect(Math.abs(p.y - (stage.y + stage.height / 2))).toBeLessThanOrEqual(2);
+    const half = await page.evaluate(() => Number.parseFloat(getComputedStyle(document.getElementById('app')!).getPropertyValue('--opened-half')));
+    expect(half).toBeGreaterThan(20);
     const card = (await page.locator('fw-card').boundingBox())!;
-    expect(p.y).toBeLessThan(card.y);
+    expect(p.y + half).toBeLessThan(card.y);
   });
 
   test('phone: Back from an opened word returns to the whole wheel with it selected', async ({ page }) => {

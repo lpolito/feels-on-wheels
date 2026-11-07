@@ -3,14 +3,14 @@ import { loadData } from '../../src/data/load';
 import { buildLayout } from '../../src/model/layout';
 import { TAU, normAngle, type Viewport } from '../../src/model/geometry';
 import {
-  createCameraController, halfRestRotation, nearestRestingState, overviewCamera, ringFocusCamera, shouldStartZoomed,
-  wheelCamera, type CameraController,
+  createCameraController, halfRestRotation, openedHalfHeight, overviewCamera, ringFocusCamera,
+  shouldStartZoomed, wheelCamera, type CameraController,
 } from '../../src/camera';
 
 const layout = buildLayout(loadData().wheel);
 const phone: Viewport = { width: 375, height: 667, radius: 375 / 2 - 8 };
 const desk: Viewport = { width: 1440, height: 900, radius: 900 / 2 - 8 };
-const opts = { remPx: 16, portrait: false, anchorY: 0.5, half: false };
+const opts = { remPx: 16, portrait: false, half: false };
 
 function segHeight(ring: number, vp: Viewport, scale: number): number {
   const r = layout.rings[ring]!;
@@ -24,20 +24,50 @@ describe('resting cameras', () => {
     expect(overviewCamera(desk, 0.5)).toEqual({ scale: 1, rotation: 0.5, cx: 720, cy: 450 });
   });
 
-  test('ringFocusCamera puts ring mid-radius at 40% width (50% portrait)', () => {
-    for (const [o, frac] of [[opts, 0.4], [{ remPx: 16, portrait: true, anchorY: 0.5, half: false }, 0.5]] as const) {
-      const cam = ringFocusCamera(layout, 1, desk, 0, o);
-      const rMid = (0.32 + 0.62) / 2;
-      expect(cam.cx + rMid * desk.radius * cam.scale).toBeCloseTo(frac * desk.width, 6);
-      expect(cam.cy).toBe(desk.height / 2);
+  test("desktop ring camera puts the wheel's outer edge on the stage's right edge", () => {
+    const vp: Viewport = { width: 900, height: 900, radius: 442 };
+    for (const ring of [0, 1, 2]) {
+      const cam = ringFocusCamera(layout, ring, vp, 0, opts);
+      expect(cam.cx + vp.radius * cam.scale, `ring ${ring}`).toBeCloseTo(vp.width, 6);
+      expect(cam.cy).toBe(vp.height / 2);
     }
   });
 
-  test("portrait ring camera puts the ring's mid-radius row at 27.5% height", () => {
-    const cam = ringFocusCamera(layout, 1, phone, 0, { remPx: 16, portrait: true, anchorY: 0.275, half: false });
-    expect(cam.cy).toBeCloseTo(0.275 * phone.height, 9);
-    const rMid = (0.32 + 0.62) / 2;
-    expect(cam.cx + rMid * phone.radius * cam.scale).toBeCloseTo(0.5 * phone.width, 6);
+  test('desktop ring camera keeps the opened cell at least 1rem from the left', () => {
+    const narrow: Viewport = { width: 500, height: 768, radius: 242 };
+    const innerX = (ring: number, c: { cx: number; scale: number }): number =>
+      c.cx + layout.rings[ring]!.inner * narrow.radius * c.scale - 10;
+    for (const ring of [0, 1, 2]) {
+      expect(innerX(ring, ringFocusCamera(layout, ring, narrow, 0, opts)), `ring ${ring}`).toBeGreaterThanOrEqual(16 - 1e-9);
+    }
+    // The middle ring is where the safeguard bites: the edge rule alone would put its cell off the left edge.
+    const mid = ringFocusCamera(layout, 1, narrow, 0, opts);
+    expect(innerX(1, { ...mid, cx: narrow.width - narrow.radius * mid.scale })).toBeLessThan(0);
+    expect(innerX(1, mid)).toBeCloseTo(16, 6);
+  });
+
+  test('portrait ring camera centres the ring middle horizontally and the word vertically', () => {
+    for (const ring of [0, 1, 2]) {
+      const cam = ringFocusCamera(layout, ring, phone, 0, { remPx: 16, portrait: true, half: true });
+      const r = layout.rings[ring]!;
+      expect(cam.cx + ((r.inner + r.outer) / 2) * phone.radius * cam.scale).toBeCloseTo(0.5 * phone.width, 6);
+      expect(cam.cy).toBe(0.5 * phone.height);
+    }
+  });
+
+  test('openedHalfHeight is larger for a core word than an outer word on a phone', () => {
+    const o = { remPx: 16, portrait: true, half: true };
+    const hostile = layout.byPath.get('angry/aggressive/hostile')!;
+    const core = openedHalfHeight(layout, layout.byPath.get('angry')!, phone, o);
+    const outer = openedHalfHeight(layout, hostile, phone, o);
+    expect(core).toBeGreaterThan(outer);
+    // Half of the lifted outer chord, 2·(outer·R·scale + 10)·sin(width/2 + side), plus 2px of outline.
+    const seg = layout.segments[hostile]!;
+    const r = layout.rings[2]!;
+    const scale = ringFocusCamera(layout, 2, phone, 0, o).scale;
+    const rOut = r.outer * phone.radius * scale + 10;
+    const side = 2 / (((r.inner + r.outer) / 2) * phone.radius * scale);
+    expect(outer).toBeCloseTo(rOut * Math.sin((seg.end - seg.start) / 2 + side) + 2, 6);
   });
 
   test('ringFocusCamera typical segment ≈ 4.5rem tall on a roomy viewport', () => {
@@ -53,12 +83,12 @@ describe('resting cameras', () => {
   });
 
   test('outer ring focus on a 375×667 viewport gives focused-ring segments ≥ 44px tall', () => {
-    const cam = ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, anchorY: 0.275, half: false });
+    const cam = ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, half: false });
     expect(segHeight(2, phone, cam.scale)).toBeGreaterThanOrEqual(44 - 1e-9);
   });
 
   test('half wheelCamera puts the centre on the left edge, halfway down, outer edge at 95% width', () => {
-    const c = wheelCamera(phone, 0.3, { remPx: 16, portrait: true, anchorY: 0.275, half: true });
+    const c = wheelCamera(phone, 0.3, { remPx: 16, portrait: true, half: true });
     expect(c.cx).toBe(0);
     expect(c.cy).toBe(phone.height / 2);
     expect(c.rotation).toBe(0.3);
@@ -79,16 +109,6 @@ describe('resting cameras', () => {
   test('shouldStartZoomed true for 375×667, false for 1440×900', () => {
     expect(shouldStartZoomed(layout, phone)).toBe(true);
     expect(shouldStartZoomed(layout, desk)).toBe(false);
-  });
-
-  test('nearestRestingState picks overview below the midpoint scale, ring above', () => {
-    const ringCam = ringFocusCamera(layout, 0, desk, 0, opts);
-    const mid = (1 + ringCam.scale) / 2;
-    const at = (scale: number) => ({ ...ringCam, scale });
-    expect(nearestRestingState(layout, at(mid * 0.9), desk, opts)).toEqual({ mode: 'overview' });
-    expect(nearestRestingState(layout, ringCam, desk, opts)).toEqual({ mode: 'ring', ring: 0 });
-    const outer = ringFocusCamera(layout, 2, desk, 0, opts);
-    expect(nearestRestingState(layout, outer, desk, opts)).toEqual({ mode: 'ring', ring: 2 });
   });
 });
 

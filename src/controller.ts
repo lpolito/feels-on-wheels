@@ -250,7 +250,7 @@ export function createController(
 
   function setViewport(next: Viewport, o: CameraOpts): void {
     const unchanged = next.width === vp.width && next.height === vp.height && next.radius === vp.radius
-      && o.remPx === opts.remPx && o.portrait === opts.portrait && o.anchorY === opts.anchorY && o.half === opts.half;
+      && o.remPx === opts.remPx && o.portrait === opts.portrait && o.half === opts.half;
     if (unchanged) return;
     vp = next;
     opts = o;

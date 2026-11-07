@@ -73,17 +73,24 @@ let lit: Uint8Array = litMask(layout, store.get().selected);
 let prevLit: Uint8Array = lit.slice();
 let fadeStart = -Infinity;
 let pendingDraw = 0;
+const TEST = import.meta.env.MODE === 'test';
+const drawTimes: number[] = [];
 
 function frame(): void {
   pendingDraw = 0;
   const s = store.get();
   const fadeT = reducedMotion.matches ? 1 : Math.min(1, (performance.now() - fadeStart) / FADE_MS);
+  const t0 = TEST ? performance.now() : 0;
   renderer.draw({
     cam: camera.current, vp, lit, prevLit, fadeT,
     focused: s.focused,
     showFocus: tree.hasFocus() || (s.view.mode === 'ring' && !s.interacted),
     mode: s.view.mode, remPx: opts.remPx, moreContrast: moreContrast.matches,
   });
+  if (TEST) {
+    drawTimes.push(performance.now() - t0);
+    if (drawTimes.length > 5000) drawTimes.splice(0, 2500);
+  }
   if (fadeT < 1) requestDraw();
 }
 
@@ -251,7 +258,7 @@ if (import.meta.env.PROD && 'serviceWorker' in navigator) {
 }
 
 // ── Test hook (build:test only) ──────────────────────────────────────────
-if (import.meta.env.MODE === 'test') {
+if (TEST) {
   const pointOf = (path: string) => {
     const i = layout.byPath.get(path);
     if (i === undefined) throw new Error(`unknown path ${path}`);
@@ -268,6 +275,7 @@ if (import.meta.env.MODE === 'test') {
       state: () => store.get(),
       camera: () => ({ ...camera.current }),
       moving: () => camera.moving,
+      drawTimes: () => drawTimes.slice(),
       pathOf: (i: number | null) => (i === null ? null : layout.segments[i]!.path),
       offCenter: (path: string) => {
         const off = normAngle(layout.segments[layout.byPath.get(path)!]!.mid + camera.current.rotation);

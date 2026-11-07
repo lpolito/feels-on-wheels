@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { buildLayout } from '../../src/model/layout';
-import { TAU, normAngle, type Camera, type Viewport } from '../../src/model/geometry';
+import { TAU, hitTest, normAngle, segmentAt, type Camera, type Viewport } from '../../src/model/geometry';
 import { createCameraController, type CameraController } from '../../src/camera';
-import { createStore, initialState, type Store } from '../../src/state/store';
+import { createStore, initialState, type Action, type State, type Store } from '../../src/state/store';
 import { createController, type Controller } from '../../src/controller';
 
 const layout = buildLayout(loadData().wheel);
@@ -55,37 +55,108 @@ function setup(initial = initialState): void {
 
 beforeEach(() => setup());
 
+const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { mode: 'ring', ring: layout.segments[idx(p)]!.ring }, hinted: false });
+const phoneStart = (p: string): State => ({ selected: idx(p), opened: false, view: { mode: 'ring', ring: 0 }, hinted: true });
+
+/** A screen point over no word (outside the wheel or in the hole). */
+function missPoint(): { x: number; y: number } {
+  for (let y = 5; y < desk.height; y += 20) {
+    for (let x = 5; x < desk.width; x += 20) {
+      if (hitTest(layout, camera.current, desk, x, y) === null) return { x, y };
+    }
+  }
+  throw new Error('no miss point');
+}
+
+/** A word of `ring` fully on screen, other than `not`. */
+function visibleIn(ring: number, not: number): number {
+  return layout.rings[ring]!.segments.find((i) => {
+    if (i === not) return false;
+    const p = screenOf(i);
+    return p.x > 40 && p.x < desk.width - 40 && p.y > 40 && p.y < desk.height - 40 && hitTest(layout, camera.current, desk, p.x, p.y) === i;
+  })!;
+}
+
+const sameAngle = (a: number, b: number): number => {
+  const d = normAngle(a - b);
+  return Math.min(d, TAU - d);
+};
+
+
 describe('taps', () => {
-  test('tap on hostile in overview selects it, no rotation change', () => {
+  test('tap selects without moving the camera on the whole wheel', () => {
     const p = screenOf(idx('angry/aggressive/hostile'));
-    const before = camera.current.rotation;
+    const before = { ...camera.current };
     ctl.handle([{ type: 'tap', ...p }]);
     step(500);
-    expect(store.get().selected).toBe(idx('angry/aggressive/hostile'));
-    expect(camera.current.rotation).toBe(before);
+    expect(store.get()).toMatchObject({ selected: idx('angry/aggressive/hostile'), opened: false, view: { mode: 'wheel' } });
+    expect(camera.current).toEqual(before);
   });
 
-  test('tap outside the wheel clears', () => {
+  test('tap on the selected word opens it: ring view, centred at angle 0', () => {
+    const hostile = idx('angry/aggressive/hostile');
+    ctl.handle([{ type: 'tap', ...screenOf(hostile) }]);
+    step(500);
+    ctl.handle([{ type: 'tap', ...screenOf(hostile) }]);
+    step(1000);
+    expect(store.get()).toEqual(opened('angry/aggressive/hostile'));
+    expect(offCenter(hostile)).toBeLessThan(1e-9);
+  });
+
+  test('tapping another word while opened opens it and centres it', () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    const other = visibleIn(2, idx('angry/aggressive/hostile'));
+    ctl.handle([{ type: 'tap', ...screenOf(other) }]);
+    step(1000);
+    expect(store.get().selected).toBe(other);
+    expect(store.get().opened).toBe(true);
+    expect(offCenter(other)).toBeLessThan(1e-9);
+  });
+
+  test('tap outside while opened closes to the saved rotation, selection kept', () => {
+    const hostile = idx('angry/aggressive/hostile');
+    const rot0 = camera.current.rotation;
+    ctl.handle([{ type: 'tap', ...screenOf(hostile) }]);
+    ctl.handle([{ type: 'tap', ...screenOf(hostile) }]);
+    step(1000);
+    expect(store.get().opened).toBe(true);
+    ctl.handle([{ type: 'tap', ...missPoint() }]);
+    step(1000);
+    expect(store.get()).toMatchObject({ selected: hostile, opened: false, view: { mode: 'wheel' } });
+    expect(camera.current.scale).toBe(1);
+    expect(sameAngle(camera.current.rotation, rot0)).toBeLessThan(1e-6);
+  });
+
+  test('tap outside while selected clears', () => {
     ctl.handle([{ type: 'tap', ...screenOf(idx('sad')) }]);
     ctl.handle([{ type: 'tap', x: 2, y: 2 }]);
     expect(store.get().selected).toBeNull();
   });
 
-  test('tap in ring mode selects and rotation settles with it at angle 0', () => {
-    setup({ ...initialState, view: { mode: 'ring', ring: 2 } });
+  test('double-tap on an unselected word opens it', () => {
+    const hostile = idx('angry/aggressive/hostile');
+    store.dispatch({ type: 'select', segment: idx('sad') });
+    const p = screenOf(hostile);
+    ctl.handle([{ type: 'tap', ...p }]);
+    ctl.handle([{ type: 'doubleTap', ...p }]);
     step(1000);
-    const target = layout.rings[2]!.segments.find((i) => {
-      const p = screenOf(i);
-      return p.y > 50 && p.y < desk.height / 2 - 100 && p.x > 0 && p.x < desk.width;
-    })!;
-    ctl.handle([{ type: 'tap', ...screenOf(target) }]);
-    step(1000);
-    expect(store.get().selected).toBe(target);
-    expect(offCenter(target)).toBeLessThan(1e-9);
+    expect(store.get()).toEqual(opened('angry/aggressive/hostile'));
+    expect(offCenter(hostile)).toBeLessThan(1e-9);
   });
 
-  test('tap during fling stops motion and selects the segment under the finger at the live camera', () => {
-    setup({ ...initialState, view: { mode: 'ring', ring: 2 } });
+  test('double-tap outside while opened closes', () => {
+    setup(opened('angry'));
+    step(1000);
+    const p = missPoint();
+    ctl.handle([{ type: 'tap', ...p }]);
+    ctl.handle([{ type: 'doubleTap', ...p }]);
+    step(1000);
+    expect(store.get()).toMatchObject({ selected: idx('angry'), opened: false, view: { mode: 'wheel' } });
+  });
+
+  test('tap during a fling selects (or opens) the word under the finger, never clears', () => {
+    setup(opened('angry/aggressive/hostile'));
     step(1000);
     ctl.handle([{ type: 'dragStart', x: 500, y: 450, axis: 'y' }, { type: 'dragEnd', vx: 0, vy: 2500 }]);
     step(80);
@@ -96,99 +167,27 @@ describe('taps', () => {
     const target = onRight.reduce((a, b) => (dist(b) < dist(a) ? b : a));
     ctl.handle([{ type: 'tap', ...screenOf(target, live) }]);
     expect(store.get().selected).toBe(target);
+    expect(store.get().opened).toBe(true);
     step(1000);
+    expect(store.get().selected).toBe(target);
     expect(offCenter(target)).toBeLessThan(1e-9);
   });
 
-  test('double tap in overview zooms into that ring with it selected', () => {
-    const hostile = idx('angry/aggressive/hostile');
-    ctl.handle([{ type: 'doubleTap', ...screenOf(hostile) }]);
-    step(1000);
-    expect(store.get().view).toEqual({ mode: 'ring', ring: 2 });
-    expect(store.get().selected).toBe(hostile);
-    expect(offCenter(hostile)).toBeLessThan(1e-9);
-    ctl.handle([{ type: 'doubleTap', x: 600, y: 450 }]);
-    expect(store.get().view).toEqual({ mode: 'overview' });
-  });
-});
-
-describe('review fixes: input', () => {
-  test('a horizontal flick in overview keeps spinning after release', () => {
+  test('tapping the selected word while the wheel spins keeps it selected and does not open it', () => {
+    const sad = idx('sad');
+    store.dispatch({ type: 'select', segment: sad });
     const top = { x: desk.width / 2, y: desk.height / 2 - 300 };
-    ctl.handle([
-      { type: 'dragStart', ...top, axis: 'x' },
-      { type: 'drag', x: top.x - 60, y: top.y, dx: -60, dy: 0 },
-    ]);
-    const atRelease = camera.current.rotation;
-    ctl.handle([{ type: 'swipe', dir: 'left', vx: -1500, vy: 0 }]);
-    step(1500);
-    const d = normAngle(camera.current.rotation - atRelease);
-    expect(Math.min(d, TAU - d)).toBeGreaterThan(0.5);
-  });
-
-  test('tapping the selected word while it is still moving keeps it selected', () => {
-    setup({ ...initialState, view: { mode: 'ring', ring: 2 } });
-    step(1000);
-    const hostile = idx('angry/aggressive/hostile');
-    store.dispatch({ type: 'select', segment: hostile });
-    step(1000);
-    ctl.handle([{ type: 'dragStart', x: 500, y: 450, axis: 'y' }, { type: 'dragEnd', vx: 0, vy: 300 }]);
+    ctl.handle([{ type: 'dragStart', ...top, axis: 'x' }, { type: 'dragEnd', vx: 800, vy: 0 }]);
     step(30);
     expect(camera.moving).toBe(true);
-    const live = { ...camera.current };
-    ctl.handle([{ type: 'tap', ...screenOf(hostile, live) }]);
-    step(1000);
-    expect(store.get().selected).toBe(hostile);
-    expect(offCenter(hostile)).toBeLessThan(1e-9);
-  });
-
-  test('double-tap to zoom out keeps the selection', () => {
-    setup({ ...initialState, view: { mode: 'ring', ring: 2 } });
-    step(1000);
-    const hostile = idx('angry/aggressive/hostile');
-    store.dispatch({ type: 'select', segment: hostile });
-    step(1000);
-    const p = screenOf(hostile);
-    ctl.handle([{ type: 'tap', ...p }]);
-    ctl.handle([{ type: 'doubleTap', ...p }]);
-    expect(store.get().view).toEqual({ mode: 'overview' });
-    expect(store.get().selected).toBe(hostile);
-  });
-});
-
-describe('review fixes: consistent ring changes', () => {
-  const consistent = (s: ReturnType<Store['get']>) =>
-    s.view.mode !== 'ring' || !s.interacted || s.selected === null || layout.segments[s.selected]!.ring === s.view.ring;
-
-  test('a swipe never produces a state whose selection is outside the focused ring', () => {
-    setup({ ...initialState, view: { mode: 'ring', ring: 1 } });
-    step(1000);
-    store.dispatch({ type: 'select', segment: idx('angry/aggressive') });
-    step(1000);
-    const seen: ReturnType<Store['get']>[] = [];
-    store.subscribe((s) => seen.push(s));
-    ctl.handle([{ type: 'swipe', dir: 'left', vx: -900, vy: 0 }]);
-    step(1000);
-    expect(seen.length).toBeGreaterThan(0);
-    expect(seen.every(consistent)).toBe(true);
-    expect(store.get().view).toEqual({ mode: 'ring', ring: 2 });
-    expect(offCenter(store.get().selected!)).toBeLessThan(1e-9);
-  });
-
-  test('pinching from overview into a ring changes the view in one transition', () => {
-    const views: string[] = [];
-    store.subscribe((s, prev) => {
-      if (JSON.stringify(s.view) !== JSON.stringify(prev.view)) views.push(JSON.stringify(s.view));
-    });
-    ctl.handle([{ type: 'pinch', scale: 3, cx: 900, cy: 450 }, { type: 'pinchEnd' }]);
-    step(1000);
-    expect(views).toHaveLength(1);
+    ctl.handle([{ type: 'tap', ...screenOf(sad, { ...camera.current }) }]);
+    expect(store.get()).toMatchObject({ selected: sad, opened: false });
   });
 });
 
 describe('spinning', () => {
-  test('drag then dragEnd in ring mode settles exactly on a segment mid and selects it', () => {
-    setup({ ...initialState, view: { mode: 'ring', ring: 1 } });
+  test('drag + dragEnd while opened settles exactly on a segment mid and opens it', () => {
+    setup(opened('angry/aggressive'));
     step(1000);
     ctl.handle([
       { type: 'dragStart', x: 500, y: 400, axis: 'y' },
@@ -198,105 +197,219 @@ describe('spinning', () => {
     ]);
     step(1500);
     const s = store.get();
-    expect(s.interacted).toBe(true);
-    expect(s.selected).not.toBeNull();
+    expect(s.opened).toBe(true);
+    expect(s.selected).not.toBe(idx('angry/aggressive'));
     expect(layout.segments[s.selected!]!.ring).toBe(1);
     expect(offCenter(s.selected!)).toBeLessThan(1e-9);
   });
 
-  test('scroll in ring mode rotates and snaps after scrollEnd', () => {
-    setup({ ...initialState, view: { mode: 'ring', ring: 2 } });
+  test('spinning the whole wheel only rotates; the selection does not change', () => {
+    store.dispatch({ type: 'select', segment: idx('sad') });
+    const top = { x: desk.width / 2, y: desk.height / 2 - 300 };
+    const before = camera.current.rotation;
+    ctl.handle([{ type: 'dragStart', ...top, axis: 'x' }, { type: 'drag', x: top.x + 80, y: top.y, dx: 80, dy: 0 }, { type: 'dragEnd', vx: 900, vy: 0 }]);
+    step(1500);
+    expect(store.get()).toMatchObject({ selected: idx('sad'), opened: false, view: { mode: 'wheel' } });
+    expect(sameAngle(camera.current.rotation, before)).toBeGreaterThan(0.1);
+  });
+
+  test('spinning in phone-start view selects the settled word without opening it', () => {
+    setup(phoneStart('angry'));
+    step(1000);
+    ctl.handle([
+      { type: 'dragStart', x: 500, y: 400, axis: 'y' },
+      { type: 'drag', x: 500, y: 500, dx: 0, dy: 100 },
+      { type: 'dragEnd', vx: 0, vy: 1500 },
+    ]);
+    step(1500);
+    const s = store.get();
+    expect(s.opened).toBe(false);
+    expect(s.hinted).toBe(false);
+    expect(s.selected).not.toBe(idx('angry'));
+    expect(layout.segments[s.selected!]!.ring).toBe(0);
+    expect(offCenter(s.selected!)).toBeLessThan(1e-9);
+  });
+
+  test('scroll while opened rotates and snaps after scrollEnd', () => {
+    setup(opened('angry/aggressive/hostile'));
     step(1000);
     ctl.handle([{ type: 'scroll', dy: 40 }, { type: 'scroll', dy: 40 }, { type: 'scrollEnd' }]);
     step(1000);
-    expect(store.get().selected).not.toBeNull();
+    expect(store.get().opened).toBe(true);
     expect(offCenter(store.get().selected!)).toBeLessThan(1e-9);
   });
 
-  test('ArrowDown (step) in ring mode rotates to the next segment', () => {
-    setup({ ...initialState, view: { mode: 'ring', ring: 0 } });
+  test('swipe right while opened opens the parent; swipe left opens the centre child', () => {
+    setup(opened('angry/aggressive'));
     step(1000);
-    const centered = store.get().focused!;
+    ctl.handle([{ type: 'swipe', dir: 'left', vx: -900, vy: 0 }]);
+    step(1000);
+    expect(store.get()).toEqual(opened('angry/aggressive/hostile'));
+    expect(offCenter(idx('angry/aggressive/hostile'))).toBeLessThan(1e-9);
+    ctl.handle([{ type: 'swipe', dir: 'right', vx: 900, vy: 0 }]);
+    step(1000);
+    expect(store.get()).toEqual(opened('angry/aggressive'));
+    expect(offCenter(idx('angry/aggressive'))).toBeLessThan(1e-9);
+  });
+
+  test('swipe left on an opened leaf leaves it opened and centred', () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    ctl.handle([{ type: 'swipe', dir: 'left', vx: -900, vy: 0 }]);
+    step(1000);
+    expect(store.get()).toEqual(opened('angry/aggressive/hostile'));
+    expect(offCenter(idx('angry/aggressive/hostile'))).toBeLessThan(1e-9);
+  });
+
+  test('ArrowDown (step) while opened opens and centres the next word', () => {
+    setup(opened('angry'));
+    step(1000);
     store.dispatch({ type: 'step', delta: 1 });
     step(1000);
-    const next = layout.rings[0]!.segments[(layout.rings[0]!.segments.indexOf(centered) + 1) % 7]!;
-    expect(store.get().selected).toBe(next);
-    expect(offCenter(next)).toBeLessThan(1e-9);
+    expect(store.get()).toEqual(opened('disgusted'));
+    expect(offCenter(idx('disgusted'))).toBeLessThan(1e-9);
   });
 });
 
-describe('rings and zoom', () => {
-  test('swipe right from ring 2 → ring 1, and the settled segment is selected', () => {
-    setup({ ...initialState, view: { mode: 'ring', ring: 2 } });
-    step(1000);
-    ctl.handle([{ type: 'swipe', dir: 'right', vx: 900, vy: 0 }]);
-    step(1000);
-    const s = store.get();
-    expect(s.view).toEqual({ mode: 'ring', ring: 1 });
-    expect(layout.segments[s.selected!]!.ring).toBe(1);
-    expect(offCenter(s.selected!)).toBeLessThan(1e-9);
-  });
-
-  test('pinchEnd past the midpoint → ring mode; below it → overview', () => {
-    ctl.handle([{ type: 'pinch', scale: 3, cx: 900, cy: 450 }, { type: 'pinchEnd' }]);
-    step(1000);
-    expect(store.get().view.mode).toBe('ring');
-    ctl.handle([{ type: 'pinch', scale: 0.3, cx: 600, cy: 450 }, { type: 'pinchEnd' }]);
-    step(1000);
-    expect(store.get().view).toEqual({ mode: 'overview' });
-    expect(camera.current.scale).toBe(1);
-  });
-
-  test('ctrl-wheel zoom resolves to a resting state after 150ms', () => {
+describe('pinch and zoom', () => {
+  test("ctrl-wheel zoom over Sad on the whole wheel opens Sad, not the word at 3 o'clock", () => {
     vi.useFakeTimers();
     try {
-      for (let k = 0; k < 10; k++) ctl.handle([{ type: 'zoomWheel', factor: 1.2, cx: 900, cy: 450 }]);
-      vi.advanceTimersByTime(200);
+      const sad = idx('sad');
+      expect(segmentAt(layout, 0, normAngle(-camera.current.rotation))).not.toBe(sad);
+      const p = screenOf(sad);
+      for (let k = 0; k < 5; k++) ctl.handle([{ type: 'zoomWheel', factor: 1.2, cx: p.x, cy: p.y }]);
+      vi.advanceTimersByTime(150);
       step(1000);
-      expect(store.get().view.mode).toBe('ring');
+      expect(store.get()).toEqual(opened('sad'));
+      expect(offCenter(sad)).toBeLessThan(1e-9);
     } finally {
       vi.useRealTimers();
     }
   });
 
-  test('setViewport while zoomed keeps the same segment centered at angle 0', () => {
-    setup({ ...initialState, view: { mode: 'ring', ring: 2 } });
+  test('pinch in on the whole wheel opens the word under the midpoint', () => {
+    const p = screenOf(idx('happy'));
+    ctl.handle([{ type: 'pinch', scale: 1.5, cx: p.x, cy: p.y }, { type: 'pinchEnd' }]);
     step(1000);
-    const centered = store.get().focused!;
+    expect(store.get()).toEqual(opened('happy'));
+  });
+
+  test('pinch in over the hole with nothing selected changes nothing and springs back', () => {
+    const before = { ...camera.current };
+    const seen: Action[] = [];
+    store.subscribe((_s, _p, a) => seen.push(a));
+    ctl.handle([{ type: 'pinch', scale: 2, cx: desk.width / 2, cy: desk.height / 2 }, { type: 'pinchEnd' }]);
+    step(1000);
+    expect(store.get().selected).toBeNull();
+    expect(store.get().opened).toBe(false);
+    expect(seen.map((a) => a.type)).toEqual(['dismissHint']);
+    expect(camera.current.scale).toBeCloseTo(before.scale, 6);
+    expect(camera.current.cx).toBeCloseTo(before.cx, 3);
+  });
+
+  test('small pinch out on an opened outer word opens its parent', () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    ctl.handle([{ type: 'pinch', scale: 0.8, cx: 500, cy: 450 }, { type: 'pinchEnd' }]);
+    step(1000);
+    expect(store.get()).toEqual(opened('angry/aggressive'));
+    expect(offCenter(idx('angry/aggressive'))).toBeLessThan(1e-9);
+  });
+
+  test('big pinch out closes', () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    ctl.handle([{ type: 'pinch', scale: 0.4, cx: 500, cy: 450 }, { type: 'pinchEnd' }]);
+    step(1000);
+    expect(store.get()).toMatchObject({ selected: idx('angry/aggressive/hostile'), opened: false, view: { mode: 'wheel' } });
+    expect(camera.current.scale).toBe(1);
+  });
+
+  test('pinch in on an opened leaf leaves it opened and centred', () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    const p = screenOf(idx('angry/aggressive/hostile'));
+    ctl.handle([{ type: 'pinch', scale: 1.4, cx: p.x, cy: p.y }, { type: 'pinchEnd' }]);
+    step(1000);
+    expect(store.get()).toEqual(opened('angry/aggressive/hostile'));
+    expect(offCenter(idx('angry/aggressive/hostile'))).toBeLessThan(1e-9);
+  });
+
+  test('pinch out in phone-start view goes to the whole wheel, selection kept', () => {
+    setup(phoneStart('happy'));
+    step(1000);
+    ctl.handle([{ type: 'pinch', scale: 0.5, cx: 500, cy: 450 }, { type: 'pinchEnd' }]);
+    step(1000);
+    expect(store.get()).toMatchObject({ selected: idx('happy'), opened: false, view: { mode: 'wheel' } });
+    expect(camera.current.scale).toBe(1);
+  });
+});
+
+describe('intro and restore', () => {
+  test('playIntro lands centred on the selected core word without dispatching anything but settled', () => {
+    setup(phoneStart('sad'));
+    const seen: Action[] = [];
+    store.subscribe((_s, _p, a) => seen.push(a));
+    ctl.playIntro();
+    step(16);
+    expect(camera.current.scale).toBeLessThan(1.2);
+    step(2000);
+    expect(store.get()).toEqual(phoneStart('sad'));
+    expect(seen.every((a) => a.type === 'settled')).toBe(true);
+    expect(offCenter(idx('sad'))).toBeLessThan(1e-9);
+  });
+
+  test('restore during a fling wins: the late settled is ignored', () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    ctl.handle([{ type: 'dragStart', x: 500, y: 450, axis: 'y' }, { type: 'dragEnd', vx: 0, vy: 2500 }]);
+    step(80);
+    expect(camera.moving).toBe(true);
+    const target = opened('sad/hurt/embarrassed');
+    store.dispatch({ type: 'restore', state: target });
+    step(2000);
+    expect(store.get()).toEqual(target);
+    expect(offCenter(idx('sad/hurt/embarrassed'))).toBeLessThan(1e-9);
+  });
+
+  test('restore during the phone intro wins', () => {
+    setup(phoneStart('sad'));
+    ctl.playIntro();
+    step(80);
+    const target = opened('angry/aggressive');
+    store.dispatch({ type: 'restore', state: target });
+    step(2000);
+    expect(store.get()).toEqual(target);
+    expect(offCenter(idx('angry/aggressive'))).toBeLessThan(1e-9);
+  });
+
+  test('close via the store returns the camera to the whole wheel', () => {
+    setup(opened('angry/aggressive'));
+    step(1000);
+    store.dispatch({ type: 'close' });
+    step(1000);
+    expect(camera.current.scale).toBe(1);
+    expect(camera.current.cx).toBe(600);
+  });
+});
+
+describe('viewport', () => {
+  test('setViewport while opened keeps the same word centred at angle 0', () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
     ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true });
     step(1000);
-    expect(offCenter(centered)).toBeLessThan(1e-9);
+    expect(offCenter(idx('angry/aggressive/hostile'))).toBeLessThan(1e-9);
     expect(camera.current.cx + 0.81 * 342 * camera.current.scale).toBeCloseTo(350, 6);
   });
 
   test('setViewport with an unchanged viewport does not interrupt motion', () => {
-    setup({ ...initialState, view: { mode: 'ring', ring: 0 } });
+    setup(opened('angry'));
     step(1000);
     camera.animateTo({ rotation: camera.current.rotation + 1 });
     step(50);
     ctl.setViewport({ ...desk }, { ...opts });
     expect(camera.moving).toBe(true);
-  });
-
-  test('setViewport mid-animation centers the intended segment and keeps focus in sync', () => {
-    setup({ ...initialState, view: { mode: 'ring', ring: 0 } });
-    step(1000);
-    const intended = store.get().focused!;
-    camera.jump({ ...camera.current, rotation: camera.current.rotation - 2 });
-    camera.animateTo({ rotation: camera.current.rotation + 2 });
-    step(50);
-    ctl.setViewport({ width: 900, height: 900, radius: 442 }, opts);
-    step(1000);
-    expect(offCenter(intended)).toBeLessThan(1e-9);
-    expect(store.get().focused).toBe(intended);
-  });
-
-  test('zoom out via store returns the camera to overview', () => {
-    setup({ ...initialState, view: { mode: 'ring', ring: 1 } });
-    step(1000);
-    store.dispatch({ type: 'zoomOut' });
-    step(1000);
-    expect(camera.current.scale).toBe(1);
-    expect(camera.current.cx).toBe(600);
   });
 });

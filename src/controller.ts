@@ -1,26 +1,29 @@
-import {
-  nearestRestingState, overviewCamera, ringFocusCamera, type CameraController, type CameraOpts,
-} from './camera';
+import { overviewCamera, ringFocusCamera, type CameraController, type CameraOpts } from './camera';
 import type { Intent } from './input/gestures';
 import type { Layout } from './model/layout';
 import {
   TAU, hitTest, normAngle, rotationToCenter, segmentAt, snapRotation, type Camera, type Viewport,
 } from './model/geometry';
+import { resolvePinch } from './model/pinch';
 import type { State, Store } from './state/store';
 
 export interface Controller {
   handle(intents: Intent[]): void;
-  /** Re-targets the current resting state for a new viewport, keeping the centered segment. */
+  /** Re-targets the current resting state for a new viewport, keeping the intended word centred. */
   setViewport(vp: Viewport, o: CameraOpts): void;
+  /** Phone start (spec §3.2): from the whole wheel, spin in to the core ring centred on the selection. */
+  playIntro(): void;
   readonly camera: CameraController;
 }
 
-/** Default overview rotation: the first core segment starts at 12 o'clock, as in the reference wheel. */
+/** Default whole-wheel rotation: the first core segment starts at 12 o'clock, as in the reference wheel. */
 export const DEFAULT_ROTATION = -Math.PI / 2;
 const MIN_SCALE = 0.8;
 const MAX_SCALE_HEADROOM = 1.2;
-const OVERVIEW_SCROLL_RATE = 0.004;
+const WHEEL_SCROLL_RATE = 0.004;
 const WHEEL_ZOOM_IDLE_MS = 150;
+/** The intro spins in over about this many median core widths. */
+const INTRO_SEGMENTS = 1.5;
 
 export function createController(
   layout: Layout, store: Store, camera: CameraController, initialVp: Viewport, initialOpts: CameraOpts,
@@ -29,12 +32,21 @@ export function createController(
   let opts = initialOpts;
   let dragAxis: 'x' | 'y' | null = null;
   let last = { x: 0, y: 0 };
-  let pinchBase: { cam: Camera; x: number; y: number } | null = null;
+  /**
+   * The current pinch / ctrl-wheel gesture: the scale it started at, the camera and point it zooms about,
+   * and its latest midpoint.
+   */
+  let zoom: { startScale: number; base: Camera; ax: number; ay: number; x: number; y: number } | null = null;
   let wheelZoomTimer: ReturnType<typeof setTimeout> | null = null;
-  /** State before the most recent tap, so a double-tap can undo the first tap's toggle. */
+  /** State before the most recent tap, so a double-tap acts from it. */
   let beforeLastTap: State | null = null;
+  /** Whole-wheel rotation before the last open; closing returns to it. Null once the user rotates the wheel. */
+  let savedRotation: number | null = null;
+  /** A user spin is in flight in a ring view: its settle picks the word at 3 o'clock. */
+  let userSpin = false;
 
   const cam = camera.current;
+  const seg = (i: number) => layout.segments[i]!;
   const ringOf = (s: State): number | null => (s.view.mode === 'ring' ? s.view.ring : null);
   const radiusPx = (ring: number): number =>
     ((layout.rings[ring]!.inner + layout.rings[ring]!.outer) / 2) * vp.radius * cam.scale;
@@ -42,41 +54,57 @@ export function createController(
   const maxScale = (): number =>
     Math.max(...layout.rings.map((r) => ringFocusCamera(layout, r.index, vp, 0, opts).scale)) * MAX_SCALE_HEADROOM;
   const clampScale = (s: number): number => Math.min(Math.max(s, MIN_SCALE), maxScale());
-  const snapRing = (): number | null => {
-    const s = store.get();
-    const ring = ringOf(s);
-    if (ring !== null) return ring;
-    return s.selected === null ? null : layout.segments[s.selected]!.ring;
-  };
 
-  /** The resting camera for a view, rotated to center the selection/focus (or the nearest segment). */
+  /** The resting camera for a state (spec §3.1): the whole wheel, or the view ring centred on the selection. */
   function restingCamera(s: State): Camera {
     const ring = ringOf(s);
-    if (ring === null) return overviewCamera(vp, cam.rotation);
-    const inRing = [s.selected, s.focused].find((i) => i !== null && layout.segments[i]!.ring === ring);
-    const rotation = inRing === undefined || inRing === null
-      ? snapRotation(layout, ring, cam.rotation).rotation
-      : rotationToCenter(layout.segments[inRing]!, cam.rotation);
+    if (ring === null) return overviewCamera(vp, savedRotation ?? cam.rotation);
+    const sel = s.selected;
+    const rotation = sel !== null && seg(sel).ring === ring
+      ? rotationToCenter(seg(sel), cam.rotation)
+      : snapRotation(layout, ring, cam.rotation).rotation;
     return ringFocusCamera(layout, ring, vp, rotation, opts);
   }
 
-  const goToView = (): void => camera.animateTo(restingCamera(store.get()));
+  const goToRest = (): void => camera.animateTo(restingCamera(store.get()));
 
-  function resolveZoom(): void {
-    const rest = nearestRestingState(layout, cam, vp, opts);
-    const s = store.get();
-    if (rest.mode === 'overview') {
-      if (s.view.mode === 'ring') store.dispatch({ type: 'zoomOut' });
-    } else if (s.view.mode === 'overview' || s.view.ring !== rest.ring) {
-      store.dispatch({ type: 'setRing', ring: rest.ring, segment: snapRotation(layout, rest.ring, cam.rotation).segment });
-    }
-    goToView();
+  function dismissHint(): void {
+    if (store.get().hinted) store.dispatch({ type: 'dismissHint' });
   }
 
-  function zoomAbout(scale: number, x: number, y: number, base: Camera, ax: number, ay: number): void {
+  /** The user is about to rotate the camera directly. */
+  function grab(): void {
+    camera.stop();
+    dismissHint();
+    if (ringOf(store.get()) === null) savedRotation = null;
+  }
+
+  function zoomAbout(scale: number, x: number, y: number): void {
+    const z = zoom!;
     const s = clampScale(scale);
-    const k = s / base.scale;
-    camera.jump({ scale: s, rotation: cam.rotation, cx: x - (ax - base.cx) * k, cy: y - (ay - base.cy) * k });
+    const k = s / z.base.scale;
+    camera.jump({ scale: s, rotation: cam.rotation, cx: x - (z.ax - z.base.cx) * k, cy: y - (z.ay - z.base.cy) * k });
+    z.x = x;
+    z.y = y;
+  }
+
+  function startZoom(x: number, y: number): void {
+    if (zoom) return;
+    camera.stop();
+    dismissHint();
+    userSpin = false;
+    zoom = { startScale: cam.scale, base: { ...cam }, ax: x, ay: y, x, y };
+  }
+
+  /** Spec §3.4: resolve the gesture to a word, its parent/child, the wheel, or nothing; then spring to rest. */
+  function endZoom(): void {
+    const z = zoom;
+    zoom = null;
+    if (!z) return;
+    const hit = hitTest(layout, cam, vp, z.x, z.y);
+    const a = resolvePinch(layout, store.get(), cam.scale / z.startScale, hit);
+    if (a) store.dispatch(a);
+    goToRest();
   }
 
   function rotateBy(delta: number): void {
@@ -91,29 +119,34 @@ export function createController(
     return r2 > 0 ? (rx * vy - ry * vx) / r2 : 0;
   }
 
-  function interact(): void {
-    if (store.get().view.mode === 'ring') store.dispatch({ type: 'interact' });
+  function fling(v: number): void {
+    const ring = ringOf(store.get());
+    userSpin = ring !== null;
+    camera.fling(v, ring, layout);
   }
 
-  store.subscribe((s, prev) => {
+  store.subscribe((s, prev, a) => {
+    // Anything but the spin's own settle re-targets the camera, so a later settle from that spin is stale.
+    if (a.type !== 'settled') userSpin = false;
+    if (zoom) return; // endZoom springs to rest itself.
     const viewChanged = s.view.mode !== prev.view.mode || ringOf(s) !== ringOf(prev);
     if (viewChanged) {
-      goToView();
+      if (prev.view.mode === 'wheel') savedRotation = cam.rotation;
+      goToRest();
       return;
     }
     const ring = ringOf(s);
-    if (ring === null || dragAxis !== null) return;
-    const want = s.selected ?? s.focused;
-    if (want === null || layout.segments[want]!.ring !== ring) return;
-    const off = normAngle(layout.segments[want]!.mid + camera.current.rotation);
-    if (Math.min(off, TAU - off) > 1e-9 || camera.moving) {
-      camera.animateTo({ rotation: rotationToCenter(layout.segments[want]!, cam.rotation) });
+    if (ring === null || dragAxis !== null || s.selected === null || a.type === 'settled') return;
+    if (s.selected !== prev.selected || camera.moving) {
+      camera.animateTo({ rotation: rotationToCenter(seg(s.selected), cam.rotation) });
     }
   });
 
   camera.onSettle(() => {
     const ring = ringOf(store.get());
-    if (ring !== null) store.dispatch({ type: 'settled', segment: centered(ring) });
+    if (ring === null || !userSpin) return;
+    userSpin = false;
+    store.dispatch({ type: 'settled', segment: centered(ring) });
   });
 
   function handleOne(i: Intent): void {
@@ -123,36 +156,35 @@ export function createController(
       case 'tap': {
         const wasMoving = camera.moving;
         camera.stop();
+        userSpin = false;
+        if (ring === null && wasMoving) savedRotation = null;
         beforeLastTap = s;
         const hit = hitTest(layout, cam, vp, i.x, i.y);
-        // Tapping a moving wheel means "stop here and pick this": never toggle the selection off.
-        if (!(wasMoving && hit !== null && hit === s.selected)) {
-          store.dispatch(hit === null ? { type: 'clear' } : { type: 'select', segment: hit });
+        if (hit === null) {
+          store.dispatch(s.opened ? { type: 'close' } : { type: 'clear' });
+        } else if (wasMoving && !s.opened && hit === s.selected) {
+          // Tapping a moving wheel means "stop here and pick this", never "open".
+        } else {
+          store.dispatch(s.opened ? { type: 'open', segment: hit } : { type: 'select', segment: hit });
         }
-        if (store.get().view.mode === 'ring' && !camera.moving) goToView();
+        if (ringOf(store.get()) !== null && !camera.moving) goToRest();
         return;
       }
       case 'doubleTap': {
-        if (ring !== null) {
-          // The first tap of the pair toggled the selection off; zoom out with it restored.
-          const before = beforeLastTap;
-          if (before && before.selected !== null && s.selected === null) {
-            store.dispatch({ type: 'restore', state: { ...before, view: { mode: 'overview' } } });
-          } else {
-            store.dispatch({ type: 'zoomOut' });
-          }
-          return;
-        }
         camera.stop();
+        const before = beforeLastTap ?? s;
+        beforeLastTap = null;
         const hit = hitTest(layout, cam, vp, i.x, i.y);
-        if (hit !== null) store.dispatch({ type: 'zoomIn', segment: hit });
+        if (hit !== null) store.dispatch({ type: 'open', segment: hit });
+        else if (before.opened) store.dispatch({ type: 'close' });
+        if (!camera.moving) goToRest();
         return;
       }
       case 'dragStart':
-        camera.stop();
+        grab();
+        userSpin = false;
         dragAxis = i.axis;
         last = { x: i.x, y: i.y };
-        interact();
         return;
       case 'drag': {
         if (ring === null) {
@@ -170,57 +202,47 @@ export function createController(
       }
       case 'dragEnd': {
         let v = 0;
-        if (ring === null) {
-          v = angularVelocity(i.vx, i.vy);
-        } else if (dragAxis === 'y') {
-          v = i.vy / radiusPx(ring);
-        }
+        if (ring === null) v = angularVelocity(i.vx, i.vy);
+        else if (dragAxis === 'y') v = i.vy / radiusPx(ring);
         dragAxis = null;
-        camera.fling(v, snapRing(), layout);
+        fling(v);
         return;
       }
       case 'swipe': {
         dragAxis = null;
         if (ring === null) {
-          camera.fling(angularVelocity(i.vx, i.vy), snapRing(), layout);
+          fling(angularVelocity(i.vx, i.vy));
           return;
         }
-        interact();
-        const next = ring + (i.dir === 'left' ? 1 : -1);
-        if (next >= 0 && next < layout.rings.length) {
-          store.dispatch({ type: 'setRing', ring: next, segment: snapRotation(layout, next, cam.rotation).segment });
-        } else {
-          goToView();
-        }
+        const before = store.get();
+        store.dispatch({ type: i.dir === 'left' ? 'toChild' : 'toParent' });
+        if (store.get() === before) goToRest();
         return;
       }
       case 'pinch':
-        if (!pinchBase) {
-          camera.stop();
-          pinchBase = { cam: { ...cam }, x: i.cx, y: i.cy };
-        }
-        zoomAbout(pinchBase.cam.scale * i.scale, i.cx, i.cy, pinchBase.cam, pinchBase.x, pinchBase.y);
+        startZoom(i.cx, i.cy);
+        zoomAbout(zoom!.base.scale * i.scale, i.cx, i.cy);
         return;
       case 'pinchEnd':
-        pinchBase = null;
-        resolveZoom();
+        endZoom();
         return;
       case 'zoomWheel':
-        camera.stop();
-        zoomAbout(cam.scale * i.factor, i.cx, i.cy, { ...cam }, i.cx, i.cy);
+        startZoom(i.cx, i.cy);
+        // Each wheel event zooms about its own point, from the live camera.
+        Object.assign(zoom!, { base: { ...cam }, ax: i.cx, ay: i.cy });
+        zoomAbout(cam.scale * i.factor, i.cx, i.cy);
         if (wheelZoomTimer !== null) clearTimeout(wheelZoomTimer);
         wheelZoomTimer = setTimeout(() => {
           wheelZoomTimer = null;
-          resolveZoom();
+          endZoom();
         }, WHEEL_ZOOM_IDLE_MS);
         return;
       case 'scroll':
-        if (camera.moving) camera.stop();
-        interact();
-        rotateBy(ring === null ? -i.dy * OVERVIEW_SCROLL_RATE : -i.dy / radiusPx(ring));
+        grab();
+        rotateBy(ring === null ? -i.dy * WHEEL_SCROLL_RATE : -i.dy / radiusPx(ring));
         return;
       case 'scrollEnd':
-        camera.fling(0, snapRing(), layout);
+        fling(0);
         return;
     }
   }
@@ -229,26 +251,26 @@ export function createController(
     const unchanged = next.width === vp.width && next.height === vp.height && next.radius === vp.radius
       && o.remPx === opts.remPx && o.portrait === opts.portrait;
     if (unchanged) return;
-    const s = store.get();
-    const ring = ringOf(s);
     vp = next;
     opts = o;
-    if (ring === null) {
-      camera.jump(restingCamera(s));
-      return;
-    }
-    // Keep the segment the user intends (focus/selection), not whatever a running animation passes through.
-    const intended = [s.selected, s.focused].find((i) => i !== null && layout.segments[i]!.ring === ring);
-    const keep = intended ?? centered(ring);
-    camera.jump(ringFocusCamera(layout, ring, vp, rotationToCenter(layout.segments[keep]!, cam.rotation), opts));
-    store.dispatch({ type: 'settled', segment: keep });
+    camera.jump(restingCamera(store.get()));
+  }
+
+  function playIntro(): void {
+    const s = store.get();
+    const ring = ringOf(s);
+    if (ring === null || s.selected === null) return;
+    const widths = layout.rings[0]!.segments.map((k) => seg(k).end - seg(k).start).sort((a, b) => a - b);
+    const median = widths[Math.floor(widths.length / 2)]!;
+    const rest = restingCamera(s);
+    camera.jump(overviewCamera(vp, rest.rotation - INTRO_SEGMENTS * median));
+    userSpin = false;
+    camera.animateTo(rest);
   }
 
   // Initial resting state.
-  camera.jump({ ...overviewCamera(vp, DEFAULT_ROTATION) });
+  camera.jump(overviewCamera(vp, DEFAULT_ROTATION));
   camera.jump(restingCamera(store.get()));
-  const startRing = ringOf(store.get());
-  if (startRing !== null) store.dispatch({ type: 'settled', segment: centered(startRing) });
 
   return {
     camera,
@@ -256,5 +278,6 @@ export function createController(
       for (const i of intents) handleOne(i);
     },
     setViewport,
+    playIntro,
   };
 }

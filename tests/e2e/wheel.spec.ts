@@ -284,17 +284,23 @@ test.describe('phone', () => {
   });
 });
 
-test('axe: no violations with nothing selected, selected, opened', async ({ page }) => {
-  await open(page, '#/core/angry/aggressive/hostile');
-  expect((await new AxeBuilder({ page }).analyze()).violations, 'opened').toEqual([]);
-  await page.keyboard.press('Escape');
-  await idle(page);
-  await expect(title(page)).toHaveText('Hostile');
-  expect((await new AxeBuilder({ page }).analyze()).violations, 'selected').toEqual([]);
-  await page.keyboard.press('Escape');
-  await expect(page.locator('fw-card')).toBeHidden();
-  expect((await new AxeBuilder({ page }).analyze()).violations, 'nothing').toEqual([]);
-});
+for (const colorScheme of ['light', 'dark'] as const) {
+  test(`axe: no violations with nothing selected, selected, opened (${colorScheme})`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme });
+    await open(page, '#/core/angry/aggressive/hostile');
+    // Let the unfold finish, so axe reads the settled colours.
+    await page.waitForTimeout(300);
+    expect((await new AxeBuilder({ page }).analyze()).violations, 'opened').toEqual([]);
+    await page.keyboard.press('Escape');
+    await idle(page);
+    await expect(title(page)).toHaveText('Hostile');
+    await page.waitForTimeout(300);
+    expect((await new AxeBuilder({ page }).analyze()).violations, 'selected').toEqual([]);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('fw-card')).toBeHidden();
+    expect((await new AxeBuilder({ page }).analyze()).violations, 'nothing').toEqual([]);
+  });
+}
 
 test('resizing never paints a cleared (black) canvas frame', async ({ page }) => {
   await open(page);

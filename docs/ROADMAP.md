@@ -12,7 +12,7 @@ Each version is used before the next one is designed. Point releases (v1.1) rewo
 |---|---|---|
 | v1: Core wheel | Shipped | [spec](superpowers/specs/2026-11-06-feelings-wheel-v1-design.md), [plan](superpowers/plans/2026-11-06-feelings-wheel-v1.md) |
 | v1.1: Selected and opened states, card redesign | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.1-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.1.md) |
-| v1.2: Fixes and polish from using v1.1 | Next: plan written | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.2-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.2.md) |
+| v1.2: Fixes and polish from using v1.1 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.2-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.2.md) |
 | v2: Strength | Planned | Not designed yet |
 | v3: Body sensations wheel | Planned | Not designed yet |
 | v4: Emoji wheel | Planned | Not designed yet |
@@ -23,6 +23,8 @@ Each version is used before the next one is designed. Point releases (v1.1) rewo
 These are what Lucas asked for. Each version's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
 
 ### v1.2: Fixes and polish from using v1.1
+
+Shipped 2026-11-07 ([spec](superpowers/specs/2026-11-07-feelings-wheel-v1.2-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.2.md)). Everything below was addressed in it.
 
 Lucas's feedback from using v1.1 (2026-11-07, mostly in Firefox). The decisions are in the [v1.2 spec](superpowers/specs/2026-11-07-feelings-wheel-v1.2-design.md), which replaces some of the ideas below (for example, the starting message and the half-wheel rules).
 

@@ -1,0 +1,26 @@
+import type { Layout } from './layout';
+import type { Action, State } from '../state/store';
+
+export const PINCH_IN = 1.15;
+export const PINCH_STEP_OUT = 0.87;
+export const PINCH_CLOSE = 0.6;
+
+/**
+ * Spec §3.4: what a pinch does when it ends. Always resolves to the word under the fingers, the selection's parent
+ * or child, the whole wheel, or nothing — never whatever sits at 3 o'clock.
+ * @param ratio release scale / scale at gesture start
+ * @param hit segment under the pinch midpoint, or null over the hole / outside the wheel
+ */
+export function resolvePinch(_layout: Layout, s: State, ratio: number, hit: number | null): Action | null {
+  if (ratio > PINCH_IN) {
+    if (hit === null) return null;
+    if (s.opened && hit === s.selected) return { type: 'toChild' };
+    return { type: 'open', segment: hit };
+  }
+  if (ratio < PINCH_STEP_OUT) {
+    if (s.opened) return ratio < PINCH_CLOSE ? { type: 'close' } : { type: 'toParent' };
+    // Phone start: back to the whole wheel, selection kept.
+    if (s.view.mode === 'ring') return { type: 'restore', state: { ...s, view: { mode: 'wheel' } } };
+  }
+  return null;
+}

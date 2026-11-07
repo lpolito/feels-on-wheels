@@ -5,6 +5,8 @@
   position: absolute;
   overflow: hidden;
   background: #eee;
+
+  counter-reset: accumulated-degrees 0;
 }
 
 .wedge {
@@ -15,9 +17,53 @@
   width: 50%;
   pointer-events: none;
   transform: translate(0, -50%);
+
+  /* counter-increment: count 1; */
+
+  /* 82 total segments */
+  --total-leafs: 82;
+}
+
+.wedge::after {
+  /* content: counter(accumulated-degrees, decimal); */
 }
 
 .wedge>* {
+  &[label="Happy"] {
+    background-color: orange;
+    --leaf-segments: 18;
+  }
+
+  &[label="Surprised"] {
+    background-color: green;
+    --leaf-segments: 8;
+  }
+
+  &[label="Bad"] {
+    background-color: purple;
+    --leaf-segments: 8;
+  }
+
+  &[label="Fearful"] {
+    background-color: pink;
+    --leaf-segments: 12;
+  }
+
+  &[label="Angry"] {
+    background-color: red;
+    --leaf-segments: 16;
+  }
+
+  &[label="Disgusted"] {
+    background-color: brown;
+    --leaf-segments: 8;
+  }
+
+  &[label="Sad"] {
+    background-color: indigo;
+    --leaf-segments: 12;
+  }
+
   display: flex;
   align-items: center;
   justify-content: stretch;
@@ -27,12 +73,22 @@
   transform-origin: 0 50%;
   /* pointer-events: all; */
   z-index: 2;
-  background-color: var(--bg-color);
 
+  --segment-ratio: calc(var(--leaf-segments) / var(--total-leafs));
   --pi-fraction: pi * var(--segment-ratio);
   --clip-position: calc(cos(var(--pi-fraction)) * 100%);
-
   height: calc(sin(var(--pi-fraction)) * 100cqw);
   clip-path: polygon(100% 0px, var(--clip-position) 0px, 0px 50%, var(--clip-position) 100%, 100% 100%);
-  transform: rotate(var(--segment-rotation));
+
+  --segment-degrees: calc(var(--segment-ratio) * 360);
+  --segment-degrees-half: calc(var(var(--segment-degrees)) / 2);
+  --midpoint-degrees: calc(counter(accumulated-degrees, decimal) + var(--segment-degrees-half));
+  transform: rotate(calc(var(--midpoint-degrees) * 1deg));
+
+  counter-increment: accumulated-degrees var(--segment-degrees);
+
+  &::after {
+    /* content: "count " counter(accumulated-degrees, decimal); */
+    content: "transform " var(--midpoint-degrees);
+  }
 }

@@ -37,14 +37,16 @@ class FeelingsWheel extends HTMLElement {
 
       let accumulatedDegrees = 0;
       assignedElements.forEach((element, idx) => {
+
         const segmentRatio = leafCountBySegment[idx] / totalLeafSegments;
+        console.log(leafCountBySegment)
         const segmentDegrees = segmentRatio * 360;
         // Calculate the midpoint angle of this specific slice
         const midpointDegrees = accumulatedDegrees + (segmentDegrees / 2);
 
         // data attributes (child.dataset) don't seem to propogate
         // set inline style vars to ensure css has access to these values
-        element.style.setProperty("--segment-ratio", segmentRatio);
+        // element.style.setProperty("--segment-ratio", segmentRatio);
         element.style.setProperty("--segment-rotation", `${midpointDegrees}deg`);
 
         accumulatedDegrees += segmentDegrees;

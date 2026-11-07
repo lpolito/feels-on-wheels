@@ -9,7 +9,7 @@ import { createController, type Controller } from '../../src/controller';
 const layout = buildLayout(loadData().wheel);
 const idx = (p: string): number => layout.byPath.get(p)!;
 const desk: Viewport = { width: 1200, height: 900, radius: 442 };
-const opts = { remPx: 16, portrait: false, anchorY: 0.5 };
+const opts = { remPx: 16, portrait: false, anchorY: 0.5, half: false };
 
 let now = 0;
 let queue: Map<number, FrameRequestCallback>;
@@ -54,6 +54,39 @@ function setup(initial = initialState): void {
 }
 
 beforeEach(() => setup());
+
+const phoneVp: Viewport = { width: 390, height: 844, radius: 187 };
+const phoneOpts = { remPx: 16, portrait: true, anchorY: 0.275, half: true };
+const halfScale = (0.95 * phoneVp.width) / phoneVp.radius;
+
+/** A phone (spec v1.2 §3.2): the whole-wheel view is the half-wheel. */
+function setupPhone(initial = initialState): void {
+  now = 0; queue = new Map(); nextId = 1;
+  store = createStore(layout, initial);
+  camera = createCameraController({
+    now: () => now,
+    raf: (cb) => { const id = nextId++; queue.set(id, cb); return id; },
+    caf: (id) => { queue.delete(id); },
+    reducedMotion: () => false,
+  });
+  ctl = createController(layout, store, camera, phoneVp, phoneOpts);
+  step(50);
+}
+
+function phoneScreenOf(i: number): { x: number; y: number } {
+  const s = layout.segments[i]!;
+  const ring = layout.rings[s.ring]!;
+  const c = camera.current;
+  const d = ((ring.inner + ring.outer) / 2) * phoneVp.radius * c.scale;
+  return { x: c.cx + d * Math.cos(s.mid + c.rotation), y: c.cy + d * Math.sin(s.mid + c.rotation) };
+}
+
+const expectHalf = (rotation?: number): void => {
+  expect(camera.current.cx).toBeCloseTo(0, 9);
+  expect(camera.current.cy).toBeCloseTo(phoneVp.height / 2, 9);
+  expect(camera.current.scale).toBeCloseTo(halfScale, 9);
+  if (rotation !== undefined) expect(sameAngle(camera.current.rotation, rotation)).toBeLessThan(1e-6);
+};
 
 const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { mode: 'ring', ring: layout.segments[idx(p)]!.ring }, hinted: false });
 const phoneStart = (p: string): State => ({ selected: idx(p), opened: false, view: { mode: 'ring', ring: 0 }, hinted: true });
@@ -432,19 +465,6 @@ describe('pinch and zoom', () => {
 });
 
 describe('intro and restore', () => {
-  test('playIntro lands centred on the selected core word without dispatching anything but settled', () => {
-    setup(phoneStart('sad'));
-    const seen: Action[] = [];
-    store.subscribe((_s, _p, a) => seen.push(a));
-    ctl.playIntro();
-    step(16);
-    expect(camera.current.scale).toBeLessThan(1.2);
-    step(2000);
-    expect(store.get()).toEqual(phoneStart('sad'));
-    expect(seen.every((a) => a.type === 'settled')).toBe(true);
-    expect(offCenter(idx('sad'))).toBeLessThan(1e-9);
-  });
-
   test('restore during a fling wins: the late settled is ignored', () => {
     setup(opened('angry/aggressive/hostile'));
     step(1000);
@@ -459,7 +479,7 @@ describe('intro and restore', () => {
   });
 
   test('restore during the phone intro wins', () => {
-    setup(phoneStart('sad'));
+    setupPhone();
     ctl.playIntro();
     step(80);
     const target = opened('angry/aggressive');
@@ -479,11 +499,101 @@ describe('intro and restore', () => {
   });
 });
 
+describe('half-wheel (phone)', () => {
+  const medianCore = (): number => {
+    const w = layout.rings[0]!.segments.map((k) => layout.segments[k]!.end - layout.segments[k]!.start).sort((x, y) => x - y);
+    return w[Math.floor(w.length / 2)]!;
+  };
+
+  test("phone starts on the half-wheel with Fearful at 3 o'clock", () => {
+    setupPhone();
+    expectHalf();
+    expect(offCenter(idx('fearful'))).toBeLessThan(1e-9);
+    expect(camera.moving).toBe(false);
+  });
+
+  test('playIntro only spins: scale and centre stay those of the half-wheel, nothing is dispatched', () => {
+    setupPhone();
+    const rest = camera.current.rotation;
+    const seen: Action[] = [];
+    store.subscribe((_s, _p, a) => seen.push(a));
+    ctl.playIntro();
+    expectHalf(rest - 1.5 * medianCore());
+    expect(camera.moving).toBe(true);
+    for (let k = 0; k < 90; k++) {
+      step(1000 / 60);
+      expect(camera.current.scale).toBeCloseTo(halfScale, 9);
+      expect(camera.current.cx).toBeCloseTo(0, 9);
+      expect(camera.current.cy).toBeCloseTo(phoneVp.height / 2, 9);
+    }
+    step(2000);
+    expect(camera.moving).toBe(false);
+    expectHalf(rest);
+    expect(seen).toEqual([]);
+    expect(store.get()).toBe(initialState);
+  });
+
+  test('playIntro does nothing on the full wheel or in a ring view', () => {
+    ctl.playIntro();
+    expect(camera.moving).toBe(false);
+    setupPhone(opened('sad'));
+    step(2000);
+    const before = { ...camera.current };
+    ctl.playIntro();
+    expect(camera.moving).toBe(false);
+    expect(camera.current).toEqual(before);
+  });
+
+  test('tap selects on the half-wheel without moving the camera', () => {
+    setupPhone();
+    const before = { ...camera.current };
+    ctl.handle([{ type: 'tap', ...phoneScreenOf(idx('fearful')) }]);
+    step(1000);
+    expect(store.get()).toMatchObject({ selected: idx('fearful'), opened: false, view: { mode: 'wheel' } });
+    expect(camera.current).toEqual(before);
+  });
+
+  test('closing an opened word lands on the half-wheel at the current rotation', () => {
+    setupPhone();
+    const angry = idx('angry'); // beside Fearful, on the visible half
+    ctl.handle([{ type: 'tap', ...phoneScreenOf(angry) }]);
+    ctl.handle([{ type: 'tap', ...phoneScreenOf(angry) }]);
+    step(2000);
+    expect(store.get().opened).toBe(true);
+    const rot = camera.current.rotation;
+    store.dispatch({ type: 'close' });
+    step(2000);
+    expectHalf(rot);
+    expect(store.get()).toMatchObject({ selected: angry, opened: false, view: { mode: 'wheel' } });
+  });
+
+  test('setViewport portrait→landscape on the half-wheel with a selection keeps the selection, not opened, full wheel at the same rotation', () => {
+    setupPhone();
+    ctl.handle([{ type: 'tap', ...phoneScreenOf(idx('angry')) }]);
+    step(1000);
+    const rot = camera.current.rotation;
+    const before = store.get();
+    const land: Viewport = { width: 844, height: 390, radius: 187 };
+    ctl.setViewport(land, { remPx: 16, portrait: false, anchorY: 0.5, half: false });
+    step(2000);
+    expect(store.get()).toBe(before);
+    expect(before).toMatchObject({ selected: idx('angry'), opened: false, view: { mode: 'wheel' } });
+    expect(camera.current.scale).toBe(1);
+    expect(camera.current.cx).toBe(422);
+    expect(camera.current.cy).toBe(195);
+    expect(sameAngle(camera.current.rotation, rot)).toBeLessThan(1e-6);
+    // And back again.
+    ctl.setViewport(phoneVp, phoneOpts);
+    step(1000);
+    expectHalf(rot);
+  });
+});
+
 describe('viewport', () => {
   test('setViewport while opened keeps the same word centred at angle 0', () => {
     setup(opened('angry/aggressive/hostile'));
     step(1000);
-    ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true, anchorY: 0.275 });
+    ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true, anchorY: 0.275, half: false });
     step(1000);
     expect(offCenter(idx('angry/aggressive/hostile'))).toBeLessThan(1e-9);
     expect(camera.current.cx + 0.81 * 342 * camera.current.scale).toBeCloseTo(350, 6);
@@ -522,10 +632,10 @@ describe('viewport', () => {
       caf: (id) => { queue.delete(id); },
       reducedMotion: () => false,
     });
-    ctl = createController(layout, store, camera, phone, { remPx: 16, portrait: true, anchorY: 0.275 });
+    ctl = createController(layout, store, camera, phone, { remPx: 16, portrait: true, anchorY: 0.275, half: false });
     step(1000);
     expect(camera.current.cy).toBeCloseTo(0.275 * 844, 6);
-    ctl.setViewport({ width: 844, height: 390, radius: 187 }, { remPx: 16, portrait: false, anchorY: 0.5 });
+    ctl.setViewport({ width: 844, height: 390, radius: 187 }, { remPx: 16, portrait: false, anchorY: 0.5, half: false });
     step(1000);
     expect(store.get()).toEqual(phoneStart('surprised'));
     expect(offCenter(idx('surprised'))).toBeLessThan(1e-9);

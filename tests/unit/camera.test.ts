@@ -3,14 +3,14 @@ import { loadData } from '../../src/data/load';
 import { buildLayout } from '../../src/model/layout';
 import { TAU, normAngle, type Viewport } from '../../src/model/geometry';
 import {
-  createCameraController, nearestRestingState, overviewCamera, ringFocusCamera, shouldStartZoomed,
-  type CameraController,
+  createCameraController, halfRestRotation, nearestRestingState, overviewCamera, ringFocusCamera, shouldStartZoomed,
+  wheelCamera, type CameraController,
 } from '../../src/camera';
 
 const layout = buildLayout(loadData().wheel);
 const phone: Viewport = { width: 375, height: 667, radius: 375 / 2 - 8 };
 const desk: Viewport = { width: 1440, height: 900, radius: 900 / 2 - 8 };
-const opts = { remPx: 16, portrait: false, anchorY: 0.5 };
+const opts = { remPx: 16, portrait: false, anchorY: 0.5, half: false };
 
 function segHeight(ring: number, vp: Viewport, scale: number): number {
   const r = layout.rings[ring]!;
@@ -25,7 +25,7 @@ describe('resting cameras', () => {
   });
 
   test('ringFocusCamera puts ring mid-radius at 40% width (50% portrait)', () => {
-    for (const [o, frac] of [[opts, 0.4], [{ remPx: 16, portrait: true, anchorY: 0.5 }, 0.5]] as const) {
+    for (const [o, frac] of [[opts, 0.4], [{ remPx: 16, portrait: true, anchorY: 0.5, half: false }, 0.5]] as const) {
       const cam = ringFocusCamera(layout, 1, desk, 0, o);
       const rMid = (0.32 + 0.62) / 2;
       expect(cam.cx + rMid * desk.radius * cam.scale).toBeCloseTo(frac * desk.width, 6);
@@ -34,7 +34,7 @@ describe('resting cameras', () => {
   });
 
   test("portrait ring camera puts the ring's mid-radius row at 27.5% height", () => {
-    const cam = ringFocusCamera(layout, 1, phone, 0, { remPx: 16, portrait: true, anchorY: 0.275 });
+    const cam = ringFocusCamera(layout, 1, phone, 0, { remPx: 16, portrait: true, anchorY: 0.275, half: false });
     expect(cam.cy).toBeCloseTo(0.275 * phone.height, 9);
     const rMid = (0.32 + 0.62) / 2;
     expect(cam.cx + rMid * phone.radius * cam.scale).toBeCloseTo(0.5 * phone.width, 6);
@@ -53,8 +53,27 @@ describe('resting cameras', () => {
   });
 
   test('outer ring focus on a 375×667 viewport gives focused-ring segments ≥ 44px tall', () => {
-    const cam = ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, anchorY: 0.275 });
+    const cam = ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, anchorY: 0.275, half: false });
     expect(segHeight(2, phone, cam.scale)).toBeGreaterThanOrEqual(44 - 1e-9);
+  });
+
+  test('half wheelCamera puts the centre on the left edge, halfway down, outer edge at 95% width', () => {
+    const c = wheelCamera(phone, 0.3, { remPx: 16, portrait: true, anchorY: 0.275, half: true });
+    expect(c.cx).toBe(0);
+    expect(c.cy).toBe(phone.height / 2);
+    expect(c.rotation).toBe(0.3);
+    expect(phone.radius * c.scale).toBeCloseTo(0.95 * phone.width, 9);
+  });
+
+  test('full wheelCamera equals overviewCamera', () => {
+    expect(wheelCamera(desk, 0.5, opts)).toEqual(overviewCamera(desk, 0.5));
+    expect(wheelCamera(phone, 0.5, { ...opts, portrait: true })).toEqual(overviewCamera(phone, 0.5));
+  });
+
+  test("halfRestRotation centres Fearful at 3 o'clock", () => {
+    const fearful = layout.segments[layout.byPath.get('fearful')!]!;
+    const off = normAngle(fearful.mid + halfRestRotation(layout));
+    expect(Math.min(off, TAU - off)).toBeLessThan(1e-12);
   });
 
   test('shouldStartZoomed true for 375×667, false for 1440×900', () => {

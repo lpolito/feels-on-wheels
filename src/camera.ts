@@ -6,6 +6,8 @@ export interface CameraOpts {
   portrait: boolean;
   /** Ring-view vertical anchor as a fraction of stage height: 0.275 on phones (above the card's 45dvh cap), else 0.5. */
   anchorY: number;
+  /** The whole-wheel view is the half-wheel (spec v1.2 §3.2): phones, where the full wheel's labels would be too small. */
+  half: boolean;
 }
 
 /** Spec §4.2 constants. */
@@ -32,6 +34,20 @@ const anchorX = (vp: Viewport, o: CameraOpts): number => (o.portrait ? 0.5 : 0.4
 
 export function overviewCamera(vp: Viewport, rotation: number): Camera {
   return { scale: 1, rotation, cx: vp.width / 2, cy: vp.height / 2 };
+}
+
+/** The half-wheel's outer edge reaches this fraction of the stage width. */
+const HALF_REACH = 0.95;
+
+/** The whole-wheel resting camera: centred in the stage, or the half-wheel when o.half. */
+export function wheelCamera(vp: Viewport, rotation: number, o: CameraOpts): Camera {
+  if (!o.half) return overviewCamera(vp, rotation);
+  return { scale: (HALF_REACH * vp.width) / vp.radius, rotation, cx: 0, cy: vp.height / 2 };
+}
+
+/** Rotation that centres the first core word (Fearful) at 3 o'clock. */
+export function halfRestRotation(layout: Layout): number {
+  return -layout.segments[layout.rings[0]!.segments[0]!]!.mid;
 }
 
 export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rotation: number, o: CameraOpts): Camera {

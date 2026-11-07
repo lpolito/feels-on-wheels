@@ -59,10 +59,11 @@ function measure(): { vp: Viewport; opts: CameraOpts } {
   const whole = app.getBoundingClientRect();
   const remPx = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
   const portrait = whole.width < 720 || whole.height > whole.width;
-  return {
-    vp: { width, height, radius: Math.max(Math.min(width, height) / 2 - 8, 1) },
-    opts: { remPx, portrait, anchorY: portrait ? PHONE_ANCHOR_Y : 0.5 },
-  };
+  const vp = { width, height, radius: Math.max(Math.min(width, height) / 2 - 8, 1) };
+  // Spec v1.2 §3.2: the half-wheel where the full wheel's labels would be too small; a phone turned sideways
+  // (not portrait) gets the full wheel back.
+  const half = portrait && shouldStartZoomed(layout, vp);
+  return { vp, opts: { remPx, portrait, anchorY: portrait ? PHONE_ANCHOR_Y : 0.5, half } };
 }
 
 let { vp, opts } = measure();
@@ -231,7 +232,7 @@ new ResizeObserver(() => {
 renderer.resize(vp.width, vp.height, devicePixelRatio || 1);
 refreshColors();
 renderUi(store.get());
-if (beganAtBase && shouldStartZoomed(layout, vp) && !reducedMotion.matches) controller.playIntro();
+if (beganAtBase && opts.half && !reducedMotion.matches) controller.playIntro();
 drawNow();
 
 // ── Offline support (spec §6.5) ─────────────────────────────────────────

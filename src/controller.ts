@@ -1,4 +1,4 @@
-import { overviewCamera, ringFocusCamera, type CameraController, type CameraOpts } from './camera';
+import { halfRestRotation, ringFocusCamera, wheelCamera, type CameraController, type CameraOpts } from './camera';
 import type { Intent } from './input/gestures';
 import type { Layout } from './model/layout';
 import {
@@ -11,7 +11,7 @@ export interface Controller {
   handle(intents: Intent[]): void;
   /** Re-targets the current resting state for a new viewport, keeping the intended word centred. */
   setViewport(vp: Viewport, o: CameraOpts): void;
-  /** Phone start (spec §3.2): from the whole wheel, spin in to the core ring centred on the selection. */
+  /** Phone start (spec v1.2 §3.2): on the half-wheel, spin in to the resting rotation. Dispatches nothing. */
   playIntro(): void;
   readonly camera: CameraController;
 }
@@ -61,7 +61,7 @@ export function createController(
   function restingCamera(s: State): Camera {
     const ring = ringOf(s);
     // Spec v1.2 §3.3: the whole wheel keeps the rotation it is at (or heading to), so closing never spins back.
-    if (ring === null) return overviewCamera(vp, camera.moving ? camera.target.rotation : cam.rotation);
+    if (ring === null) return wheelCamera(vp, camera.moving ? camera.target.rotation : cam.rotation, opts);
     const sel = s.selected;
     const rotation = sel !== null && seg(sel).ring === ring
       ? rotationToCenter(seg(sel), cam.rotation)
@@ -250,15 +250,15 @@ export function createController(
 
   function setViewport(next: Viewport, o: CameraOpts): void {
     const unchanged = next.width === vp.width && next.height === vp.height && next.radius === vp.radius
-      && o.remPx === opts.remPx && o.portrait === opts.portrait && o.anchorY === opts.anchorY;
+      && o.remPx === opts.remPx && o.portrait === opts.portrait && o.anchorY === opts.anchorY && o.half === opts.half;
     if (unchanged) return;
     vp = next;
     opts = o;
     const s = store.get();
     const ring = ringOf(s);
     if (ring === null) {
-      // Mid-close or mid-fling, keep where the wheel was heading.
-      camera.jump(overviewCamera(vp, camera.target.rotation));
+      // Mid-close or mid-fling, keep where the wheel was heading; half ↔ full when the device turns.
+      camera.jump(wheelCamera(vp, camera.target.rotation, opts));
       return;
     }
     if (userSpin && camera.moving) {
@@ -273,19 +273,18 @@ export function createController(
   }
 
   function playIntro(): void {
-    const s = store.get();
-    const ring = ringOf(s);
-    if (ring === null || s.selected === null) return;
+    if (ringOf(store.get()) !== null || !opts.half) return;
     const widths = layout.rings[0]!.segments.map((k) => seg(k).end - seg(k).start).sort((a, b) => a - b);
     const median = widths[Math.floor(widths.length / 2)]!;
-    const rest = restingCamera(s);
-    camera.jump(overviewCamera(vp, rest.rotation - INTRO_SEGMENTS * median));
+    const rest = halfRestRotation(layout);
+    // Only the rotation moves: scale and centre are the half-wheel's throughout.
+    camera.jump(wheelCamera(vp, rest - INTRO_SEGMENTS * median, opts));
     userSpin = false;
-    camera.animateTo(rest);
+    camera.animateTo(wheelCamera(vp, rest, opts));
   }
 
   // Initial resting state.
-  camera.jump(overviewCamera(vp, DEFAULT_ROTATION));
+  camera.jump(wheelCamera(vp, opts.half ? halfRestRotation(layout) : DEFAULT_ROTATION, opts));
   camera.jump(restingCamera(store.get()));
 
   return {

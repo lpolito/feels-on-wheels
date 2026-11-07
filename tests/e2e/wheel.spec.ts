@@ -171,6 +171,34 @@ test.describe('phone', () => {
     await expect(hint(page)).toHaveText('How are you feeling? Tap a feeling or spin to explore.');
   });
 
+  test("phone: the wheel's centre is on the left edge", async ({ page }) => {
+    await open(page);
+    const cam = await page.evaluate(() => window.__fw.camera());
+    expect(Math.abs(cam.cx)).toBeLessThanOrEqual(2);
+    expect(await page.evaluate(() => window.__fw.offCenter('fearful'))).toBeLessThan(1e-6);
+  });
+
+  test('phone: deep link then Back lands on the half-wheel with the word selected and no intro', async ({ page }) => {
+    // A base entry behind a fresh load of the deep link: as if someone opened a link to Angry, having been here before.
+    await open(page);
+    await page.evaluate(() => { location.hash = '#/core/angry'; });
+    await page.reload();
+    await page.waitForFunction(() => window.__fw !== undefined);
+    await idle(page);
+    expect((await state(page)).opened).toBe(true);
+    await page.goBack();
+    await idle(page);
+    // Once the close has landed, nothing else (no intro) starts moving.
+    for (let k = 0; k < 3; k++) {
+      expect(await page.evaluate(() => window.__fw.moving())).toBe(false);
+      await page.waitForTimeout(50);
+    }
+    expect(await page.evaluate(() => location.hash)).toBe('');
+    expect(await selectedPath(page)).toBe('angry');
+    expect((await state(page)).view).toEqual({ mode: 'wheel' });
+    expect(Math.abs((await page.evaluate(() => window.__fw.camera())).cx)).toBeLessThanOrEqual(2);
+  });
+
   test('phone: first drag hides the hint and keeps the URL', async ({ page }) => {
     await open(page);
     const box = (await wheelBox(page))!;
@@ -245,7 +273,7 @@ test('resizing never paints a cleared (black) canvas frame', async ({ page }) =>
   expect(corner).not.toEqual([0, 0, 0]);
 });
 
-test('a late stylesheet still gives the themed palette and the right start layout', async ({ page }) => {
+test('a late stylesheet still gives the themed palette and the right start layout', async ({ page, isMobile }) => {
   // WebKit can run the module before the stylesheets apply when the machine is busy; force that order.
   await page.route('**/*.css', async (route) => {
     await new Promise((r) => setTimeout(r, 600));
@@ -258,4 +286,8 @@ test('a late stylesheet still gives the themed palette and the right start layou
   });
   expect(corner).not.toEqual([0, 0, 0]);
   expect(await state(page)).toMatchObject({ selected: null, view: { mode: 'wheel' } });
+  // Phones measure the stage once the styles apply, so they still get the half-wheel.
+  const cx = (await page.evaluate(() => window.__fw.camera())).cx;
+  if (isMobile) expect(Math.abs(cx)).toBeLessThanOrEqual(2);
+  else expect(cx).toBeGreaterThan(100);
 });

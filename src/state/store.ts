@@ -2,7 +2,10 @@ import { ringNeighbor, type Layout } from '../model/layout';
 
 export type View = { mode: 'wheel' } | { mode: 'ring'; ring: number };
 
-/** Spec §3.1. `opened` implies `selected !== null` and `view` is the selection's ring. */
+/**
+ * Spec §3.1. `opened` implies `selected !== null` and `view` is the selection's ring; otherwise `view` is the whole
+ * wheel (v1.2 removed the phone's zoomed start, the one ring view that wasn't opened).
+ */
 export interface State {
   selected: number | null;
   opened: boolean;
@@ -63,10 +66,9 @@ function open(layout: Layout, s: State, i: number): State {
   return { ...s, selected: i, opened: true, view: ringView(layout.segments[i]!.ring) };
 }
 
-/** Select without opening. In a (phone-start) ring view the view follows the word to its ring, so it stays centred. */
-function selectOnly(layout: Layout, s: State, i: number): State {
-  const view = s.view.mode === 'ring' ? ringView(layout.segments[i]!.ring) : s.view;
-  return { ...s, selected: i, opened: false, view };
+/** Select without opening, on the whole wheel. */
+function selectOnly(s: State, i: number): State {
+  return { ...s, selected: i, opened: false, view: WHEEL };
 }
 
 const firstCore = (layout: Layout): number => layout.rings[0]!.segments[0]!;
@@ -77,7 +79,7 @@ function next(layout: Layout, s: State, a: Action): State {
   switch (a.type) {
     case 'select':
       if (s.opened || a.segment === sel) return open(layout, s, a.segment);
-      return selectOnly(layout, s, a.segment);
+      return selectOnly(s, a.segment);
     case 'open':
       return open(layout, s, a.segment);
     case 'close':
@@ -85,9 +87,9 @@ function next(layout: Layout, s: State, a: Action): State {
     case 'clear':
       return { ...s, selected: null, opened: false, view: WHEEL };
     case 'step': {
-      if (sel === null) return selectOnly(layout, s, firstCore(layout));
+      if (sel === null) return selectOnly(s, firstCore(layout));
       const to = ringNeighbor(layout, sel, a.delta);
-      return s.opened ? open(layout, s, to) : selectOnly(layout, s, to);
+      return s.opened ? open(layout, s, to) : selectOnly(s, to);
     }
     case 'toChild': {
       if (sel === null) return s;
@@ -96,25 +98,26 @@ function next(layout: Layout, s: State, a: Action): State {
         return c === null ? s : open(layout, s, c);
       }
       const c = seg(sel).children[0];
-      return c === undefined ? s : selectOnly(layout, s, c);
+      return c === undefined ? s : selectOnly(s, c);
     }
     case 'toParent': {
       if (sel === null) return s;
       const p = seg(sel).parent;
       if (s.opened) return p < 0 ? next(layout, s, { type: 'close' }) : open(layout, s, p);
-      return p < 0 ? s : selectOnly(layout, s, p);
+      return p < 0 ? s : selectOnly(s, p);
     }
     case 'stepOut':
       return s.opened ? next(layout, s, { type: 'toParent' }) : s;
     case 'activate':
-      if (sel === null) return selectOnly(layout, s, firstCore(layout));
+      if (sel === null) return selectOnly(s, firstCore(layout));
       return s.opened ? s : open(layout, s, sel);
     case 'escape':
       if (s.opened) return next(layout, s, { type: 'close' });
       return sel === null ? s : next(layout, s, { type: 'clear' });
     case 'settled': {
-      if (s.view.mode !== 'ring' || seg(a.segment).ring !== s.view.ring || sel === null) return s;
-      return s.opened ? open(layout, s, a.segment) : { ...s, selected: a.segment };
+      // A spin settled while opened: open the word it stopped on, if it's in the opened ring.
+      if (!s.opened || s.view.mode !== 'ring' || seg(a.segment).ring !== s.view.ring) return s;
+      return open(layout, s, a.segment);
     }
     case 'dismissHint':
       return s;

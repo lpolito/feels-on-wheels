@@ -63,15 +63,14 @@ Lucas's feedback from using v1.1 (2026-11-07, mostly in Firefox). The decisions 
 - The selection chevron crowds core-word labels (its look is marked provisional).
 - Spec question: on phones, Back to the start returns to the random start word. This goes away if phones stop starting with a selection.
 
-**Small issues left open by the v1.2 review:**
-- With focus on a card button, the arrows go to the wheel, so they no longer scroll a long card (PageUp/PageDown still do).
-- On the phone's half-wheel, choosing a word by keyboard or the accessible tree can select one on the hidden left half without turning the wheel to show it.
-- The opened cell's lift and outline sizes are defined twice (`src/camera.ts` and `src/render/wheel.ts`); they should come from one place.
-- Dead code from the removed phone start: the ring-view branch of `selectOnly` in `src/state/store.ts`, and settling a selected-but-not-opened ring view.
-- Enter and Space on "Zoom out" and on card buttons are covered by unit tests only, not end-to-end.
-- The axe test waits a fixed 300 ms for the card's unfold; waiting for the transition to end would be sturdier on a slow machine.
-- Pressing Escape while "Zoom out" has focus hides the button without moving focus to the wheel.
-- Spec change made during the build: on desktop, the opened view puts the opened cell's lifted edge and outline (not the wheel's bare edge) on the column, 12 px further left than spec §4.1's formula, so an opened outer word isn't clipped.
+**Known bugs after v1.2:**
+- On the phone's half-wheel, choosing a word by keyboard or the accessible tree can select one on the hidden left half without turning the wheel to show it. Not pressing; Lucas wants to try it before deciding whether the wheel should turn to show it.
+
+**Decisions and changes made after the v1.2 spec (2026-11-07):**
+- **Keys from the card stay as built.** After a card link, focus stays on the card's header, and the arrows move through the wheel from any card or toolbar button. The first Escape closes the word; the second clears it and moves focus to the wheel. The arrows therefore don't scroll a long card; Tab (which scrolls each link into view) and PageUp/PageDown still do. Screen readers in reading mode (NVDA, JAWS) keep the arrows for reading, so this doesn't get in their way.
+- **`+`, `=` and `−` only work with focus on the wheel** (WCAG 2.1.4, character key shortcuts), so speech input can't trigger them by accident. Before, they worked from anywhere on the page. The arrows, Enter, Space and Escape are unchanged.
+- **Opened words on desktop aren't clipped.** The opened view puts the opened cell's lifted edge and outline (not the wheel's bare edge) on the card's column, 12 px further left than spec §4.1's formula.
+- **Small phones turned sideways get the full wheel.** The half-wheel follows the stage's own orientation, so a 667×375 phone in landscape isn't kept on the half-wheel.
 
 ### v2: Strength
 

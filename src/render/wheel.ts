@@ -3,6 +3,7 @@ import type { Layout } from '../model/layout';
 import { inWindow, viewWindow, type Camera, type Viewport, type ViewWindow } from '../model/geometry';
 import type { FillTable, Palette } from './colors';
 import { fitLabel, labelRotation, type Measure } from './labels';
+import { LIFT_RADIAL_PX, LIFT_SIDE_PX, OUTLINE_INNER_PX, OUTLINE_PX } from './selection';
 import type { SpriteCache } from './sprites';
 
 export interface Frame {
@@ -38,11 +39,7 @@ const LABEL_PAD = 6;
 const LINE_HEIGHT = 1.15;
 const GAP_PX = 1.5;
 const GAP_PX_MORE = 2.5;
-/** Spec §4.2 selection treatments. */
-const OUTLINE_PX = 4;
-const OUTLINE_INNER_PX = 2;
-const LIFT_RADIAL_PX = 10;
-const LIFT_SIDE_PX = 2;
+/** Spec §4.2 selection treatments (sizes shared with the camera in ./selection). */
 const LIFT_LABEL = 1.15;
 const SHADOW = { blur: 12, color: 'rgba(0,0,0,.35)', offsetY: 3 } as const;
 const PULSE_FROM = 0.96;

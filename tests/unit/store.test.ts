@@ -10,7 +10,6 @@ const wheel = { mode: 'wheel' } as const;
 const ring = (r: number) => ({ mode: 'ring', ring: r }) as const;
 const selected = (p: string, extra: Partial<State> = {}): State => ({ ...initialState, selected: idx(p), hinted: false, ...extra });
 const opened = (p: string): State => ({ selected: idx(p), opened: true, view: ring(layout.segments[idx(p)]!.ring), hinted: false });
-const phoneStart = (p: string): State => ({ selected: idx(p), opened: false, view: ring(0), hinted: true });
 
 describe('initial state', () => {
   test('nothing selected, whole wheel, hint showing', () => {
@@ -40,15 +39,6 @@ describe('select', () => {
     expect(s).toEqual(opened('sad/hurt/embarrassed'));
   });
 
-  test('select in phone-start ring view keeps it selected, not opened', () => {
-    const s = run(phoneStart('angry'), { type: 'select', segment: idx('sad') });
-    expect(s).toEqual({ selected: idx('sad'), opened: false, view: ring(0), hinted: false });
-  });
-
-  test('select a word outside the phone-start ring follows it to its ring, still not opened', () => {
-    const s = run(phoneStart('angry'), { type: 'select', segment: idx('angry/aggressive') });
-    expect(s).toEqual({ selected: idx('angry/aggressive'), opened: false, view: ring(1), hinted: false });
-  });
 });
 
 describe('open / close / clear / escape', () => {
@@ -173,15 +163,44 @@ describe('settled', () => {
     expect(reduce(layout, s, { type: 'settled', segment: idx('sad') })).toBe(s);
   });
 
-  test('settled in phone-start ring view selects without opening', () => {
-    const s = run(phoneStart('angry'), { type: 'settled', segment: idx('sad') });
-    expect(s).toEqual({ ...phoneStart('sad') });
-  });
-
   test('settled on the wheel is a no-op', () => {
     const s = selected('angry');
     expect(reduce(layout, s, { type: 'settled', segment: idx('sad') })).toBe(s);
     expect(reduce(layout, initialState, { type: 'settled', segment: idx('sad') })).toBe(initialState);
+  });
+});
+
+describe('reachable states', () => {
+  test('a word is only ever in a ring view while opened; otherwise the view is the whole wheel', () => {
+    let seed = 7;
+    const rand = (n: number): number => {
+      seed = (seed * 1103515245 + 12345) % 2 ** 31;
+      return seed % n;
+    };
+    const n = layout.segments.length;
+    const actions = (): Action => {
+      const all: Action[] = [
+        { type: 'select', segment: rand(n) }, { type: 'open', segment: rand(n) }, { type: 'close' }, { type: 'clear' },
+        { type: 'step', delta: 1 }, { type: 'step', delta: -1 }, { type: 'toChild' }, { type: 'toParent' },
+        { type: 'stepOut' }, { type: 'activate' }, { type: 'escape' }, { type: 'settled', segment: rand(n) },
+        { type: 'dismissHint' },
+      ];
+      return all[rand(all.length)]!;
+    };
+    // Start states: the base URL, and every deep link (opened, hint showing).
+    const starts: State[] = [initialState, ...layout.segments.map((g) => ({ ...opened(g.path), hinted: true }))];
+    for (const start of starts) {
+      let st = start;
+      for (let k = 0; k < 60; k++) {
+        const a = actions();
+        st = reduce(layout, st, a);
+        if (st.opened) {
+          expect(st.view, a.type).toEqual(ring(layout.segments[st.selected!]!.ring));
+        } else {
+          expect(st.view, a.type).toEqual(wheel);
+        }
+      }
+    }
   });
 });
 
@@ -192,9 +211,10 @@ describe('hint and restore', () => {
       { type: 'step', delta: 1 }, { type: 'toChild' }, { type: 'toParent' }, { type: 'activate' }, { type: 'escape' },
       { type: 'dismissHint' }, { type: 'stepOut' },
     ];
-    for (const a of user) expect(run(phoneStart('angry'), a).hinted, a.type).toBe(false);
-    expect(run(phoneStart('angry'), { type: 'settled', segment: idx('sad') }).hinted).toBe(true);
-    const target = phoneStart('happy');
+    const deepLink: State = { ...opened('angry/aggressive'), hinted: true };
+    for (const a of user) expect(run(deepLink, a).hinted, a.type).toBe(false);
+    expect(run(deepLink, { type: 'settled', segment: idx('angry/mad') }).hinted).toBe(true);
+    const target: State = { ...opened('happy'), hinted: true };
     expect(run(initialState, { type: 'restore', state: target })).toBe(target);
   });
 

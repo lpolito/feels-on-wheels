@@ -242,6 +242,20 @@ describe('<fw-card>', () => {
 });
 
 describe('<fw-toolbar>', () => {
+  test('hiding Zoom out while it has focus (Escape, Back) emits fw-focus-lost', () => {
+    document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+    const el = document.querySelector<FwToolbar>('fw-toolbar')!;
+    let lost = 0;
+    el.addEventListener('fw-focus-lost', () => lost++);
+    el.opened = true;
+    el.opened = false;
+    expect(lost).toBe(0);
+    el.opened = true;
+    el.querySelector<HTMLButtonElement>('button.fw-zoom-out')!.focus();
+    el.opened = false;
+    expect(lost).toBe(1);
+  });
+
   test('toolbar shows Zoom out only when opened, emits close then fw-focus-lost', () => {
     document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
     const el = document.querySelector<FwToolbar>('fw-toolbar')!;

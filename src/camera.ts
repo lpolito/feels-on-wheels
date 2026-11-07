@@ -1,5 +1,6 @@
 import type { Layout } from './model/layout';
 import { normAngle, snapRotation, type Camera, type Viewport } from './model/geometry';
+import { LIFT_RADIAL_PX, LIFT_SIDE_PX, OUTLINE_OUTSIDE_PX } from './render/selection';
 
 export interface CameraOpts {
   remPx: number;
@@ -16,10 +17,6 @@ const MIN_TARGET_PX = 44;
 const MIN_RING_SCALE = 1.25;
 const START_ZOOMED_BELOW_PX = 12;
 const LABEL_HEIGHT_RATIO = 0.55;
-/** The opened cell's lift past its ring, its side lift and the outline outside its edge (render/wheel.ts). */
-const LIFT_RADIAL_PX = 10;
-const LIFT_SIDE_PX = 2;
-const OUTLINE_OUTSIDE_PX = 2;
 /** Spring stiffness (spec v1.2 §3.5): about 90% of a move done in 270ms. */
 const OMEGA = 14;
 const FLING_TAU = 0.325;

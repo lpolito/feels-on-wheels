@@ -27,3 +27,8 @@ export const hint = (page: Page) => page.locator('fw-hint');
 export async function expectTitle(page: Page, text: string): Promise<void> {
   await expect(title(page)).toHaveText(text);
 }
+
+/** Waits until no CSS transition is running (the card's unfold, fades), so checks read settled styles. */
+export async function settled(page: Page): Promise<void> {
+  await page.waitForFunction(() => !document.getAnimations().some((a) => a instanceof CSSTransition));
+}

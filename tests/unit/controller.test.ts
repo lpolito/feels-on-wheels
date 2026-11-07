@@ -89,7 +89,6 @@ const expectHalf = (rotation?: number): void => {
 };
 
 const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { mode: 'ring', ring: layout.segments[idx(p)]!.ring }, hinted: false });
-const phoneStart = (p: string): State => ({ selected: idx(p), opened: false, view: { mode: 'ring', ring: 0 }, hinted: true });
 
 /** A screen point over no word (outside the wheel or in the hole). */
 function missPoint(): { x: number; y: number } {
@@ -201,19 +200,6 @@ describe('taps', () => {
     ctl.handle([{ type: 'doubleTap', ...p }]);
     step(1000);
     expect(store.get()).toEqual(opened('sad'));
-  });
-
-  test('double-tap on a neighbour in phone-start view opens that neighbour, not what the camera moved under the finger', () => {
-    setup(phoneStart('angry'));
-    step(1000);
-    const target = idx('disgusted');
-    const p = screenOf(target);
-    expect(hitTest(layout, camera.current, desk, p.x, p.y)).toBe(target);
-    ctl.handle([{ type: 'tap', ...p }]);
-    step(150);
-    ctl.handle([{ type: 'doubleTap', ...p }]);
-    step(1000);
-    expect(store.get()).toEqual(opened('disgusted'));
   });
 
   test('double-tap on another word while opened opens that word', () => {
@@ -328,23 +314,6 @@ describe('spinning', () => {
     step(1500);
     expect(store.get()).toMatchObject({ selected: idx('sad'), opened: false, view: { mode: 'wheel' } });
     expect(sameAngle(camera.current.rotation, before)).toBeGreaterThan(0.1);
-  });
-
-  test('spinning in phone-start view selects the settled word without opening it', () => {
-    setup(phoneStart('angry'));
-    step(1000);
-    ctl.handle([
-      { type: 'dragStart', x: 500, y: 400, axis: 'y' },
-      { type: 'drag', x: 500, y: 500, dx: 0, dy: 100 },
-      { type: 'dragEnd', vx: 0, vy: 1500 },
-    ]);
-    step(1500);
-    const s = store.get();
-    expect(s.opened).toBe(false);
-    expect(s.hinted).toBe(false);
-    expect(s.selected).not.toBe(idx('angry'));
-    expect(layout.segments[s.selected!]!.ring).toBe(0);
-    expect(offCenter(s.selected!)).toBeLessThan(1e-9);
   });
 
   test('scroll while opened rotates and snaps after scrollEnd', () => {
@@ -620,26 +589,6 @@ describe('viewport', () => {
     step(1000);
     expect(store.get()).toEqual(opened(layout.segments[dest]!.path));
     expect(offCenter(dest)).toBeLessThan(1e-9);
-  });
-
-  test('portrait → wide while in phone-start view keeps the same word selected, centred, not opened', () => {
-    const phone: Viewport = { width: 390, height: 844, radius: 187 };
-    now = 0; queue = new Map(); nextId = 1;
-    store = createStore(layout, phoneStart('surprised'));
-    camera = createCameraController({
-      now: () => now,
-      raf: (cb) => { const id = nextId++; queue.set(id, cb); return id; },
-      caf: (id) => { queue.delete(id); },
-      reducedMotion: () => false,
-    });
-    ctl = createController(layout, store, camera, phone, { remPx: 16, portrait: true, half: false });
-    step(1000);
-    expect(camera.current.cy).toBeCloseTo(0.5 * 844, 6);
-    ctl.setViewport({ width: 844, height: 390, radius: 187 }, { remPx: 16, portrait: false, half: false });
-    step(1000);
-    expect(store.get()).toEqual(phoneStart('surprised'));
-    expect(offCenter(idx('surprised'))).toBeLessThan(1e-9);
-    expect(camera.current.cy).toBeCloseTo(195, 6);
   });
 
   test("resize mid-close keeps the closing camera's target rotation", () => {

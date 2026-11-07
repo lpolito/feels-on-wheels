@@ -86,6 +86,12 @@ describe('a11y tree', () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
+  test("+, = and − work while the wheel's tree has focus", () => {
+    createA11yTree(root, layout, dispatch).update(sel('angry'));
+    for (const key of ['+', '=', '-']) item(idx('angry')).dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+    expect(dispatch.mock.calls.map((c) => c[0])).toEqual([{ type: 'activate' }, { type: 'activate' }, { type: 'stepOut' }]);
+  });
+
   test('modified keys (browser zoom, Back) are left to the browser', () => {
     createA11yTree(root, layout, dispatch).update(sel('angry'));
     for (const init of [{ key: '=', ctrlKey: true }, { key: '-', metaKey: true }, { key: 'ArrowLeft', altKey: true }, { key: 'ArrowLeft', metaKey: true }]) {

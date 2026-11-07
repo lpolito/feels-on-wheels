@@ -51,7 +51,10 @@ export class FwToolbar extends HTMLElement {
 
   #sync(): void {
     if (!this.#zoomOut || !this.#select) return;
+    // Hiding the focused button (Escape, Back, a pinch) would drop focus to <body>: hand it to the wheel instead.
+    const hadFocus = !this.#opened && !this.#zoomOut.hidden && document.activeElement === this.#zoomOut;
     this.#zoomOut.hidden = !this.#opened;
+    if (hadFocus) this.dispatchEvent(new CustomEvent('fw-focus-lost', { bubbles: true }));
     this.#select.value = this.#theme;
   }
 }

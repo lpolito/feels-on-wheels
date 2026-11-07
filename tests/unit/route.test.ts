@@ -6,9 +6,6 @@ describe('routeKey', () => {
   test('button target: ArrowDown routes to step +1', () => {
     expect(routeKey('ArrowDown', 'button', false)).toEqual({ type: 'step', delta: 1 });
     expect(routeKey('ArrowUp', 'button', false)).toEqual({ type: 'step', delta: -1 });
-    expect(routeKey('-', 'button', false)).toEqual({ type: 'stepOut' });
-    expect(routeKey('+', 'button', false)).toEqual({ type: 'activate' });
-    expect(routeKey('=', 'button', false)).toEqual({ type: 'activate' });
     expect(routeKey('Escape', 'button', false)).toEqual({ type: 'escape' });
   });
 
@@ -26,6 +23,12 @@ describe('routeKey', () => {
     expect(routeKey('Enter', 'other', false)).toEqual({ type: 'activate' });
     expect(routeKey('ArrowRight', 'other', false)).toEqual({ type: 'toChild' });
     expect(routeKey('a', 'other', false)).toBeNull();
+  });
+
+  test('single-character keys (+, =, −) are never routed: they work only with focus on the wheel (WCAG 2.1.4)', () => {
+    for (const where of ['field', 'button', 'other'] as const) {
+      for (const k of ['+', '=', '-']) expect(routeKey(k, where, false), `${k} ${where}`).toBeNull();
+    }
   });
 
   test('modified keys are never routed', () => {

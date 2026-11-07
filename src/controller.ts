@@ -67,9 +67,8 @@ export function createController(
     const s = store.get();
     if (rest.mode === 'overview') {
       if (s.view.mode === 'ring') store.dispatch({ type: 'zoomOut' });
-    } else {
-      if (s.view.mode === 'overview') store.dispatch({ type: 'zoomIn' });
-      store.dispatch({ type: 'setRing', ring: rest.ring });
+    } else if (s.view.mode === 'overview' || s.view.ring !== rest.ring) {
+      store.dispatch({ type: 'setRing', ring: rest.ring, segment: snapRotation(layout, rest.ring, cam.rotation).segment });
     }
     goToView();
   }
@@ -188,8 +187,11 @@ export function createController(
         }
         interact();
         const next = ring + (i.dir === 'left' ? 1 : -1);
-        if (next >= 0 && next < layout.rings.length) store.dispatch({ type: 'setRing', ring: next });
-        else goToView();
+        if (next >= 0 && next < layout.rings.length) {
+          store.dispatch({ type: 'setRing', ring: next, segment: snapRotation(layout, next, cam.rotation).segment });
+        } else {
+          goToView();
+        }
         return;
       }
       case 'pinch':

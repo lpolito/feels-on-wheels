@@ -156,6 +156,36 @@ describe('review fixes: input', () => {
   });
 });
 
+describe('review fixes: consistent ring changes', () => {
+  const consistent = (s: ReturnType<Store['get']>) =>
+    s.view.mode !== 'ring' || !s.interacted || s.selected === null || layout.segments[s.selected]!.ring === s.view.ring;
+
+  test('a swipe never produces a state whose selection is outside the focused ring', () => {
+    setup({ ...initialState, view: { mode: 'ring', ring: 1 } });
+    step(1000);
+    store.dispatch({ type: 'select', segment: idx('angry/aggressive') });
+    step(1000);
+    const seen: ReturnType<Store['get']>[] = [];
+    store.subscribe((s) => seen.push(s));
+    ctl.handle([{ type: 'swipe', dir: 'left', vx: -900, vy: 0 }]);
+    step(1000);
+    expect(seen.length).toBeGreaterThan(0);
+    expect(seen.every(consistent)).toBe(true);
+    expect(store.get().view).toEqual({ mode: 'ring', ring: 2 });
+    expect(offCenter(store.get().selected!)).toBeLessThan(1e-9);
+  });
+
+  test('pinching from overview into a ring changes the view in one transition', () => {
+    const views: string[] = [];
+    store.subscribe((s, prev) => {
+      if (JSON.stringify(s.view) !== JSON.stringify(prev.view)) views.push(JSON.stringify(s.view));
+    });
+    ctl.handle([{ type: 'pinch', scale: 3, cx: 900, cy: 450 }, { type: 'pinchEnd' }]);
+    step(1000);
+    expect(views).toHaveLength(1);
+  });
+});
+
 describe('spinning', () => {
   test('drag then dragEnd in ring mode settles exactly on a segment mid and selects it', () => {
     setup({ ...initialState, view: { mode: 'ring', ring: 1 } });

@@ -124,3 +124,16 @@ test('axe: no accessibility violations in overview and zoomed views', async ({ p
   const zoomed = await new AxeBuilder({ page }).analyze();
   expect(zoomed.violations).toEqual([]);
 });
+
+test('phone: Back to the first entry returns to the zoomed start, not the overview', async ({ page, isMobile }) => {
+  test.skip(!narrow(isMobile), 'phone-only behaviour');
+  await open(page);
+  await page.waitForTimeout(350);
+  const center = await page.evaluate(() => window.__fw.segmentScreenPoint(window.__fw.pathOf(window.__fw.state().focused)!));
+  await page.mouse.click(center.x, center.y);
+  await idle(page);
+  expect((await page.evaluate(() => window.__fw.state())).selected).not.toBeNull();
+  await page.goBack();
+  await idle(page);
+  expect((await page.evaluate(() => window.__fw.state())).view).toEqual({ mode: 'ring', ring: 0 });
+});

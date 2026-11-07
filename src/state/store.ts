@@ -17,7 +17,8 @@ export type Action =
   | { type: 'step'; delta: 1 | -1 }
   | { type: 'toChild' }
   | { type: 'toParent' }
-  | { type: 'setRing'; ring: number }
+  /** Change the focused ring; `segment` is the word that lands at 3 o'clock there. */
+  | { type: 'setRing'; ring: number; segment?: number }
   | { type: 'settled'; segment: number }
   | { type: 'interact' }
   | { type: 'zoomIn'; segment?: number }
@@ -74,9 +75,13 @@ function next(layout: Layout, s: State, a: Action): State {
       const parent = cursor === null ? -1 : seg(cursor).parent;
       return parent < 0 ? s : moveTo(layout, s, parent);
     }
-    case 'setRing':
-      if (s.view.mode !== 'ring' || a.ring < 0 || a.ring >= layout.rings.length) return s;
-      return { ...s, view: ringView(a.ring) };
+    case 'setRing': {
+      if (a.ring < 0 || a.ring >= layout.rings.length) return s;
+      if (a.segment === undefined) return s.view.mode === 'ring' ? { ...s, view: ringView(a.ring) } : s;
+      // One transition, so no intermediate state (or history entry) has a selection outside the ring.
+      const interacted = s.view.mode === 'ring' ? s.interacted : s.selected !== null;
+      return { ...s, view: ringView(a.ring), focused: a.segment, interacted, selected: interacted ? a.segment : s.selected };
+    }
     case 'settled':
       if (s.view.mode !== 'ring') return s;
       return s.interacted ? { ...s, focused: a.segment, selected: a.segment } : { ...s, focused: a.segment };

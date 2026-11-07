@@ -11,7 +11,8 @@ import { TAU, normAngle, type Viewport } from './model/geometry';
 import { buildLayout, litMask } from './model/layout';
 import { buildFillTable, readPalette } from './render/colors';
 import { createWheelRenderer } from './render/wheel';
-import { createStore, initialState, type Action, type State } from './state/store';
+import { createStore, type Action, type State } from './state/store';
+import { createHistoryWriter, defaultState } from './state/history';
 import { fromHash, toHash } from './state/url';
 import { panelModel, type FwPanel, type FwPath } from './ui/panel';
 import { applyPref, readPref, resolvedTheme, safeStorage, writePref, type ThemePref } from './ui/theme';
@@ -57,7 +58,7 @@ let { vp, opts } = measure();
 // ── State ────────────────────────────────────────────────────────────────
 const fromUrl = fromHash(layout, location.hash);
 const startZoomed = fromUrl === null && shouldStartZoomed(layout, vp);
-const store = createStore(layout, fromUrl ?? (startZoomed ? { ...initialState, view: { mode: 'ring', ring: 0 } } : initialState));
+const store = createStore(layout, fromUrl ?? defaultState(layout, vp));
 
 const camera = createCameraController({
   now: () => performance.now(),
@@ -188,6 +189,7 @@ function renderUi(s: State): void {
 
 // ── URL & history ────────────────────────────────────────────────────────
 let restoring = false;
+const writeHistory = createHistoryWriter(history, () => performance.now());
 
 store.subscribe((s, prev) => {
   if (s.selected !== prev.selected) {
@@ -201,14 +203,14 @@ store.subscribe((s, prev) => {
   if (!restoring) {
     const hash = toHash(layout, s);
     if (hash !== location.hash && !(hash === '' && location.hash === '')) {
-      history.pushState(null, '', hash === '' ? location.pathname + location.search : hash);
+      writeHistory(hash === '' ? location.pathname + location.search : hash);
     }
   }
 });
 
 addEventListener('popstate', () => {
   restoring = true;
-  store.dispatch({ type: 'restore', state: fromHash(layout, location.hash) ?? initialState });
+  store.dispatch({ type: 'restore', state: fromHash(layout, location.hash) ?? defaultState(layout, vp) });
   restoring = false;
 });
 

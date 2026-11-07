@@ -95,11 +95,31 @@ describe('ring mode (picker)', () => {
     expect(s.selected).toBe(idx('angry/let-down'));
   });
 
+  test('setRing with a center after interaction selects it in the same transition', () => {
+    const start = ring(1, { selected: idx('angry/aggressive'), focused: idx('angry/aggressive'), interacted: true });
+    const s = run(start, { type: 'setRing', ring: 2, segment: idx('angry/aggressive/hostile') });
+    expect(s).toEqual({ selected: idx('angry/aggressive/hostile'), focused: idx('angry/aggressive/hostile'), view: { mode: 'ring', ring: 2 }, interacted: true });
+  });
+
+  test('setRing with a center before interaction only focuses it', () => {
+    const s = run(ring(0), { type: 'setRing', ring: 1, segment: idx('sad/lonely') });
+    expect(s.selected).toBeNull();
+    expect(s.focused).toBe(idx('sad/lonely'));
+  });
+
+  test('setRing from overview enters ring mode; it selects the center only if something was selected', () => {
+    const empty = run(initialState, { type: 'setRing', ring: 2, segment: idx('sad/lonely/isolated') });
+    expect(empty).toEqual({ selected: null, focused: idx('sad/lonely/isolated'), view: { mode: 'ring', ring: 2 }, interacted: false });
+    const withSel = run({ ...initialState, selected: idx('sad'), focused: idx('sad') }, { type: 'setRing', ring: 2, segment: idx('sad/lonely/isolated') });
+    expect(withSel.selected).toBe(idx('sad/lonely/isolated'));
+    expect(withSel.interacted).toBe(true);
+  });
+
   test('setRing changes the focused ring and ignores invalid rings', () => {
     expect(run(ring(2), { type: 'setRing', ring: 1 }).view).toEqual({ mode: 'ring', ring: 1 });
     const r = ring(2);
     expect(reduce(layout, r, { type: 'setRing', ring: 3 })).toBe(r);
-    expect(reduce(layout, initialState, { type: 'setRing', ring: 1 })).toBe(initialState);
+    expect(reduce(layout, initialState, { type: 'setRing', ring: 7 })).toBe(initialState);
   });
 
   test('escape in ring → overview with selection kept', () => {

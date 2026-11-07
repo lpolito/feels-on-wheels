@@ -48,6 +48,12 @@ const darkScheme = media('(prefers-color-scheme: dark)');
 const moreContrast = media('(prefers-contrast: more)');
 const forcedColors = media('(forced-colors: active)');
 
+// WebKit can run this module before the stylesheets apply (seen on a busy machine). The palette, the stage size
+// and the phone/desktop start all read them, so wait for the page's load event when the tokens are missing.
+if (!getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() && document.readyState !== 'complete') {
+  await new Promise((resolve) => addEventListener('load', resolve, { once: true }));
+}
+
 function measure(): { vp: Viewport; opts: CameraOpts } {
   const { width, height } = stage.getBoundingClientRect();
   const whole = app.getBoundingClientRect();

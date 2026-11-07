@@ -210,3 +210,18 @@ test('resizing never paints a cleared (black) canvas frame', async ({ page }) =>
   });
   expect(corner).not.toEqual([0, 0, 0]);
 });
+
+test('a late stylesheet still gives the themed palette and the right start layout', async ({ page, isMobile }) => {
+  // WebKit can run the module before the stylesheets apply when the machine is busy; force that order.
+  await page.route('**/*.css', async (route) => {
+    await new Promise((r) => setTimeout(r, 600));
+    await route.continue();
+  });
+  await open(page);
+  const corner = await page.evaluate(() => {
+    const px = document.querySelector('canvas')!.getContext('2d')!.getImageData(2, 2, 1, 1).data;
+    return [px[0], px[1], px[2]];
+  });
+  expect(corner).not.toEqual([0, 0, 0]);
+  expect((await state(page)).view.mode).toBe(isMobile ? 'ring' : 'wheel');
+});

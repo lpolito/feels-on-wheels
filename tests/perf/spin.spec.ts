@@ -22,7 +22,7 @@ async function setup(page: Page): Promise<void> {
     };
     raf(probe);
   });
-  await page.goto('/#/core?ring=2');
+  await page.goto('/#/core/angry/aggressive/hostile');
   await page.waitForFunction(() => window.__fw !== undefined && !window.__fw.moving());
 }
 

@@ -22,508 +22,549 @@
   "feelings": {
     "scared": {
       "label": "Scared",
-      "definition": ""
+      "definition": "A sudden feeling that you are in danger or about to be hurt."
     },
     "helpless": {
       "label": "Helpless",
-      "definition": ""
+      "definition": "Feeling that you can't do anything to change what is happening to you."
     },
     "frightened": {
       "label": "Frightened",
-      "definition": ""
+      "definition": "Strongly afraid, often because of something sudden or threatening."
     },
     "anxious": {
       "label": "Anxious",
-      "definition": ""
+      "definition": "Worried and uneasy about something that might happen, often without knowing exactly what."
     },
     "overwhelmed": {
       "label": "Overwhelmed",
-      "definition": ""
+      "definition": "Feeling like there is too much to handle at once, more than you have room for."
     },
     "worried": {
       "label": "Worried",
-      "definition": ""
+      "definition": "Thinking again and again about something that could go wrong."
     },
     "insecure": {
       "label": "Insecure",
-      "definition": ""
+      "definition": "Unsure of yourself or your place, and doubting that you are good enough."
     },
     "inadequate": {
       "label": "Inadequate",
-      "definition": ""
+      "definition": "Feeling that you are not good enough or not able to do what is needed."
     },
     "inferior": {
       "label": "Inferior",
-      "definition": ""
+      "definition": "Feeling lower or less worthy than other people."
     },
     "weak": {
       "label": "Weak",
-      "definition": ""
+      "definition": "Feeling that you lack the strength, power, or will to cope."
     },
     "worthless": {
       "label": "Worthless",
-      "definition": ""
+      "definition": "Feeling that you have no value or that you don't matter."
     },
     "insignificant": {
       "label": "Insignificant",
-      "definition": ""
+      "definition": "Feeling small and unimportant, as if no one would notice you."
     },
     "rejected": {
       "label": "Rejected",
-      "definition": ""
+      "definition": "Feeling pushed away or not wanted by someone."
     },
     "excluded": {
       "label": "Excluded",
-      "definition": ""
+      "definition": "Feeling left out, as if you are on the outside of a group."
     },
     "persecuted": {
       "label": "Persecuted",
-      "definition": ""
+      "definition": "Feeling that you are being targeted or treated badly on purpose."
     },
     "threatened": {
       "label": "Threatened",
-      "definition": ""
+      "definition": "Sensing that someone or something might harm you or what you care about."
     },
     "nervous": {
       "label": "Nervous",
-      "definition": ""
+      "definition": "Jittery and on edge about something coming up."
     },
     "exposed": {
       "label": "Exposed",
-      "definition": ""
+      "definition": "Feeling seen in a way you didn't choose, with nowhere to hide."
     },
     "fearful": {
       "label": "Fearful",
-      "definition": ""
+      "definition": "Sensing danger or that something bad might happen, and wanting to protect yourself."
     },
     "let-down": {
       "label": "Let Down",
-      "definition": ""
+      "definition": "Disappointed because someone didn't do what you hoped or expected."
     },
     "betrayed": {
       "label": "Betrayed",
-      "definition": ""
+      "definition": "Hurt and angry because someone you trusted broke that trust."
     },
     "resentful": {
       "label": "Resentful",
-      "definition": ""
+      "definition": "Holding on to anger about being treated unfairly in the past."
     },
     "humiliated": {
       "label": "Humiliated",
-      "definition": ""
+      "definition": "Deeply embarrassed and made to feel small, often in front of others."
     },
     "disrespected": {
       "label": "Disrespected",
-      "definition": ""
+      "definition": "Feeling that someone treated you as if you didn't matter."
     },
     "ridiculed": {
       "label": "Ridiculed",
-      "definition": ""
+      "definition": "Feeling mocked or laughed at."
     },
     "bitter": {
       "label": "Bitter",
-      "definition": ""
+      "definition": "Lasting anger and hurt about something that felt unfair."
     },
     "indignant": {
       "label": "Indignant",
-      "definition": ""
+      "definition": "Angry about something you see as unjust or insulting."
     },
     "violated": {
       "label": "Violated",
-      "definition": ""
+      "definition": "Feeling that a boundary was crossed or something of yours was taken without permission."
     },
     "mad": {
       "label": "Mad",
-      "definition": ""
+      "definition": "Plainly angry and fired up."
     },
     "furious": {
       "label": "Furious",
-      "definition": ""
+      "definition": "Extremely angry, close to losing control."
     },
     "jealous": {
       "label": "Jealous",
-      "definition": ""
+      "definition": "Afraid of losing someone or something to another person, or wanting what they have."
     },
     "aggressive": {
       "label": "Aggressive",
-      "definition": ""
+      "definition": "Ready to attack or confront, in words or actions."
     },
     "provoked": {
       "label": "Provoked",
-      "definition": ""
+      "definition": "Stirred up to anger by something someone said or did."
     },
     "hostile": {
       "label": "Hostile",
-      "definition": ""
+      "definition": "Unfriendly and ready to fight or oppose."
     },
     "frustrated": {
       "label": "Frustrated",
-      "definition": ""
+      "definition": "Upset because something keeps getting in your way."
     },
     "infuriated": {
       "label": "Infuriated",
-      "definition": ""
+      "definition": "Made extremely angry, usually by something that keeps happening."
     },
     "annoyed": {
       "label": "Annoyed",
-      "definition": ""
+      "definition": "Mildly irritated by something that bothers you."
     },
     "distant": {
       "label": "Distant",
-      "definition": ""
+      "definition": "Pulled back from others, keeping feelings at arm's length."
     },
     "withdrawn": {
       "label": "Withdrawn",
-      "definition": ""
+      "definition": "Pulling into yourself and avoiding contact with others."
     },
     "numb": {
       "label": "Numb",
-      "definition": ""
+      "definition": "Feeling very little, as if your emotions have been switched off."
     },
     "critical": {
       "label": "Critical",
-      "definition": ""
+      "definition": "Quick to notice faults and judge them."
     },
     "skeptical": {
       "label": "Skeptical",
-      "definition": ""
+      "definition": "Doubting whether something is true or can be trusted."
     },
     "dismissive": {
       "label": "Dismissive",
-      "definition": ""
+      "definition": "Brushing something off as not worth your attention."
     },
     "angry": {
       "label": "Angry",
-      "definition": ""
+      "definition": "A strong feeling that something is wrong or unfair, with an urge to push back."
     },
     "disapproving": {
       "label": "Disapproving",
-      "definition": ""
+      "definition": "Feeling that something is wrong or not okay."
     },
     "judgmental": {
       "label": "Judgmental",
-      "definition": ""
+      "definition": "Forming harsh opinions about someone or something."
     },
     "embarrassed": {
       "label": "Embarrassed",
-      "definition": ""
+      "definition": "Self-conscious and uncomfortable after something awkward or revealing."
     },
     "disappointed": {
       "label": "Disappointed",
-      "definition": ""
+      "definition": "Sad that something didn't turn out the way you hoped."
     },
     "appalled": {
       "label": "Appalled",
-      "definition": ""
+      "definition": "Shocked and disgusted by something you think is very wrong."
     },
     "revolted": {
       "label": "Revolted",
-      "definition": ""
+      "definition": "Strongly repelled, with an urge to get away."
     },
     "awful": {
       "label": "Awful",
-      "definition": ""
+      "definition": "Feeling very bad, sick, or unpleasant inside."
     },
     "nauseated": {
       "label": "Nauseated",
-      "definition": ""
+      "definition": "Sick to your stomach, as if you might throw up."
     },
     "detestable": {
       "label": "Detestable",
-      "definition": ""
+      "definition": "Feeling that something, or you yourself, is hateful or deeply unpleasant."
     },
     "repelled": {
       "label": "Repelled",
-      "definition": ""
+      "definition": "Pushed away by something you find unpleasant."
     },
     "horrified": {
       "label": "Horrified",
-      "definition": ""
+      "definition": "Filled with shock and fear at something terrible."
     },
     "hesitant": {
       "label": "Hesitant",
-      "definition": ""
+      "definition": "Holding back because you are unsure or uneasy."
     },
     "disgusted": {
       "label": "Disgusted",
-      "definition": ""
+      "definition": "Strong dislike of something that feels gross, wrong, or offensive."
     },
     "hurt": {
       "label": "Hurt",
-      "definition": ""
+      "definition": "Emotional pain from something said, done, or lost."
     },
     "depressed": {
       "label": "Depressed",
-      "definition": ""
+      "definition": "Low and heavy for a long time, with little energy or hope."
     },
     "empty": {
       "label": "Empty",
-      "definition": ""
+      "definition": "Feeling hollow, as if something important is missing."
     },
     "guilty": {
       "label": "Guilty",
-      "definition": ""
+      "definition": "Feeling that you did something wrong and wanting to make it right."
     },
     "remorseful": {
       "label": "Remorseful",
-      "definition": ""
+      "definition": "Deeply sorry for something you did."
     },
     "ashamed": {
       "label": "Ashamed",
-      "definition": ""
+      "definition": "Feeling that something is wrong with who you are, not just with what you did."
     },
     "despair": {
       "label": "Despair",
-      "definition": ""
+      "definition": "Losing all hope that things can get better."
     },
     "powerless": {
       "label": "Powerless",
-      "definition": ""
+      "definition": "Feeling unable to affect what happens to you."
     },
     "grief": {
       "label": "Grief",
-      "definition": ""
+      "definition": "Deep sorrow after losing someone or something you love."
     },
     "vulnerable": {
       "label": "Vulnerable",
-      "definition": ""
+      "definition": "Open to being hurt, without your usual protection."
     },
     "fragile": {
       "label": "Fragile",
-      "definition": ""
+      "definition": "Feeling easily broken, as if you can't take much more."
     },
     "victimized": {
       "label": "Victimized",
-      "definition": ""
+      "definition": "Feeling that you were harmed or treated unfairly by others."
     },
     "lonely": {
       "label": "Lonely",
-      "definition": ""
+      "definition": "Wanting connection and feeling alone without it."
     },
     "abandoned": {
       "label": "Abandoned",
-      "definition": ""
+      "definition": "Feeling left behind by someone you counted on."
     },
     "isolated": {
       "label": "Isolated",
-      "definition": ""
+      "definition": "Cut off from other people."
     },
     "sad": {
       "label": "Sad",
-      "definition": ""
+      "definition": "A heavy feeling of loss, disappointment, or hurt."
     },
     "optimistic": {
       "label": "Optimistic",
-      "definition": ""
+      "definition": "Expecting that things will turn out well."
     },
     "inspired": {
       "label": "Inspired",
-      "definition": ""
+      "definition": "Moved to create, act, or do something meaningful."
     },
     "hopeful": {
       "label": "Hopeful",
-      "definition": ""
+      "definition": "Believing that something good can happen."
     },
     "trusting": {
       "label": "Trusting",
-      "definition": ""
+      "definition": "Feeling safe relying on someone or something."
     },
     "intimate": {
       "label": "Intimate",
-      "definition": ""
+      "definition": "Feeling close and deeply connected to someone."
     },
     "sensitive": {
       "label": "Sensitive",
-      "definition": ""
+      "definition": "Easily moved, and keenly aware of your own feelings and other people's."
     },
     "peaceful": {
       "label": "Peaceful",
-      "definition": ""
+      "definition": "Calm and settled, without inner conflict."
     },
     "thankful": {
       "label": "Thankful",
-      "definition": ""
+      "definition": "Glad and appreciative for something you received."
     },
     "loving": {
       "label": "Loving",
-      "definition": ""
+      "definition": "Feeling deep care and affection for someone."
     },
     "powerful": {
       "label": "Powerful",
-      "definition": ""
+      "definition": "Feeling strong and able to make things happen."
     },
     "creative": {
       "label": "Creative",
-      "definition": ""
+      "definition": "Full of ideas and wanting to make something new."
     },
     "courageous": {
       "label": "Courageous",
-      "definition": ""
+      "definition": "Facing fear or difficulty and acting anyway."
     },
     "accepted": {
       "label": "Accepted",
-      "definition": ""
+      "definition": "Feeling welcomed and included as you are."
     },
     "valued": {
       "label": "Valued",
-      "definition": ""
+      "definition": "Feeling that others see your worth and appreciate you."
     },
     "respected": {
       "label": "Respected",
-      "definition": ""
+      "definition": "Feeling that others take you seriously and treat you well."
     },
     "proud": {
       "label": "Proud",
-      "definition": ""
+      "definition": "Pleased with something you or someone close to you did."
     },
     "confident": {
       "label": "Confident",
-      "definition": ""
+      "definition": "Sure of yourself and your abilities."
     },
     "successful": {
       "label": "Successful",
-      "definition": ""
+      "definition": "Feeling that you reached a goal or did well."
     },
     "interested": {
       "label": "Interested",
-      "definition": ""
+      "definition": "Wanting to know more about something."
     },
     "inquisitive": {
       "label": "Inquisitive",
-      "definition": ""
+      "definition": "Eager to ask questions and find things out."
     },
     "curious": {
       "label": "Curious",
-      "definition": ""
+      "definition": "Drawn to explore something new or unknown."
     },
     "content": {
       "label": "Content",
-      "definition": ""
+      "definition": "Satisfied with how things are right now."
     },
     "joyful": {
       "label": "Joyful",
-      "definition": ""
+      "definition": "Full of great happiness and delight."
     },
     "free": {
       "label": "Free",
-      "definition": ""
+      "definition": "Unburdened and able to be yourself."
     },
     "playful": {
       "label": "Playful",
-      "definition": ""
+      "definition": "In the mood for fun and lightheartedness."
     },
     "cheeky": {
       "label": "Cheeky",
-      "definition": ""
+      "definition": "Playfully bold or a little mischievous."
     },
     "aroused": {
       "label": "Aroused",
-      "definition": ""
+      "definition": "Feeling physical or sexual excitement."
     },
     "happy": {
       "label": "Happy",
-      "definition": ""
+      "definition": "A light, good feeling of pleasure or well-being."
     },
     "excited": {
       "label": "Excited",
-      "definition": ""
+      "definition": "Eager and full of energy about something."
     },
     "energetic": {
       "label": "Energetic",
-      "definition": ""
+      "definition": "Full of energy and ready to go."
     },
     "eager": {
       "label": "Eager",
-      "definition": ""
+      "definition": "Keen and impatient for something to happen."
     },
     "amazed": {
       "label": "Amazed",
-      "definition": ""
+      "definition": "Very surprised and impressed."
     },
     "awe": {
       "label": "Awe",
-      "definition": ""
+      "definition": "Wonder at something vast, beautiful, or powerful."
     },
     "astonished": {
       "label": "Astonished",
-      "definition": ""
+      "definition": "Greatly surprised, almost unable to believe it."
     },
     "confused": {
       "label": "Confused",
-      "definition": ""
+      "definition": "Unable to make sense of something."
     },
     "perplexed": {
       "label": "Perplexed",
-      "definition": ""
+      "definition": "Puzzled by something that doesn't add up."
     },
     "disillusioned": {
       "label": "Disillusioned",
-      "definition": ""
+      "definition": "Let down after learning something isn't as good as you believed."
     },
     "startled": {
       "label": "Startled",
-      "definition": ""
+      "definition": "Briefly jolted by something sudden."
     },
     "dismayed": {
       "label": "Dismayed",
-      "definition": ""
+      "definition": "Upset and discouraged by something unexpected."
     },
     "shocked": {
       "label": "Shocked",
-      "definition": ""
+      "definition": "Stunned by something sudden and upsetting."
     },
     "surprised": {
       "label": "Surprised",
-      "definition": ""
+      "definition": "A quick reaction to something unexpected."
     },
     "tired": {
       "label": "Tired",
-      "definition": ""
+      "definition": "Low on energy and needing rest."
     },
     "unfocused": {
       "label": "Unfocused",
-      "definition": ""
+      "definition": "Having trouble keeping your attention on one thing."
     },
     "sleepy": {
       "label": "Sleepy",
-      "definition": ""
+      "definition": "Ready for sleep, with heavy eyes and a slow body."
     },
     "stressed": {
       "label": "Stressed",
-      "definition": ""
+      "definition": "Under pressure and stretched thin."
     },
     "out-of-control": {
       "label": "Out of Control",
-      "definition": ""
+      "definition": "Feeling that things are happening faster than you can manage."
     },
     "busy": {
       "label": "Busy",
-      "definition": ""
+      "definition": "Occupied with a lot to do."
     },
     "rushed": {
       "label": "Rushed",
-      "definition": ""
+      "definition": "Hurrying, without enough time to do things well."
     },
     "pressured": {
       "label": "Pressured",
-      "definition": ""
+      "definition": "Pushed by demands or expectations from others or yourself."
     },
     "bored": {
       "label": "Bored",
-      "definition": ""
+      "definition": "Uninterested and wanting something to happen."
     },
     "apathetic": {
       "label": "Apathetic",
-      "definition": ""
+      "definition": "Not caring or feeling much about anything."
     },
     "indifferent": {
       "label": "Indifferent",
-      "definition": ""
+      "definition": "Neither for nor against something, without strong feelings either way."
     },
     "bad": {
       "label": "Bad",
-      "definition": ""
+      "definition": "Generally unwell or off, without one clear emotion."
     }
   },
-  "sensations": {}
+  "sensations": {
+    "racing-heart": "Racing heart",
+    "tight-chest": "Tight chest",
+    "shallow-breath": "Shallow breathing",
+    "deep-breath": "Slow, deep breathing",
+    "lump-in-throat": "Lump in your throat",
+    "hot-face": "Hot or flushed face",
+    "clenched-jaw": "Clenched jaw",
+    "clenched-fists": "Clenched fists",
+    "tense-shoulders": "Tense shoulders",
+    "knot-in-stomach": "Knot in your stomach",
+    "nausea": "Queasy stomach",
+    "butterflies": "Butterflies in your stomach",
+    "sweaty-palms": "Sweaty palms",
+    "trembling": "Trembling or shaky",
+    "cold-hands": "Cold hands",
+    "restless": "Restless, need to move",
+    "fidgety": "Fidgety",
+    "frozen": "Frozen or very still",
+    "heavy-limbs": "Heavy arms and legs",
+    "tired-eyes": "Tired eyes",
+    "low-energy": "Low energy",
+    "slumped": "Slumped posture",
+    "tearful": "Tearful",
+    "hollow-chest": "Hollow feeling in your chest",
+    "numbness": "Numbness",
+    "headache": "Headache",
+    "scrunched-face": "Scrunched-up face",
+    "turning-away": "Urge to turn away",
+    "shrinking": "Urge to shrink or hide",
+    "blushing": "Blushing",
+    "light-body": "Light, floaty body",
+    "warm-chest": "Warmth in your chest",
+    "relaxed-muscles": "Relaxed muscles",
+    "open-posture": "Open, upright posture",
+    "smiling": "Smiling",
+    "buzzing": "Buzzing energy",
+    "wide-eyes": "Wide eyes",
+    "raised-eyebrows": "Raised eyebrows",
+    "gasp": "Sharp intake of breath",
+    "foggy-head": "Foggy head"
+  }
 }

@@ -12,34 +12,27 @@ describe('url hash', () => {
     expect(toHash(layout, initialState)).toBe('');
   });
 
-  test('round-trip overview with selection', () => {
-    const s: State = { ...initialState, selected: idx('angry'), focused: idx('angry') };
-    expect(toHash(layout, s)).toBe('#/core/angry');
-    expect(fromHash(layout, '#/core/angry')).toEqual(s);
+  test('selected-only state has empty hash', () => {
+    expect(toHash(layout, { ...initialState, selected: idx('angry') })).toBe('');
+    expect(toHash(layout, { selected: idx('angry'), opened: false, view: { mode: 'ring', ring: 0 }, hinted: true })).toBe('');
   });
 
-  test('round-trip ring mode with selection', () => {
-    const s: State = { selected: idx('angry/aggressive/hostile'), focused: idx('angry/aggressive/hostile'), view: { mode: 'ring', ring: 2 }, interacted: true };
-    const hash = toHash(layout, s);
-    expect(hash).toBe('#/core/angry/aggressive/hostile?ring=2');
-    expect(fromHash(layout, hash)).toEqual(s);
+  test('opened round-trip', () => {
+    const s: State = { selected: idx('angry/aggressive/hostile'), opened: true, view: { mode: 'ring', ring: 2 }, hinted: false };
+    expect(toHash(layout, s)).toBe('#/core/angry/aggressive/hostile');
+    expect(fromHash(layout, '#/core/angry/aggressive/hostile')).toEqual(s);
+    expect(fromHash(layout, '#/core/angry')).toEqual({ selected: idx('angry'), opened: true, view: { mode: 'ring', ring: 0 }, hinted: false });
   });
 
-  test('ring mode without selection', () => {
-    const s: State = { ...initialState, view: { mode: 'ring', ring: 0 } };
-    expect(toHash(layout, s)).toBe('#/core?ring=0');
-    expect(fromHash(layout, '#/core?ring=0')).toEqual(s);
-  });
-
-  test('malformed or unknown hashes return null', () => {
-    for (const h of ['', '#', '#/core/angry/nope', '#/other/angry', '#%%%', 'garbage']) {
-      expect(fromHash(layout, h), h).toBeNull();
+  test('legacy ?ring= query is ignored', () => {
+    for (const h of ['#/core/angry?ring=2', '#/core/angry?ring=x', '#/core/angry?ring=0']) {
+      expect(fromHash(layout, h), h).toEqual({ selected: idx('angry'), opened: true, view: { mode: 'ring', ring: 0 }, hinted: false });
     }
   });
 
-  test('a valid path with an invalid ring gives overview', () => {
-    for (const h of ['#/core/angry?ring=x', '#/core/angry?ring=9', '#/core/angry?ring=-1']) {
-      expect(fromHash(layout, h), h).toEqual({ ...initialState, selected: idx('angry'), focused: idx('angry') });
+  test('malformed, unknown or path-less hashes return null', () => {
+    for (const h of ['', '#', '#/core', '#/core?ring=0', '#/core/angry/nope', '#/other/angry', '#%%%', 'garbage']) {
+      expect(fromHash(layout, h), h).toBeNull();
     }
   });
 });

@@ -1,178 +1,217 @@
 import { describe, expect, test, vi } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { buildLayout } from '../../src/model/layout';
-import { createStore, initialState, reduce, type Action, type State } from '../../src/state/store';
+import { centerChild, createStore, initialState, reduce, type Action, type State } from '../../src/state/store';
 
 const layout = buildLayout(loadData().wheel);
 const idx = (p: string): number => layout.byPath.get(p)!;
 const run = (s: State, ...actions: Action[]): State => actions.reduce((acc, a) => reduce(layout, acc, a), s);
-const ring = (r: number, extra: Partial<State> = {}): State => ({ ...initialState, view: { mode: 'ring', ring: r }, ...extra });
+const wheel = { mode: 'wheel' } as const;
+const ring = (r: number) => ({ mode: 'ring', ring: r }) as const;
+const selected = (p: string, extra: Partial<State> = {}): State => ({ ...initialState, selected: idx(p), hinted: false, ...extra });
+const opened = (p: string): State => ({ selected: idx(p), opened: true, view: ring(layout.segments[idx(p)]!.ring), hinted: false });
+const phoneStart = (p: string): State => ({ selected: idx(p), opened: false, view: ring(0), hinted: true });
 
-describe('selection in overview', () => {
-  test('select in overview sets selected and focused', () => {
-    const s = run(initialState, { type: 'select', segment: idx('angry') });
-    expect(s.selected).toBe(idx('angry'));
-    expect(s.focused).toBe(idx('angry'));
-    expect(s.view).toEqual({ mode: 'overview' });
+describe('initial state', () => {
+  test('nothing selected, whole wheel, hint showing', () => {
+    expect(initialState).toEqual({ selected: null, opened: false, view: wheel, hinted: true });
+  });
+});
+
+describe('select', () => {
+  test('select on the wheel selects without opening or moving the view', () => {
+    const s = run(initialState, { type: 'select', segment: idx('angry/aggressive') });
+    expect(s).toEqual({ selected: idx('angry/aggressive'), opened: false, view: wheel, hinted: false });
   });
 
-  test('select same again clears', () => {
-    const s = run(initialState, { type: 'select', segment: idx('angry') }, { type: 'select', segment: idx('angry') });
-    expect(s.selected).toBeNull();
-    expect(s.focused).toBe(idx('angry'));
+  test('select another word moves the selection', () => {
+    const s = run(selected('angry'), { type: 'select', segment: idx('sad') });
+    expect(s.selected).toBe(idx('sad'));
+    expect(s.opened).toBe(false);
   });
 
-  test('step in overview moves focus only, wrapping', () => {
-    const lastCore = layout.rings[0]!.segments[6]!;
-    const s = run({ ...initialState, focused: lastCore }, { type: 'step', delta: 1 });
-    expect(s.focused).toBe(layout.rings[0]!.segments[0]);
-    expect(s.selected).toBeNull();
+  test('select same word opens it', () => {
+    const s = run(selected('angry/aggressive'), { type: 'select', segment: idx('angry/aggressive') });
+    expect(s).toEqual(opened('angry/aggressive'));
   });
 
-  test('escape in overview clears', () => {
-    const s = run(initialState, { type: 'select', segment: idx('sad') }, { type: 'escape' });
-    expect(s.selected).toBeNull();
+  test('select while opened opens the new word in its ring', () => {
+    const s = run(opened('angry/aggressive'), { type: 'select', segment: idx('sad/hurt/embarrassed') });
+    expect(s).toEqual(opened('sad/hurt/embarrassed'));
   });
 
-  test('toChild / toParent move focus structurally', () => {
-    const s = run({ ...initialState, focused: idx('angry') }, { type: 'toChild' });
-    expect(s.focused).toBe(idx('angry/let-down'));
-    expect(run(s, { type: 'toParent' }).focused).toBe(idx('angry'));
+  test('select in phone-start ring view keeps it selected, not opened', () => {
+    const s = run(phoneStart('angry'), { type: 'select', segment: idx('sad') });
+    expect(s).toEqual({ selected: idx('sad'), opened: false, view: ring(0), hinted: false });
   });
 
-  test('toChild from a leaf is a no-op; toParent from a core is a no-op', () => {
-    const leaf = { ...initialState, focused: idx('angry/aggressive/hostile') };
-    expect(reduce(layout, leaf, { type: 'toChild' })).toBe(leaf);
-    const core = { ...initialState, focused: idx('angry') };
+  test('select a word outside the phone-start ring follows it to its ring, still not opened', () => {
+    const s = run(phoneStart('angry'), { type: 'select', segment: idx('angry/aggressive') });
+    expect(s).toEqual({ selected: idx('angry/aggressive'), opened: false, view: ring(1), hinted: false });
+  });
+});
+
+describe('open / close / clear / escape', () => {
+  test('open from nothing opens in the word ring', () => {
+    expect(run(initialState, { type: 'open', segment: idx('angry/aggressive/hostile') })).toEqual(opened('angry/aggressive/hostile'));
+  });
+
+  test('close keeps the selection and returns to wheel', () => {
+    const s = run(opened('angry/aggressive'), { type: 'close' });
+    expect(s).toEqual({ selected: idx('angry/aggressive'), opened: false, view: wheel, hinted: false });
+  });
+
+  test('close when only selected is a no-op (same object)', () => {
+    const s = selected('angry');
+    expect(reduce(layout, s, { type: 'close' })).toBe(s);
+  });
+
+  test('clear drops the selection and returns to wheel', () => {
+    expect(run(opened('angry'), { type: 'clear' })).toEqual({ ...initialState, hinted: false });
+    expect(run(selected('angry'), { type: 'clear' })).toEqual({ ...initialState, hinted: false });
+  });
+
+  test('escape closes then clears', () => {
+    const closed = run(opened('angry/aggressive'), { type: 'escape' });
+    expect(closed).toEqual(selected('angry/aggressive'));
+    expect(run(closed, { type: 'escape' })).toEqual({ ...initialState, hinted: false });
+  });
+});
+
+describe('step', () => {
+  test('step with nothing selected selects the first core', () => {
+    const s = run(initialState, { type: 'step', delta: 1 });
+    expect(s.selected).toBe(layout.rings[0]!.segments[0]);
+    expect(s.opened).toBe(false);
+  });
+
+  test('step while selected selects the ring neighbour, wrapping', () => {
+    const last = layout.rings[0]!.segments[6]!;
+    const s = run({ ...initialState, selected: last, hinted: false }, { type: 'step', delta: 1 });
+    expect(s).toEqual(selected('fearful'));
+    expect(run(selected('angry'), { type: 'step', delta: 1 }).selected).toBe(idx('disgusted'));
+  });
+
+  test('step while opened opens the ring neighbour', () => {
+    expect(run(opened('angry'), { type: 'step', delta: -1 })).toEqual(opened('fearful'));
+  });
+});
+
+describe('toChild / toParent', () => {
+  test('toChild while selected selects the first child', () => {
+    expect(run(selected('angry'), { type: 'toChild' })).toEqual(selected('angry/let-down'));
+  });
+
+  test('toChild while opened opens the centre child', () => {
+    expect(run(opened('angry/aggressive'), { type: 'toChild' })).toEqual(opened('angry/aggressive/hostile'));
+  });
+
+  test('toChild on an opened leaf is a no-op (same object)', () => {
+    const s = opened('angry/aggressive/hostile');
+    expect(reduce(layout, s, { type: 'toChild' })).toBe(s);
+  });
+
+  test('toChild on a selected leaf is a no-op (same object)', () => {
+    const s = selected('angry/aggressive/hostile');
+    expect(reduce(layout, s, { type: 'toChild' })).toBe(s);
+  });
+
+  test('toParent while selected selects the parent; at the core it is a no-op', () => {
+    expect(run(selected('angry/aggressive'), { type: 'toParent' })).toEqual(selected('angry'));
+    const core = selected('angry');
     expect(reduce(layout, core, { type: 'toParent' })).toBe(core);
   });
-});
 
-describe('ring mode (picker)', () => {
-  test('select in ring mode sets interacted and moves view.ring to the segment ring', () => {
-    const s = run(ring(1), { type: 'select', segment: idx('angry/aggressive/hostile') });
-    expect(s.view).toEqual({ mode: 'ring', ring: 2 });
-    expect(s.interacted).toBe(true);
-    expect(s.selected).toBe(idx('angry/aggressive/hostile'));
+  test('toParent while opened opens the parent', () => {
+    expect(run(opened('angry/aggressive/hostile'), { type: 'toParent' })).toEqual(opened('angry/aggressive'));
   });
 
-  test('settled before interaction only moves focus', () => {
-    const s = run(ring(0), { type: 'settled', segment: idx('sad') });
-    expect(s.focused).toBe(idx('sad'));
-    expect(s.selected).toBeNull();
+  test('toParent on an opened core closes', () => {
+    expect(run(opened('angry'), { type: 'toParent' })).toEqual(selected('angry'));
   });
 
-  test('settled after interaction selects', () => {
-    const s = run(ring(0), { type: 'interact' }, { type: 'settled', segment: idx('sad') });
-    expect(s.selected).toBe(idx('sad'));
-    expect(s.focused).toBe(idx('sad'));
-  });
-
-  test('clear in ring mode resets interacted but keeps view and focus', () => {
-    const s = run(ring(0), { type: 'select', segment: idx('sad') }, { type: 'clear' });
-    expect(s.selected).toBeNull();
-    expect(s.interacted).toBe(false);
-    expect(s.focused).toBe(idx('sad'));
-    expect(s.view).toEqual({ mode: 'ring', ring: 0 });
-  });
-
-  test('select same in ring mode clears like clear', () => {
-    const s = run(ring(0), { type: 'select', segment: idx('sad') }, { type: 'select', segment: idx('sad') });
-    expect(s.selected).toBeNull();
-    expect(s.interacted).toBe(false);
-  });
-
-  test('step in ring mode selects the neighbor', () => {
-    const s = run(ring(0, { focused: idx('angry') }), { type: 'step', delta: 1 });
-    expect(s.selected).toBe(idx('disgusted'));
-    expect(s.focused).toBe(idx('disgusted'));
-    expect(s.interacted).toBe(true);
-  });
-
-  test('toChild in ring mode moves view.ring + 1 and selects the child', () => {
-    const s = run(ring(0, { focused: idx('angry') }), { type: 'toChild' });
-    expect(s.view).toEqual({ mode: 'ring', ring: 1 });
-    expect(s.selected).toBe(idx('angry/let-down'));
-  });
-
-  test('setRing with a center after interaction selects it in the same transition', () => {
-    const start = ring(1, { selected: idx('angry/aggressive'), focused: idx('angry/aggressive'), interacted: true });
-    const s = run(start, { type: 'setRing', ring: 2, segment: idx('angry/aggressive/hostile') });
-    expect(s).toEqual({ selected: idx('angry/aggressive/hostile'), focused: idx('angry/aggressive/hostile'), view: { mode: 'ring', ring: 2 }, interacted: true });
-  });
-
-  test('setRing with a center before interaction only focuses it', () => {
-    const s = run(ring(0), { type: 'setRing', ring: 1, segment: idx('sad/lonely') });
-    expect(s.selected).toBeNull();
-    expect(s.focused).toBe(idx('sad/lonely'));
-  });
-
-  test('setRing from overview enters ring mode; it selects the center only if something was selected', () => {
-    const empty = run(initialState, { type: 'setRing', ring: 2, segment: idx('sad/lonely/isolated') });
-    expect(empty).toEqual({ selected: null, focused: idx('sad/lonely/isolated'), view: { mode: 'ring', ring: 2 }, interacted: false });
-    const withSel = run({ ...initialState, selected: idx('sad'), focused: idx('sad') }, { type: 'setRing', ring: 2, segment: idx('sad/lonely/isolated') });
-    expect(withSel.selected).toBe(idx('sad/lonely/isolated'));
-    expect(withSel.interacted).toBe(true);
-  });
-
-  test('setRing changes the focused ring and ignores invalid rings', () => {
-    expect(run(ring(2), { type: 'setRing', ring: 1 }).view).toEqual({ mode: 'ring', ring: 1 });
-    const r = ring(2);
-    expect(reduce(layout, r, { type: 'setRing', ring: 3 })).toBe(r);
-    expect(reduce(layout, initialState, { type: 'setRing', ring: 7 })).toBe(initialState);
-  });
-
-  test('escape in ring → overview with selection kept', () => {
-    const s = run(ring(0), { type: 'select', segment: idx('sad') }, { type: 'escape' });
-    expect(s.view).toEqual({ mode: 'overview' });
-    expect(s.selected).toBe(idx('sad'));
+  test('centerChild(angry/aggressive) is hostile', () => {
+    expect(centerChild(layout, idx('angry/aggressive'))).toBe(idx('angry/aggressive/hostile'));
+    expect(centerChild(layout, idx('angry/aggressive/hostile'))).toBeNull();
   });
 });
 
-describe('zoom', () => {
-  test('zoomIn with segment selects it and uses its ring', () => {
-    const s = run(initialState, { type: 'zoomIn', segment: idx('angry/aggressive') });
-    expect(s.view).toEqual({ mode: 'ring', ring: 1 });
-    expect(s.selected).toBe(idx('angry/aggressive'));
-    expect(s.interacted).toBe(true);
+describe('activate', () => {
+  test('activate with nothing selected selects the first core', () => {
+    expect(run(initialState, { type: 'activate' }).selected).toBe(layout.rings[0]!.segments[0]);
   });
 
-  test('zoomIn without one uses the selected ring, else 0', () => {
-    expect(run(initialState, { type: 'zoomIn' }).view).toEqual({ mode: 'ring', ring: 0 });
-    const s = run(initialState, { type: 'select', segment: idx('angry/aggressive/hostile') }, { type: 'zoomIn' });
-    expect(s.view).toEqual({ mode: 'ring', ring: 2 });
-    expect(s.interacted).toBe(true);
+  test('activate while selected opens', () => {
+    expect(run(selected('sad'), { type: 'activate' })).toEqual(opened('sad'));
   });
 
-  test('zoomOut returns to overview', () => {
-    expect(run(ring(1), { type: 'zoomOut' }).view).toEqual({ mode: 'overview' });
+  test('activate while opened is a no-op (same object)', () => {
+    const s = opened('sad');
+    expect(reduce(layout, s, { type: 'activate' })).toBe(s);
+  });
+});
+
+describe('settled', () => {
+  test('settled while opened opens the word in the opened ring', () => {
+    expect(run(opened('angry/aggressive'), { type: 'settled', segment: idx('angry/mad') })).toEqual(opened('angry/mad'));
+  });
+
+  test('settled while opened ignores a word from another ring', () => {
+    const s = opened('angry/aggressive');
+    expect(reduce(layout, s, { type: 'settled', segment: idx('sad') })).toBe(s);
+  });
+
+  test('settled in phone-start ring view selects without opening', () => {
+    const s = run(phoneStart('angry'), { type: 'settled', segment: idx('sad') });
+    expect(s).toEqual({ ...phoneStart('sad') });
+  });
+
+  test('settled on the wheel is a no-op', () => {
+    const s = selected('angry');
+    expect(reduce(layout, s, { type: 'settled', segment: idx('sad') })).toBe(s);
+    expect(reduce(layout, initialState, { type: 'settled', segment: idx('sad') })).toBe(initialState);
+  });
+});
+
+describe('hint and restore', () => {
+  test('every user action clears hinted; restore and settled keep it', () => {
+    const user: Action[] = [
+      { type: 'select', segment: idx('sad') }, { type: 'open', segment: idx('sad') }, { type: 'close' }, { type: 'clear' },
+      { type: 'step', delta: 1 }, { type: 'toChild' }, { type: 'toParent' }, { type: 'activate' }, { type: 'escape' },
+      { type: 'dismissHint' },
+    ];
+    for (const a of user) expect(run(phoneStart('angry'), a).hinted, a.type).toBe(false);
+    expect(run(phoneStart('angry'), { type: 'settled', segment: idx('sad') }).hinted).toBe(true);
+    const target = phoneStart('happy');
+    expect(run(initialState, { type: 'restore', state: target })).toBe(target);
+  });
+
+  test('dismissHint twice is a no-op the second time', () => {
+    const s = run(initialState, { type: 'dismissHint' });
+    expect(reduce(layout, s, { type: 'dismissHint' })).toBe(s);
+  });
+
+  test('restore of an equal state keeps identity', () => {
+    const s = opened('angry');
+    expect(reduce(layout, s, { type: 'restore', state: { ...s, view: { ...s.view } } })).toBe(s);
   });
 });
 
 describe('store', () => {
-  test('reduce returns the same object for no-op actions', () => {
-    expect(reduce(layout, initialState, { type: 'clear' })).toBe(initialState);
-    expect(reduce(layout, initialState, { type: 'zoomOut' })).toBe(initialState);
-    expect(reduce(layout, initialState, { type: 'interact' })).toBe(initialState);
-  });
-
-  test('restore replaces state', () => {
-    const target = ring(2, { selected: idx('sad/lonely/isolated') });
-    expect(reduce(layout, initialState, { type: 'restore', state: target })).toEqual(target);
-  });
-
-  test('subscribe fires with (state, prev) only on change', () => {
+  test('subscribe receives the action as third argument', () => {
     const store = createStore(layout);
     const fn = vi.fn();
-    const off = store.subscribe(fn);
-    store.dispatch({ type: 'clear' });
+    store.subscribe(fn);
+    const a: Action = { type: 'select', segment: idx('sad') };
+    store.dispatch(a);
+    expect(fn).toHaveBeenCalledWith(store.get(), initialState, a);
+  });
+
+  test('no-op dispatches do not notify', () => {
+    const store = createStore(layout, selected('angry'));
+    const fn = vi.fn();
+    store.subscribe(fn);
+    store.dispatch({ type: 'close' });
     expect(fn).not.toHaveBeenCalled();
-    store.dispatch({ type: 'select', segment: idx('sad') });
-    expect(fn).toHaveBeenCalledTimes(1);
-    expect(fn.mock.calls[0]![0].selected).toBe(idx('sad'));
-    expect(fn.mock.calls[0]![1]).toBe(initialState);
-    off();
-    store.dispatch({ type: 'clear' });
-    expect(fn).toHaveBeenCalledTimes(1);
   });
 });

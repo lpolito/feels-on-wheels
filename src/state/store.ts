@@ -1,103 +1,119 @@
 import { ringNeighbor, type Layout } from '../model/layout';
 
-export type View = { mode: 'overview' } | { mode: 'ring'; ring: number };
+export type View = { mode: 'wheel' } | { mode: 'ring'; ring: number };
 
+/** Spec §3.1. `opened` implies `selected !== null` and `view` is the selection's ring. */
 export interface State {
   selected: number | null;
-  focused: number | null;
+  opened: boolean;
   view: View;
-  /** In ring mode: the user has spun or tapped, so the centered segment is the selection. */
-  interacted: boolean;
+  /** The floating hint is still showing. */
+  hinted: boolean;
 }
 
 export type Action =
+  /** Tap: opens instead when already opened, or when `segment` is the selection. */
   | { type: 'select'; segment: number }
+  | { type: 'open'; segment: number }
+  | { type: 'close' }
   | { type: 'clear' }
-  | { type: 'focus'; segment: number }
   | { type: 'step'; delta: 1 | -1 }
   | { type: 'toChild' }
   | { type: 'toParent' }
-  /** Change the focused ring; `segment` is the word that lands at 3 o'clock there. */
-  | { type: 'setRing'; ring: number; segment?: number }
-  | { type: 'settled'; segment: number }
-  | { type: 'interact' }
-  | { type: 'zoomIn'; segment?: number }
-  | { type: 'zoomOut' }
+  /** Enter / Space / '+'. */
+  | { type: 'activate' }
   | { type: 'escape' }
+  /** The camera came to rest in a ring view with `segment` at 3 o'clock. */
+  | { type: 'settled'; segment: number }
+  | { type: 'dismissHint' }
   | { type: 'restore'; state: State };
+
+const WHEEL: View = Object.freeze({ mode: 'wheel' }) as View;
 
 export const initialState: State = Object.freeze({
   selected: null,
-  focused: null,
-  view: Object.freeze({ mode: 'overview' }) as View,
-  interacted: false,
+  opened: false,
+  view: WHEEL,
+  hinted: true,
 }) as State;
 
 const ringView = (ring: number): View => ({ mode: 'ring', ring });
 
 function sameView(a: View, b: View): boolean {
-  return a.mode === b.mode && (a.mode === 'overview' || a.ring === (b as { ring: number }).ring);
+  return a.mode === b.mode && (a.mode === 'wheel' || a.ring === (b as { ring: number }).ring);
 }
 
 function sameState(a: State, b: State): boolean {
-  return a.selected === b.selected && a.focused === b.focused && a.interacted === b.interacted && sameView(a.view, b.view);
+  return a.selected === b.selected && a.opened === b.opened && a.hinted === b.hinted && sameView(a.view, b.view);
 }
 
-/** Move keyboard/picker focus to `to`; in ring mode that also selects it. */
-function moveTo(layout: Layout, s: State, to: number): State {
-  if (s.view.mode === 'overview') return { ...s, focused: to };
-  return { ...s, focused: to, selected: to, interacted: true, view: ringView(layout.segments[to]!.ring) };
+/** The child whose [start, end) contains the parent's mid: the one at 3 o'clock once the parent is centred. */
+export function centerChild(layout: Layout, i: number): number | null {
+  const seg = layout.segments[i]!;
+  for (const c of seg.children) {
+    const child = layout.segments[c]!;
+    if (child.start <= seg.mid && seg.mid < child.end) return c;
+  }
+  return seg.children.length > 0 ? seg.children[seg.children.length - 1]! : null;
 }
+
+function open(layout: Layout, s: State, i: number): State {
+  return { ...s, selected: i, opened: true, view: ringView(layout.segments[i]!.ring) };
+}
+
+/** Select without opening. In a (phone-start) ring view the view follows the word to its ring, so it stays centred. */
+function selectOnly(layout: Layout, s: State, i: number): State {
+  const view = s.view.mode === 'ring' ? ringView(layout.segments[i]!.ring) : s.view;
+  return { ...s, selected: i, opened: false, view };
+}
+
+const firstCore = (layout: Layout): number => layout.rings[0]!.segments[0]!;
 
 function next(layout: Layout, s: State, a: Action): State {
   const seg = (i: number) => layout.segments[i]!;
-  const cursor = s.focused ?? s.selected;
+  const sel = s.selected;
   switch (a.type) {
-    case 'select': {
-      if (s.selected === a.segment) return { ...s, selected: null, interacted: false };
-      if (s.view.mode === 'overview') return { ...s, selected: a.segment, focused: a.segment };
-      return { ...s, selected: a.segment, focused: a.segment, interacted: true, view: ringView(seg(a.segment).ring) };
-    }
+    case 'select':
+      if (s.opened || a.segment === sel) return open(layout, s, a.segment);
+      return selectOnly(layout, s, a.segment);
+    case 'open':
+      return open(layout, s, a.segment);
+    case 'close':
+      return s.opened ? { ...s, opened: false, view: WHEEL } : s;
     case 'clear':
-      return { ...s, selected: null, interacted: false };
-    case 'focus':
-      return { ...s, focused: a.segment };
+      return { ...s, selected: null, opened: false, view: WHEEL };
     case 'step': {
-      const ring = s.view.mode === 'ring' ? s.view.ring : 0;
-      const from = cursor ?? layout.rings[ring]!.segments[0]!;
-      return moveTo(layout, s, ringNeighbor(layout, from, a.delta));
+      if (sel === null) return selectOnly(layout, s, firstCore(layout));
+      const to = ringNeighbor(layout, sel, a.delta);
+      return s.opened ? open(layout, s, to) : selectOnly(layout, s, to);
     }
     case 'toChild': {
-      const child = cursor === null ? undefined : seg(cursor).children[0];
-      return child === undefined ? s : moveTo(layout, s, child);
+      if (sel === null) return s;
+      if (s.opened) {
+        const c = centerChild(layout, sel);
+        return c === null ? s : open(layout, s, c);
+      }
+      const c = seg(sel).children[0];
+      return c === undefined ? s : selectOnly(layout, s, c);
     }
     case 'toParent': {
-      const parent = cursor === null ? -1 : seg(cursor).parent;
-      return parent < 0 ? s : moveTo(layout, s, parent);
+      if (sel === null) return s;
+      const p = seg(sel).parent;
+      if (s.opened) return p < 0 ? next(layout, s, { type: 'close' }) : open(layout, s, p);
+      return p < 0 ? s : selectOnly(layout, s, p);
     }
-    case 'setRing': {
-      if (a.ring < 0 || a.ring >= layout.rings.length) return s;
-      if (a.segment === undefined) return s.view.mode === 'ring' ? { ...s, view: ringView(a.ring) } : s;
-      // One transition, so no intermediate state (or history entry) has a selection outside the ring.
-      const interacted = s.view.mode === 'ring' ? s.interacted : s.selected !== null;
-      return { ...s, view: ringView(a.ring), focused: a.segment, interacted, selected: interacted ? a.segment : s.selected };
-    }
-    case 'settled':
-      if (s.view.mode !== 'ring') return s;
-      return s.interacted ? { ...s, focused: a.segment, selected: a.segment } : { ...s, focused: a.segment };
-    case 'interact':
-      return s.view.mode === 'ring' ? { ...s, interacted: true } : s;
-    case 'zoomIn': {
-      if (a.segment !== undefined) {
-        return { ...s, selected: a.segment, focused: a.segment, interacted: true, view: ringView(seg(a.segment).ring) };
-      }
-      const ring = s.selected === null ? 0 : seg(s.selected).ring;
-      return { ...s, view: ringView(ring), interacted: s.selected !== null };
-    }
-    case 'zoomOut':
-      return { ...s, view: initialState.view };
+    case 'activate':
+      if (sel === null) return selectOnly(layout, s, firstCore(layout));
+      return s.opened ? s : open(layout, s, sel);
     case 'escape':
-      return s.view.mode === 'ring' ? next(layout, s, { type: 'zoomOut' }) : next(layout, s, { type: 'clear' });
+      if (s.opened) return next(layout, s, { type: 'close' });
+      return sel === null ? s : next(layout, s, { type: 'clear' });
+    case 'settled': {
+      if (s.view.mode !== 'ring' || seg(a.segment).ring !== s.view.ring || sel === null) return s;
+      return s.opened ? open(layout, s, a.segment) : { ...s, selected: a.segment };
+    }
+    case 'dismissHint':
+      return s;
     case 'restore':
       return a.state;
   }
@@ -105,25 +121,26 @@ function next(layout: Layout, s: State, a: Action): State {
 
 /** Pure transition. Returns `s` itself when nothing changed. */
 export function reduce(layout: Layout, s: State, a: Action): State {
-  const n = next(layout, s, a);
+  let n = next(layout, s, a);
+  if (a.type !== 'restore' && a.type !== 'settled' && n.hinted) n = { ...n, hinted: false };
   return n === s || sameState(n, s) ? s : n;
 }
 
 export interface Store {
   get(): State;
   dispatch(a: Action): void;
-  subscribe(fn: (s: State, prev: State) => void): () => void;
+  subscribe(fn: (s: State, prev: State, a: Action) => void): () => void;
 }
 
 export function createStore(layout: Layout, initial: State = initialState): Store {
   let state = initial;
-  const subs = new Set<(s: State, prev: State) => void>();
+  const subs = new Set<(s: State, prev: State, a: Action) => void>();
   return {
     get: () => state,
     dispatch(a) {
       const prev = state;
       state = reduce(layout, state, a);
-      if (state !== prev) for (const fn of subs) fn(state, prev);
+      if (state !== prev) for (const fn of subs) fn(state, prev, a);
     },
     subscribe(fn) {
       subs.add(fn);

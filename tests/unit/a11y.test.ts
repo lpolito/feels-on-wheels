@@ -64,9 +64,35 @@ describe('a11y tree', () => {
     expect(dispatch.mock.calls).toEqual([[{ type: 'activate' }], [{ type: 'activate' }]]);
   });
 
-  test('tabbing into the tree does not change the selection', () => {
-    createA11yTree(root, layout, dispatch).update(initialState);
+  test('tabbing into the tree keeps an existing selection', () => {
+    createA11yTree(root, layout, dispatch).update(sel('sad'));
     item(idx('sad')).focus();
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  test('tabbing into the tree with nothing selected selects the first core word, so focus is visible', () => {
+    document.body.insertAdjacentHTML('afterbegin', '<button id="before">x</button>');
+    createA11yTree(root, layout, dispatch).update(initialState);
+    document.getElementById('before')!.focus();
+    item(layout.rings[0]!.segments[0]!).focus();
+    expect(dispatch.mock.calls).toEqual([[{ type: 'select', segment: layout.rings[0]!.segments[0]! }]]);
+  });
+
+  test('focusSelected with nothing selected does not select anything', () => {
+    const tree = createA11yTree(root, layout, dispatch);
+    tree.update(initialState);
+    tree.focusSelected();
+    expect(document.activeElement).toBe(item(layout.rings[0]!.segments[0]!));
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  test('modified keys (browser zoom, Back) are left to the browser', () => {
+    createA11yTree(root, layout, dispatch).update(sel('angry'));
+    for (const init of [{ key: '=', ctrlKey: true }, { key: '-', metaKey: true }, { key: 'ArrowLeft', altKey: true }, { key: 'ArrowLeft', metaKey: true }]) {
+      const ev = new KeyboardEvent('keydown', { ...init, bubbles: true, cancelable: true });
+      item(idx('angry')).dispatchEvent(ev);
+      expect(ev.defaultPrevented, JSON.stringify(init)).toBe(false);
+    }
     expect(dispatch).not.toHaveBeenCalled();
   });
 

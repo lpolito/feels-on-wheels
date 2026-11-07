@@ -145,6 +145,76 @@ describe('taps', () => {
     expect(offCenter(hostile)).toBeLessThan(1e-9);
   });
 
+  test('double-tap on the selected word opens it even though the first tap starts the zoom', () => {
+    const sad = idx('sad');
+    store.dispatch({ type: 'select', segment: sad });
+    const p = screenOf(sad);
+    ctl.handle([{ type: 'tap', ...p }]);
+    step(150);
+    ctl.handle([{ type: 'doubleTap', ...p }]);
+    step(1000);
+    expect(store.get()).toEqual(opened('sad'));
+  });
+
+  test('double-tap on a neighbour in phone-start view opens that neighbour, not what the camera moved under the finger', () => {
+    setup(phoneStart('angry'));
+    step(1000);
+    const target = idx('disgusted');
+    const p = screenOf(target);
+    expect(hitTest(layout, camera.current, desk, p.x, p.y)).toBe(target);
+    ctl.handle([{ type: 'tap', ...p }]);
+    step(150);
+    ctl.handle([{ type: 'doubleTap', ...p }]);
+    step(1000);
+    expect(store.get()).toEqual(opened('disgusted'));
+  });
+
+  test('double-tap on another word while opened opens that word', () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    const other = visibleIn(2, idx('angry/aggressive/hostile'));
+    const p = screenOf(other);
+    ctl.handle([{ type: 'tap', ...p }]);
+    step(200);
+    ctl.handle([{ type: 'doubleTap', ...p }]);
+    step(1000);
+    expect(store.get()).toEqual(opened(layout.segments[other]!.path));
+  });
+
+  test('double-tap outside while opened closes and opens nothing, even as the wheel zooms out under the finger', () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    const p = missPoint();
+    ctl.handle([{ type: 'tap', ...p }]);
+    step(200);
+    ctl.handle([{ type: 'doubleTap', ...p }]);
+    step(1000);
+    expect(store.get()).toMatchObject({ selected: idx('angry/aggressive/hostile'), opened: false, view: { mode: 'wheel' } });
+  });
+
+  test('tapping the hole to stop a spin keeps the opened word', () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    ctl.handle([{ type: 'dragStart', x: 500, y: 450, axis: 'y' }, { type: 'dragEnd', vx: 0, vy: 2500 }]);
+    step(60);
+    expect(camera.moving).toBe(true);
+    ctl.handle([{ type: 'tap', ...missPoint() }]);
+    expect(store.get().opened).toBe(true);
+    step(1000);
+    expect(store.get().opened).toBe(true);
+    expect(offCenter(store.get().selected!)).toBeLessThan(1e-9);
+  });
+
+  test('tapping outside to stop a whole-wheel spin keeps the selection', () => {
+    store.dispatch({ type: 'select', segment: idx('sad') });
+    const top = { x: desk.width / 2, y: desk.height / 2 - 300 };
+    ctl.handle([{ type: 'dragStart', ...top, axis: 'x' }, { type: 'dragEnd', vx: 800, vy: 0 }]);
+    step(30);
+    expect(camera.moving).toBe(true);
+    ctl.handle([{ type: 'tap', x: 2, y: 2 }]);
+    expect(store.get().selected).toBe(idx('sad'));
+  });
+
   test('double-tap outside while opened closes', () => {
     setup(opened('angry'));
     step(1000);

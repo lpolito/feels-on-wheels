@@ -38,8 +38,12 @@ export function createController(
    */
   let zoom: { startScale: number; base: Camera; ax: number; ay: number; x: number; y: number } | null = null;
   let wheelZoomTimer: ReturnType<typeof setTimeout> | null = null;
-  /** State before the most recent tap, so a double-tap acts from it. */
+  /**
+   * State before the most recent tap and the word that tap hit, so a double-tap acts from them: the first tap may
+   * already have started moving the camera, so re-hit-testing at the second would find a different word.
+   */
   let beforeLastTap: State | null = null;
+  let lastTapHit: number | null = null;
   /** Whole-wheel rotation before the last open; closing returns to it. Null once the user rotates the wheel. */
   let savedRotation: number | null = null;
   /** A user spin is in flight in a ring view: its settle picks the word at 3 o'clock. */
@@ -160,10 +164,11 @@ export function createController(
         if (ring === null && wasMoving) savedRotation = null;
         beforeLastTap = s;
         const hit = hitTest(layout, cam, vp, i.x, i.y);
-        if (hit === null) {
+        lastTapHit = hit;
+        if (wasMoving && (hit === null || (!s.opened && hit === s.selected))) {
+          // Tapping a moving wheel means "stop here": never clear, close or open (spec §3.3).
+        } else if (hit === null) {
           store.dispatch(s.opened ? { type: 'close' } : { type: 'clear' });
-        } else if (wasMoving && !s.opened && hit === s.selected) {
-          // Tapping a moving wheel means "stop here and pick this", never "open".
         } else {
           store.dispatch(s.opened ? { type: 'open', segment: hit } : { type: 'select', segment: hit });
         }
@@ -171,10 +176,10 @@ export function createController(
         return;
       }
       case 'doubleTap': {
-        camera.stop();
         const before = beforeLastTap ?? s;
+        const hit = beforeLastTap ? lastTapHit : hitTest(layout, cam, vp, i.x, i.y);
         beforeLastTap = null;
-        const hit = hitTest(layout, cam, vp, i.x, i.y);
+        lastTapHit = null;
         if (hit !== null) store.dispatch({ type: 'open', segment: hit });
         else if (before.opened) store.dispatch({ type: 'close' });
         if (!camera.moving) goToRest();

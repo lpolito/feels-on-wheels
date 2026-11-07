@@ -114,7 +114,8 @@ export function createWheelRenderer(
 
   function drawLabel(lines: string[], px: number, bold: boolean, x: number, y: number, angle: number, scale: number, color: string): void {
     const rot = labelRotation(angle);
-    if (sprites && !bold) {
+    // Forced colours draw live: system colours must resolve on the page canvas, and stay current on theme change.
+    if (sprites && !bold && !palette?.forced) {
       // Each line's centre, offset along the label's rotated vertical axis.
       const lineGap = px * LINE_HEIGHT;
       const top = -((lines.length - 1) * lineGap) / 2;

@@ -29,3 +29,13 @@ test('manifest is linked and valid', async ({ page, request }) => {
     expect((await request.get(new URL(icon.src, new URL(href!, page.url())).toString())).ok(), icon.src).toBe(true);
   }
 });
+
+test('the service worker registers even when the app waited for a late stylesheet', async ({ page }) => {
+  await page.route('**/*.css', async (route) => {
+    await new Promise((r) => setTimeout(r, 600));
+    await route.continue();
+  });
+  await page.goto('/');
+  await page.waitForFunction(() => window.__fw !== undefined);
+  await page.waitForFunction(async () => (await navigator.serviceWorker.getRegistration()) !== undefined, null, { timeout: 5000 });
+});

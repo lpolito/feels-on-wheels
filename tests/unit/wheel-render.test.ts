@@ -212,4 +212,17 @@ describe('wheel renderer', () => {
     expect(sprited).toContain(label('provoked'));
     expect(sprited).not.toContain(label('hostile'));
   });
+
+  test('forced colours draw labels with fillText, never from sprite bitmaps', () => {
+    const forced: Palette = { ...palette, bg: 'Canvas', fg: 'CanvasText', gap: 'CanvasText', focus: 'Highlight', outline: 'Highlight', forced: true };
+    const sprited: string[] = [];
+    const sprites = { size: 0, setScale: () => {}, draw: (_g: unknown, text: string) => { sprited.push(text); } };
+    const { canvas, ctx, rec } = fakeCanvas();
+    const r = createWheelRenderer(canvas, layout, ctx, sprites);
+    r.setColors(buildFillTable(forced, 3, 'light'), forced);
+    r.resize(1000, 1000, 1);
+    r.draw(frame(desk));
+    expect(sprited).toEqual([]);
+    expect(rec.texts.length).toBeGreaterThan(100);
+  });
 });

@@ -45,6 +45,7 @@ export function createA11yTree(root: HTMLElement, layout: Layout, dispatch: (a: 
   let tabbable = -1;
   let selected: number | null = null;
   let current: number | null = null;
+  let focusingProgrammatically = false;
 
   root.setAttribute('role', 'tree');
   root.setAttribute('aria-label', t('wheelLabel'));
@@ -81,12 +82,22 @@ export function createA11yTree(root: HTMLElement, layout: Layout, dispatch: (a: 
   root.append(top);
 
   root.addEventListener('keydown', (e) => {
+    // Browser zoom (Ctrl/Cmd +/−) and Back (Alt/Cmd+Left) stay with the browser.
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
     const action = keyToAction(e.key);
     if (action) {
       e.preventDefault();
       e.stopPropagation();
       dispatch(action);
     }
+  });
+
+  // Spec §3.1: keyboard focus is the selection. Tabbing in with nothing selected selects the first core word,
+  // so the outline shows where focus is (WCAG 2.4.7). Our own focusSelected() never selects.
+  root.addEventListener('focusin', (e) => {
+    const from = e.relatedTarget as Node | null;
+    if (focusingProgrammatically || selected !== null || (from && root.contains(from))) return;
+    dispatch({ type: 'select', segment: layout.rings[0]!.segments[0]! });
   });
 
   return {
@@ -118,7 +129,13 @@ export function createA11yTree(root: HTMLElement, layout: Layout, dispatch: (a: 
     },
     focusSelected() {
       const el = els[tabbable >= 0 ? tabbable : layout.rings[0]!.segments[0]!]!;
-      if (document.activeElement !== el) el.focus({ preventScroll: true });
+      if (document.activeElement === el) return;
+      focusingProgrammatically = true;
+      try {
+        el.focus({ preventScroll: true });
+      } finally {
+        focusingProgrammatically = false;
+      }
     },
   };
 }

@@ -17,7 +17,8 @@
     "themeDark": "Dark",
     "wheelLabel": "Feelings wheel",
     "inPath": "{label}. In {path}.",
-    "path": "Path"
+    "path": "Path",
+    "labelOnly": "{label}."
   },
   "feelings": {
     "scared": {

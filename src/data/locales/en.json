@@ -18,7 +18,13 @@
     "wheelLabel": "Feelings wheel",
     "inPath": "{label}. In {path}.",
     "path": "Path",
-    "labelOnly": "{label}."
+    "labelOnly": "{label}.",
+    "hintSpin": "Spin to explore.",
+    "hintChoose": "How are you feeling? Tap a feeling.",
+    "wholeWheel": "Whole wheel",
+    "opened": "{label}, opened. In {path}.",
+    "openedCore": "{label}, opened.",
+    "closed": "{label}, closed."
   },
   "feelings": {
     "scared": {

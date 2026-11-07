@@ -241,6 +241,15 @@ if (startZoomed && !seenIntro && !reducedMotion.matches) {
 }
 requestDraw();
 
+// ── Offline support (spec §6.5) ─────────────────────────────────────────
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {
+      // Offline support is an enhancement; the app works without it.
+    });
+  });
+}
+
 // ── Test hook (build:test only) ──────────────────────────────────────────
 if (import.meta.env.MODE === 'test') {
   const pointOf = (path: string) => {

@@ -20,7 +20,7 @@ export async function tapPath(page: Page, path: string): Promise<void> {
 
 export const state = (page: Page) => page.evaluate(() => window.__fw.state());
 export const selectedPath = (page: Page) => page.evaluate(() => window.__fw.pathOf(window.__fw.state().selected));
-export const head = (page: Page) => page.locator('fw-card .fw-card-head');
+export const head = (page: Page) => page.locator('fw-card .fw-card-toggle');
 export const title = (page: Page) => page.locator('fw-card .fw-card-title');
 export const hint = (page: Page) => page.locator('fw-hint');
 

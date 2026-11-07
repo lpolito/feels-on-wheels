@@ -103,8 +103,14 @@ fw-card {
   border-radius: 1rem;
 }
 
+/* ── Card header (spec v1.2 §5.1): crumbs above the name, one dot, the toggle ── */
+fw-card {
+  /* The toggle's left padding, the dot and the gap: crumbs line up with the name, not the dot. */
+  --name-inset: calc(1.1rem + 0.75rem + 0.6rem);
+  --unfold: 220ms ease-out;
+}
 .fw-card-heading { font-size: 1.35rem; line-height: 1.2; }
-.fw-card-head {
+.fw-card-toggle {
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -128,10 +134,9 @@ fw-card {
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
-  transition: rotate 150ms ease-out;
+  transition: rotate var(--unfold);
 }
 fw-card[data-open] .fw-card-chevron { rotate: 90deg; }
-@media (prefers-reduced-motion: reduce) { .fw-card-chevron { transition: none; } }
 
 .fw-dot {
   flex: none;
@@ -141,10 +146,37 @@ fw-card[data-open] .fw-card-chevron { rotate: 90deg; }
   border-radius: 50%;
   background: var(--dot-hue);
 }
+/* Spec v1.2 §5.2: while opened, a soft halo in the dot's own colour grows and fades. */
+@keyframes fw-halo {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--dot-hue) 55%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 0.55rem color-mix(in srgb, var(--dot-hue) 0%, transparent); }
+}
+fw-card[data-open] .fw-dot { animation: fw-halo 2.4s ease-out infinite; }
 @media (forced-colors: active) { .fw-dot { background: CanvasText; } }
 
-.fw-card-body { padding: 0 1.25rem 1.25rem; }
-.fw-card-body h3 {
+/* The crumbs row and the body grow from zero height: a 0fr → 1fr grid row around a clipped inner element. */
+.fw-crumbs-wrap, .fw-card-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--unfold), opacity var(--unfold);
+}
+.fw-crumbs-wrap { opacity: 0; }
+fw-card[data-open] :is(.fw-crumbs-wrap, .fw-card-body) { grid-template-rows: 1fr; opacity: 1; }
+.fw-crumbs-inner, .fw-card-body-inner { min-height: 0; overflow: hidden; }
+.fw-crumbs-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0 1rem 0 var(--name-inset);
+  color: var(--muted);
+}
+fw-card[data-open] .fw-crumbs-inner { padding-top: 0.6rem; }
+.fw-crumbs-inner { transition: padding-top var(--unfold); }
+.fw-sep { color: var(--muted); }
+
+.fw-card-content { padding: 0 1.25rem 1.25rem; }
+.fw-card-content h3 {
   margin-top: 1rem;
   margin-bottom: 0.25rem;
   font-size: 0.8rem;
@@ -152,8 +184,6 @@ fw-card[data-open] .fw-card-chevron { rotate: 90deg; }
   text-transform: uppercase;
   color: var(--muted);
 }
-.fw-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; margin-bottom: 0.4rem; color: var(--muted); }
-.fw-sep { color: var(--muted); }
 .fw-definition { font-size: 1.05rem; }
 .fw-sensations { padding-left: 1.1rem; }
 
@@ -169,6 +199,8 @@ fw-card[data-open] .fw-card-chevron { rotate: 90deg; }
   text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
   text-underline-offset: 3px;
 }
+/* Spec v1.2 §5.2: links take the feeling's ink (≥ 4.5:1 on the surface, from colors.ts inkFor). */
+.fw-link:is(:hover, :focus-visible) { color: var(--ink, var(--fg)); }
 .fw-rows { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: 0.75rem; }
 .fw-rows .fw-link {
   display: block;
@@ -178,7 +210,13 @@ fw-card[data-open] .fw-card-chevron { rotate: 90deg; }
   text-decoration: none;
   border-bottom: 1px solid color-mix(in srgb, var(--fg) 14%, transparent);
 }
+.fw-rows .fw-link:hover { background: color-mix(in srgb, var(--ink, var(--fg)) 8%, transparent); }
 .fw-close-to { display: flex; flex-wrap: wrap; gap: 0.25rem 0.9rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fw-card-chevron, .fw-crumbs-wrap, .fw-card-body, .fw-crumbs-inner { transition: none; }
+  fw-card[data-open] .fw-dot { animation: none; }
+}
 
 /* Narrow / portrait: full-screen wheel, hint and card float at the bottom (spec §5.3). */
 @container app (max-width: 719.98px) or (orientation: portrait) {

@@ -70,9 +70,21 @@ function dot(hue: string): HTMLSpanElement {
   return d;
 }
 
-/** The floating accordion card (spec §5.1). Emits 'fw-action' (Action) and 'fw-focus-lost'. */
+type Shown = Exclude<CardModel, { kind: 'none' }>;
+
+/**
+ * The floating accordion card (spec v1.2 §5). Emits 'fw-action' (Action) and 'fw-focus-lost'.
+ *
+ * The same word going between selected and opened updates in place, so the CSS unfold can run and focus stays put;
+ * any other change rebuilds.
+ */
 export class FwCard extends HTMLElement {
   #model: CardModel = { kind: 'none' };
+  #inks: Record<string, string> = {};
+  #toggle: HTMLButtonElement | null = null;
+  #head: HTMLDivElement | null = null;
+  #crumbs: HTMLElement | null = null;
+  #body: HTMLDivElement | null = null;
 
   get model(): CardModel {
     return this.#model;
@@ -82,12 +94,22 @@ export class FwCard extends HTMLElement {
     const prev = this.#model;
     this.#model = m;
     // Same feeling in the same state: keep the DOM (and the user's focus) as it is.
-    if (prev.kind === m.kind && (m.kind === 'none' || (prev as { index: number }).index === m.index)) return;
+    if (prev.kind === m.kind && (m.kind === 'none' || (prev as Shown).index === m.index)) return;
+    if (prev.kind !== 'none' && m.kind !== 'none' && prev.index === m.index && this.#toggle) {
+      this.#update(m);
+      return;
+    }
     const hadFocus = this.contains(document.activeElement);
     this.render();
     if (!hadFocus) return;
     if (m.kind === 'none') this.dispatchEvent(new CustomEvent('fw-focus-lost', { bubbles: true }));
-    else this.querySelector<HTMLElement>('.fw-card-head')?.focus();
+    else this.#toggle?.focus();
+  }
+
+  /** Hue → hover ink (spec v1.2 §5.2), from colors.ts inkFor. */
+  set inks(map: Record<string, string>) {
+    this.#inks = map;
+    this.#applyInk();
   }
 
   connectedCallback(): void {
@@ -104,53 +126,99 @@ export class FwCard extends HTMLElement {
     return b;
   }
 
-  render(): void {
+  #applyInk(): void {
     const m = this.#model;
-    this.hidden = m.kind === 'none';
-    if (m.kind === 'none') {
-      this.replaceChildren();
-      return;
-    }
-    const isOpen = m.kind === 'opened';
-    const head = h('button', { type: 'button', className: 'fw-card-head' },
-      dot(m.hue), h('span', { className: 'fw-card-title' }, m.title), chevronIcon());
-    head.setAttribute('aria-expanded', String(isOpen));
-    head.addEventListener('click', () => this.#emit(isOpen ? { type: 'close' } : { type: 'activate' }));
-    this.toggleAttribute('data-open', isOpen);
-    // Accordion pattern: the header button sits inside a heading, so the sections below have a parent.
-    const heading = h('h2', { className: 'fw-card-heading' }, head);
-    if (!isOpen) {
-      this.replaceChildren(heading);
-      return;
-    }
+    const ink = m.kind === 'none' ? undefined : this.#inks[m.hue];
+    if (ink) this.style.setProperty('--ink', ink);
+    else this.style.removeProperty('--ink');
+  }
 
-    const body = h('div', { className: 'fw-card-body' });
-    if (m.crumbs.length > 0) {
-      const nav = h('nav', { className: 'fw-crumbs' }, dot(m.hue));
-      nav.setAttribute('aria-label', t('path'));
-      for (const c of m.crumbs) nav.append(this.#link(c), h('span', { className: 'fw-sep' }, '›'));
-      body.append(nav);
+  /** Same word, selected ↔ opened: fill (or keep) the crumbs and body, then flip the open state. */
+  #update(m: Shown): void {
+    if (m.kind === 'opened') {
+      if (!this.#body) {
+        if (m.crumbs.length > 0) {
+          this.#crumbs = this.#crumbsNav(m.crumbs);
+          this.#head!.prepend(this.#crumbs);
+        }
+        this.#body = this.#bodyFor(m);
+        this.append(this.#body);
+        // Lay out the folded state first, so the unfold transitions from it.
+        void this.#body.offsetHeight;
+      }
     }
-    body.append(h('p', { className: 'fw-definition' }, m.definition));
+    this.#setOpen(m.kind === 'opened');
+  }
+
+  #setOpen(open: boolean): void {
+    this.toggleAttribute('data-open', open);
+    this.#toggle!.setAttribute('aria-expanded', String(open));
+    // A folded body stays for its fold-away animation, out of reach of the keyboard and assistive tech.
+    if (this.#body) this.#body.inert = !open;
+    if (this.#crumbs) this.#crumbs.inert = !open;
+  }
+
+  /** Ancestors, root first, each a link, then "›". The nav is also the row that grows open (a 0fr → 1fr grid). */
+  #crumbsNav(crumbs: Row[]): HTMLElement {
+    const inner = h('div', { className: 'fw-crumbs-inner' });
+    for (const c of crumbs) inner.append(this.#link(c), h('span', { className: 'fw-sep' }, '›'));
+    const nav = h('nav', { className: 'fw-crumbs fw-crumbs-wrap' }, inner);
+    nav.setAttribute('aria-label', t('path'));
+    return nav;
+  }
+
+  #bodyFor(m: Extract<CardModel, { kind: 'opened' }>): HTMLDivElement {
+    const content = h('div', { className: 'fw-card-content' });
+    content.append(h('p', { className: 'fw-definition' }, m.definition));
     if (m.sensations.length > 0) {
-      body.append(
+      content.append(
         h('h3', {}, t('youMightNotice')),
         h('ul', { className: 'fw-sensations' }, ...m.sensations.map((s) => h('li', {}, s))),
       );
     }
     if (m.children.length > 0) {
-      body.append(
+      content.append(
         h('h3', {}, t('narrowDown')),
         h('ul', { className: 'fw-rows' }, ...m.children.map((c) => h('li', {}, this.#link(c, ' ›')))),
       );
     }
     if (m.closeTo.length > 0) {
-      body.append(
+      content.append(
         h('h3', {}, t('closeTo')),
         h('p', { className: 'fw-close-to' }, ...m.closeTo.map((c) => this.#link(c))),
       );
     }
-    this.replaceChildren(heading, body);
+    return h('div', { className: 'fw-card-body' }, h('div', { className: 'fw-card-body-inner' }, content));
+  }
+
+  render(): void {
+    const m = this.#model;
+    this.hidden = m.kind === 'none';
+    this.#toggle = this.#head = this.#crumbs = this.#body = null;
+    this.#applyInk();
+    if (m.kind === 'none') {
+      this.removeAttribute('data-open');
+      this.replaceChildren();
+      return;
+    }
+    const toggle = h('button', { type: 'button', className: 'fw-card-toggle' },
+      dot(m.hue), h('span', { className: 'fw-card-title' }, m.title), chevronIcon());
+    toggle.addEventListener('click', () => this.#emit(this.#model.kind === 'opened' ? { type: 'close' } : { type: 'activate' }));
+    // Accordion pattern: the toggle sits inside a heading, so the sections below have a parent.
+    const head = h('div', { className: 'fw-card-head' }, h('h2', { className: 'fw-card-heading' }, toggle));
+    this.#toggle = toggle;
+    this.#head = head;
+    if (m.kind === 'opened') {
+      if (m.crumbs.length > 0) {
+        this.#crumbs = this.#crumbsNav(m.crumbs);
+        head.prepend(this.#crumbs);
+      }
+      this.#body = this.#bodyFor(m);
+      this.replaceChildren(head, this.#body);
+    } else {
+      this.replaceChildren(head);
+    }
+    this.#setOpen(m.kind === 'opened');
   }
 }
 

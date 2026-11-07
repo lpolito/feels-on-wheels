@@ -8,7 +8,7 @@ import { attachGestures } from './input/gestures';
 import { keyTarget, routeKey } from './input/route';
 import { TAU, normAngle, type Viewport } from './model/geometry';
 import { buildLayout, litMask } from './model/layout';
-import { buildFillTable, readPalette } from './render/colors';
+import { buildFillTable, inkFor, readPalette } from './render/colors';
 import { createSpriteCache } from './render/sprites';
 import { createWheelRenderer, labelFont } from './render/wheel';
 import { createStore, initialState, type Action, type State } from './state/store';
@@ -136,10 +136,12 @@ let themePref: ThemePref = readPref(storage);
 function refreshColors(): void {
   applyPref(themePref, document.documentElement);
   const palette = readPalette(document.documentElement);
-  renderer.setColors(
-    buildFillTable(palette, layout.rings.length, resolvedTheme(themePref, darkScheme), { moreContrast: moreContrast.matches }),
-    palette,
-  );
+  const theme = resolvedTheme(themePref, darkScheme);
+  renderer.setColors(buildFillTable(palette, layout.rings.length, theme, { moreContrast: moreContrast.matches }), palette);
+  // Spec v1.2 §5.2: hover ink per hue. Forced colours use the system's own link colours instead.
+  card.inks = palette.forced
+    ? {}
+    : Object.fromEntries(Object.entries(palette.hues).map(([hue, base]) => [hue, inkFor(base, theme, palette.surface)]));
   // Spec §5.3: the browser chrome follows the resolved theme, including the manual override.
   const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
   if (bg) themeMeta.content = bg;

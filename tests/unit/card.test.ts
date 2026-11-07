@@ -49,7 +49,7 @@ describe('<fw-card>', () => {
     el.addEventListener('fw-action', (e) => actions.push((e as CustomEvent<Action>).detail));
     return { el, actions };
   };
-  const head = (el: FwCard) => el.querySelector<HTMLButtonElement>('button.fw-card-head')!;
+  const head = (el: FwCard) => el.querySelector<HTMLButtonElement>('button.fw-card-toggle')!;
 
   test('none is hidden', () => {
     const { el } = mount();
@@ -129,6 +129,96 @@ describe('<fw-card>', () => {
     el.model = { kind: 'none' };
     expect(el.hidden).toBe(true);
     expect(lost).toBe(1);
+  });
+
+  test('breadcrumb links sit outside the toggle button', () => {
+    const { el } = mount();
+    el.model = cardModel(layout, feelings, opened('angry/aggressive/hostile'));
+    expect(head(el).querySelector('button, a')).toBeNull();
+    const nav = el.querySelector('.fw-card-head > nav.fw-crumbs')!;
+    expect([...nav.querySelectorAll('button')].map((b) => b.textContent)).toEqual(['Angry', 'Aggressive']);
+    expect(el.querySelector('.fw-card-body .fw-crumbs')).toBeNull();
+    // Core words have none.
+    el.model = cardModel(layout, feelings, opened('sad'));
+    expect(el.querySelector('nav.fw-crumbs')).toBeNull();
+  });
+
+  test('toggle is a button with aria-expanded inside an h2', () => {
+    const { el } = mount();
+    el.model = cardModel(layout, feelings, selected('angry/aggressive'));
+    const toggle = head(el);
+    expect(toggle.type).toBe('button');
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    expect(toggle.parentElement!.matches('.fw-card-head > h2.fw-card-heading')).toBe(true);
+    expect(toggle.querySelector('.fw-dot')).not.toBeNull();
+    expect(toggle.querySelector('.fw-card-title')!.textContent).toBe('Aggressive');
+    expect(toggle.querySelector('.fw-card-chevron')).not.toBeNull();
+  });
+
+  test('selected → opened on the same word keeps the toggle element and sets data-open', () => {
+    const { el } = mount();
+    el.model = cardModel(layout, feelings, selected('angry/aggressive/hostile'));
+    const toggle = head(el);
+    const dot = toggle.querySelector('.fw-dot');
+    toggle.focus();
+    el.model = cardModel(layout, feelings, opened('angry/aggressive/hostile'));
+    expect(head(el)).toBe(toggle);
+    expect(toggle.querySelector('.fw-dot')).toBe(dot);
+    expect(document.activeElement).toBe(toggle);
+    expect(el.hasAttribute('data-open')).toBe(true);
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    expect(el.querySelectorAll('.fw-card-head > nav.fw-crumbs button')).toHaveLength(2);
+    expect(el.querySelector('.fw-card-body .fw-definition')).not.toBeNull();
+    expect(el.querySelector<HTMLElement>('.fw-card-body')!.inert).toBe(false);
+  });
+
+  test('opened → selected on the same word keeps the body until another word renders', () => {
+    const { el, actions } = mount();
+    el.model = cardModel(layout, feelings, opened('angry'));
+    const toggle = head(el);
+    const body = el.querySelector<HTMLElement>('.fw-card-body')!;
+    el.model = cardModel(layout, feelings, selected('angry'));
+    expect(head(el)).toBe(toggle);
+    expect(el.querySelector('.fw-card-body')).toBe(body);
+    expect(body.querySelectorAll('ul.fw-rows button')).toHaveLength(8);
+    // Folded away: out of reach of the keyboard and assistive tech.
+    expect(body.inert).toBe(true);
+    expect(el.hasAttribute('data-open')).toBe(false);
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+    toggle.click();
+    expect(actions).toEqual([{ type: 'activate' }]);
+    el.model = cardModel(layout, feelings, selected('sad'));
+    expect(el.querySelector('.fw-card-body')).toBeNull();
+  });
+
+  test('rapid open/close/open leaves data-open and aria-expanded matching the last model', () => {
+    const { el } = mount();
+    const sel = cardModel(layout, feelings, selected('angry/aggressive'));
+    const opn = cardModel(layout, feelings, opened('angry/aggressive'));
+    el.model = sel;
+    const toggle = head(el);
+    for (const m of [opn, sel, opn, sel, opn, opn, sel]) {
+      el.model = m;
+      const open = m.kind === 'opened';
+      expect(head(el)).toBe(toggle);
+      expect(el.hasAttribute('data-open')).toBe(open);
+      expect(toggle.getAttribute('aria-expanded')).toBe(String(open));
+      expect(el.querySelectorAll('.fw-card-body')).toHaveLength(1);
+      expect(el.querySelectorAll('nav.fw-crumbs')).toHaveLength(1);
+      expect(el.querySelector<HTMLElement>('.fw-card-body')!.inert).toBe(!open);
+      expect(el.querySelector<HTMLElement>('nav.fw-crumbs')!.inert).toBe(!open);
+    }
+  });
+
+  test('--ink is set from inks[hue]', () => {
+    const { el } = mount();
+    el.inks = { angry: '#7a1018', sad: '#2a2450' };
+    el.model = cardModel(layout, feelings, selected('angry'));
+    expect(el.style.getPropertyValue('--ink')).toBe('#7a1018');
+    el.model = cardModel(layout, feelings, opened('sad'));
+    expect(el.style.getPropertyValue('--ink')).toBe('#2a2450');
+    el.inks = { sad: '#111111' };
+    expect(el.style.getPropertyValue('--ink')).toBe('#111111');
   });
 
   test('no pill classes remain', () => {

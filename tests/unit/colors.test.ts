@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
-import { buildFillTable, contrast, fitWhite, mix, shade, type Palette } from '../../src/render/colors';
+import { buildFillTable, contrast, fitWhite, inkFor, mix, shade, type Palette } from '../../src/render/colors';
 
 const css = readFileSync(new URL('../../src/styles/tokens.css', import.meta.url), 'utf8');
 
@@ -12,7 +12,7 @@ function block(selector: string): Record<string, string> {
 
 function palette(vars: Record<string, string>): Palette {
   const hues = Object.fromEntries(Object.entries(vars).filter(([k]) => k.startsWith('hue-')).map(([k, v]) => [k.slice(4), v]));
-  return { bg: vars['bg']!, fg: vars['fg']!, gap: vars['gap']!, focus: vars['focus']!, outline: vars['outline']!, hues };
+  return { bg: vars['bg']!, fg: vars['fg']!, gap: vars['gap']!, focus: vars['focus']!, outline: vars['outline']!, surface: vars['surface']!, hues };
 }
 
 const themes = [
@@ -99,7 +99,7 @@ describe('palette contrast floors', () => {
   });
 
   test("forced palette: fill 'Canvas', label 'CanvasText'/'GrayText'", () => {
-    const forced: Palette = { bg: 'Canvas', fg: 'CanvasText', gap: 'CanvasText', focus: 'Highlight', outline: 'Highlight', forced: true, hues: { angry: 'Canvas' } };
+    const forced: Palette = { bg: 'Canvas', fg: 'CanvasText', gap: 'CanvasText', focus: 'Highlight', outline: 'Highlight', surface: 'Canvas', forced: true, hues: { angry: 'Canvas' } };
     const table = buildFillTable(forced, 3, 'light');
     expect(table.fill('angry', 1, true)).toBe('Canvas');
     expect(table.label('angry', 1, true)).toBe('CanvasText');
@@ -110,5 +110,28 @@ describe('palette contrast floors', () => {
     const table = buildFillTable(themes[0][1], 3, 'light');
     expect(table.fill('angry', 1, false)).toBe(table.fill('angry', 1, false));
     expect(table.fill('angry', 0, true)).not.toBe(table.fill('angry', 0, false));
+  });
+});
+
+describe('card ink', () => {
+  test('inkFor reaches ≥ 4.5:1 on --surface for every hue in both themes', () => {
+    for (const [theme, p] of themes) {
+      expect(p.surface, theme).toMatch(/^#[0-9a-f]{6}$/i);
+      for (const [hue, base] of Object.entries(p.hues)) {
+        const ink = inkFor(base, theme, p.surface);
+        expect(contrast(ink, p.surface), `${theme} ${hue}`).toBeGreaterThanOrEqual(4.5);
+        // Still on a hovered row's faint tint of itself.
+        expect(contrast(ink, mix(p.surface, ink, 0.08)), `${theme} ${hue} row`).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  });
+
+  test('inkFor darkens in light and lightens in dark, and keeps a base that already passes', () => {
+    const surface = '#f6f5f8';
+    const light = inkFor('#e8933a', 'light', surface);
+    expect(contrast(light, '#000000')).toBeLessThan(contrast('#e8933a', '#000000'));
+    const dark = inkFor('#3b3470', 'dark', '#1e1c22');
+    expect(contrast(dark, '#ffffff')).toBeLessThan(contrast('#3b3470', '#ffffff'));
+    expect(inkFor('#1c1b1f', 'light', surface)).toBe('#1c1b1f');
   });
 });

@@ -5,6 +5,8 @@ export interface Palette {
   focus: string;
   /** Selection outline colour: ink in light, white in dark, Highlight in forced colours. */
   outline: string;
+  /** The card's background (--surface); 'Canvas' in forced colours. */
+  surface: string;
   hues: Record<string, string>;
   /** Windows high-contrast mode: values are CSS system color keywords, not hex. */
   forced?: boolean;
@@ -16,14 +18,15 @@ const HUE_NAMES = ['fearful', 'angry', 'disgusted', 'sad', 'happy', 'surprised',
 export function readPalette(el: Element): Palette {
   if (typeof matchMedia !== 'undefined' && matchMedia('(forced-colors: active)').matches) {
     return {
-      bg: 'Canvas', fg: 'CanvasText', gap: 'CanvasText', focus: 'Highlight', outline: 'Highlight', forced: true,
+      bg: 'Canvas', fg: 'CanvasText', gap: 'CanvasText', focus: 'Highlight', outline: 'Highlight', surface: 'Canvas',
+      forced: true,
       hues: Object.fromEntries(HUE_NAMES.map((h) => [h, 'Canvas'])),
     };
   }
   const cs = getComputedStyle(el);
   const v = (name: string) => cs.getPropertyValue(name).trim().toLowerCase();
   return {
-    bg: v('--bg'), fg: v('--fg'), gap: v('--gap'), focus: v('--focus'), outline: v('--outline'),
+    bg: v('--bg'), fg: v('--fg'), gap: v('--gap'), focus: v('--focus'), outline: v('--outline'), surface: v('--surface'),
     hues: Object.fromEntries(HUE_NAMES.map((h) => [h, v(HUE_PREFIX + h)])),
   };
 }
@@ -102,6 +105,25 @@ export function fitWhite(base: string, min = 4.8): string {
   let c = shade(base, 0);
   for (let dL = 0; contrast(WHITE, c) < min && dL > -1; ) {
     dL -= 0.004;
+    c = shade(base, dL);
+  }
+  return c;
+}
+
+/** Card hover ink (spec v1.2 §5.2): rows tint their hover background with this much of the ink. */
+const ROW_TINT = 0.08;
+const INK_MIN = 4.5;
+
+/**
+ * Text colour for a feeling on the card surface: the base hue shifted in OKLab L (darker in light, lighter in dark)
+ * until ≥ 4.5:1 against `surface`, and against a hovered row's faint tint of itself.
+ */
+export function inkFor(base: string, theme: 'light' | 'dark', surface: string): string {
+  const step = theme === 'light' ? -0.004 : 0.004;
+  const ok = (c: string): boolean => contrast(c, surface) >= INK_MIN && contrast(c, mix(surface, c, ROW_TINT)) >= INK_MIN;
+  let c = shade(base, 0);
+  for (let dL = 0; !ok(c) && Math.abs(dL) < 1; ) {
+    dL += step;
     c = shade(base, dL);
   }
   return c;

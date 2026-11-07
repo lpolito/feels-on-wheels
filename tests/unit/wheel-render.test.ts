@@ -17,20 +17,37 @@ const palette: Palette = {
 };
 const table = buildFillTable(palette, 3, 'light');
 
-interface Rec { fills: string[]; strokes: string[]; texts: string[]; fonts: string[]; shadowSets: number }
+type Arc = { r: number; a0: number; a1: number };
+/** One stroke call: its style, width and the arcs in its path. */
+type StrokeRec = { style: string; lineWidth: number; arcs: Arc[] };
+
+interface Rec {
+  fills: string[]; strokes: string[]; texts: string[]; fonts: string[]; shadowSets: number;
+  strokeLog: StrokeRec[];
+  /** The transform's translation (e, f) at each fillText. */
+  textAt: { text: string; e: number; f: number }[];
+}
 
 function fakeCanvas(): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D; rec: Rec } {
-  const rec: Rec = { fills: [], strokes: [], texts: [], fonts: [], shadowSets: 0 };
+  const rec: Rec = { fills: [], strokes: [], texts: [], fonts: [], shadowSets: 0, strokeLog: [], textAt: [] };
   const state = {
     fillStyle: '', strokeStyle: '', font: '10px sans-serif', globalAlpha: 1, lineWidth: 1, textAlign: 'start', textBaseline: 'alphabetic',
     lineJoin: 'miter', lineCap: 'butt', shadowBlur: 0, shadowColor: 'transparent', shadowOffsetX: 0, shadowOffsetY: 0,
   };
   const noop = () => {};
+  let path: Arc[] = [];
+  let tf = { e: 0, f: 0 };
   const ctx = {
-    ...Object.fromEntries(['beginPath', 'closePath', 'arc', 'moveTo', 'lineTo', 'setTransform', 'clearRect', 'fillRect'].map((k) => [k, noop])),
+    ...Object.fromEntries(['closePath', 'moveTo', 'lineTo', 'clearRect', 'fillRect'].map((k) => [k, noop])),
+    beginPath: () => { path = []; },
+    arc: (_x: number, _y: number, r: number, a0: number, a1: number) => { path.push({ r, a0, a1 }); },
+    setTransform: (_a: number, _b: number, _c: number, _d: number, e: number, f: number) => { tf = { e, f }; },
     fill: () => rec.fills.push(state.fillStyle),
-    stroke: () => rec.strokes.push(state.strokeStyle),
-    fillText: (t: string) => { rec.texts.push(t); rec.fonts.push(state.font); },
+    stroke: () => {
+      rec.strokes.push(state.strokeStyle);
+      rec.strokeLog.push({ style: state.strokeStyle, lineWidth: state.lineWidth, arcs: path.slice() });
+    },
+    fillText: (t: string) => { rec.texts.push(t); rec.fonts.push(state.font); rec.textAt.push({ text: t, ...tf }); },
     measureText: (t: string) => ({ width: t.length * Number(/([\d.]+)px/.exec(state.font)![1]) * 0.6 }),
   } as Record<string, unknown>;
   for (const k of Object.keys(state) as (keyof typeof state)[]) {
@@ -153,6 +170,58 @@ describe('wheel renderer', () => {
     expect(hostileFont.startsWith('800 ')).toBe(true);
     expect(provokedFont.startsWith('600 ')).toBe(true);
     expect(pxOf(hostileFont)).toBeGreaterThan(pxOf(provokedFont));
+  });
+
+  /** Each inner-line arc against the outline's own arc: the angular inset times the inner arc's radius. */
+  function insets(rec: Rec): { start: number; end: number }[] {
+    const k = rec.strokeLog.findIndex((s) => s.style === palette.gap && s.lineWidth === 2 && s.arcs.length === 2);
+    expect(k, 'inner line stroke').toBeGreaterThan(0);
+    const cell = rec.strokeLog[k - 1]!;
+    expect(cell.style).toBe(palette.outline);
+    const lo = (a: Arc) => Math.min(a.a0, a.a1);
+    const hi = (a: Arc) => Math.max(a.a0, a.a1);
+    const c0 = lo(cell.arcs[0]!);
+    const c1 = hi(cell.arcs[0]!);
+    return rec.strokeLog[k]!.arcs.map((a) => ({ start: (lo(a) - c0) * a.r, end: (c1 - hi(a)) * a.r }));
+  }
+
+  test('inner outline line is a parallel 3px inset on every ring', () => {
+    for (const path of ['angry', 'angry/aggressive', 'angry/aggressive/hostile']) {
+      const { rec } = draw(desk, { selected: layout.byPath.get(path)! });
+      const ins = insets(rec);
+      expect(ins).toHaveLength(2);
+      for (const { start, end } of ins) {
+        expect(start, path).toBeCloseTo(3, 2);
+        expect(end, path).toBeCloseTo(3, 2);
+      }
+    }
+  });
+
+  test('inner outline line is a parallel 3px inset on an opened (lifted) core cell', () => {
+    const angry = layout.byPath.get('angry')!;
+    const cam = ringFocusCamera(layout, 0, desk, -layout.segments[angry]!.mid, { remPx: 16, portrait: false, anchorY: 0.5 });
+    const lit = litMask(layout, angry);
+    const { rec } = draw(desk, { cam, mode: 'ring', selected: angry, opened: true, lit, prevLit: lit });
+    for (const { start, end } of insets(rec)) {
+      expect(start).toBeCloseTo(3, 2);
+      expect(end).toBeCloseTo(3, 2);
+    }
+  });
+
+  test('the label of a selected cell with an inside chevron moves 7px inward', () => {
+    const angry = layout.byPath.get('angry')!;
+    const dpr = 2;
+    const centreDist = (o: Partial<Frame>) => {
+      const { canvas, ctx, rec } = fakeCanvas();
+      const r = createWheelRenderer(canvas, layout, ctx);
+      r.setColors(table, palette);
+      r.resize(desk.width, desk.height, dpr);
+      const f = frame(desk, o);
+      r.draw(f);
+      const at = rec.textAt.find((x) => x.text === label('angry'))!;
+      return Math.hypot(at.e / dpr - f.cam.cx, at.f / dpr - f.cam.cy);
+    };
+    expect(centreDist({}) - centreDist({ selected: angry })).toBeCloseTo(7, 2);
   });
 
   test('thin cell gets the chevron outside in the outline colour; wide cell gets it inside in white', () => {

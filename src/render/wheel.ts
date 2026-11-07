@@ -49,6 +49,10 @@ const PULSE_FROM = 0.96;
 const CHEVRON_INSIDE_MIN_ARC = 22;
 const CHEVRON_HALF = 4;
 const CHEVRON_OFFSET = 9;
+/** Label box px given up at the outer end to an inside chevron. */
+const CHEVRON_ROOM = 14;
+/** The selection's chevron fits inside the cell when the outer arc is long enough. */
+const chevronInside = (width: number, outerR: number): boolean => width * outerR >= CHEVRON_INSIDE_MIN_ARC;
 /** Label fits are reused while the box stays within this many px (pinch frames). */
 const FIT_TOLERANCE = 1;
 const WHITE = '#ffffff';
@@ -139,7 +143,11 @@ export function createWheelRenderer(
     stats.labelsDrawn++;
   }
 
-  /** Two-tone outline: ink on the edge, a gap-coloured line just inside it. */
+  /**
+   * Two-tone outline: ink on the edge, a gap-coloured line just inside it. The line sits a fixed distance inside
+   * every edge (spec v1.2 §4.4): each arc gets its own angular inset, distance / radius, so the sides stay
+   * parallel to the cell's on every ring.
+   */
   function outline(cx: number, cy: number, r0: number, r1: number, a0: number, a1: number, ink: string, gap: string): void {
     sector(cx, cy, r0, r1, a0, a1);
     g.lineWidth = OUTLINE_PX;
@@ -148,13 +156,18 @@ export function createWheelRenderer(
     const inset = OUTLINE_PX / 2 + OUTLINE_INNER_PX / 2;
     const rIn = r0 + inset;
     const rOut = r1 - inset;
-    if (rOut > rIn) {
-      const da = inset / Math.max(rIn, 1);
-      sector(cx, cy, rIn, rOut, a0 + da, Math.max(a0 + da, a1 - da));
-      g.lineWidth = OUTLINE_INNER_PX;
-      g.strokeStyle = gap;
-      g.stroke();
-    }
+    if (rOut <= rIn) return;
+    const daOut = inset / rOut;
+    const daIn = inset / Math.max(rIn, 1);
+    // Too narrow for the inner line at its inner arc: skip it rather than draw it crossed over.
+    if (a1 - a0 <= 2 * daIn) return;
+    g.beginPath();
+    g.arc(cx, cy, rOut, a0 + daOut, a1 - daOut);
+    g.arc(cx, cy, rIn, a1 - daIn, a0 + daIn, true);
+    g.closePath();
+    g.lineWidth = OUTLINE_INNER_PX;
+    g.strokeStyle = gap;
+    g.stroke();
   }
 
   /** A small outward-pointing chevron at radius r on the cell's mid angle (decoration only). */
@@ -236,12 +249,14 @@ export function createWheelRenderer(
       for (const s of layout.segments) {
         const ring = layout.rings[s.ring]!;
         if (s.index === lifted || !inWindow(s, ring, win)) continue;
-        const rMid = ((ring.inner + ring.outer) / 2) * R;
+        // Spec v1.2 §4.4: a selected cell's inside chevron takes CHEVRON_ROOM px off the label box's outer end.
+        const room = s.index === f.selected && !f.opened && chevronInside(s.end - s.start, ring.outer * R) ? CHEVRON_ROOM : 0;
+        const rMid = ((ring.inner + ring.outer) / 2) * R - room / 2;
         const angle = s.mid + cam.rotation;
         const x = cam.cx + rMid * Math.cos(angle);
         const y = cam.cy + rMid * Math.sin(angle);
         if (x < -rMid || y < -rMid || x > cssW + rMid || y > cssH + rMid) continue;
-        const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, minPx, maxPx);
+        const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD - room, (s.end - s.start) * rMid, minPx, maxPx);
         if (!fit) continue;
         const lit = f.fadeT >= 0.5 ? f.lit[s.index] === 1 : f.prevLit[s.index] === 1;
         drawLabel(fit.lines, fit.px, false, x, y, angle, 1, table.label(s.hue, s.ring, lit));
@@ -259,8 +274,7 @@ export function createWheelRenderer(
 
       if (!f.opened) {
         outline(cam.cx, cam.cy, ring.inner * R, ring.outer * R, a0, a1, ink, palette.gap);
-        const outerArc = (s.end - s.start) * ring.outer * R;
-        if (outerArc >= CHEVRON_INSIDE_MIN_ARC) {
+        if (chevronInside(s.end - s.start, ring.outer * R)) {
           chevron(cam.cx, cam.cy, ring.outer * R - CHEVRON_OFFSET, angle, palette.forced ? ink : WHITE);
         } else {
           chevron(cam.cx, cam.cy, ring.outer * R + CHEVRON_OFFSET, angle, ink);

@@ -249,11 +249,26 @@ export function createController(
 
   function setViewport(next: Viewport, o: CameraOpts): void {
     const unchanged = next.width === vp.width && next.height === vp.height && next.radius === vp.radius
-      && o.remPx === opts.remPx && o.portrait === opts.portrait;
+      && o.remPx === opts.remPx && o.portrait === opts.portrait && o.anchorY === opts.anchorY;
     if (unchanged) return;
     vp = next;
     opts = o;
-    camera.jump(restingCamera(store.get()));
+    const s = store.get();
+    const ring = ringOf(s);
+    if (ring === null) {
+      // Mid-close or mid-fling, keep where the wheel was heading.
+      camera.jump(overviewCamera(vp, savedRotation ?? camera.target.rotation));
+      return;
+    }
+    if (userSpin && camera.moving) {
+      // Keep the fling's destination, not the pre-fling selection (spec §8).
+      const dest = segmentAt(layout, ring, normAngle(-camera.target.rotation));
+      camera.jump(ringFocusCamera(layout, ring, vp, rotationToCenter(seg(dest), camera.target.rotation), opts));
+      userSpin = false;
+      store.dispatch({ type: 'settled', segment: dest });
+      return;
+    }
+    camera.jump(restingCamera(s));
   }
 
   function playIntro(): void {

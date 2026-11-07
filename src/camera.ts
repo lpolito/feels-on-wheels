@@ -4,6 +4,8 @@ import { normAngle, ringAt, snapRotation, toPolar, type Camera, type Viewport } 
 export interface CameraOpts {
   remPx: number;
   portrait: boolean;
+  /** Ring-view vertical anchor as a fraction of stage height: 0.275 on phones (above the card's 45dvh cap), else 0.5. */
+  anchorY: number;
 }
 
 /** Spec §4.2 constants. */
@@ -41,7 +43,7 @@ export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rota
     MIN_TARGET_PX / arcAtScale1,
     MIN_RING_SCALE,
   );
-  return { scale, rotation, cx: anchorX(vp, o) - rMid * vp.radius * scale, cy: vp.height / 2 };
+  return { scale, rotation, cx: anchorX(vp, o) - rMid * vp.radius * scale, cy: o.anchorY * vp.height };
 }
 
 /** Spec §4.6: start zoomed when overview would draw outer labels under 12 CSS px. */
@@ -68,6 +70,8 @@ export function nearestRestingState(
 
 export interface CameraController {
   readonly current: Camera;
+  /** Where the spring is heading (a fling's destination); equal to `current` at rest. */
+  readonly target: Camera;
   readonly moving: boolean;
   jump(c: Camera): void;
   animateTo(c: Partial<Camera>, velocity?: Partial<Camera>): void;
@@ -159,6 +163,7 @@ export function createCameraController(deps: {
 
   return {
     current,
+    target,
     get moving() {
       return springing;
     },

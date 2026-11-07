@@ -64,7 +64,7 @@ describe('wheel renderer', () => {
     const r = createWheelRenderer(canvas, layout, ctx);
     r.setColors(table, palette);
     r.resize(375, 667, 3);
-    r.draw(frame(phone, { cam: ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true }), mode: 'ring' }));
+    r.draw(frame(phone, { cam: ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, anchorY: 0.275 }), mode: 'ring' }));
     expect(r.stats.segmentsDrawn).toBeGreaterThan(0);
     expect(r.stats.segmentsDrawn).toBeLessThan(40);
   });

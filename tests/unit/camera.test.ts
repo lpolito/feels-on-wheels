@@ -10,7 +10,7 @@ import {
 const layout = buildLayout(loadData().wheel);
 const phone: Viewport = { width: 375, height: 667, radius: 375 / 2 - 8 };
 const desk: Viewport = { width: 1440, height: 900, radius: 900 / 2 - 8 };
-const opts = { remPx: 16, portrait: false };
+const opts = { remPx: 16, portrait: false, anchorY: 0.5 };
 
 function segHeight(ring: number, vp: Viewport, scale: number): number {
   const r = layout.rings[ring]!;
@@ -25,12 +25,19 @@ describe('resting cameras', () => {
   });
 
   test('ringFocusCamera puts ring mid-radius at 40% width (50% portrait)', () => {
-    for (const [o, frac] of [[opts, 0.4], [{ remPx: 16, portrait: true }, 0.5]] as const) {
+    for (const [o, frac] of [[opts, 0.4], [{ remPx: 16, portrait: true, anchorY: 0.5 }, 0.5]] as const) {
       const cam = ringFocusCamera(layout, 1, desk, 0, o);
       const rMid = (0.32 + 0.62) / 2;
       expect(cam.cx + rMid * desk.radius * cam.scale).toBeCloseTo(frac * desk.width, 6);
       expect(cam.cy).toBe(desk.height / 2);
     }
+  });
+
+  test("portrait ring camera puts the ring's mid-radius row at 27.5% height", () => {
+    const cam = ringFocusCamera(layout, 1, phone, 0, { remPx: 16, portrait: true, anchorY: 0.275 });
+    expect(cam.cy).toBeCloseTo(0.275 * phone.height, 9);
+    const rMid = (0.32 + 0.62) / 2;
+    expect(cam.cx + rMid * phone.radius * cam.scale).toBeCloseTo(0.5 * phone.width, 6);
   });
 
   test('ringFocusCamera typical segment ≈ 4.5rem tall on a roomy viewport', () => {
@@ -46,7 +53,7 @@ describe('resting cameras', () => {
   });
 
   test('outer ring focus on a 375×667 viewport gives focused-ring segments ≥ 44px tall', () => {
-    const cam = ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true });
+    const cam = ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, anchorY: 0.275 });
     expect(segHeight(2, phone, cam.scale)).toBeGreaterThanOrEqual(44 - 1e-9);
   });
 
@@ -109,6 +116,18 @@ describe('camera controller', () => {
     expect(cam.current.rotation).toBe(0.2);
     expect(settles).toBe(1);
     expect(frames).toBeGreaterThan(10);
+  });
+
+  test('target equals the fling destination while moving and current at rest', () => {
+    cam.fling(3, 1, layout);
+    step(30);
+    expect(cam.moving).toBe(true);
+    const dest = { ...cam.target };
+    expect(dest.rotation).not.toBeCloseTo(cam.current.rotation, 3);
+    step(2000);
+    expect(cam.moving).toBe(false);
+    expect(cam.target).toEqual(cam.current);
+    expect(cam.current.rotation).toBeCloseTo(normAngle(dest.rotation), 9);
   });
 
   test('no raf is scheduled after settle', () => {

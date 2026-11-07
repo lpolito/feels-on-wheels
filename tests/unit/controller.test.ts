@@ -9,7 +9,7 @@ import { createController, type Controller } from '../../src/controller';
 const layout = buildLayout(loadData().wheel);
 const idx = (p: string): number => layout.byPath.get(p)!;
 const desk: Viewport = { width: 1200, height: 900, radius: 442 };
-const opts = { remPx: 16, portrait: false };
+const opts = { remPx: 16, portrait: false, anchorY: 0.5 };
 
 let now = 0;
 let queue: Map<number, FrameRequestCallback>;
@@ -398,7 +398,7 @@ describe('viewport', () => {
   test('setViewport while opened keeps the same word centred at angle 0', () => {
     setup(opened('angry/aggressive/hostile'));
     step(1000);
-    ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true });
+    ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true, anchorY: 0.275 });
     step(1000);
     expect(offCenter(idx('angry/aggressive/hostile'))).toBeLessThan(1e-9);
     expect(camera.current.cx + 0.81 * 342 * camera.current.scale).toBeCloseTo(350, 6);
@@ -411,5 +411,52 @@ describe('viewport', () => {
     step(50);
     ctl.setViewport({ ...desk }, { ...opts });
     expect(camera.moving).toBe(true);
+  });
+
+  test("resize mid-fling keeps the fling's destination centred", () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    ctl.handle([{ type: 'dragStart', x: 500, y: 450, axis: 'y' }, { type: 'dragEnd', vx: 0, vy: 2500 }]);
+    step(50);
+    expect(camera.moving).toBe(true);
+    const dest = segmentAt(layout, 2, normAngle(-camera.target.rotation));
+    expect(dest).not.toBe(idx('angry/aggressive/hostile'));
+    ctl.setViewport({ width: 900, height: 900, radius: 442 }, opts);
+    step(1000);
+    expect(store.get()).toEqual(opened(layout.segments[dest]!.path));
+    expect(offCenter(dest)).toBeLessThan(1e-9);
+  });
+
+  test('portrait → wide while in phone-start view keeps the same word selected, centred, not opened', () => {
+    const phone: Viewport = { width: 390, height: 844, radius: 187 };
+    now = 0; queue = new Map(); nextId = 1;
+    store = createStore(layout, phoneStart('surprised'));
+    camera = createCameraController({
+      now: () => now,
+      raf: (cb) => { const id = nextId++; queue.set(id, cb); return id; },
+      caf: (id) => { queue.delete(id); },
+      reducedMotion: () => false,
+    });
+    ctl = createController(layout, store, camera, phone, { remPx: 16, portrait: true, anchorY: 0.275 });
+    step(1000);
+    expect(camera.current.cy).toBeCloseTo(0.275 * 844, 6);
+    ctl.setViewport({ width: 844, height: 390, radius: 187 }, { remPx: 16, portrait: false, anchorY: 0.5 });
+    step(1000);
+    expect(store.get()).toEqual(phoneStart('surprised'));
+    expect(offCenter(idx('surprised'))).toBeLessThan(1e-9);
+    expect(camera.current.cy).toBeCloseTo(195, 6);
+  });
+
+  test('resize on the whole wheel mid-close keeps the saved rotation', () => {
+    const hostile = idx('angry/aggressive/hostile');
+    const rot0 = camera.current.rotation;
+    store.dispatch({ type: 'open', segment: hostile });
+    step(1000);
+    store.dispatch({ type: 'close' });
+    step(30);
+    ctl.setViewport({ width: 900, height: 900, radius: 442 }, opts);
+    step(1000);
+    expect(sameAngle(camera.current.rotation, rot0)).toBeLessThan(1e-6);
+    expect(camera.current.scale).toBe(1);
   });
 });

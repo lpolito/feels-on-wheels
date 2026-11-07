@@ -1,9 +1,10 @@
 import type { Layout } from './layout';
 import type { Action, State } from '../state/store';
 
-export const PINCH_IN = 1.15;
-export const PINCH_STEP_OUT = 0.87;
-export const PINCH_CLOSE = 0.6;
+/** Spec v1.2 §3.4: each relative to the scale when the gesture started. */
+export const PINCH_IN = 1.35;
+export const PINCH_STEP_OUT = 0.8;
+export const PINCH_CLOSE = 0.55;
 
 /**
  * Spec §3.4: what a pinch does when it ends. Always resolves to the word under the fingers, the selection's parent

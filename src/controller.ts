@@ -44,8 +44,6 @@ export function createController(
    */
   let beforeLastTap: State | null = null;
   let lastTapHit: number | null = null;
-  /** Whole-wheel rotation before the last open; closing returns to it. Null once the user rotates the wheel. */
-  let savedRotation: number | null = null;
   /** A user spin is in flight in a ring view: its settle picks the word at 3 o'clock. */
   let userSpin = false;
 
@@ -62,7 +60,8 @@ export function createController(
   /** The resting camera for a state (spec §3.1): the whole wheel, or the view ring centred on the selection. */
   function restingCamera(s: State): Camera {
     const ring = ringOf(s);
-    if (ring === null) return overviewCamera(vp, savedRotation ?? cam.rotation);
+    // Spec v1.2 §3.3: the whole wheel keeps the rotation it is at (or heading to), so closing never spins back.
+    if (ring === null) return overviewCamera(vp, camera.moving ? camera.target.rotation : cam.rotation);
     const sel = s.selected;
     const rotation = sel !== null && seg(sel).ring === ring
       ? rotationToCenter(seg(sel), cam.rotation)
@@ -80,7 +79,6 @@ export function createController(
   function grab(): void {
     camera.stop();
     dismissHint();
-    if (ringOf(store.get()) === null) savedRotation = null;
   }
 
   function zoomAbout(scale: number, x: number, y: number): void {
@@ -135,7 +133,6 @@ export function createController(
     if (zoom) return; // endZoom springs to rest itself.
     const viewChanged = s.view.mode !== prev.view.mode || ringOf(s) !== ringOf(prev);
     if (viewChanged) {
-      if (prev.view.mode === 'wheel') savedRotation = cam.rotation;
       goToRest();
       return;
     }
@@ -161,7 +158,6 @@ export function createController(
         const wasMoving = camera.moving;
         camera.stop();
         userSpin = false;
-        if (ring === null && wasMoving) savedRotation = null;
         beforeLastTap = s;
         const hit = hitTest(layout, cam, vp, i.x, i.y);
         lastTapHit = hit;
@@ -262,7 +258,7 @@ export function createController(
     const ring = ringOf(s);
     if (ring === null) {
       // Mid-close or mid-fling, keep where the wheel was heading.
-      camera.jump(overviewCamera(vp, savedRotation ?? camera.target.rotation));
+      camera.jump(overviewCamera(vp, camera.target.rotation));
       return;
     }
     if (userSpin && camera.moving) {

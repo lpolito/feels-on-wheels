@@ -114,18 +114,32 @@ describe('taps', () => {
     expect(offCenter(other)).toBeLessThan(1e-9);
   });
 
-  test('tap outside while opened closes to the saved rotation, selection kept', () => {
+  test('closing keeps the current rotation', () => {
     const hostile = idx('angry/aggressive/hostile');
-    const rot0 = camera.current.rotation;
     ctl.handle([{ type: 'tap', ...screenOf(hostile) }]);
     ctl.handle([{ type: 'tap', ...screenOf(hostile) }]);
-    step(1000);
+    step(2000);
     expect(store.get().opened).toBe(true);
+    const rot = camera.current.rotation;
     ctl.handle([{ type: 'tap', ...missPoint() }]);
-    step(1000);
+    step(2000);
     expect(store.get()).toMatchObject({ selected: hostile, opened: false, view: { mode: 'wheel' } });
     expect(camera.current.scale).toBe(1);
-    expect(sameAngle(camera.current.rotation, rot0)).toBeLessThan(1e-6);
+    expect(sameAngle(camera.current.rotation, rot)).toBeLessThan(1e-6);
+  });
+
+  test('close after spinning while opened keeps the spun rotation', () => {
+    const hostile = idx('angry/aggressive/hostile');
+    store.dispatch({ type: 'open', segment: hostile });
+    step(2000);
+    ctl.handle([{ type: 'dragStart', x: 500, y: 450, axis: 'y' }, { type: 'dragEnd', vx: 0, vy: 2500 }]);
+    step(2000);
+    expect(store.get().selected).not.toBe(hostile);
+    const rot = camera.current.rotation;
+    store.dispatch({ type: 'close' });
+    step(2000);
+    expect(camera.current.scale).toBe(1);
+    expect(sameAngle(camera.current.rotation, rot)).toBeLessThan(1e-6);
   });
 
   test('tap outside while selected clears', () => {
@@ -381,7 +395,7 @@ describe('pinch and zoom', () => {
   test('small pinch out on an opened outer word opens its parent', () => {
     setup(opened('angry/aggressive/hostile'));
     step(1000);
-    ctl.handle([{ type: 'pinch', scale: 0.8, cx: 500, cy: 450 }, { type: 'pinchEnd' }]);
+    ctl.handle([{ type: 'pinch', scale: 0.7, cx: 500, cy: 450 }, { type: 'pinchEnd' }]);
     step(1000);
     expect(store.get()).toEqual(opened('angry/aggressive'));
     expect(offCenter(idx('angry/aggressive'))).toBeLessThan(1e-9);
@@ -517,16 +531,17 @@ describe('viewport', () => {
     expect(camera.current.cy).toBeCloseTo(195, 6);
   });
 
-  test('resize on the whole wheel mid-close keeps the saved rotation', () => {
+  test("resize mid-close keeps the closing camera's target rotation", () => {
     const hostile = idx('angry/aggressive/hostile');
-    const rot0 = camera.current.rotation;
     store.dispatch({ type: 'open', segment: hostile });
-    step(1000);
+    step(2000);
+    const rot = camera.current.rotation;
     store.dispatch({ type: 'close' });
     step(30);
+    expect(camera.moving).toBe(true);
     ctl.setViewport({ width: 900, height: 900, radius: 442 }, opts);
-    step(1000);
-    expect(sameAngle(camera.current.rotation, rot0)).toBeLessThan(1e-6);
+    step(2000);
+    expect(sameAngle(camera.current.rotation, rot)).toBeLessThan(1e-6);
     expect(camera.current.scale).toBe(1);
   });
 });

@@ -107,11 +107,16 @@ describe('camera controller', () => {
     step(20);
   });
 
-  test('animateTo approaches within 1% by 300ms and settles by 600ms, calling onSettle once', () => {
+  test('animateTo at OMEGA 14: about 90% done by 280ms, within 1% by 500ms, settled by 1000ms', () => {
     cam.animateTo({ rotation: 0.2 });
-    step(300);
-    expect(Math.abs(cam.current.rotation - 0.2)).toBeLessThan(0.002);
-    step(300);
+    step(200);
+    expect(Math.abs(cam.current.rotation - 0.2)).toBeGreaterThan(0.03);
+    step(80);
+    expect(Math.abs(cam.current.rotation - 0.2)).toBeLessThanOrEqual(0.02);
+    step(220);
+    expect(Math.abs(cam.current.rotation - 0.2)).toBeLessThanOrEqual(0.002);
+    expect(settles).toBe(0);
+    step(500);
     expect(cam.moving).toBe(false);
     expect(cam.current.rotation).toBe(0.2);
     expect(settles).toBe(1);
@@ -134,7 +139,7 @@ describe('camera controller', () => {
     cam.onFrame(() => { now += 15; }); // each draw takes 15 ms of the 16.7 ms frame
     cam.animateTo({ rotation: 0.2 });
     let t = now;
-    for (let k = 0; k < 40; k++) {
+    for (let k = 0; k < 70; k++) {
       t += 1000 / 60;
       now = t;
       const cbs = [...queue.values()];

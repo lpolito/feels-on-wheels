@@ -15,7 +15,8 @@ const MIN_TARGET_PX = 44;
 const MIN_RING_SCALE = 1.25;
 const START_ZOOMED_BELOW_PX = 12;
 const LABEL_HEIGHT_RATIO = 0.55;
-const OMEGA = 24;
+/** Spring stiffness (spec v1.2 §3.5): about 90% of a move done in 270ms. */
+const OMEGA = 14;
 const FLING_TAU = 0.325;
 const MAX_DT = 1 / 30;
 

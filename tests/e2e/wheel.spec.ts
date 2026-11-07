@@ -58,12 +58,13 @@ test.describe('desktop', () => {
     await expect(page.locator('fw-card')).toBeHidden();
   });
 
-  test('close restores the pre-open rotation', async ({ page }) => {
+  test('close keeps the rotation', async ({ page }) => {
     await open(page);
-    const before = (await page.evaluate(() => window.__fw.camera())).rotation;
-    await tapPath(page, 'sad');
-    await tapPath(page, 'sad');
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('sad'));
+    await page.mouse.dblclick(p.x, p.y);
+    await idle(page);
     expect((await state(page)).opened).toBe(true);
+    const before = (await page.evaluate(() => window.__fw.camera())).rotation;
     await page.getByRole('button', { name: 'Whole wheel' }).click();
     await idle(page);
     const after = await page.evaluate(() => window.__fw.camera());

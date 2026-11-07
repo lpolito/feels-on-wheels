@@ -11,13 +11,13 @@ const phoneStart: State = { selected: idx('angry'), opened: false, view: { mode:
 
 describe('resolvePinch', () => {
   test('thresholds match the spec', () => {
-    expect([PINCH_IN, PINCH_STEP_OUT, PINCH_CLOSE]).toEqual([1.15, 0.87, 0.6]);
+    expect([PINCH_IN, PINCH_STEP_OUT, PINCH_CLOSE]).toEqual([1.35, 0.8, 0.55]);
   });
 
   test('pinch in on the whole wheel opens the word under the fingers', () => {
     expect(resolvePinch(layout, initialState, 1.5, idx('sad'))).toEqual({ type: 'open', segment: idx('sad') });
     const sel = { ...initialState, selected: idx('angry'), hinted: false };
-    expect(resolvePinch(layout, sel, 1.2, idx('sad/hurt'))).toEqual({ type: 'open', segment: idx('sad/hurt') });
+    expect(resolvePinch(layout, sel, 1.4, idx('sad/hurt'))).toEqual({ type: 'open', segment: idx('sad/hurt') });
   });
 
   test('pinch in over the hole or outside the wheel does nothing', () => {
@@ -26,13 +26,13 @@ describe('resolvePinch', () => {
   });
 
   test('pinch in on the opened word goes to its centre child', () => {
-    expect(resolvePinch(layout, opened('angry/aggressive'), 1.3, idx('angry/aggressive'))).toEqual({ type: 'toChild' });
+    expect(resolvePinch(layout, opened('angry/aggressive'), 1.4, idx('angry/aggressive'))).toEqual({ type: 'toChild' });
     const s = opened('angry/aggressive');
     expect(reduce(layout, s, { type: 'toChild' })).toEqual(opened('angry/aggressive/hostile'));
   });
 
   test('pinch in on another word while opened opens it', () => {
-    expect(resolvePinch(layout, opened('angry/aggressive'), 1.3, idx('angry/mad'))).toEqual({ type: 'open', segment: idx('angry/mad') });
+    expect(resolvePinch(layout, opened('angry/aggressive'), 1.4, idx('angry/mad'))).toEqual({ type: 'open', segment: idx('angry/mad') });
   });
 
   test('pinch in on an opened leaf yields toChild, which the reducer ignores', () => {
@@ -43,16 +43,16 @@ describe('resolvePinch', () => {
   });
 
   test('small pinch out while opened opens the parent', () => {
-    expect(resolvePinch(layout, opened('angry/aggressive'), 0.8, idx('sad'))).toEqual({ type: 'toParent' });
-    expect(resolvePinch(layout, opened('angry/aggressive'), 0.6, null)).toEqual({ type: 'toParent' });
+    expect(resolvePinch(layout, opened('angry/aggressive'), 0.7, idx('sad'))).toEqual({ type: 'toParent' });
+    expect(resolvePinch(layout, opened('angry/aggressive'), 0.55, null)).toEqual({ type: 'toParent' });
   });
 
   test('big pinch out while opened closes', () => {
-    expect(resolvePinch(layout, opened('angry/aggressive'), 0.59, null)).toEqual({ type: 'close' });
+    expect(resolvePinch(layout, opened('angry/aggressive'), 0.54, null)).toEqual({ type: 'close' });
   });
 
   test('pinch out in phone-start view returns to the wheel keeping the selection', () => {
-    for (const ratio of [0.8, 0.3]) {
+    for (const ratio of [0.7, 0.3]) {
       const a = resolvePinch(layout, phoneStart, ratio, null);
       expect(a).toEqual({ type: 'restore', state: { ...phoneStart, view: { mode: 'wheel' } } });
     }
@@ -63,8 +63,13 @@ describe('resolvePinch', () => {
     expect(resolvePinch(layout, { ...initialState, selected: idx('angry') }, 0.8, idx('angry'))).toBeNull();
   });
 
+  test('pinch in just either side of PINCH_IN', () => {
+    expect(resolvePinch(layout, initialState, 1.34, idx('sad'))).toBeNull();
+    expect(resolvePinch(layout, initialState, 1.36, idx('sad'))).toEqual({ type: 'open', segment: idx('sad') });
+  });
+
   test('ratios between thresholds do nothing', () => {
-    for (const r of [0.87, 0.95, 1, 1.1, 1.15]) {
+    for (const r of [0.8, 0.95, 1, 1.2, 1.35]) {
       expect(resolvePinch(layout, opened('angry/aggressive'), r, idx('angry/aggressive')), String(r)).toBeNull();
       expect(resolvePinch(layout, initialState, r, idx('sad')), String(r)).toBeNull();
     }

@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["sw.ts"]
+  "include": ["sw.ts", "strategy.ts"]
 }

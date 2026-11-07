@@ -1,0 +1,380 @@
+{
+  "scared": {
+    "sensations": []
+  },
+  "helpless": {
+    "sensations": []
+  },
+  "frightened": {
+    "sensations": []
+  },
+  "anxious": {
+    "sensations": []
+  },
+  "overwhelmed": {
+    "sensations": []
+  },
+  "worried": {
+    "sensations": []
+  },
+  "insecure": {
+    "sensations": []
+  },
+  "inadequate": {
+    "sensations": []
+  },
+  "inferior": {
+    "sensations": []
+  },
+  "weak": {
+    "sensations": []
+  },
+  "worthless": {
+    "sensations": []
+  },
+  "insignificant": {
+    "sensations": []
+  },
+  "rejected": {
+    "sensations": []
+  },
+  "excluded": {
+    "sensations": []
+  },
+  "persecuted": {
+    "sensations": []
+  },
+  "threatened": {
+    "sensations": []
+  },
+  "nervous": {
+    "sensations": []
+  },
+  "exposed": {
+    "sensations": []
+  },
+  "fearful": {
+    "sensations": []
+  },
+  "let-down": {
+    "sensations": []
+  },
+  "betrayed": {
+    "sensations": []
+  },
+  "resentful": {
+    "sensations": []
+  },
+  "humiliated": {
+    "sensations": []
+  },
+  "disrespected": {
+    "sensations": []
+  },
+  "ridiculed": {
+    "sensations": []
+  },
+  "bitter": {
+    "sensations": []
+  },
+  "indignant": {
+    "sensations": []
+  },
+  "violated": {
+    "sensations": []
+  },
+  "mad": {
+    "sensations": []
+  },
+  "furious": {
+    "sensations": []
+  },
+  "jealous": {
+    "sensations": []
+  },
+  "aggressive": {
+    "sensations": []
+  },
+  "provoked": {
+    "sensations": []
+  },
+  "hostile": {
+    "sensations": []
+  },
+  "frustrated": {
+    "sensations": []
+  },
+  "infuriated": {
+    "sensations": []
+  },
+  "annoyed": {
+    "sensations": []
+  },
+  "distant": {
+    "sensations": []
+  },
+  "withdrawn": {
+    "sensations": []
+  },
+  "numb": {
+    "sensations": []
+  },
+  "critical": {
+    "sensations": []
+  },
+  "skeptical": {
+    "sensations": []
+  },
+  "dismissive": {
+    "sensations": []
+  },
+  "angry": {
+    "sensations": []
+  },
+  "disapproving": {
+    "sensations": []
+  },
+  "judgmental": {
+    "sensations": []
+  },
+  "embarrassed": {
+    "sensations": []
+  },
+  "disappointed": {
+    "sensations": []
+  },
+  "appalled": {
+    "sensations": []
+  },
+  "revolted": {
+    "sensations": []
+  },
+  "awful": {
+    "sensations": []
+  },
+  "nauseated": {
+    "sensations": []
+  },
+  "detestable": {
+    "sensations": []
+  },
+  "repelled": {
+    "sensations": []
+  },
+  "horrified": {
+    "sensations": []
+  },
+  "hesitant": {
+    "sensations": []
+  },
+  "disgusted": {
+    "sensations": []
+  },
+  "hurt": {
+    "sensations": []
+  },
+  "depressed": {
+    "sensations": []
+  },
+  "empty": {
+    "sensations": []
+  },
+  "guilty": {
+    "sensations": []
+  },
+  "remorseful": {
+    "sensations": []
+  },
+  "ashamed": {
+    "sensations": []
+  },
+  "despair": {
+    "sensations": []
+  },
+  "powerless": {
+    "sensations": []
+  },
+  "grief": {
+    "sensations": []
+  },
+  "vulnerable": {
+    "sensations": []
+  },
+  "fragile": {
+    "sensations": []
+  },
+  "victimized": {
+    "sensations": []
+  },
+  "lonely": {
+    "sensations": []
+  },
+  "abandoned": {
+    "sensations": []
+  },
+  "isolated": {
+    "sensations": []
+  },
+  "sad": {
+    "sensations": []
+  },
+  "optimistic": {
+    "sensations": []
+  },
+  "inspired": {
+    "sensations": []
+  },
+  "hopeful": {
+    "sensations": []
+  },
+  "trusting": {
+    "sensations": []
+  },
+  "intimate": {
+    "sensations": []
+  },
+  "sensitive": {
+    "sensations": []
+  },
+  "peaceful": {
+    "sensations": []
+  },
+  "thankful": {
+    "sensations": []
+  },
+  "loving": {
+    "sensations": []
+  },
+  "powerful": {
+    "sensations": []
+  },
+  "creative": {
+    "sensations": []
+  },
+  "courageous": {
+    "sensations": []
+  },
+  "accepted": {
+    "sensations": []
+  },
+  "valued": {
+    "sensations": []
+  },
+  "respected": {
+    "sensations": []
+  },
+  "proud": {
+    "sensations": []
+  },
+  "confident": {
+    "sensations": []
+  },
+  "successful": {
+    "sensations": []
+  },
+  "interested": {
+    "sensations": []
+  },
+  "inquisitive": {
+    "sensations": []
+  },
+  "curious": {
+    "sensations": []
+  },
+  "content": {
+    "sensations": []
+  },
+  "joyful": {
+    "sensations": []
+  },
+  "free": {
+    "sensations": []
+  },
+  "playful": {
+    "sensations": []
+  },
+  "cheeky": {
+    "sensations": []
+  },
+  "aroused": {
+    "sensations": []
+  },
+  "happy": {
+    "sensations": []
+  },
+  "excited": {
+    "sensations": []
+  },
+  "energetic": {
+    "sensations": []
+  },
+  "eager": {
+    "sensations": []
+  },
+  "amazed": {
+    "sensations": []
+  },
+  "awe": {
+    "sensations": []
+  },
+  "astonished": {
+    "sensations": []
+  },
+  "confused": {
+    "sensations": []
+  },
+  "perplexed": {
+    "sensations": []
+  },
+  "disillusioned": {
+    "sensations": []
+  },
+  "startled": {
+    "sensations": []
+  },
+  "dismayed": {
+    "sensations": []
+  },
+  "shocked": {
+    "sensations": []
+  },
+  "surprised": {
+    "sensations": []
+  },
+  "tired": {
+    "sensations": []
+  },
+  "unfocused": {
+    "sensations": []
+  },
+  "sleepy": {
+    "sensations": []
+  },
+  "stressed": {
+    "sensations": []
+  },
+  "out-of-control": {
+    "sensations": []
+  },
+  "busy": {
+    "sensations": []
+  },
+  "rushed": {
+    "sensations": []
+  },
+  "pressured": {
+    "sensations": []
+  },
+  "bored": {
+    "sensations": []
+  },
+  "apathetic": {
+    "sensations": []
+  },
+  "indifferent": {
+    "sensations": []
+  },
+  "bad": {
+    "sensations": []
+  }
+}

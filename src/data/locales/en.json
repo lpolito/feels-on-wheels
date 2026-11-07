@@ -1,0 +1,529 @@
+{
+  "meta": {
+    "lang": "en",
+    "dir": "ltr"
+  },
+  "ui": {
+    "prompt": "How are you feeling? Spin to explore, tap to choose.",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "close": "Clear selection",
+    "narrowDown": "Narrow it down",
+    "youMightNotice": "You might notice",
+    "closeTo": "Close to",
+    "theme": "Theme",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "wheelLabel": "Feelings wheel",
+    "inPath": "{label}. In {path}.",
+    "path": "Path"
+  },
+  "feelings": {
+    "scared": {
+      "label": "Scared",
+      "definition": ""
+    },
+    "helpless": {
+      "label": "Helpless",
+      "definition": ""
+    },
+    "frightened": {
+      "label": "Frightened",
+      "definition": ""
+    },
+    "anxious": {
+      "label": "Anxious",
+      "definition": ""
+    },
+    "overwhelmed": {
+      "label": "Overwhelmed",
+      "definition": ""
+    },
+    "worried": {
+      "label": "Worried",
+      "definition": ""
+    },
+    "insecure": {
+      "label": "Insecure",
+      "definition": ""
+    },
+    "inadequate": {
+      "label": "Inadequate",
+      "definition": ""
+    },
+    "inferior": {
+      "label": "Inferior",
+      "definition": ""
+    },
+    "weak": {
+      "label": "Weak",
+      "definition": ""
+    },
+    "worthless": {
+      "label": "Worthless",
+      "definition": ""
+    },
+    "insignificant": {
+      "label": "Insignificant",
+      "definition": ""
+    },
+    "rejected": {
+      "label": "Rejected",
+      "definition": ""
+    },
+    "excluded": {
+      "label": "Excluded",
+      "definition": ""
+    },
+    "persecuted": {
+      "label": "Persecuted",
+      "definition": ""
+    },
+    "threatened": {
+      "label": "Threatened",
+      "definition": ""
+    },
+    "nervous": {
+      "label": "Nervous",
+      "definition": ""
+    },
+    "exposed": {
+      "label": "Exposed",
+      "definition": ""
+    },
+    "fearful": {
+      "label": "Fearful",
+      "definition": ""
+    },
+    "let-down": {
+      "label": "Let Down",
+      "definition": ""
+    },
+    "betrayed": {
+      "label": "Betrayed",
+      "definition": ""
+    },
+    "resentful": {
+      "label": "Resentful",
+      "definition": ""
+    },
+    "humiliated": {
+      "label": "Humiliated",
+      "definition": ""
+    },
+    "disrespected": {
+      "label": "Disrespected",
+      "definition": ""
+    },
+    "ridiculed": {
+      "label": "Ridiculed",
+      "definition": ""
+    },
+    "bitter": {
+      "label": "Bitter",
+      "definition": ""
+    },
+    "indignant": {
+      "label": "Indignant",
+      "definition": ""
+    },
+    "violated": {
+      "label": "Violated",
+      "definition": ""
+    },
+    "mad": {
+      "label": "Mad",
+      "definition": ""
+    },
+    "furious": {
+      "label": "Furious",
+      "definition": ""
+    },
+    "jealous": {
+      "label": "Jealous",
+      "definition": ""
+    },
+    "aggressive": {
+      "label": "Aggressive",
+      "definition": ""
+    },
+    "provoked": {
+      "label": "Provoked",
+      "definition": ""
+    },
+    "hostile": {
+      "label": "Hostile",
+      "definition": ""
+    },
+    "frustrated": {
+      "label": "Frustrated",
+      "definition": ""
+    },
+    "infuriated": {
+      "label": "Infuriated",
+      "definition": ""
+    },
+    "annoyed": {
+      "label": "Annoyed",
+      "definition": ""
+    },
+    "distant": {
+      "label": "Distant",
+      "definition": ""
+    },
+    "withdrawn": {
+      "label": "Withdrawn",
+      "definition": ""
+    },
+    "numb": {
+      "label": "Numb",
+      "definition": ""
+    },
+    "critical": {
+      "label": "Critical",
+      "definition": ""
+    },
+    "skeptical": {
+      "label": "Skeptical",
+      "definition": ""
+    },
+    "dismissive": {
+      "label": "Dismissive",
+      "definition": ""
+    },
+    "angry": {
+      "label": "Angry",
+      "definition": ""
+    },
+    "disapproving": {
+      "label": "Disapproving",
+      "definition": ""
+    },
+    "judgmental": {
+      "label": "Judgmental",
+      "definition": ""
+    },
+    "embarrassed": {
+      "label": "Embarrassed",
+      "definition": ""
+    },
+    "disappointed": {
+      "label": "Disappointed",
+      "definition": ""
+    },
+    "appalled": {
+      "label": "Appalled",
+      "definition": ""
+    },
+    "revolted": {
+      "label": "Revolted",
+      "definition": ""
+    },
+    "awful": {
+      "label": "Awful",
+      "definition": ""
+    },
+    "nauseated": {
+      "label": "Nauseated",
+      "definition": ""
+    },
+    "detestable": {
+      "label": "Detestable",
+      "definition": ""
+    },
+    "repelled": {
+      "label": "Repelled",
+      "definition": ""
+    },
+    "horrified": {
+      "label": "Horrified",
+      "definition": ""
+    },
+    "hesitant": {
+      "label": "Hesitant",
+      "definition": ""
+    },
+    "disgusted": {
+      "label": "Disgusted",
+      "definition": ""
+    },
+    "hurt": {
+      "label": "Hurt",
+      "definition": ""
+    },
+    "depressed": {
+      "label": "Depressed",
+      "definition": ""
+    },
+    "empty": {
+      "label": "Empty",
+      "definition": ""
+    },
+    "guilty": {
+      "label": "Guilty",
+      "definition": ""
+    },
+    "remorseful": {
+      "label": "Remorseful",
+      "definition": ""
+    },
+    "ashamed": {
+      "label": "Ashamed",
+      "definition": ""
+    },
+    "despair": {
+      "label": "Despair",
+      "definition": ""
+    },
+    "powerless": {
+      "label": "Powerless",
+      "definition": ""
+    },
+    "grief": {
+      "label": "Grief",
+      "definition": ""
+    },
+    "vulnerable": {
+      "label": "Vulnerable",
+      "definition": ""
+    },
+    "fragile": {
+      "label": "Fragile",
+      "definition": ""
+    },
+    "victimized": {
+      "label": "Victimized",
+      "definition": ""
+    },
+    "lonely": {
+      "label": "Lonely",
+      "definition": ""
+    },
+    "abandoned": {
+      "label": "Abandoned",
+      "definition": ""
+    },
+    "isolated": {
+      "label": "Isolated",
+      "definition": ""
+    },
+    "sad": {
+      "label": "Sad",
+      "definition": ""
+    },
+    "optimistic": {
+      "label": "Optimistic",
+      "definition": ""
+    },
+    "inspired": {
+      "label": "Inspired",
+      "definition": ""
+    },
+    "hopeful": {
+      "label": "Hopeful",
+      "definition": ""
+    },
+    "trusting": {
+      "label": "Trusting",
+      "definition": ""
+    },
+    "intimate": {
+      "label": "Intimate",
+      "definition": ""
+    },
+    "sensitive": {
+      "label": "Sensitive",
+      "definition": ""
+    },
+    "peaceful": {
+      "label": "Peaceful",
+      "definition": ""
+    },
+    "thankful": {
+      "label": "Thankful",
+      "definition": ""
+    },
+    "loving": {
+      "label": "Loving",
+      "definition": ""
+    },
+    "powerful": {
+      "label": "Powerful",
+      "definition": ""
+    },
+    "creative": {
+      "label": "Creative",
+      "definition": ""
+    },
+    "courageous": {
+      "label": "Courageous",
+      "definition": ""
+    },
+    "accepted": {
+      "label": "Accepted",
+      "definition": ""
+    },
+    "valued": {
+      "label": "Valued",
+      "definition": ""
+    },
+    "respected": {
+      "label": "Respected",
+      "definition": ""
+    },
+    "proud": {
+      "label": "Proud",
+      "definition": ""
+    },
+    "confident": {
+      "label": "Confident",
+      "definition": ""
+    },
+    "successful": {
+      "label": "Successful",
+      "definition": ""
+    },
+    "interested": {
+      "label": "Interested",
+      "definition": ""
+    },
+    "inquisitive": {
+      "label": "Inquisitive",
+      "definition": ""
+    },
+    "curious": {
+      "label": "Curious",
+      "definition": ""
+    },
+    "content": {
+      "label": "Content",
+      "definition": ""
+    },
+    "joyful": {
+      "label": "Joyful",
+      "definition": ""
+    },
+    "free": {
+      "label": "Free",
+      "definition": ""
+    },
+    "playful": {
+      "label": "Playful",
+      "definition": ""
+    },
+    "cheeky": {
+      "label": "Cheeky",
+      "definition": ""
+    },
+    "aroused": {
+      "label": "Aroused",
+      "definition": ""
+    },
+    "happy": {
+      "label": "Happy",
+      "definition": ""
+    },
+    "excited": {
+      "label": "Excited",
+      "definition": ""
+    },
+    "energetic": {
+      "label": "Energetic",
+      "definition": ""
+    },
+    "eager": {
+      "label": "Eager",
+      "definition": ""
+    },
+    "amazed": {
+      "label": "Amazed",
+      "definition": ""
+    },
+    "awe": {
+      "label": "Awe",
+      "definition": ""
+    },
+    "astonished": {
+      "label": "Astonished",
+      "definition": ""
+    },
+    "confused": {
+      "label": "Confused",
+      "definition": ""
+    },
+    "perplexed": {
+      "label": "Perplexed",
+      "definition": ""
+    },
+    "disillusioned": {
+      "label": "Disillusioned",
+      "definition": ""
+    },
+    "startled": {
+      "label": "Startled",
+      "definition": ""
+    },
+    "dismayed": {
+      "label": "Dismayed",
+      "definition": ""
+    },
+    "shocked": {
+      "label": "Shocked",
+      "definition": ""
+    },
+    "surprised": {
+      "label": "Surprised",
+      "definition": ""
+    },
+    "tired": {
+      "label": "Tired",
+      "definition": ""
+    },
+    "unfocused": {
+      "label": "Unfocused",
+      "definition": ""
+    },
+    "sleepy": {
+      "label": "Sleepy",
+      "definition": ""
+    },
+    "stressed": {
+      "label": "Stressed",
+      "definition": ""
+    },
+    "out-of-control": {
+      "label": "Out of Control",
+      "definition": ""
+    },
+    "busy": {
+      "label": "Busy",
+      "definition": ""
+    },
+    "rushed": {
+      "label": "Rushed",
+      "definition": ""
+    },
+    "pressured": {
+      "label": "Pressured",
+      "definition": ""
+    },
+    "bored": {
+      "label": "Bored",
+      "definition": ""
+    },
+    "apathetic": {
+      "label": "Apathetic",
+      "definition": ""
+    },
+    "indifferent": {
+      "label": "Indifferent",
+      "definition": ""
+    },
+    "bad": {
+      "label": "Bad",
+      "definition": ""
+    }
+  },
+  "sensations": {}
+}

@@ -1,6 +1,5 @@
 import { expect, type Page } from '@playwright/test';
 
-
 export async function open(page: Page, hash = ''): Promise<void> {
   await page.goto(`/${hash}`);
   await page.waitForFunction(() => window.__fw !== undefined);
@@ -19,8 +18,11 @@ export async function tapPath(page: Page, path: string): Promise<void> {
   await idle(page);
 }
 
-export const title = (page: Page) => page.locator('fw-panel h2');
-export const prompt = (page: Page) => page.locator('fw-panel .fw-prompt');
+export const state = (page: Page) => page.evaluate(() => window.__fw.state());
+export const selectedPath = (page: Page) => page.evaluate(() => window.__fw.pathOf(window.__fw.state().selected));
+export const head = (page: Page) => page.locator('fw-card .fw-card-head');
+export const title = (page: Page) => page.locator('fw-card .fw-card-title');
+export const hint = (page: Page) => page.locator('fw-hint');
 
 export async function expectTitle(page: Page, text: string): Promise<void> {
   await expect(title(page)).toHaveText(text);

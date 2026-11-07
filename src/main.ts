@@ -1,27 +1,30 @@
 import { data } from './boot';
 import { createAnnouncer } from './a11y/announce';
-import { createA11yTree, describe } from './a11y/tree';
-import {
-  createCameraController, overviewCamera, ringFocusCamera, shouldStartZoomed, type CameraOpts,
-} from './camera';
+import { announceFor, createA11yTree } from './a11y/tree';
+import { createCameraController, type CameraOpts } from './camera';
 import { createController } from './controller';
+import { t } from './i18n';
 import { attachGestures } from './input/gestures';
-import { keyToAction, type KeyAction } from './input/keyboard';
+import { keyToAction } from './input/keyboard';
 import { TAU, normAngle, type Viewport } from './model/geometry';
 import { buildLayout, litMask } from './model/layout';
 import { buildFillTable, readPalette } from './render/colors';
 import { createWheelRenderer } from './render/wheel';
-import { createStore, type Action, type State } from './state/store';
-import { createHistoryWriter, defaultState } from './state/history';
+import { createStore, initialState, type Action, type State } from './state/store';
+import { createHistoryWriter, historyOp, startState } from './state/history';
 import { fromHash, toHash } from './state/url';
-import { panelModel, type FwPanel, type FwPath } from './ui/panel';
+import { cardModel, type FwCard } from './ui/card';
+import type { FwHint } from './ui/hint';
 import { applyPref, readPref, resolvedTheme, safeStorage, writePref, type ThemePref } from './ui/theme';
 import type { FwToolbar } from './ui/toolbar';
+import './ui/card';
+import './ui/hint';
 import './ui/toolbar';
 
 const FADE_MS = 150;
-const SEEN_INTRO_KEY = 'fw.seenIntro';
-const INTRO_SEGMENTS = 1.5;
+const PULSE_MS = 180;
+/** Spec §5.3: on phones the card is capped at 45dvh, so ring views centre in the 55% above it. */
+const PHONE_ANCHOR_Y = 0.275;
 
 const $ = <T extends Element>(sel: string): T => document.querySelector<T>(sel)!;
 const media = (q: string): MediaQueryList => matchMedia(q);
@@ -32,9 +35,10 @@ const layout = buildLayout(wheel);
 const app = $<HTMLElement>('#app');
 const stage = $<HTMLElement>('#stage');
 const canvas = $<HTMLCanvasElement>('#wheel');
-const panel = $<FwPanel>('fw-panel');
-const pathEl = $<FwPath>('fw-path');
+const card = $<FwCard>('fw-card');
+const hint = $<FwHint>('fw-hint');
 const toolbar = $<FwToolbar>('fw-toolbar');
+const themeMeta = $<HTMLMetaElement>('#theme-color');
 const announce = createAnnouncer($<HTMLElement>('#announcer'));
 const storage = safeStorage();
 
@@ -47,18 +51,22 @@ function measure(): { vp: Viewport; opts: CameraOpts } {
   const { width, height } = stage.getBoundingClientRect();
   const whole = app.getBoundingClientRect();
   const remPx = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  const portrait = whole.width < 720 || whole.height > whole.width;
   return {
     vp: { width, height, radius: Math.max(Math.min(width, height) / 2 - 8, 1) },
-    opts: { remPx, portrait: whole.width < 720 || whole.height > whole.width },
+    opts: { remPx, portrait, anchorY: portrait ? PHONE_ANCHOR_Y : 0.5 },
   };
 }
 
 let { vp, opts } = measure();
 
-// ── State ────────────────────────────────────────────────────────────────
+// ── State (spec §3.2) ────────────────────────────────────────────────────
 const fromUrl = fromHash(layout, location.hash);
-const startZoomed = fromUrl === null && shouldStartZoomed(layout, vp);
-const store = createStore(layout, fromUrl ?? defaultState(layout, vp));
+/** The base-URL state for this page load; Back to the base restores it on phones. */
+const start = startState(layout, vp, Math.random);
+const phoneStart = start !== initialState;
+const beganAtBase = fromUrl === null;
+const store = createStore(layout, fromUrl ?? start);
 
 const camera = createCameraController({
   now: () => performance.now(),
@@ -70,9 +78,14 @@ const controller = createController(layout, store, camera, vp, opts);
 
 // ── Rendering ────────────────────────────────────────────────────────────
 const renderer = createWheelRenderer(canvas, layout);
-let lit: Uint8Array = litMask(layout, store.get().selected);
-let prevLit: Uint8Array = lit.slice();
+const allLit = litMask(layout, null);
+/** Spec §4.2: cells fade only while a word is opened. */
+const litFor = (s: State): Uint8Array => (s.opened ? litMask(layout, s.selected) : allLit);
+const openedKey = (s: State): number | null => (s.opened ? s.selected : null);
+let lit: Uint8Array = litFor(store.get());
+let prevLit: Uint8Array = lit;
 let fadeStart = -Infinity;
+let pulseStart = -Infinity;
 let pendingDraw = 0;
 const TEST = import.meta.env.MODE === 'test';
 const drawTimes: number[] = [];
@@ -80,19 +93,20 @@ const drawTimes: number[] = [];
 function frame(): void {
   pendingDraw = 0;
   const s = store.get();
-  const fadeT = reducedMotion.matches ? 1 : Math.min(1, (performance.now() - fadeStart) / FADE_MS);
-  const t0 = TEST ? performance.now() : 0;
+  const now = performance.now();
+  const fadeT = reducedMotion.matches ? 1 : Math.min(1, (now - fadeStart) / FADE_MS);
+  const pulseT = reducedMotion.matches ? 1 : Math.min(1, (now - pulseStart) / PULSE_MS);
+  const t0 = TEST ? now : 0;
   renderer.draw({
-    cam: camera.current, vp, lit, prevLit, fadeT,
-    focused: s.focused,
-    showFocus: tree.hasFocus() || (s.view.mode === 'ring' && !s.interacted),
+    cam: camera.current, vp, lit, prevLit, fadeT, pulseT,
+    selected: s.selected, opened: s.opened,
     mode: s.view.mode, remPx: opts.remPx, moreContrast: moreContrast.matches,
   });
   if (TEST) {
     drawTimes.push(performance.now() - t0);
     if (drawTimes.length > 5000) drawTimes.splice(0, 2500);
   }
-  if (fadeT < 1) requestDraw();
+  if (fadeT < 1 || pulseT < 1) requestDraw();
 }
 
 function requestDraw(): void {
@@ -120,6 +134,9 @@ function refreshColors(): void {
     buildFillTable(palette, layout.rings.length, resolvedTheme(themePref, darkScheme), { moreContrast: moreContrast.matches }),
     palette,
   );
+  // Spec §5.3: the browser chrome follows the resolved theme, including the manual override.
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  if (bg) themeMeta.content = bg;
   requestDraw();
 }
 
@@ -131,93 +148,67 @@ app.addEventListener('fw-theme', (e) => {
   refreshColors();
 });
 
-// ── Accessible tree, panel, toolbar ──────────────────────────────────────
-function dispatch(a: KeyAction): void {
-  if (a.type === 'zoomToggle') {
-    store.dispatch({ type: store.get().view.mode === 'overview' ? 'zoomIn' : 'zoomOut' });
-  } else {
-    store.dispatch(a);
-  }
-}
-
+// ── Accessible tree, card, hint, toolbar ─────────────────────────────────
+const dispatch = (a: Action): void => store.dispatch(a);
 const tree = createA11yTree($<HTMLElement>('#a11y-tree'), layout, dispatch);
-tree.onFocusChange(requestDraw);
-app.addEventListener('fw-action', (e) => dispatch((e as CustomEvent<Action | KeyAction>).detail));
+app.addEventListener('fw-action', (e) => dispatch((e as CustomEvent<Action>).detail));
+app.addEventListener('fw-focus-lost', () => tree.focusSelected());
 
+// Spec §3.5: keys work from the page body and the wheel; inputs and the card's buttons keep theirs, except Escape.
 document.addEventListener('keydown', (e) => {
-  const target = e.target as HTMLElement | null;
-  if (target?.closest('[role="tree"], input, select, textarea')) return;
-  if (e.key !== 'Escape' && e.key !== '+' && e.key !== '=' && e.key !== '-') return;
+  if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
   const action = keyToAction(e.key);
-  if (action) {
-    e.preventDefault();
-    dispatch(action);
-  }
+  if (!action) return;
+  const target = e.target as HTMLElement | null;
+  if (e.key !== 'Escape' && target?.closest('#float, fw-toolbar, input, select, textarea, button')) return;
+  e.preventDefault();
+  dispatch(action);
 });
 
-/** Spec §6.1: in the wide overview the card never covers the selected segment. */
-function placePanel(s: State): void {
-  let left = false;
-  if (s.view.mode === 'overview' && s.selected !== null && !opts.portrait) {
-    const seg = layout.segments[s.selected]!;
-    const ring = layout.rings[seg.ring]!;
-    const c = camera.current;
-    const r = panel.getBoundingClientRect();
-    const stageRect = stage.getBoundingClientRect();
-    // The card's rectangle when docked right (mirror it if it currently sits left).
-    const docked = app.dataset['panelSide'] === 'left'
-      ? { left: stageRect.width - (r.right - stageRect.left), right: stageRect.width - (r.left - stageRect.left) }
-      : { left: r.left - stageRect.left, right: r.right - stageRect.left };
-    const top = r.top - stageRect.top;
-    const bottom = r.bottom - stageRect.top;
-    for (const frac of [0, 0.5, 1]) {
-      for (const rad of [ring.inner, (ring.inner + ring.outer) / 2, ring.outer]) {
-        const a = seg.start + (seg.end - seg.start) * frac + c.rotation;
-        const x = c.cx + rad * vp.radius * c.scale * Math.cos(a);
-        const y = c.cy + rad * vp.radius * c.scale * Math.sin(a);
-        if (x >= docked.left && x <= docked.right && y >= top && y <= bottom) left = true;
-      }
-    }
-  }
-  if (left) app.dataset['panelSide'] = 'left';
-  else delete app.dataset['panelSide'];
-}
+// A mouse click on the wheel puts keyboard focus in the tree, so the arrows work at once.
+canvas.addEventListener('pointerup', (e) => {
+  if (e.pointerType === 'mouse') tree.focusSelected();
+});
+
+const hintText = (s: State): string | null =>
+  s.hinted ? t(beganAtBase && phoneStart ? 'hintSpin' : 'hintChoose') : null;
 
 function renderUi(s: State): void {
-  const model = panelModel(layout, feelings, s);
-  panel.model = model;
-  pathEl.model = model;
-  toolbar.zoomed = s.view.mode === 'ring';
+  card.model = cardModel(layout, feelings, s);
+  hint.text = hintText(s);
+  toolbar.opened = s.opened;
   app.dataset['mode'] = s.view.mode;
   tree.update(s);
-  placePanel(s);
 }
 
-// ── URL & history ────────────────────────────────────────────────────────
-let restoring = false;
-const writeHistory = createHistoryWriter(history, () => performance.now());
+// ── URL & history (spec §3.6) ────────────────────────────────────────────
+const writer = createHistoryWriter(history, () => performance.now());
 
-store.subscribe((s, prev) => {
-  if (s.selected !== prev.selected) {
+store.subscribe((s, prev, a) => {
+  if (openedKey(s) !== openedKey(prev)) {
     prevLit = lit;
-    lit = litMask(layout, s.selected);
+    lit = litFor(s);
     fadeStart = performance.now();
-    if (s.selected !== null) announce(describe(layout, s.selected));
+    if (openedKey(s) !== null) pulseStart = fadeStart;
   }
+  const message = announceFor(layout, prev, s);
+  if (message) announce(message);
   renderUi(s);
   requestDraw();
-  if (!restoring) {
-    const hash = toHash(layout, s);
-    if (hash !== location.hash && !(hash === '' && location.hash === '')) {
-      writeHistory(hash === '' ? location.pathname + location.search : hash);
-    }
+  const op = historyOp(prev, s, a);
+  if (op !== 'none') {
+    const url = toHash(layout, s) || location.pathname + location.search;
+    if (op === 'push') writer.push(url);
+    else writer.replace(url);
   }
 });
 
 addEventListener('popstate', () => {
-  restoring = true;
-  store.dispatch({ type: 'restore', state: fromHash(layout, location.hash) ?? defaultState(layout, vp) });
-  restoring = false;
+  const cur = store.get();
+  const restored = fromHash(layout, location.hash)
+    ?? (beganAtBase && phoneStart ? start : { ...cur, opened: false, view: { mode: 'wheel' } as const });
+  // The hint never comes back once dismissed.
+  store.dispatch({ type: 'restore', state: { ...restored, hinted: cur.hinted && restored.hinted } });
 });
 
 // ── Input & resize ───────────────────────────────────────────────────────
@@ -227,33 +218,14 @@ new ResizeObserver(() => {
   ({ vp, opts } = measure());
   renderer.resize(vp.width, vp.height, devicePixelRatio || 1);
   controller.setViewport(vp, opts);
-  placePanel(store.get());
   drawNow();
 }).observe(stage);
 
-// ── First load (spec §4.6) ───────────────────────────────────────────────
+// ── First load ───────────────────────────────────────────────────────────
 renderer.resize(vp.width, vp.height, devicePixelRatio || 1);
 refreshColors();
 renderUi(store.get());
-
-let seenIntro = false;
-try {
-  seenIntro = storage?.getItem(SEEN_INTRO_KEY) === '1';
-} catch {
-  seenIntro = true;
-}
-if (startZoomed && !seenIntro && !reducedMotion.matches) {
-  const target = { ...camera.current };
-  const core = layout.rings[0]!.segments.map((i) => layout.segments[i]!.end - layout.segments[i]!.start).sort((a, b) => a - b);
-  const offset = INTRO_SEGMENTS * core[Math.floor(core.length / 2)]!;
-  camera.jump(overviewCamera(vp, target.rotation - offset));
-  camera.animateTo(ringFocusCamera(layout, 0, vp, target.rotation, opts));
-  try {
-    storage?.setItem(SEEN_INTRO_KEY, '1');
-  } catch {
-    // Storage unavailable: the intro may play again next visit.
-  }
-}
+if (beganAtBase && phoneStart && !reducedMotion.matches) controller.playIntro();
 drawNow();
 
 // ── Offline support (spec §6.5) ─────────────────────────────────────────
@@ -281,6 +253,7 @@ if (TEST) {
     __fw: {
       segmentScreenPoint: pointOf,
       state: () => store.get(),
+      startState: () => start,
       camera: () => ({ ...camera.current }),
       moving: () => camera.moving,
       drawTimes: () => drawTimes.slice(),

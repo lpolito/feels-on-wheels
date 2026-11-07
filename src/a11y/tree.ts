@@ -1,12 +1,12 @@
 import { label, t } from '../i18n';
-import { keyToAction, type KeyAction } from '../input/keyboard';
+import { keyToAction } from '../input/keyboard';
 import type { Layout } from '../model/layout';
-import type { State } from '../state/store';
+import type { Action, State } from '../state/store';
 
 export interface A11yTree {
   update(s: State): void;
-  hasFocus(): boolean;
-  onFocusChange(fn: (focused: boolean) => void): void;
+  /** Moves DOM focus into the tree (the selection, or the first core word) without scrolling. */
+  focusSelected(): void;
 }
 
 /** "Hostile. In Angry, Aggressive." — or "Angry." for a core word. */
@@ -19,14 +19,32 @@ export function describe(layout: Layout, i: number): string {
   return ancestors.length === 0 ? t('labelOnly', { label: own }) : t('inPath', { label: own, path: ancestors.join(', ') });
 }
 
+function ancestorLabels(layout: Layout, i: number): string[] {
+  const out: string[] = [];
+  for (let p = layout.segments[i]!.parent; p >= 0; p = layout.segments[p]!.parent) out.unshift(label(layout.segments[p]!.feelingId));
+  return out;
+}
+
+/** Spec §6: what to announce for a transition, or null. */
+export function announceFor(layout: Layout, prev: State, next: State): string | null {
+  const own = (i: number) => label(layout.segments[i]!.feelingId);
+  if (next.opened && next.selected !== null && (!prev.opened || prev.selected !== next.selected)) {
+    const path = ancestorLabels(layout, next.selected);
+    return path.length === 0
+      ? t('openedCore', { label: own(next.selected) })
+      : t('opened', { label: own(next.selected), path: path.join(', ') });
+  }
+  if (prev.opened && !next.opened && prev.selected !== null) return t('closed', { label: own(prev.selected) });
+  if (next.selected !== null && next.selected !== prev.selected) return describe(layout, next.selected);
+  return null;
+}
+
 /** Spec §8: a visually hidden role="tree" mirroring the wheel, with roving tabindex. */
-export function createA11yTree(root: HTMLElement, layout: Layout, dispatch: (a: KeyAction) => void): A11yTree {
+export function createA11yTree(root: HTMLElement, layout: Layout, dispatch: (a: Action) => void): A11yTree {
   const els: HTMLLIElement[] = [];
-  const focusSubs: ((focused: boolean) => void)[] = [];
-  let state: State | null = null;
   let tabbable = -1;
   let selected: number | null = null;
-  let focusedInside = false;
+  let current: number | null = null;
 
   root.setAttribute('role', 'tree');
   root.setAttribute('aria-label', t('wheelLabel'));
@@ -63,41 +81,18 @@ export function createA11yTree(root: HTMLElement, layout: Layout, dispatch: (a: 
   root.append(top);
 
   root.addEventListener('keydown', (e) => {
-    if (!state) return;
-    const cursor = state.focused ?? layout.rings[0]!.segments[0]!;
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      dispatch({ type: 'select', segment: cursor });
-      return;
-    }
     const action = keyToAction(e.key);
     if (action) {
       e.preventDefault();
+      e.stopPropagation();
       dispatch(action);
     }
-  });
-  root.addEventListener('focusin', (e) => {
-    const li = (e.target as HTMLElement).closest<HTMLElement>('[role="treeitem"]');
-    if (!focusedInside) {
-      focusedInside = true;
-      for (const fn of focusSubs) fn(true);
-    }
-    if (li) {
-      const i = Number(li.dataset['index']);
-      if (state?.focused !== i) dispatch({ type: 'focus', segment: i });
-    }
-  });
-  root.addEventListener('focusout', (e) => {
-    const next = e.relatedTarget as Node | null;
-    if (next && root.contains(next)) return;
-    focusedInside = false;
-    for (const fn of focusSubs) fn(false);
   });
 
   return {
     update(s) {
-      state = s;
-      const want = s.focused ?? layout.rings[0]!.segments[0]!;
+      const want = s.selected ?? layout.rings[0]!.segments[0]!;
+      const hadFocus = root.contains(document.activeElement);
       if (want !== tabbable) {
         if (tabbable >= 0) els[tabbable]!.tabIndex = -1;
         els[want]!.tabIndex = 0;
@@ -108,18 +103,22 @@ export function createA11yTree(root: HTMLElement, layout: Layout, dispatch: (a: 
         if (s.selected !== null) els[s.selected]!.setAttribute('aria-selected', 'true');
         selected = s.selected;
       }
-      const open = new Set<number>();
-      for (const start of [s.focused, s.selected]) {
-        for (let p = start === null ? -1 : layout.segments[start]!.parent; p >= 0; p = layout.segments[p]!.parent) open.add(p);
+      const cur = s.opened ? s.selected : null;
+      if (cur !== current) {
+        if (current !== null) els[current]!.removeAttribute('aria-current');
+        if (cur !== null) els[cur]!.setAttribute('aria-current', 'true');
+        current = cur;
       }
+      const open = new Set<number>();
+      for (let p = s.selected === null ? -1 : layout.segments[s.selected]!.parent; p >= 0; p = layout.segments[p]!.parent) open.add(p);
       for (const seg of layout.segments) {
         if (seg.children.length > 0) els[seg.index]!.setAttribute('aria-expanded', String(open.has(seg.index)));
       }
-      if (focusedInside && document.activeElement !== els[want]) els[want]!.focus();
+      if (hadFocus && document.activeElement !== els[want]) els[want]!.focus({ preventScroll: true });
     },
-    hasFocus: () => focusedInside,
-    onFocusChange(fn) {
-      focusSubs.push(fn);
+    focusSelected() {
+      const el = els[tabbable >= 0 ? tabbable : layout.rings[0]!.segments[0]!]!;
+      if (document.activeElement !== el) el.focus({ preventScroll: true });
     },
   };
 }

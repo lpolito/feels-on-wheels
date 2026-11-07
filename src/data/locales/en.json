@@ -4,10 +4,6 @@
     "dir": "ltr"
   },
   "ui": {
-    "prompt": "How are you feeling? Spin to explore, tap to choose.",
-    "zoomIn": "Zoom in",
-    "zoomOut": "Zoom out",
-    "close": "Clear selection",
     "narrowDown": "Narrow it down",
     "youMightNotice": "You might notice",
     "closeTo": "Close to",

@@ -117,8 +117,10 @@ export class FwCard extends HTMLElement {
     head.setAttribute('aria-expanded', String(isOpen));
     head.addEventListener('click', () => this.#emit(isOpen ? { type: 'close' } : { type: 'activate' }));
     this.toggleAttribute('data-open', isOpen);
+    // Accordion pattern: the header button sits inside a heading, so the sections below have a parent.
+    const heading = h('h2', { className: 'fw-card-heading' }, head);
     if (!isOpen) {
-      this.replaceChildren(head);
+      this.replaceChildren(heading);
       return;
     }
 
@@ -148,7 +150,7 @@ export class FwCard extends HTMLElement {
         h('p', { className: 'fw-close-to' }, ...m.closeTo.map((c) => this.#link(c))),
       );
     }
-    this.replaceChildren(head, body);
+    this.replaceChildren(heading, body);
   }
 }
 

@@ -9,7 +9,8 @@ import { keyToAction } from './input/keyboard';
 import { TAU, normAngle, type Viewport } from './model/geometry';
 import { buildLayout, litMask } from './model/layout';
 import { buildFillTable, readPalette } from './render/colors';
-import { createWheelRenderer } from './render/wheel';
+import { createSpriteCache } from './render/sprites';
+import { createWheelRenderer, labelFont } from './render/wheel';
 import { createStore, initialState, type Action, type State } from './state/store';
 import { createHistoryWriter, historyOp, startState } from './state/history';
 import { fromHash, toHash } from './state/url';
@@ -77,7 +78,9 @@ const camera = createCameraController({
 const controller = createController(layout, store, camera, vp, opts);
 
 // ── Rendering ────────────────────────────────────────────────────────────
-const renderer = createWheelRenderer(canvas, layout);
+const makeCanvas = (w: number, h: number): HTMLCanvasElement | OffscreenCanvas =>
+  typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(w, h) : Object.assign(document.createElement('canvas'), { width: w, height: h });
+const renderer = createWheelRenderer(canvas, layout, undefined, createSpriteCache(makeCanvas, 600, labelFont));
 const allLit = litMask(layout, null);
 /** Spec §4.2: cells fade only while a word is opened. */
 const litFor = (s: State): Uint8Array => (s.opened ? litMask(layout, s.selected) : allLit);

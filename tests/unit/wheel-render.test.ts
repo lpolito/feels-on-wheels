@@ -193,4 +193,23 @@ describe('wheel renderer', () => {
     r.draw(frame(desk, { cam: overviewCamera(desk, 0.7) }));
     expect(rec.texts.length).toBe(first * 2);
   });
+
+  test('with a sprite cache, labels are blitted from it except the opened (pulsing) one', () => {
+    const hostile = layout.byPath.get('angry/aggressive/hostile')!;
+    const sel = layout.segments[hostile]!;
+    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, anchorY: 0.5 });
+    const lit = litMask(layout, hostile);
+    const sprited: string[] = [];
+    const scales: number[] = [];
+    const sprites = { size: 0, setScale: (d: number) => scales.push(d), draw: (_g: unknown, text: string) => { sprited.push(text); } };
+    const { canvas, ctx, rec } = fakeCanvas();
+    const r = createWheelRenderer(canvas, layout, ctx, sprites);
+    r.setColors(table, palette);
+    r.resize(1000, 1000, 2);
+    expect(scales).toEqual([2]);
+    r.draw(frame(desk, { cam, mode: 'ring', selected: hostile, opened: true, lit, prevLit: lit }));
+    expect(rec.texts).toEqual([label('hostile')]);
+    expect(sprited).toContain(label('provoked'));
+    expect(sprited).not.toContain(label('hostile'));
+  });
 });

@@ -3,6 +3,7 @@ import type { Layout } from '../model/layout';
 import { inWindow, viewWindow, type Camera, type Viewport, type ViewWindow } from '../model/geometry';
 import type { FillTable, Palette } from './colors';
 import { fitLabel, labelRotation, type Measure } from './labels';
+import type { SpriteCache } from './sprites';
 
 export interface Frame {
   cam: Camera;
@@ -30,6 +31,8 @@ export interface WheelRenderer {
 }
 
 const FONT_STACK = 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+/** The regular label font, shared with the sprite cache. */
+export const labelFont = (px: number): string => `600 ${px}px ${FONT_STACK}`;
 const MEASURE_PX = 100;
 const LABEL_PAD = 6;
 const LINE_HEIGHT = 1.15;
@@ -54,7 +57,10 @@ interface LabelCache { w: number; h: number; min: number; max: number; result: {
 
 const easeOut = (t: number): number => 1 - (1 - t) ** 3;
 
-export function createWheelRenderer(canvas: HTMLCanvasElement, layout: Layout, ctx?: CanvasRenderingContext2D): WheelRenderer {
+/** `sprites`: optional label bitmap cache (spec §7); every label but the opened one is blitted from it. */
+export function createWheelRenderer(
+  canvas: HTMLCanvasElement, layout: Layout, ctx?: CanvasRenderingContext2D, sprites?: SpriteCache,
+): WheelRenderer {
   const g = ctx ?? canvas.getContext('2d', { alpha: false })!;
   const texts = layout.segments.map((s) => label(s.feelingId));
   const widthAt100 = new Map<string, number>();
@@ -73,7 +79,7 @@ export function createWheelRenderer(canvas: HTMLCanvasElement, layout: Layout, c
     const cache = bold ? boldFonts : fonts;
     let f = cache.get(px);
     if (f === undefined) {
-      f = `${bold ? 800 : 600} ${px}px ${FONT_STACK}`;
+      f = bold ? `800 ${px}px ${FONT_STACK}` : labelFont(px);
       cache.set(px, f);
     }
     return f;
@@ -108,6 +114,19 @@ export function createWheelRenderer(canvas: HTMLCanvasElement, layout: Layout, c
 
   function drawLabel(lines: string[], px: number, bold: boolean, x: number, y: number, angle: number, scale: number, color: string): void {
     const rot = labelRotation(angle);
+    if (sprites && !bold) {
+      // Each line's centre, offset along the label's rotated vertical axis.
+      const lineGap = px * LINE_HEIGHT;
+      const top = -((lines.length - 1) * lineGap) / 2;
+      const ux = -Math.sin(rot);
+      const uy = Math.cos(rot);
+      for (let l = 0; l < lines.length; l++) {
+        const dy = top + l * lineGap;
+        sprites.draw(g, lines[l]!, px, color, x + ux * dy, y + uy * dy, rot);
+      }
+      stats.labelsDrawn++;
+      return;
+    }
     const cos = Math.cos(rot) * scale;
     const sin = Math.sin(rot) * scale;
     g.setTransform(dpr * cos, dpr * sin, -dpr * sin, dpr * cos, dpr * x, dpr * y);
@@ -158,6 +177,7 @@ export function createWheelRenderer(canvas: HTMLCanvasElement, layout: Layout, c
       cssW = w;
       cssH = h;
       dpr = ratio;
+      sprites?.setScale(ratio);
       canvas.width = Math.round(w * ratio);
       canvas.height = Math.round(h * ratio);
     },

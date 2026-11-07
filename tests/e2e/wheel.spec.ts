@@ -97,6 +97,37 @@ test.describe('desktop', () => {
     await expect(page.locator('[role="treeitem"][aria-selected="true"]')).toHaveAttribute('aria-label', 'Disgusted');
   });
 
+  test('arrows work after a Close-to link', async ({ page }) => {
+    await open(page, '#/core/angry/aggressive/hostile');
+    await page.locator('fw-card .fw-close-to button', { hasText: 'Provoked' }).click();
+    await idle(page);
+    expect(await selectedPath(page)).toBe('angry/aggressive/provoked');
+    await page.keyboard.press('ArrowDown');
+    await idle(page);
+    // Ring order: Provoked's next neighbour in the outer ring is Hostile.
+    expect(await selectedPath(page)).toBe('angry/aggressive/hostile');
+  });
+
+  test('Enter on a focused row activates it, not the wheel', async ({ page }) => {
+    await open(page, '#/core/angry');
+    await page.locator('fw-card ul.fw-rows button').first().focus();
+    await page.keyboard.press('Enter');
+    await idle(page);
+    expect(await page.evaluate(() => location.hash)).toBe('#/core/angry/let-down');
+  });
+
+  test('the theme picker keeps its choice', async ({ page }) => {
+    await open(page);
+    const picker = page.locator('fw-toolbar select');
+    await picker.selectOption('dark');
+    await tapPath(page, 'angry');
+    await tapPath(page, 'angry');
+    expect((await state(page)).opened).toBe(true);
+    await page.keyboard.press('Escape');
+    await idle(page);
+    await expect(picker).toHaveValue('dark');
+  });
+
   test('the card never moves the wheel', async ({ page }) => {
     await open(page);
     const none = await wheelBox(page);

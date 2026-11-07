@@ -130,6 +130,18 @@ describe('toChild / toParent', () => {
     expect(run(opened('angry'), { type: 'toParent' })).toEqual(selected('angry'));
   });
 
+  test('stepOut while opened opens the parent; on an opened core it closes', () => {
+    expect(run(opened('angry/aggressive/hostile'), { type: 'stepOut' })).toEqual(opened('angry/aggressive'));
+    expect(run(opened('angry'), { type: 'stepOut' })).toEqual(selected('angry'));
+  });
+
+  test('stepOut while only selected is a no-op apart from hinted', () => {
+    const s = selected('angry/aggressive');
+    expect(reduce(layout, s, { type: 'stepOut' })).toBe(s);
+    expect(run({ ...s, hinted: true }, { type: 'stepOut' })).toEqual(s);
+    expect(reduce(layout, { ...initialState, hinted: false }, { type: 'stepOut' }).selected).toBeNull();
+  });
+
   test('centerChild(angry/aggressive) is hostile', () => {
     expect(centerChild(layout, idx('angry/aggressive'))).toBe(idx('angry/aggressive/hostile'));
     expect(centerChild(layout, idx('angry/aggressive/hostile'))).toBeNull();
@@ -178,7 +190,7 @@ describe('hint and restore', () => {
     const user: Action[] = [
       { type: 'select', segment: idx('sad') }, { type: 'open', segment: idx('sad') }, { type: 'close' }, { type: 'clear' },
       { type: 'step', delta: 1 }, { type: 'toChild' }, { type: 'toParent' }, { type: 'activate' }, { type: 'escape' },
-      { type: 'dismissHint' },
+      { type: 'dismissHint' }, { type: 'stepOut' },
     ];
     for (const a of user) expect(run(phoneStart('angry'), a).hinted, a.type).toBe(false);
     expect(run(phoneStart('angry'), { type: 'settled', segment: idx('sad') }).hinted).toBe(true);

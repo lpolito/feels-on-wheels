@@ -5,7 +5,7 @@ import { createCameraController, type CameraOpts } from './camera';
 import { createController } from './controller';
 import { t } from './i18n';
 import { attachGestures } from './input/gestures';
-import { keyToAction } from './input/keyboard';
+import { keyTarget, routeKey } from './input/route';
 import { TAU, normAngle, type Viewport } from './model/geometry';
 import { buildLayout, litMask } from './model/layout';
 import { buildFillTable, readPalette } from './render/colors';
@@ -153,6 +153,8 @@ for (const mq of [darkScheme, moreContrast, forcedColors]) mq.addEventListener('
 toolbar.theme = themePref;
 app.addEventListener('fw-theme', (e) => {
   themePref = (e as CustomEvent<ThemePref>).detail;
+  // Spec v1.2 §5.4: the picker's own re-syncs (on every open and close) must show the new choice.
+  toolbar.theme = themePref;
   writePref(storage, themePref);
   refreshColors();
 });
@@ -163,13 +165,12 @@ const tree = createA11yTree($<HTMLElement>('#a11y-tree'), layout, dispatch);
 app.addEventListener('fw-action', (e) => dispatch((e as CustomEvent<Action>).detail));
 app.addEventListener('fw-focus-lost', () => tree.focusSelected());
 
-// Spec §3.5: keys work from the page body and the wheel; inputs and the card's buttons keep theirs, except Escape.
+// Spec v1.2 §3.6: keys work from the page, the wheel and the card's and toolbar's buttons. Buttons keep Enter and
+// Space; inputs, selects and textareas keep everything but Escape.
 document.addEventListener('keydown', (e) => {
-  if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey) return;
-  const action = keyToAction(e.key);
+  if (e.defaultPrevented) return;
+  const action = routeKey(e.key, keyTarget(e.target as Element | null), e.metaKey || e.ctrlKey || e.altKey);
   if (!action) return;
-  const target = e.target as HTMLElement | null;
-  if (e.key !== 'Escape' && target?.closest('#float, fw-toolbar, input, select, textarea, button')) return;
   e.preventDefault();
   dispatch(action);
 });

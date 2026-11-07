@@ -20,6 +20,8 @@ export type Action =
   | { type: 'step'; delta: 1 | -1 }
   | { type: 'toChild' }
   | { type: 'toParent' }
+  /** '−' (spec v1.2 §3.6): like toParent while opened; otherwise nothing. */
+  | { type: 'stepOut' }
   /** Enter / Space / '+'. */
   | { type: 'activate' }
   | { type: 'escape' }
@@ -102,6 +104,8 @@ function next(layout: Layout, s: State, a: Action): State {
       if (s.opened) return p < 0 ? next(layout, s, { type: 'close' }) : open(layout, s, p);
       return p < 0 ? s : selectOnly(layout, s, p);
     }
+    case 'stepOut':
+      return s.opened ? next(layout, s, { type: 'toParent' }) : s;
     case 'activate':
       if (sel === null) return selectOnly(layout, s, firstCore(layout));
       return s.opened ? s : open(layout, s, sel);

@@ -84,8 +84,13 @@ export class FwPanel extends HTMLElement {
   }
 
   set model(m: PanelModel | null) {
+    const prev = this.#model;
     this.#model = m;
+    // Focus-only and settle changes produce an equal model: keep the DOM (and the user's focus) as it is.
+    if (prev && m && prev.kind === m.kind && (m.kind === 'empty' || (prev.kind === 'feeling' && prev.index === m.index))) return;
+    const hadFocus = this.contains(document.activeElement);
     this.render();
+    if (hadFocus) this.querySelector<HTMLElement>('h2, .fw-prompt')?.focus();
   }
 
   connectedCallback(): void {
@@ -102,7 +107,7 @@ export class FwPanel extends HTMLElement {
     }
     if (m.kind === 'empty') {
       this.setAttribute('aria-label', m.prompt);
-      this.replaceChildren(h('p', { className: 'fw-prompt' }, m.prompt));
+      this.replaceChildren(h('p', { className: 'fw-prompt', tabIndex: -1 }, m.prompt));
       return;
     }
     this.setAttribute('aria-label', m.title);
@@ -116,7 +121,7 @@ export class FwPanel extends HTMLElement {
     this.style.setProperty('--panel-hue', `var(--hue-${m.path[0]!.hue})`);
     this.replaceChildren(
       h('header', {}, chips(this, m.path), close),
-      h('h2', {}, m.title),
+      h('h2', { tabIndex: -1 }, m.title),
       h('p', { className: 'fw-definition' }, m.definition),
       ...sensations,
       ...buttons(this, t('narrowDown'), m.children),

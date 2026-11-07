@@ -81,6 +81,43 @@ describe('<fw-panel> and <fw-path>', () => {
     expect(el.querySelectorAll('button')).toHaveLength(0);
   });
 
+  test('activating a panel button moves focus to the new heading instead of dropping it', () => {
+    const { el } = mount<FwPanel>('fw-panel');
+    el.model = panelModel(layout, feelings, sel('angry'));
+    const btn = [...el.querySelectorAll('button')].find((b) => b.textContent === 'Aggressive')!;
+    btn.focus();
+    el.model = panelModel(layout, feelings, sel('angry/aggressive'));
+    expect(document.activeElement).toBe(el.querySelector('h2'));
+    expect(el.querySelector('h2')!.textContent).toBe('Aggressive');
+  });
+
+  test('clearing from the ✕ button moves focus to the prompt', () => {
+    const { el } = mount<FwPanel>('fw-panel');
+    el.model = panelModel(layout, feelings, sel('sad'));
+    el.querySelector<HTMLButtonElement>('.fw-close')!.focus();
+    el.model = panelModel(layout, feelings, initialState);
+    expect(document.activeElement).toBe(el.querySelector('.fw-prompt'));
+  });
+
+  test('a model for the same feeling does not rebuild the panel (keeps focus in place)', () => {
+    const { el } = mount<FwPanel>('fw-panel');
+    el.model = panelModel(layout, feelings, sel('angry'));
+    const btn = [...el.querySelectorAll('button')].find((b) => b.textContent === 'Mad')!;
+    btn.focus();
+    el.model = panelModel(layout, feelings, { ...sel('angry'), focused: idx('sad') });
+    expect(btn.isConnected).toBe(true);
+    expect(document.activeElement).toBe(btn);
+  });
+
+  test('re-rendering does not steal focus that is outside the panel', () => {
+    document.body.innerHTML = '<button id="elsewhere">x</button><fw-panel></fw-panel>';
+    const el = document.querySelector<FwPanel>('fw-panel')!;
+    el.model = panelModel(layout, feelings, sel('angry'));
+    document.getElementById('elsewhere')!.focus();
+    el.model = panelModel(layout, feelings, sel('sad'));
+    expect(document.activeElement!.id).toBe('elsewhere');
+  });
+
   test('<fw-path> renders chips only, last chip is aria-current', () => {
     const { el, actions } = mount<FwPath>('fw-path');
     el.model = panelModel(layout, feelings, sel('angry/aggressive/hostile'));

@@ -137,3 +137,17 @@ test('phone: Back to the first entry returns to the zoomed start, not the overvi
   await idle(page);
   expect((await page.evaluate(() => window.__fw.state())).view).toEqual({ mode: 'ring', ring: 0 });
 });
+
+test('resizing never paints a cleared (black) canvas frame', async ({ page }) => {
+  await open(page, '#/core');
+  const corner = await page.evaluate(async () => {
+    const stage = document.getElementById('stage')!;
+    stage.style.right = '37px';
+    await new Promise((r) => requestAnimationFrame(r));
+    await new Promise((r) => setTimeout(r, 0));
+    const c = document.querySelector('canvas')!;
+    const px = c.getContext('2d')!.getImageData(2, 2, 1, 1).data;
+    return [px[0], px[1], px[2]];
+  });
+  expect(corner).not.toEqual([0, 0, 0]);
+});

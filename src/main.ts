@@ -99,6 +99,12 @@ function requestDraw(): void {
   if (pendingDraw === 0) pendingDraw = requestAnimationFrame(frame);
 }
 
+/** Draw in this task: resizing clears the canvas, and waiting a frame would paint it blank. */
+function drawNow(): void {
+  if (pendingDraw !== 0) cancelAnimationFrame(pendingDraw);
+  frame();
+}
+
 camera.onFrame(() => {
   if (pendingDraw !== 0) cancelAnimationFrame(pendingDraw);
   frame();
@@ -222,7 +228,7 @@ new ResizeObserver(() => {
   renderer.resize(vp.width, vp.height, devicePixelRatio || 1);
   controller.setViewport(vp, opts);
   placePanel(store.get());
-  requestDraw();
+  drawNow();
 }).observe(stage);
 
 // ── First load (spec §4.6) ───────────────────────────────────────────────
@@ -248,7 +254,7 @@ if (startZoomed && !seenIntro && !reducedMotion.matches) {
     // Storage unavailable: the intro may play again next visit.
   }
 }
-requestDraw();
+drawNow();
 
 // ── Offline support (spec §6.5) ─────────────────────────────────────────
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {

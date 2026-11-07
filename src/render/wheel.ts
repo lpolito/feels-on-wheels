@@ -32,7 +32,8 @@ const LABEL_PAD = 6;
 const LINE_HEIGHT = 1.15;
 const GAP_PX = 1.5;
 const GAP_PX_MORE = 2.5;
-const FOCUS_PX = 2;
+const FOCUS_PX = 1.5;
+const FOCUS_RING_PX = 4;
 
 interface LabelCache { w: number; h: number; min: number; max: number; result: { lines: string[]; px: number } | null }
 
@@ -170,9 +171,14 @@ export function createWheelRenderer(canvas: HTMLCanvasElement, layout: Layout, c
         const s = layout.segments[f.focused]!;
         const ring = layout.rings[s.ring]!;
         if (inWindow(s, ring, win)) {
-          const inset = FOCUS_PX;
+          const inset = FOCUS_RING_PX / 2;
           sector(cam.cx, cam.cy, ring.inner * R + inset, ring.outer * R - inset,
             s.start + cam.rotation + inset / (ring.outer * R), s.end + cam.rotation - inset / (ring.outer * R));
+          // Two-tone ring: the segment's label color is ≥4.5:1 against its fill, so the indicator always
+          // shows (WCAG 1.4.11); the thin --focus line on top keeps the familiar focus color.
+          g.lineWidth = FOCUS_RING_PX;
+          g.strokeStyle = table.label(s.hue, s.ring, true);
+          g.stroke();
           g.lineWidth = FOCUS_PX;
           g.strokeStyle = palette.focus;
           g.stroke();

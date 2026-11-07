@@ -113,6 +113,25 @@ describe('wheel renderer', () => {
     }
   });
 
+  test('focus outline includes a ring in the segment label color, which contrasts ≥3:1 with every fill', async () => {
+    const { contrast } = await import('../../src/render/colors');
+    for (const path of ['angry', 'happy/proud', 'sad/lonely/isolated']) {
+      const i = layout.byPath.get(path)!;
+      const s = layout.segments[i]!;
+      const ring = table.label(s.hue, s.ring, true);
+      expect(contrast(ring, table.fill(s.hue, s.ring, true))).toBeGreaterThanOrEqual(3);
+      const counts = [false, true].map((showFocus) => {
+        const { canvas, ctx, rec } = fakeCanvas();
+        const r = createWheelRenderer(canvas, layout, ctx);
+        r.setColors(table, palette);
+        r.resize(1000, 1000, 1);
+        r.draw(frame(desk, { focused: i, showFocus }));
+        return rec.strokes.filter((x) => x === ring).length;
+      });
+      expect(counts[1]! - counts[0]!, path).toBe(1);
+    }
+  });
+
   test('repeat draws at the same camera reuse label layouts', () => {
     const { canvas, ctx, rec } = fakeCanvas();
     const r = createWheelRenderer(canvas, layout, ctx);

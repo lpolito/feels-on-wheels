@@ -130,6 +130,21 @@ describe('camera controller', () => {
     expect(cam.current.rotation).toBeCloseTo(normAngle(dest.rotation), 9);
   });
 
+  test('expensive frames do not slow the animation down (dt is measured frame to frame)', () => {
+    cam.onFrame(() => { now += 15; }); // each draw takes 15 ms of the 16.7 ms frame
+    cam.animateTo({ rotation: 0.2 });
+    let t = now;
+    for (let k = 0; k < 40; k++) {
+      t += 1000 / 60;
+      now = t;
+      const cbs = [...queue.values()];
+      queue.clear();
+      for (const cb of cbs) cb(t);
+    }
+    expect(cam.moving).toBe(false);
+    expect(cam.current.rotation).toBe(0.2);
+  });
+
   test('no raf is scheduled after settle', () => {
     cam.animateTo({ scale: 2 });
     step(1000);

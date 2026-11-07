@@ -144,7 +144,9 @@ export function createCameraController(deps: {
     }
     for (const fn of frameSubs) fn();
     if (springing) {
-      schedule();
+      // Keep `last` at this frame's timestamp: resetting it to now() after the draw would make the next dt
+      // "frame interval minus draw time", slowing the spring to a crawl when drawing is expensive.
+      if (rafId === null) rafId = deps.raf(tick);
     } else if (pendingSettle) {
       pendingSettle = false;
       for (const fn of settleSubs) fn();

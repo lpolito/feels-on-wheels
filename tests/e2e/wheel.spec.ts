@@ -139,7 +139,8 @@ test.describe('desktop', () => {
     for (const path of ['angry', 'angry/aggressive', 'angry/aggressive/hostile']) {
       await open(page, `#/core/${path}`);
       const { cam, vp } = await page.evaluate(() => ({ cam: window.__fw.camera(), vp: window.__fw.viewport() }));
-      expect(Math.abs(cam.cx + vp.radius * cam.scale - vp.width), path).toBeLessThanOrEqual(1);
+      // The opened cell's 10px lift and 2px of outline end exactly at the column.
+      expect(Math.abs(cam.cx + vp.radius * cam.scale + 12 - vp.width), path).toBeLessThanOrEqual(1);
     }
   });
 
@@ -166,6 +167,15 @@ test.describe('desktop', () => {
     const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
     expect(Math.abs(p.y - 450)).toBeLessThanOrEqual(2);
     expect(Math.abs(p.x - 450)).toBeLessThanOrEqual(2);
+  });
+
+  test('Escape on a focused row closes and leaves focus on the card toggle', async ({ page }) => {
+    await open(page, '#/core/angry');
+    await page.locator('fw-card ul.fw-rows button').first().focus();
+    await page.keyboard.press('Escape');
+    await idle(page);
+    expect((await state(page)).opened).toBe(false);
+    expect(await page.evaluate(() => document.activeElement?.className)).toBe('fw-card-toggle');
   });
 
   test('the card never moves the wheel', async ({ page }) => {
@@ -230,6 +240,22 @@ test.describe('phone', () => {
     expect(await selectedPath(page)).toBe('angry');
     expect((await state(page)).view).toEqual({ mode: 'wheel' });
     expect(Math.abs((await page.evaluate(() => window.__fw.camera())).cx)).toBeLessThanOrEqual(2);
+  });
+
+  test('phone: turned sideways with a word selected, the half-wheel becomes the full wheel', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await open(page);
+    await tapPath(page, 'angry');
+    const rot = (await page.evaluate(() => window.__fw.camera())).rotation;
+    await page.setViewportSize({ width: 667, height: 375 });
+    await page.waitForTimeout(200);
+    await idle(page);
+    const { cam, vp } = await page.evaluate(() => ({ cam: window.__fw.camera(), vp: window.__fw.viewport() }));
+    expect(cam.scale).toBe(1);
+    expect(Math.abs(cam.cx - vp.width / 2)).toBeLessThanOrEqual(1);
+    expect(sameAngle(cam.rotation, rot)).toBeLessThan(1e-6);
+    expect(await selectedPath(page)).toBe('angry');
+    expect((await state(page)).opened).toBe(false);
   });
 
   test('phone: first drag hides the hint and keeps the URL', async ({ page }) => {

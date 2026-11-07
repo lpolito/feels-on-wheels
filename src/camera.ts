@@ -47,6 +47,14 @@ export function wheelCamera(vp: Viewport, rotation: number, o: CameraOpts): Came
   return { scale: (HALF_REACH * vp.width) / vp.radius, rotation, cx: 0, cy: vp.height / 2 };
 }
 
+/**
+ * Spec v1.2 §3.2: the whole wheel is a half-wheel where the full wheel's labels would be too small, but only while
+ * the stage itself stands upright: a phone turned sideways gets the full wheel, even when it is under 720px wide.
+ */
+export function useHalfWheel(layout: Layout, vp: Viewport): boolean {
+  return vp.height >= vp.width && shouldStartZoomed(layout, vp);
+}
+
 /** Rotation that centres the first core word (Fearful) at 3 o'clock. */
 export function halfRestRotation(layout: Layout): number {
   return -layout.segments[layout.rings[0]!.segments[0]!]!.mid;
@@ -63,11 +71,12 @@ export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rota
     MIN_RING_SCALE,
   );
   const R = vp.radius * scale;
-  // Spec v1.2 §4.1–§4.2: phones centre the ring's middle; elsewhere the wheel's outer edge meets the stage's right
-  // edge (the card's column), unless that would start the opened cell (with its lift) within 1rem of the left.
+  // Spec v1.2 §4.1–§4.2: phones centre the ring's middle; elsewhere the wheel meets the stage's right edge (the
+  // card's column) — its outer edge plus the opened cell's lift and outline, so an opened outer word isn't clipped —
+  // unless that would start the opened cell (with its lift) within 1rem of the left.
   const cx = o.portrait
     ? 0.5 * vp.width - rMid * R
-    : Math.max(vp.width - R, o.remPx - (r.inner * R - LIFT_RADIAL_PX));
+    : Math.max(vp.width - (R + LIFT_RADIAL_PX + OUTLINE_OUTSIDE_PX), o.remPx - (r.inner * R - LIFT_RADIAL_PX));
   return { scale, rotation, cx, cy: vp.height / 2 };
 }
 

@@ -191,6 +191,18 @@ describe('<fw-card>', () => {
     expect(el.querySelector('.fw-card-body')).toBeNull();
   });
 
+  test('closing in place with focus in the body or crumbs moves focus to the toggle', () => {
+    const { el } = mount();
+    el.model = cardModel(layout, feelings, opened('angry'));
+    el.querySelector<HTMLButtonElement>('ul.fw-rows button')!.focus();
+    el.model = cardModel(layout, feelings, selected('angry'));
+    expect(document.activeElement).toBe(head(el));
+    el.model = cardModel(layout, feelings, opened('angry/aggressive/hostile'));
+    el.querySelector<HTMLButtonElement>('nav.fw-crumbs button')!.focus();
+    el.model = cardModel(layout, feelings, selected('angry/aggressive/hostile'));
+    expect(document.activeElement).toBe(head(el));
+  });
+
   test('rapid open/close/open leaves data-open and aria-expanded matching the last model', () => {
     const { el } = mount();
     const sel = cardModel(layout, feelings, selected('angry/aggressive'));

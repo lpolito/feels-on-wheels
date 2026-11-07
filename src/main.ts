@@ -1,7 +1,7 @@
 import { data } from './boot';
 import { createAnnouncer } from './a11y/announce';
 import { announceFor, createA11yTree } from './a11y/tree';
-import { createCameraController, openedHalfHeight, shouldStartZoomed, type CameraOpts } from './camera';
+import { createCameraController, openedHalfHeight, useHalfWheel, type CameraOpts } from './camera';
 import { createController } from './controller';
 import { t } from './i18n';
 import { attachGestures } from './input/gestures';
@@ -59,10 +59,7 @@ function measure(): { vp: Viewport; opts: CameraOpts } {
   // Spec v1.2 §4.3: the one portrait rule, matching the stylesheet's container query.
   const portrait = whole.width < 720 || whole.height >= whole.width;
   const vp = { width, height, radius: Math.max(Math.min(width, height) / 2 - 8, 1) };
-  // Spec v1.2 §3.2: the half-wheel where the full wheel's labels would be too small; a phone turned sideways
-  // (not portrait) gets the full wheel back.
-  const half = portrait && shouldStartZoomed(layout, vp);
-  return { vp, opts: { remPx, portrait, half } };
+  return { vp, opts: { remPx, portrait, half: useHalfWheel(layout, vp) } };
 }
 
 let { vp, opts } = measure();

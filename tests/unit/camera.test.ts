@@ -4,7 +4,7 @@ import { buildLayout } from '../../src/model/layout';
 import { TAU, normAngle, type Viewport } from '../../src/model/geometry';
 import {
   createCameraController, halfRestRotation, openedHalfHeight, overviewCamera, ringFocusCamera,
-  shouldStartZoomed, wheelCamera, type CameraController,
+  shouldStartZoomed, useHalfWheel, wheelCamera, type CameraController,
 } from '../../src/camera';
 
 const layout = buildLayout(loadData().wheel);
@@ -24,11 +24,12 @@ describe('resting cameras', () => {
     expect(overviewCamera(desk, 0.5)).toEqual({ scale: 1, rotation: 0.5, cx: 720, cy: 450 });
   });
 
-  test("desktop ring camera puts the wheel's outer edge on the stage's right edge", () => {
+  test("desktop ring camera puts the opened cell's lifted outer edge and outline on the stage's right edge", () => {
     const vp: Viewport = { width: 900, height: 900, radius: 442 };
     for (const ring of [0, 1, 2]) {
       const cam = ringFocusCamera(layout, ring, vp, 0, opts);
-      expect(cam.cx + vp.radius * cam.scale, `ring ${ring}`).toBeCloseTo(vp.width, 6);
+      // The wheel's edge, plus the opened cell's 10px lift and 2px of outline, so nothing is clipped.
+      expect(cam.cx + vp.radius * cam.scale + 10 + 2, `ring ${ring}`).toBeCloseTo(vp.width, 6);
       expect(cam.cy).toBe(vp.height / 2);
     }
   });
@@ -42,7 +43,7 @@ describe('resting cameras', () => {
     }
     // The middle ring is where the safeguard bites: the edge rule alone would put its cell off the left edge.
     const mid = ringFocusCamera(layout, 1, narrow, 0, opts);
-    expect(innerX(1, { ...mid, cx: narrow.width - narrow.radius * mid.scale })).toBeLessThan(0);
+    expect(innerX(1, { ...mid, cx: narrow.width - narrow.radius * mid.scale - 12 })).toBeLessThan(0);
     expect(innerX(1, mid)).toBeCloseTo(16, 6);
   });
 
@@ -104,6 +105,16 @@ describe('resting cameras', () => {
     const fearful = layout.segments[layout.byPath.get('fearful')!]!;
     const off = normAngle(fearful.mid + halfRestRotation(layout));
     expect(Math.min(off, TAU - off)).toBeLessThan(1e-12);
+  });
+
+  test('useHalfWheel: portrait phones only; a phone turned sideways, even under 720px wide, gets the full wheel', () => {
+    const vp = (width: number, height: number): Viewport => ({ width, height, radius: Math.min(width, height) / 2 - 8 });
+    expect(useHalfWheel(layout, vp(375, 667))).toBe(true);
+    expect(useHalfWheel(layout, vp(390, 844))).toBe(true);
+    expect(useHalfWheel(layout, vp(667, 375))).toBe(false);
+    expect(useHalfWheel(layout, vp(640, 360))).toBe(false);
+    expect(useHalfWheel(layout, vp(700, 500))).toBe(false);
+    expect(useHalfWheel(layout, vp(1024, 1366))).toBe(false);
   });
 
   test('shouldStartZoomed true for 375×667, false for 1440×900', () => {

@@ -153,7 +153,10 @@ export class FwCard extends HTMLElement {
   #setOpen(open: boolean): void {
     this.toggleAttribute('data-open', open);
     this.#toggle!.setAttribute('aria-expanded', String(open));
-    // A folded body stays for its fold-away animation, out of reach of the keyboard and assistive tech.
+    // A folded body stays for its fold-away animation, out of reach of the keyboard and assistive tech. Focus inside
+    // it would drop to <body> once it's inert, so it moves to the toggle first (v1.1 §5.2's rule for rebuilds).
+    const active = document.activeElement;
+    if (!open && active && (this.#body?.contains(active) || this.#crumbs?.contains(active))) this.#toggle!.focus();
     if (this.#body) this.#body.inert = !open;
     if (this.#crumbs) this.#crumbs.inert = !open;
   }

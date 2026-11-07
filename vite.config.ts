@@ -1,6 +1,6 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
-import { swPlugin } from './build/sw-plugin';
+import { swPlugin } from './build/sw-plugin.ts';
 
 export default defineConfig({
   // Relative URLs so the app works from any sub-path (e.g. GitHub Pages).

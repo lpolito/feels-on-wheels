@@ -22,7 +22,6 @@ export interface Timers {
 
 /** Spec §4.4 / plan Global Constraints. */
 const TAP_SLOP = 8;
-const TAP_MS = 300;
 const DOUBLE_TAP_MS = 300;
 const DOUBLE_TAP_SLOP = 24;
 const SWIPE_MIN = 40;
@@ -112,7 +111,7 @@ export function createGestureRecognizer(timers: Timers): { handle(e: GestureInpu
         pointers.delete(e.id);
         if (mode === 'pending') {
           mode = 'idle';
-          if (e.t - start.t >= TAP_MS) return [];
+          // Any still press is a tap, however slow: v1 has no long-press action, and slow taps must work.
           if (lastTap && e.t - lastTap.t <= DOUBLE_TAP_MS && Math.hypot(e.x - lastTap.x, e.y - lastTap.y) <= DOUBLE_TAP_SLOP) {
             lastTap = null;
             return [{ type: 'doubleTap', x: e.x, y: e.y }];

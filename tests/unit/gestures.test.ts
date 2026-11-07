@@ -24,9 +24,9 @@ describe('taps', () => {
     expect(ev('up', 104, 103, 1, 150)).toEqual([{ type: 'tap', x: 104, y: 103 }]);
   });
 
-  test('long press 400ms → no tap', () => {
+  test('a slow still press (800ms) is still a tap', () => {
     ev('down', 100, 100);
-    expect(ev('up', 100, 100, 1, 400)).toEqual([]);
+    expect(ev('up', 100, 100, 1, 800)).toEqual([{ type: 'tap', x: 100, y: 100 }]);
   });
 
   test('double tap within 300ms and 24px → tap, then doubleTap', () => {

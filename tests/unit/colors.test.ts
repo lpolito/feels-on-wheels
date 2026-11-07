@@ -27,6 +27,12 @@ describe('color math', () => {
     expect(contrast('#777777', '#777777')).toBeCloseTo(1, 6);
   });
 
+  test('accepts the 3-digit hex the CSS minifier emits', () => {
+    expect(mix('#fff', '#000', 0.5)).toBe('#808080');
+    expect(contrast('#fff', '#000')).toBeCloseTo(21, 6);
+    expect(shade('#FFF', 0)).toBe('#ffffff');
+  });
+
   test('mix interpolates in sRGB', () => {
     expect(mix('#000000', '#ffffff', 0.5)).toBe('#808080');
     expect(mix('#ff0000', '#0000ff', 0)).toBe('#ff0000');

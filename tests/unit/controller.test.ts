@@ -195,6 +195,28 @@ describe('rings and zoom', () => {
     expect(camera.current.cx + 0.81 * 342 * camera.current.scale).toBeCloseTo(350, 6);
   });
 
+  test('setViewport with an unchanged viewport does not interrupt motion', () => {
+    setup({ ...initialState, view: { mode: 'ring', ring: 0 } });
+    step(1000);
+    camera.animateTo({ rotation: camera.current.rotation + 1 });
+    step(50);
+    ctl.setViewport({ ...desk }, { ...opts });
+    expect(camera.moving).toBe(true);
+  });
+
+  test('setViewport mid-animation centers the intended segment and keeps focus in sync', () => {
+    setup({ ...initialState, view: { mode: 'ring', ring: 0 } });
+    step(1000);
+    const intended = store.get().focused!;
+    camera.jump({ ...camera.current, rotation: camera.current.rotation - 2 });
+    camera.animateTo({ rotation: camera.current.rotation + 2 });
+    step(50);
+    ctl.setViewport({ width: 900, height: 900, radius: 442 }, opts);
+    step(1000);
+    expect(offCenter(intended)).toBeLessThan(1e-9);
+    expect(store.get().focused).toBe(intended);
+  });
+
   test('zoom out via store returns the camera to overview', () => {
     setup({ ...initialState, view: { mode: 'ring', ring: 1 } });
     step(1000);

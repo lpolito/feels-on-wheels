@@ -29,7 +29,9 @@ export function readPalette(el: Element): Palette {
 type RGB = [number, number, number];
 
 function parseHex(hex: string): RGB {
-  const n = Number.parseInt(hex.slice(1), 16);
+  const digits = hex.trim().slice(1);
+  const full = digits.length === 3 ? [...digits].map((d) => d + d).join('') : digits;
+  const n = Number.parseInt(full, 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
 
@@ -61,7 +63,7 @@ export function contrast(a: string, b: string): number {
 
 /** Shift OKLab lightness by dL (≈ OKLCH L), clamping back into sRGB. */
 export function shade(hex: string, dL: number): string {
-  if (dL === 0) return hex.toLowerCase();
+  if (dL === 0) return toHex(parseHex(hex));
   const [r, g, b] = parseHex(hex).map(toLinear) as RGB;
   const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
   const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);

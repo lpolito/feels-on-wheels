@@ -206,13 +206,22 @@ export function createController(
   }
 
   function setViewport(next: Viewport, o: CameraOpts): void {
+    const unchanged = next.width === vp.width && next.height === vp.height && next.radius === vp.radius
+      && o.remPx === opts.remPx && o.portrait === opts.portrait;
+    if (unchanged) return;
     const s = store.get();
     const ring = ringOf(s);
-    const keep = ring === null ? null : centered(ring);
     vp = next;
     opts = o;
-    if (keep !== null) camera.jump(ringFocusCamera(layout, ring!, vp, rotationToCenter(layout.segments[keep]!, cam.rotation), opts));
-    else camera.jump(restingCamera(s));
+    if (ring === null) {
+      camera.jump(restingCamera(s));
+      return;
+    }
+    // Keep the segment the user intends (focus/selection), not whatever a running animation passes through.
+    const intended = [s.selected, s.focused].find((i) => i !== null && layout.segments[i]!.ring === ring);
+    const keep = intended ?? centered(ring);
+    camera.jump(ringFocusCamera(layout, ring, vp, rotationToCenter(layout.segments[keep]!, cam.rotation), opts));
+    store.dispatch({ type: 'settled', segment: keep });
   }
 
   // Initial resting state.

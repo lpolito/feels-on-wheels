@@ -7,8 +7,8 @@ test('keyToAction maps the spec §4.5 keys', () => {
   expect(keyToAction('ArrowRight')).toEqual({ type: 'toChild' });
   expect(keyToAction('ArrowLeft')).toEqual({ type: 'toParent' });
   expect(keyToAction('Escape')).toEqual({ type: 'escape' });
-  expect(keyToAction('+')).toEqual({ type: 'zoomToggle' });
-  expect(keyToAction('=')).toEqual({ type: 'zoomToggle' });
+  expect(keyToAction('+')).toEqual({ type: 'zoomIn' });
+  expect(keyToAction('=')).toEqual({ type: 'zoomIn' });
   expect(keyToAction('-')).toEqual({ type: 'zoomOut' });
   expect(keyToAction('Enter')).toBeNull();
   expect(keyToAction('a')).toBeNull();

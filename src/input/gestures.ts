@@ -8,7 +8,7 @@ export type Intent =
   | { type: 'dragStart'; x: number; y: number; axis: 'x' | 'y' }
   | { type: 'drag'; x: number; y: number; dx: number; dy: number }
   | { type: 'dragEnd'; vx: number; vy: number }
-  | { type: 'swipe'; dir: 'left' | 'right' }
+  | { type: 'swipe'; dir: 'left' | 'right'; vx: number; vy: number }
   | { type: 'pinch'; scale: number; cx: number; cy: number }
   | { type: 'pinchEnd' }
   | { type: 'scroll'; dy: number }
@@ -42,6 +42,8 @@ export function createGestureRecognizer(timers: Timers): { handle(e: GestureInpu
   let pinchStartDist = 1;
   let lastTap: Sample | null = null;
   let scrollTimer: number | null = null;
+  /** A Safari gesture that began while touch pointers were down: iOS sends both streams, so ignore it. */
+  let gestureIgnored = false;
 
   const twoPointers = (): [Pointer, Pointer] => {
     const [a, b] = [...pointers.values()];
@@ -125,7 +127,7 @@ export function createGestureRecognizer(timers: Timers): { handle(e: GestureInpu
           const dx = e.x - start.x;
           const dy = e.y - start.y;
           if (axis === 'x' && Math.abs(dx) > SWIPE_MIN && Math.abs(dx) > 2 * Math.abs(dy)) {
-            return [{ type: 'swipe', dir: dx < 0 ? 'left' : 'right' }];
+            return [{ type: 'swipe', dir: dx < 0 ? 'left' : 'right', ...velocity(e.t) }];
           }
           return [{ type: 'dragEnd', ...velocity(e.t) }];
         }
@@ -161,7 +163,14 @@ export function createGestureRecognizer(timers: Timers): { handle(e: GestureInpu
           }, SCROLL_IDLE_MS);
           return [{ type: 'scroll', dy: e.dy }];
         case 'gesture':
-          if (e.phase === 'start') return [];
+          if (e.phase === 'start') {
+            gestureIgnored = pointers.size > 0;
+            return [];
+          }
+          if (gestureIgnored || pointers.size > 0) {
+            if (e.phase === 'end') gestureIgnored = false;
+            return [];
+          }
           if (e.phase === 'change') return [{ type: 'pinch', scale: e.scale, cx: e.x, cy: e.y }];
           return [{ type: 'pinchEnd' }];
         default:

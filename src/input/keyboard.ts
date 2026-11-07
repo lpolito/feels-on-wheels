@@ -11,7 +11,7 @@ export function keyToAction(key: string): KeyAction | null {
     case 'ArrowLeft': return { type: 'toParent' };
     case 'Escape': return { type: 'escape' };
     case '+':
-    case '=': return { type: 'zoomToggle' };
+    case '=': return { type: 'zoomIn' };
     case '-': return { type: 'zoomOut' };
     default: return null;
   }

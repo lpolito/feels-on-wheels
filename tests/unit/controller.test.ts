@@ -112,6 +112,50 @@ describe('taps', () => {
   });
 });
 
+describe('review fixes: input', () => {
+  test('a horizontal flick in overview keeps spinning after release', () => {
+    const top = { x: desk.width / 2, y: desk.height / 2 - 300 };
+    ctl.handle([
+      { type: 'dragStart', ...top, axis: 'x' },
+      { type: 'drag', x: top.x - 60, y: top.y, dx: -60, dy: 0 },
+    ]);
+    const atRelease = camera.current.rotation;
+    ctl.handle([{ type: 'swipe', dir: 'left', vx: -1500, vy: 0 }]);
+    step(1500);
+    const d = normAngle(camera.current.rotation - atRelease);
+    expect(Math.min(d, TAU - d)).toBeGreaterThan(0.5);
+  });
+
+  test('tapping the selected word while it is still moving keeps it selected', () => {
+    setup({ ...initialState, view: { mode: 'ring', ring: 2 } });
+    step(1000);
+    const hostile = idx('angry/aggressive/hostile');
+    store.dispatch({ type: 'select', segment: hostile });
+    step(1000);
+    ctl.handle([{ type: 'dragStart', x: 500, y: 450, axis: 'y' }, { type: 'dragEnd', vx: 0, vy: 300 }]);
+    step(30);
+    expect(camera.moving).toBe(true);
+    const live = { ...camera.current };
+    ctl.handle([{ type: 'tap', ...screenOf(hostile, live) }]);
+    step(1000);
+    expect(store.get().selected).toBe(hostile);
+    expect(offCenter(hostile)).toBeLessThan(1e-9);
+  });
+
+  test('double-tap to zoom out keeps the selection', () => {
+    setup({ ...initialState, view: { mode: 'ring', ring: 2 } });
+    step(1000);
+    const hostile = idx('angry/aggressive/hostile');
+    store.dispatch({ type: 'select', segment: hostile });
+    step(1000);
+    const p = screenOf(hostile);
+    ctl.handle([{ type: 'tap', ...p }]);
+    ctl.handle([{ type: 'doubleTap', ...p }]);
+    expect(store.get().view).toEqual({ mode: 'overview' });
+    expect(store.get().selected).toBe(hostile);
+  });
+});
+
 describe('spinning', () => {
   test('drag then dragEnd in ring mode settles exactly on a segment mid and selects it', () => {
     setup({ ...initialState, view: { mode: 'ring', ring: 1 } });
@@ -155,7 +199,7 @@ describe('rings and zoom', () => {
   test('swipe right from ring 2 → ring 1, and the settled segment is selected', () => {
     setup({ ...initialState, view: { mode: 'ring', ring: 2 } });
     step(1000);
-    ctl.handle([{ type: 'swipe', dir: 'right' }]);
+    ctl.handle([{ type: 'swipe', dir: 'right', vx: 900, vy: 0 }]);
     step(1000);
     const s = store.get();
     expect(s.view).toEqual({ mode: 'ring', ring: 1 });

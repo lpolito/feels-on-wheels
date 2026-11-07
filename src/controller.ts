@@ -31,6 +31,8 @@ export function createController(
   let last = { x: 0, y: 0 };
   let pinchBase: { cam: Camera; x: number; y: number } | null = null;
   let wheelZoomTimer: ReturnType<typeof setTimeout> | null = null;
+  /** State before the most recent tap, so a double-tap can undo the first tap's toggle. */
+  let beforeLastTap: State | null = null;
 
   const cam = camera.current;
   const ringOf = (s: State): number | null => (s.view.mode === 'ring' ? s.view.ring : null);
@@ -82,6 +84,14 @@ export function createController(
     camera.jump({ ...cam, rotation: cam.rotation + delta });
   }
 
+  /** Pointer velocity (px/s) at the last drag point → angular velocity around the wheel center (rad/s). */
+  function angularVelocity(vx: number, vy: number): number {
+    const rx = last.x - cam.cx;
+    const ry = last.y - cam.cy;
+    const r2 = rx * rx + ry * ry;
+    return r2 > 0 ? (rx * vy - ry * vx) / r2 : 0;
+  }
+
   function interact(): void {
     if (store.get().view.mode === 'ring') store.dispatch({ type: 'interact' });
   }
@@ -112,15 +122,26 @@ export function createController(
     const ring = ringOf(s);
     switch (i.type) {
       case 'tap': {
+        const wasMoving = camera.moving;
         camera.stop();
+        beforeLastTap = s;
         const hit = hitTest(layout, cam, vp, i.x, i.y);
-        store.dispatch(hit === null ? { type: 'clear' } : { type: 'select', segment: hit });
+        // Tapping a moving wheel means "stop here and pick this": never toggle the selection off.
+        if (!(wasMoving && hit !== null && hit === s.selected)) {
+          store.dispatch(hit === null ? { type: 'clear' } : { type: 'select', segment: hit });
+        }
         if (store.get().view.mode === 'ring' && !camera.moving) goToView();
         return;
       }
       case 'doubleTap': {
         if (ring !== null) {
-          store.dispatch({ type: 'zoomOut' });
+          // The first tap of the pair toggled the selection off; zoom out with it restored.
+          const before = beforeLastTap;
+          if (before && before.selected !== null && s.selected === null) {
+            store.dispatch({ type: 'restore', state: { ...before, view: { mode: 'overview' } } });
+          } else {
+            store.dispatch({ type: 'zoomOut' });
+          }
           return;
         }
         camera.stop();
@@ -151,10 +172,7 @@ export function createController(
       case 'dragEnd': {
         let v = 0;
         if (ring === null) {
-          const rx = last.x - cam.cx;
-          const ry = last.y - cam.cy;
-          const r2 = rx * rx + ry * ry;
-          v = r2 > 0 ? (rx * i.vy - ry * i.vx) / r2 : 0;
+          v = angularVelocity(i.vx, i.vy);
         } else if (dragAxis === 'y') {
           v = i.vy / radiusPx(ring);
         }
@@ -165,7 +183,7 @@ export function createController(
       case 'swipe': {
         dragAxis = null;
         if (ring === null) {
-          camera.fling(0, snapRing(), layout);
+          camera.fling(angularVelocity(i.vx, i.vy), snapRing(), layout);
           return;
         }
         interact();

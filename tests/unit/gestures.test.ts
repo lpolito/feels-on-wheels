@@ -63,10 +63,13 @@ describe('drags and swipes', () => {
     ev('down', 200, 100);
     ev('move', 180, 102);
     ev('move', 150, 103);
-    expect(ev('up', 140, 103)).toEqual([{ type: 'swipe', dir: 'left' }]);
+    const left = ev('up', 140, 103);
+    expect(left).toHaveLength(1);
+    expect(left[0]).toMatchObject({ type: 'swipe', dir: 'left' });
+    expect((left[0] as { vx: number }).vx).toBeLessThan(0);
     ev('down', 100, 100, 2, 500);
     ev('move', 130, 101, 2);
-    expect(ev('up', 170, 101, 2)).toEqual([{ type: 'swipe', dir: 'right' }]);
+    expect(ev('up', 170, 101, 2)[0]).toMatchObject({ type: 'swipe', dir: 'right' });
   });
 
   test('short horizontal drag ends as dragEnd, not swipe', () => {
@@ -110,6 +113,14 @@ describe('pinch', () => {
     ev('down', 100, 100);
     ev('move', 100, 150);
     expect(ev('cancel', 100, 150)).toEqual([{ type: 'dragEnd', vx: 0, vy: 0 }]);
+  });
+
+  test('Safari gesture events are ignored while touch pointers are tracked (no double pinch on iOS)', () => {
+    ev('down', 100, 100, 1);
+    ev('down', 200, 100, 2);
+    expect(rec.handle({ kind: 'gesture', phase: 'start', scale: 1, x: 150, y: 100, t: t + 1 })).toEqual([]);
+    expect(rec.handle({ kind: 'gesture', phase: 'change', scale: 1.5, x: 150, y: 100, t: t + 2 })).toEqual([]);
+    expect(rec.handle({ kind: 'gesture', phase: 'end', scale: 1.5, x: 150, y: 100, t: t + 3 })).toEqual([]);
   });
 
   test('Safari gesture start/change/end → pinch/pinchEnd', () => {

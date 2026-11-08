@@ -286,6 +286,35 @@ test.describe('v2.1: the wheel switch', () => {
   });
 });
 
+test.describe('v2.1: the message link', () => {
+  test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'desktop flows'));
+
+  test('Enter on the message link switches in place', async ({ page }) => {
+    await open(page);
+    const before = await page.evaluate(() => history.length);
+    await hintLink(page).focus();
+    await page.keyboard.press('Enter');
+    await idle(page);
+    expect(await wheelId(page)).toBe('body');
+    expect(new URL(page.url()).hash).toBe('#/body');
+    expect(await page.evaluate(() => history.length)).toBe(before + 1);
+  });
+
+  test('the link wraps with the sentence', async ({ page }) => {
+    await page.setViewportSize({ width: 851, height: 393 });
+    await open(page);
+    const { rects, stop } = await hintLink(page).evaluate((a) => {
+      const rects = [...a.getClientRects()].map((r) => ({ top: r.top }));
+      const after = a.nextSibling!;
+      const range = document.createRange();
+      range.selectNodeContents(after);
+      return { rects, stop: range.getBoundingClientRect().top };
+    });
+    expect(rects.length).toBeGreaterThan(1);
+    expect(Math.abs(stop - rects[rects.length - 1]!.top)).toBeLessThanOrEqual(2);
+  });
+});
+
 test.describe('v2.1: context rings', () => {
   test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'sets its own viewport'));
   test.use({ viewport: { width: 393, height: 851 } });

@@ -207,7 +207,10 @@ app.addEventListener('click', (e) => {
 function hintContent(s: State): HintContent {
   if (s.selected !== null) return null;
   const text = wheelText(layout.wheelId);
-  return { text: text.hint, link: { label: text.hintLink, wheel: data.suggests[layout.wheelId]! } };
+  const wheel = data.suggests[layout.wheelId]!;
+  // Spec v2.1 §6.3: the other wheel's own URL (v2 §4.3), so a new tab opens that wheel.
+  const href = wheel === firstId ? location.pathname + location.search : `#/${wheel}`;
+  return { text: text.hint, link: { label: text.hintLink, wheel, href } };
 }
 
 /** Spec v1.2 §4.2: the phone card's height cap keeps it below the opened cell. */

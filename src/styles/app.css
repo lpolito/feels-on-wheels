@@ -48,7 +48,7 @@ button, select {
   border-radius: 999px;
   cursor: pointer;
 }
-:is(button, select, [role="treeitem"]):focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+:is(button, select, a, [role="treeitem"]):focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
 fw-toolbar {
   position: absolute;
@@ -204,15 +204,10 @@ fw-hint {
   font-weight: 600;
   text-align: start;
 }
-/* Spec v2 §4.1: the link to the other wheel reads as part of the sentence. */
+/* Spec v2 §4.1, v2.1 §6.3: the link to the other wheel is a real link, so it wraps as part of the sentence. */
 .fw-hint-link {
-  display: inline;
-  padding: 0;
-  border: 0;
   border-radius: 2px;
-  background: none;
-  font: inherit;
-  text-align: inherit;
+  color: inherit;
   text-decoration: underline;
   text-underline-offset: 3px;
 }

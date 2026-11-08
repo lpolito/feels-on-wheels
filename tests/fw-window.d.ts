@@ -14,6 +14,10 @@ declare global {
       pathOf(i: number | null): string | null;
       offCenter(path: string): number;
       drawTimes(): number[];
+      /** v2: the current wheel's id. */
+      wheel(): string;
+      /** v2 leak probe: layouts and stores still alive (WeakRefs). */
+      liveWheels(): number;
     };
     __rafCount: number;
     __probe: number[];

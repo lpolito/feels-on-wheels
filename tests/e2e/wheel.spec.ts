@@ -336,7 +336,7 @@ test.describe('desktop', () => {
   test('the hint reads the same on desktop', async ({ page }) => {
     await open(page);
     expect((await state(page)).selected).toBeNull();
-    await expect(hint(page)).toHaveText('How are you feeling? Tap a feeling or spin to explore.');
+    await expect(hint(page)).toHaveText('How are you feeling? Tap or spin to explore, or start from body sensations instead.');
   });
 
   test("desktop: opened view's wheel edge meets the column", async ({ page }) => {
@@ -481,7 +481,7 @@ async function openedPlacement(page: Page, path: string) {
 test.describe('phone', () => {
   test.beforeEach(({ isMobile }) => test.skip(!isMobile, 'phone-only behaviour'));
 
-  test('phone: base URL starts with nothing selected and the hint "How are you feeling? Tap a feeling or spin to explore."', async ({ page }) => {
+  test('phone: base URL starts with nothing selected and the hint "How are you feeling? …"', async ({ page }) => {
     await open(page);
     const s = await state(page);
     expect(s.selected).toBeNull();
@@ -489,7 +489,7 @@ test.describe('phone', () => {
     expect(s.view.mode).toBe('wheel');
     expect(await page.evaluate(() => location.hash)).toBe('');
     await expect(hint(page)).toBeVisible();
-    await expect(hint(page)).toHaveText('How are you feeling? Tap a feeling or spin to explore.');
+    await expect(hint(page)).toHaveText('How are you feeling? Tap or spin to explore, or start from body sensations instead.');
   });
 
   test("phone: the wheel's centre is on the left edge", async ({ page }) => {

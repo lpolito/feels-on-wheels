@@ -2,13 +2,14 @@
 import { beforeAll, beforeEach, describe, expect, test, vi, type Mock } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { setLocale } from '../../src/i18n';
-import { buildLayout } from '../../src/model/layout';
+import { buildLayout, homes } from '../../src/model/layout';
 import { initialState, type Action, type State } from '../../src/state/store';
 import { announceFor, createA11yTree, describe as describeSeg } from '../../src/a11y/tree';
 import { createAnnouncer } from '../../src/a11y/announce';
 
-const { wheel, locale } = loadData();
+const { wheel, wheels, locale } = loadData();
 const layout = buildLayout(wheel);
+const bodyLayout = buildLayout(wheels[1]!, homes(layout));
 const idx = (p: string): number => layout.byPath.get(p)!;
 beforeAll(() => setLocale(locale));
 
@@ -182,5 +183,16 @@ describe('describe + announcer', () => {
     expect(el.textContent).toBe('');
     await new Promise((r) => requestAnimationFrame(() => r(null)));
     expect(el.textContent).toBe('Hostile.');
+  });
+});
+
+describe('body wheel (v2)', () => {
+  test('describe names a feeling with its area and sensation', () => {
+    expect(describeSeg(bodyLayout, bodyLayout.byPath.get('chest/racing-heart/scared')!)).toBe('Scared. In Chest, Racing heart.');
+  });
+
+  test('the tree is named after its wheel', () => {
+    createA11yTree(root, bodyLayout, dispatch);
+    expect(root.getAttribute('aria-label')).toBe(locale.wheels['body']!.name);
   });
 });

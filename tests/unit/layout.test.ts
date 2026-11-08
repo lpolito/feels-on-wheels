@@ -1,9 +1,11 @@
 import { describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
-import { buildLayout, litMask, ringNeighbor, siblings } from '../../src/model/layout';
+import { buildLayout, homes, litMask, ringNeighbor, siblings } from '../../src/model/layout';
 
-const { wheel } = loadData();
+const { wheel, wheels } = loadData();
 const layout = buildLayout(wheel);
+const bodyLayout = buildLayout(wheels[1]!, homes(layout));
+const bodyHue = (p: string): string => bodyLayout.segments[bodyLayout.byPath.get(p)!]!.hue;
 const TAU = Math.PI * 2;
 const idx = (path: string): number => {
   const i = layout.byPath.get(path);
@@ -54,7 +56,7 @@ describe('buildLayout', () => {
     expect(layout.segments).toHaveLength(130);
     expect(layout.byPath.size).toBe(130);
     for (const s of layout.segments) expect(layout.byPath.get(s.path)).toBe(s.index);
-    expect(layout.segments[idx('angry/aggressive/hostile')]!.feelingId).toBe('hostile');
+    expect(layout.segments[idx('angry/aggressive/hostile')]!.node).toEqual({ kind: 'feeling', id: 'hostile' });
     expect(layout.segments[idx('angry/aggressive/hostile')]!.hue).toBe('angry');
     expect(layout.segments[idx('angry')]!.parent).toBe(-1);
     expect(layout.wheelId).toBe('core');
@@ -105,5 +107,42 @@ describe('neighbors', () => {
   test('siblings excludes self', () => {
     expect(siblings(layout, idx('angry/aggressive/hostile'))).toEqual([idx('angry/aggressive/provoked')]);
     expect(siblings(layout, idx('angry'))).toHaveLength(6);
+  });
+});
+
+describe('nodes, homes and the hue rule (v2 §5.1)', () => {
+  test("core wheel: every feeling has its home's hue, except the second places of repeated feelings", () => {
+    const h = homes(layout);
+    const second = new Set(['bad/stressed/overwhelmed', 'sad/depressed/inferior', 'sad/hurt/embarrassed', 'sad/hurt/disappointed']);
+    for (const s of layout.segments) {
+      if (second.has(s.path)) expect(s.hue, s.path).not.toBe(h.get(s.node.id)!.hue);
+      else expect(s.hue, s.path).toBe(h.get(s.node.id)!.hue);
+    }
+  });
+
+  test('body wheel: areas and sensations take the area hue, feelings their core hue', () => {
+    expect(bodyHue('chest')).toBe('chest');
+    expect(bodyHue('chest/racing-heart')).toBe('chest');
+    expect(bodyHue('chest/racing-heart/scared')).toBe('fearful');
+    expect(bodyHue('chest/racing-heart/mad')).toBe('angry');
+    expect(bodyHue('chest/racing-heart/excited')).toBe('surprised');
+  });
+
+  test('homes uses the first position for repeated feelings', () => {
+    const h = homes(layout);
+    expect(h.get('overwhelmed')).toEqual({ path: 'fearful/anxious/overwhelmed', hue: 'fearful' });
+    expect(h.get('inferior')).toEqual({ path: 'fearful/insecure/inferior', hue: 'fearful' });
+    expect(h.get('embarrassed')).toEqual({ path: 'disgusted/disapproving/embarrassed', hue: 'disgusted' });
+    expect(h.get('disappointed')).toEqual({ path: 'disgusted/disappointed', hue: 'disgusted' });
+    expect(h.get('scared')).toEqual({ path: 'fearful/scared', hue: 'fearful' });
+  });
+
+  test('body paths join node ids', () => {
+    const i = bodyLayout.byPath.get('chest/racing-heart/scared');
+    expect(i).toBeDefined();
+    expect(bodyLayout.segments[i!]!.node).toEqual({ kind: 'feeling', id: 'scared' });
+    expect(bodyLayout.segments[bodyLayout.byPath.get('chest')!]!.node).toEqual({ kind: 'area', id: 'chest' });
+    expect(bodyLayout.segments[bodyLayout.byPath.get('chest/racing-heart')!]!.node).toEqual({ kind: 'sensation', id: 'racing-heart' });
+    expect(bodyLayout.wheelId).toBe('body');
   });
 });

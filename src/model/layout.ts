@@ -1,13 +1,14 @@
 import { nodeRef } from '../data/node';
-import type { FeelingId, Wheel, WheelNode } from '../data/types';
+import type { FeelingId, NodeRef, Wheel, WheelNode } from '../data/types';
 
-/** Slash-joined feeling ids from the core outward, e.g. 'angry/aggressive/hostile'. Unique per position. */
+/** Slash-joined node ids from the centre outward, e.g. 'angry/aggressive/hostile' or 'chest/racing-heart/scared'. Unique per position. */
 export type Path = string;
 
 export interface Segment {
   index: number;
   path: Path;
-  feelingId: FeelingId;
+  /** What the cell names (spec v2 §7.2). */
+  node: NodeRef;
   ring: number;
   /** Wheel-space radians in [0, 2π]; 0 = 3 o'clock, clockwise. */
   start: number;
@@ -43,7 +44,21 @@ function leaves(n: WheelNode): number {
   return n.children ? n.children.reduce((sum, c) => sum + leaves(c), 0) : 1;
 }
 
-export function buildLayout(wheel: Wheel): Layout {
+/** A feeling's first position on a wheel, and that position's hue (spec v2 §5.1). */
+export interface Home { path: Path; hue: string }
+
+/** First position of each feeling in a wheel's depth-first order. Built from the first wheel. */
+export function homes(core: Layout): Map<FeelingId, Home> {
+  const out = new Map<FeelingId, Home>();
+  // Segments are pushed in depth-first order, so the first one seen is the first position.
+  for (const s of core.segments) {
+    if (s.node.kind === 'feeling' && !out.has(s.node.id)) out.set(s.node.id, { path: s.path, hue: s.hue });
+  }
+  return out;
+}
+
+/** Without `home`, hues inherit from the centre node. With it, feeling nodes take home.get(id).hue (spec v2 §5.1). */
+export function buildLayout(wheel: Wheel, home?: Map<FeelingId, Home>): Layout {
   const segments: Segment[] = [];
   const ringMembers: number[][] = wheel.rings.map(() => []);
   const total = wheel.children.reduce((sum, n) => sum + leaves(n), 0);
@@ -54,11 +69,12 @@ export function buildLayout(wheel: Wheel): Layout {
       const leafCount = leaves(node);
       const width = (leafCount / total) * TAU;
       const index = segments.length;
-      const id = nodeRef(node).id;
-      const path = prefix ? `${prefix}/${id}` : id;
-      const segHue = node.hue ?? hue;
+      const ref = nodeRef(node);
+      const path = prefix ? `${prefix}/${ref.id}` : ref.id;
+      const own = ref.kind === 'feeling' ? home?.get(ref.id)?.hue : undefined;
+      const segHue = node.hue ?? own ?? hue;
       segments.push({
-        index, path, feelingId: id, ring,
+        index, path, node: ref, ring,
         start: cursor, end: cursor + width, mid: cursor + width / 2,
         parent, children: [], hue: segHue, leafCount,
       });

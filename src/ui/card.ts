@@ -1,5 +1,5 @@
 import type { FeelingsDict } from '../data/types';
-import { definition, label, sensationLabel, t } from '../i18n';
+import { definition, nodeLabel, sensationLabel, t } from '../i18n';
 import { siblings, type Layout } from '../model/layout';
 import type { Action, State } from '../state/store';
 
@@ -26,9 +26,9 @@ export type CardModel =
 export function cardModel(layout: Layout, feelings: FeelingsDict, s: State): CardModel {
   if (s.selected === null) return { kind: 'none' };
   const seg = layout.segments[s.selected]!;
-  const title = label(seg.feelingId);
+  const title = nodeLabel(seg.node);
   if (!s.opened) return { kind: 'selected', index: seg.index, title, hue: seg.hue };
-  const row = (i: number): Row => ({ index: i, label: label(layout.segments[i]!.feelingId) });
+  const row = (i: number): Row => ({ index: i, label: nodeLabel(layout.segments[i]!.node) });
   const crumbs: Row[] = [];
   for (let i = seg.parent; i >= 0; i = layout.segments[i]!.parent) crumbs.unshift(row(i));
   return {
@@ -37,8 +37,8 @@ export function cardModel(layout: Layout, feelings: FeelingsDict, s: State): Car
     title,
     hue: seg.hue,
     crumbs,
-    definition: definition(seg.feelingId),
-    sensations: (feelings[seg.feelingId]?.sensations ?? []).map(sensationLabel),
+    definition: seg.node.kind === 'feeling' ? definition(seg.node.id) : '',
+    sensations: seg.node.kind === 'feeling' ? (feelings[seg.node.id]?.sensations ?? []).map(sensationLabel) : [],
     children: seg.children.map(row),
     closeTo: seg.children.length === 0 ? siblings(layout, seg.index).map(row) : [],
   };

@@ -11,7 +11,6 @@
     "themeSystem": "Match system",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "wheelLabel": "Feelings wheel",
     "inPath": "{label}. In {path}.",
     "path": "Path",
     "labelOnly": "{label}.",

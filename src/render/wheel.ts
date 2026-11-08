@@ -1,4 +1,4 @@
-import { label } from '../i18n';
+import { nodeLabel } from '../i18n';
 import type { Layout } from '../model/layout';
 import { inWindow, viewWindow, type Camera, type Viewport, type ViewWindow } from '../model/geometry';
 import type { FillTable, Palette } from './colors';
@@ -63,7 +63,7 @@ export function createWheelRenderer(
   canvas: HTMLCanvasElement, layout: Layout, ctx?: CanvasRenderingContext2D, sprites?: SpriteCache,
 ): WheelRenderer {
   const g = ctx ?? canvas.getContext('2d', { alpha: false })!;
-  const texts = layout.segments.map((s) => label(s.feelingId));
+  const texts = layout.segments.map((s) => nodeLabel(s.node));
   const widthAt100 = new Map<string, number>();
   const fonts = new Map<number, string>();
   const labelCache: (LabelCache | null)[] = layout.segments.map(() => null);

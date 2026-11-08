@@ -2,20 +2,28 @@
 import { beforeAll, describe, expect, test, vi } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { setLocale } from '../../src/i18n';
-import { buildLayout } from '../../src/model/layout';
+import { buildLayout, homes } from '../../src/model/layout';
 import { initialState, type Action, type State } from '../../src/state/store';
 import { cardModel, type FwCard } from '../../src/ui/card';
 import '../../src/ui/toolbar';
 import type { FwToolbar } from '../../src/ui/toolbar';
 
-const { wheel, feelings, locale } = loadData();
+const { wheel, wheels, feelings, locale } = loadData();
 const layout = buildLayout(wheel);
+const home = homes(layout);
+const body = buildLayout(wheels[1]!, home);
+const jump = { wheel: 'core', home };
+const bIdx = (p: string): number => body.byPath.get(p)!;
+const bOpened = (p: string): State => ({ selected: bIdx(p), opened: true, view: { mode: 'ring', ring: body.segments[bIdx(p)]!.ring } });
 const idx = (p: string): number => layout.byPath.get(p)!;
 const selected = (p: string): State => ({ ...initialState, selected: idx(p) });
 const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { mode: 'ring', ring: layout.segments[idx(p)]!.ring } });
 beforeAll(() => setLocale(locale));
 
 describe('cardModel', () => {
+  const row = (p: string, label: string, hue = 'angry') => ({ index: idx(p), label, hue });
+  const sens = (id: string) => (feelings[id]?.sensations ?? []).map((s) => locale.sensations[s]);
+
   test('cardModel: none / selected / opened', () => {
     expect(cardModel(layout, feelings, initialState)).toEqual({ kind: 'none' });
     expect(cardModel(layout, feelings, selected('angry/aggressive'))).toEqual({
@@ -25,19 +33,67 @@ describe('cardModel', () => {
     if (m.kind !== 'opened') throw new Error('expected opened');
     expect(m.title).toBe('Hostile');
     expect(m.hue).toBe('angry');
-    expect(m.crumbs).toEqual([{ index: idx('angry'), label: 'Angry' }, { index: idx('angry/aggressive'), label: 'Aggressive' }]);
-    expect(m.children).toEqual([]);
-    expect(m.closeTo).toEqual([{ index: idx('angry/aggressive/provoked'), label: 'Provoked' }]);
-    expect(m.definition).toBe(locale.feelings['hostile']!.definition);
-    expect(m.sensations).toEqual((feelings['hostile']?.sensations ?? []).map((s) => locale.sensations[s]));
+    expect(m.crumbs).toEqual([row('angry', 'Angry'), row('angry/aggressive', 'Aggressive')]);
+    expect(m.sections).toEqual([
+      { kind: 'text', text: locale.feelings['hostile']!.definition },
+      { kind: 'list', heading: 'You might notice', items: sens('hostile') },
+      { kind: 'links', heading: 'Close to', inline: true, rows: [row('angry/aggressive/provoked', 'Provoked')] },
+    ]);
   });
 
-  test('opened core: no crumbs, 8 children, no closeTo', () => {
+  test('opened core: no crumbs; definition, You might notice, Narrow it down with 8 rows', () => {
     const m = cardModel(layout, feelings, opened('angry'));
     if (m.kind !== 'opened') throw new Error('expected opened');
     expect(m.crumbs).toEqual([]);
-    expect(m.children.map((c) => c.label)).toEqual(['Let Down', 'Humiliated', 'Bitter', 'Mad', 'Aggressive', 'Frustrated', 'Distant', 'Critical']);
-    expect(m.closeTo).toEqual([]);
+    expect(m.sections.map((x) => x.kind)).toEqual(['text', 'list', 'links']);
+    const links = m.sections[2]!;
+    if (links.kind !== 'links') throw new Error('expected links');
+    expect(links.heading).toBe('Narrow it down');
+    expect(links.inline).toBe(false);
+    expect(links.rows.map((c) => c.label)).toEqual(['Let Down', 'Humiliated', 'Bitter', 'Mad', 'Aggressive', 'Frustrated', 'Distant', 'Critical']);
+  });
+
+  test('area card: one Narrow it down section with its sensations', () => {
+    const m = cardModel(body, feelings, bOpened('chest'), jump);
+    if (m.kind !== 'opened') throw new Error('expected opened');
+    expect(m.hue).toBe('chest');
+    expect(m.sections).toEqual([{
+      kind: 'links', heading: 'Narrow it down', inline: false,
+      rows: ['racing-heart', 'tight-chest', 'hollow-chest', 'warm-chest'].map((s) => ({ index: bIdx(`chest/${s}`), label: locale.sensations[s], hue: 'chest' })),
+    }]);
+  });
+
+  test('sensation card: one Could be section', () => {
+    const m = cardModel(body, feelings, bOpened('chest/racing-heart'), jump);
+    if (m.kind !== 'opened') throw new Error('expected opened');
+    expect(m.crumbs).toEqual([{ index: bIdx('chest'), label: 'Chest', hue: 'chest' }]);
+    expect(m.sections).toEqual([{
+      kind: 'links', heading: 'Could be', inline: false,
+      rows: [['scared', 'Scared', 'fearful'], ['mad', 'Mad', 'angry'], ['excited', 'Excited', 'surprised']]
+        .map(([id, label, hue]) => ({ index: bIdx(`chest/racing-heart/${id}`), label, hue })),
+    }]);
+  });
+
+  test('feeling under a sensation: definition, You might notice, Could also be, jump to the feelings wheel', () => {
+    const m = cardModel(body, feelings, bOpened('chest/racing-heart/scared'), jump);
+    if (m.kind !== 'opened') throw new Error('expected opened');
+    expect(m.hue).toBe('fearful');
+    expect(m.crumbs.map((c) => c.label)).toEqual(['Chest', 'Racing heart']);
+    expect(m.sections).toEqual([
+      { kind: 'text', text: locale.feelings['scared']!.definition },
+      { kind: 'list', heading: 'You might notice', items: sens('scared') },
+      { kind: 'links', heading: 'Could also be', inline: true, rows: [
+        { index: bIdx('chest/racing-heart/mad'), label: 'Mad', hue: 'angry' },
+        { index: bIdx('chest/racing-heart/excited'), label: 'Excited', hue: 'surprised' },
+      ] },
+      { kind: 'jump', label: 'See Scared on the feelings wheel', wheel: 'core', path: 'fearful/scared' },
+    ]);
+  });
+
+  test('no jump section on the first wheel', () => {
+    const m = cardModel(layout, feelings, opened('fearful/scared'));
+    if (m.kind !== 'opened') throw new Error('expected opened');
+    expect(m.sections.some((x) => x.kind === 'jump')).toBe(false);
   });
 });
 
@@ -377,3 +433,27 @@ describe('<fw-toolbar>', () => {
 
 });
 
+describe('<fw-card> on the body wheel', () => {
+  test('the jump button dispatches fw-wheel with wheel and path', () => {
+    document.body.innerHTML = '<fw-card></fw-card>';
+    const el = document.querySelector<FwCard>('fw-card')!;
+    const got: unknown[] = [];
+    document.body.addEventListener('fw-wheel', (e) => got.push((e as CustomEvent).detail));
+    el.model = cardModel(body, feelings, bOpened('chest/racing-heart/scared'), jump);
+    const b = el.querySelector<HTMLButtonElement>('.fw-jump')!;
+    expect(b.textContent).toBe('See Scared on the feelings wheel ›');
+    b.click();
+    expect(got).toEqual([{ wheel: 'core', path: 'fearful/scared' }]);
+  });
+
+  test('Could be rows each carry their own ink', () => {
+    document.body.innerHTML = '<fw-card></fw-card>';
+    const el = document.querySelector<FwCard>('fw-card')!;
+    el.inks = { chest: '#111111', fearful: '#222222', angry: '#333333', surprised: '#444444' };
+    el.model = cardModel(body, feelings, bOpened('chest/racing-heart'), jump);
+    const rows = [...el.querySelectorAll<HTMLButtonElement>('ul.fw-rows button')];
+    expect(rows.map((r) => r.textContent)).toEqual(['Scared ›', 'Mad ›', 'Excited ›']);
+    expect(rows.map((r) => r.style.getPropertyValue('--ink'))).toEqual(['#222222', '#333333', '#444444']);
+    expect(el.querySelector('h3')!.textContent).toBe('Could be');
+  });
+});

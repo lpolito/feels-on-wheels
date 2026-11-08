@@ -278,6 +278,9 @@ fw-card[data-open] :is(.fw-crumbs-wrap, .fw-card-body) { grid-template-rows: 1fr
 }
 .fw-rows .fw-link:hover { background: color-mix(in srgb, var(--ink, var(--fg)) 8%, transparent); }
 .fw-close-to { display: flex; flex-wrap: wrap; gap: 0.25rem 0.9rem; }
+/* Spec v2 §6.2: the jump to the feeling on the feelings wheel. */
+.fw-jump-row { margin: 1rem 0 0; }
+.fw-jump { min-height: 44px; text-align: start; }
 
 @media (prefers-reduced-motion: reduce) {
   .fw-card-chevron, .fw-crumbs-wrap, .fw-card-body { transition: none; }

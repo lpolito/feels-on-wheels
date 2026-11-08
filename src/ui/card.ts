@@ -1,9 +1,16 @@
-import type { FeelingsDict } from '../data/types';
+import type { FeelingId, FeelingsDict } from '../data/types';
 import { definition, nodeLabel, sensationLabel, t } from '../i18n';
-import { siblings, type Layout } from '../model/layout';
+import { siblings, type Home, type Layout, type Path } from '../model/layout';
 import type { Action, State } from '../state/store';
 
-type Row = { index: number; label: string };
+export type Row = { index: number; label: string; hue: string };
+
+/** One block of an opened card (spec v2 §6.1). `inline` links sit in a row of words; the others are one per line. */
+export type Section =
+  | { kind: 'text'; text: string }
+  | { kind: 'list'; heading: string; items: string[] }
+  | { kind: 'links'; heading: string; inline: boolean; rows: Row[] }
+  | { kind: 'jump'; label: string; wheel: string; path: Path };
 
 export type CardModel =
   | { kind: 'none' }
@@ -15,33 +22,49 @@ export type CardModel =
       hue: string;
       /** Ancestors, root first. */
       crumbs: Row[];
-      definition: string;
-      sensations: string[];
-      /** "Narrow it down"; empty for outer words. */
-      children: Row[];
-      /** Siblings, outer words only. */
-      closeTo: Row[];
+      sections: Section[];
     };
 
-export function cardModel(layout: Layout, feelings: FeelingsDict, s: State): CardModel {
+/** Where a feeling on another wheel jumps to: the first wheel's id and each feeling's place on it. */
+export interface JumpContext { wheel: string; home: Map<FeelingId, Home> }
+
+/**
+ * Spec v2 §6.2: the sections follow the node's kind and its parent's kind, never the wheel. `jump` is given only on
+ * wheels other than the first.
+ */
+export function cardModel(layout: Layout, feelings: FeelingsDict, s: State, jump?: JumpContext): CardModel {
   if (s.selected === null) return { kind: 'none' };
   const seg = layout.segments[s.selected]!;
   const title = nodeLabel(seg.node);
   if (!s.opened) return { kind: 'selected', index: seg.index, title, hue: seg.hue };
-  const row = (i: number): Row => ({ index: i, label: nodeLabel(layout.segments[i]!.node) });
+  const row = (i: number): Row => {
+    const x = layout.segments[i]!;
+    return { index: i, label: nodeLabel(x.node), hue: x.hue };
+  };
   const crumbs: Row[] = [];
   for (let i = seg.parent; i >= 0; i = layout.segments[i]!.parent) crumbs.unshift(row(i));
-  return {
-    kind: 'opened',
-    index: seg.index,
-    title,
-    hue: seg.hue,
-    crumbs,
-    definition: seg.node.kind === 'feeling' ? definition(seg.node.id) : '',
-    sensations: seg.node.kind === 'feeling' ? (feelings[seg.node.id]?.sensations ?? []).map(sensationLabel) : [],
-    children: seg.children.map(row),
-    closeTo: seg.children.length === 0 ? siblings(layout, seg.index).map(row) : [],
-  };
+  const children = seg.children.map(row);
+  const sections: Section[] = [];
+  if (seg.node.kind === 'feeling') {
+    const id = seg.node.id;
+    sections.push({ kind: 'text', text: definition(id) });
+    const notice = (feelings[id]?.sensations ?? []).map(sensationLabel);
+    if (notice.length > 0) sections.push({ kind: 'list', heading: t('youMightNotice'), items: notice });
+    if (children.length > 0) {
+      sections.push({ kind: 'links', heading: t('narrowDown'), inline: false, rows: children });
+    } else {
+      const parent = seg.parent >= 0 ? layout.segments[seg.parent]!.node.kind : null;
+      const rows = siblings(layout, seg.index).map(row);
+      const heading = parent === 'sensation' ? t('couldAlsoBe') : t('closeTo');
+      if (rows.length > 0) sections.push({ kind: 'links', heading, inline: true, rows });
+    }
+    const home = jump?.home.get(id);
+    if (jump && home) sections.push({ kind: 'jump', label: t('seeOnWheel', { label: title }), wheel: jump.wheel, path: home.path });
+  } else if (children.length > 0) {
+    const heading = seg.node.kind === 'sensation' ? t('couldBe') : t('narrowDown');
+    sections.push({ kind: 'links', heading, inline: false, rows: children });
+  }
+  return { kind: 'opened', index: seg.index, title, hue: seg.hue, crumbs, sections };
 }
 
 const h = <K extends keyof HTMLElementTagNameMap>(tag: K, props: Partial<HTMLElementTagNameMap[K]> = {}, ...kids: (Node | string)[]) => {
@@ -118,6 +141,14 @@ export class FwCard extends HTMLElement {
 
   #emit(action: Action): void {
     this.dispatchEvent(new CustomEvent<Action>('fw-action', { detail: action, bubbles: true }));
+  }
+
+  /** A row link in its own feeling's ink (spec v2 §6.1); falls back to the card's ink. */
+  #inkedLink(r: Row, trailing = ''): HTMLButtonElement {
+    const b = this.#link(r, trailing);
+    const ink = this.#inks[r.hue];
+    if (ink) b.style.setProperty('--ink', ink);
+    return b;
   }
 
   #link(r: Row, trailing = ''): HTMLButtonElement {
@@ -217,24 +248,23 @@ export class FwCard extends HTMLElement {
 
   #bodyFor(m: Extract<CardModel, { kind: 'opened' }>): HTMLDivElement {
     const content = h('div', { className: 'fw-card-content' });
-    content.append(h('p', { className: 'fw-definition' }, m.definition));
-    if (m.sensations.length > 0) {
-      content.append(
-        h('h3', {}, t('youMightNotice')),
-        h('ul', { className: 'fw-sensations' }, ...m.sensations.map((s) => h('li', {}, s))),
-      );
-    }
-    if (m.children.length > 0) {
-      content.append(
-        h('h3', {}, t('narrowDown')),
-        h('ul', { className: 'fw-rows' }, ...m.children.map((c) => h('li', {}, this.#link(c, ' ›')))),
-      );
-    }
-    if (m.closeTo.length > 0) {
-      content.append(
-        h('h3', {}, t('closeTo')),
-        h('p', { className: 'fw-close-to' }, ...m.closeTo.map((c) => this.#link(c))),
-      );
+    // Spec v2 §6.1: draw whatever sections the model holds, in order. No wheel or ring checks here.
+    for (const s of m.sections) {
+      if (s.kind === 'text') {
+        content.append(h('p', { className: 'fw-definition' }, s.text));
+      } else if (s.kind === 'list') {
+        content.append(h('h3', {}, s.heading), h('ul', { className: 'fw-sensations' }, ...s.items.map((i) => h('li', {}, i))));
+      } else if (s.kind === 'links') {
+        content.append(h('h3', {}, s.heading), s.inline
+          ? h('p', { className: 'fw-close-to' }, ...s.rows.map((r) => this.#inkedLink(r)))
+          : h('ul', { className: 'fw-rows' }, ...s.rows.map((r) => h('li', {}, this.#inkedLink(r, ' ›')))));
+      } else {
+        const jump = h('button', { type: 'button', className: 'fw-link fw-jump' }, `${s.label} ›`);
+        jump.addEventListener('click', () => {
+          this.dispatchEvent(new CustomEvent('fw-wheel', { detail: { wheel: s.wheel, path: s.path }, bubbles: true }));
+        });
+        content.append(h('p', { className: 'fw-jump-row' }, jump));
+      }
     }
     return h('div', { className: 'fw-card-body' }, h('div', { className: 'fw-card-body-inner' }, content));
   }

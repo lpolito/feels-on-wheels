@@ -10,8 +10,14 @@ describe('<fw-hint>', () => {
     el.text = 'Spin to explore.';
     expect(el.hidden).toBe(false);
     expect(el.textContent).toBe('Spin to explore.');
-    expect(el.getAttribute('aria-live')).toBe('polite');
     el.text = null;
     expect(el.hidden).toBe(true);
+  });
+
+  test('the message is plain text, not a live region', () => {
+    document.body.innerHTML = '<fw-hint></fw-hint>';
+    const el = document.querySelector<FwHint>('fw-hint')!;
+    el.text = 'How are you feeling?';
+    expect(el.getAttribute('aria-live')).toBeNull();
   });
 });

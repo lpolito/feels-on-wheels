@@ -266,6 +266,17 @@ test.describe('desktop', () => {
     expect(await state(page)).toEqual({ selected: null, opened: false, view: { mode: 'wheel' } });
   });
 
+  test('the message sits where the card goes', async ({ page }) => {
+    await open(page);
+    const msg = (await hint(page).boundingBox())!;
+    await tapPath(page, 'angry');
+    await tapPath(page, 'angry');
+    await settled(page);
+    const card = (await page.locator('fw-card').boundingBox())!;
+    expect(Math.abs(msg.x - card.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(msg.x + msg.width - (card.x + card.width))).toBeLessThanOrEqual(1);
+  });
+
   test('the hint reads the same on desktop', async ({ page }) => {
     await open(page);
     expect((await state(page)).selected).toBeNull();
@@ -447,6 +458,19 @@ test.describe('phone', () => {
   });
 });
 
+test('the message and the card never show together', async ({ page }) => {
+  await open(page);
+  await expect(hint(page)).toBeVisible();
+  await expect(page.locator('fw-card')).toBeHidden();
+  await tapPath(page, 'angry');
+  await expect(hint(page)).toBeHidden();
+  await expect(page.locator('fw-card')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await page.keyboard.press('Escape');
+  await expect(hint(page)).toBeVisible();
+  await expect(page.locator('fw-card')).toBeHidden();
+});
+
 for (const colorScheme of ['light', 'dark'] as const) {
   test(`axe: no violations with nothing selected, selected, opened (${colorScheme})`, async ({ page }) => {
     await page.emulateMedia({ colorScheme });
@@ -461,6 +485,8 @@ for (const colorScheme of ['light', 'dark'] as const) {
     expect((await new AxeBuilder({ page }).analyze()).violations, 'selected').toEqual([]);
     await page.keyboard.press('Escape');
     await expect(page.locator('fw-card')).toBeHidden();
+    // The message fades in (150 ms); let it finish so axe reads its settled contrast.
+    await settled(page);
     expect((await new AxeBuilder({ page }).analyze()).violations, 'nothing').toEqual([]);
   });
 }

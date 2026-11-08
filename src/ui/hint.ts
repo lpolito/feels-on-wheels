@@ -1,4 +1,4 @@
-/** The floating hint above the card (spec §5.1). `null` hides it. */
+/** The message in the card's place while nothing is selected (spec v1.3 §3.1, §4.1). Plain text; `null` hides it. */
 export class FwHint extends HTMLElement {
   #text: string | null = null;
 
@@ -12,12 +12,10 @@ export class FwHint extends HTMLElement {
   }
 
   connectedCallback(): void {
-    this.setAttribute('aria-live', 'polite');
     this.#sync();
   }
 
   #sync(): void {
-    this.setAttribute('aria-live', 'polite');
     this.hidden = this.#text === null;
     if (this.textContent !== (this.#text ?? '')) this.textContent = this.#text ?? '';
   }

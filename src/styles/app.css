@@ -98,6 +98,8 @@ fw-toolbar .fw-start-over[hidden] { display: none; }
 #stage { inset: 0 var(--column) 0 0; }
 
 #float {
+  /* Spec v1.3 §5.1: the card's and the message's shared left edge. */
+  --edge: 1.1rem;
   position: absolute;
   z-index: 2;
   /* Centred in the reserved column, below the toolbar. */
@@ -119,14 +121,20 @@ fw-hint, fw-card {
   box-shadow: 0 6px 30px rgb(0 0 0 / 0.15);
 }
 fw-hint[hidden], fw-card[hidden] { display: none; }
+/* Spec v1.3 §4.1: the message is a panel in the card's place, its text on the card's left edge. */
 fw-hint {
-  display: block;
-  align-self: center;
-  max-width: 100%;
-  padding: 0.55rem 1rem;
-  border-radius: 999px;
-  font-size: 0.95rem;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 0.75rem 1rem 0.75rem var(--edge);
+  border-radius: 1rem;
+  font-size: 1rem;
+  text-align: start;
+}
+/* Swapping the message and the card fades the newcomer in. */
+@media (prefers-reduced-motion: no-preference) {
+  fw-hint, fw-card { transition: opacity 150ms ease-out; }
+  @starting-style { fw-hint, fw-card { opacity: 0; } }
 }
 fw-card {
   display: block;

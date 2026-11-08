@@ -204,7 +204,7 @@ function renderUi(s: State): void {
   setOpenedHalf(s);
   card.model = cardModel(layout, feelings, s);
   hint.text = hintText(s);
-  toolbar.opened = s.opened;
+  toolbar.selected = s.selected !== null;
   app.dataset['mode'] = s.view.mode;
   tree.update(s);
 }

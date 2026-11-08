@@ -59,7 +59,9 @@ fw-toolbar {
   gap: 0.5rem;
 }
 fw-toolbar button, fw-toolbar select { min-width: 44px; min-height: 44px; padding: 0 0.9rem; font-size: 1rem; }
-fw-toolbar .fw-zoom-out[hidden] { display: none; }
+fw-toolbar .fw-start-over { display: inline-flex; align-items: center; gap: 0.4rem; }
+fw-toolbar .fw-start-over[hidden] { display: none; }
+.fw-icon { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ── Floating hint and card (spec §5) ───────────────────────────────── */
 /* Spec v1.2 §4.1: the card's column; the card sits 1.5rem in from each side of it. */

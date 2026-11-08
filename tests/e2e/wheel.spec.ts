@@ -65,7 +65,8 @@ test.describe('desktop', () => {
     await idle(page);
     expect((await state(page)).opened).toBe(true);
     const before = (await page.evaluate(() => window.__fw.camera())).rotation;
-    await page.getByRole('button', { name: 'Zoom out' }).click();
+    // Close with the card's toggle: Start over would also clear the selection.
+    await head(page).click();
     await idle(page);
     const after = await page.evaluate(() => window.__fw.camera());
     expect(after.scale).toBe(1);
@@ -120,14 +121,13 @@ test.describe('desktop', () => {
   for (const key of ['Enter', ' '] as const) {
     const name = key === ' ' ? 'Space' : key;
 
-    test(`${name} on a focused Zoom out closes the word and moves focus to the wheel`, async ({ page }) => {
+    test(`${name} on a focused Start over clears the word and moves focus to the wheel`, async ({ page }) => {
       await open(page, '#/core/angry');
-      await page.getByRole('button', { name: 'Zoom out' }).focus();
+      await page.getByRole('button', { name: 'Start over' }).focus();
       await page.keyboard.press(key);
       await idle(page);
-      expect(await state(page)).toMatchObject({ opened: false, view: { mode: 'wheel' } });
-      expect(await selectedPath(page)).toBe('angry');
-      await expect(page.locator('[role="treeitem"][aria-selected="true"]')).toBeFocused();
+      expect(await state(page)).toEqual({ selected: null, opened: false, view: { mode: 'wheel' } });
+      await expect(page.locator('[role="treeitem"][tabindex="0"]')).toBeFocused();
     });
 
     test(`${name} on a focused card row opens that row, not the wheel`, async ({ page }) => {
@@ -139,14 +139,34 @@ test.describe('desktop', () => {
     });
   }
 
-  test('Escape on a focused Zoom out closes the word and moves focus to the wheel', async ({ page }) => {
+  test('Escape on a focused Start over closes, then clears and moves focus to the wheel', async ({ page }) => {
     await open(page, '#/core/angry');
-    await page.getByRole('button', { name: 'Zoom out' }).focus();
+    const startOver = page.getByRole('button', { name: 'Start over' });
+    await startOver.focus();
     await page.keyboard.press('Escape');
     await idle(page);
-    expect((await state(page)).opened).toBe(false);
-    await expect(page.locator('[role="treeitem"][aria-selected="true"]')).toBeFocused();
+    expect(await state(page)).toMatchObject({ selected: expect.any(Number), opened: false });
+    await expect(startOver).toBeFocused();
+    await page.keyboard.press('Escape');
+    expect((await state(page)).selected).toBeNull();
+    await expect(page.locator('[role="treeitem"][tabindex="0"]')).toBeFocused();
   });
+
+  test('Start over from an opened word clears it, and Back returns to the word', async ({ page }) => {
+    await open(page);
+    await tapPath(page, 'angry');
+    await tapPath(page, 'angry');
+    await page.getByRole('button', { name: 'Start over' }).click();
+    await idle(page);
+    expect((await state(page)).selected).toBeNull();
+    expect(await page.evaluate(() => location.hash)).toBe('');
+    await expect(page.getByRole('button', { name: 'Start over' })).toBeHidden();
+    await page.goBack();
+    await idle(page);
+    expect(await page.evaluate(() => location.hash)).toBe('#/core/angry');
+    expect((await state(page)).opened).toBe(true);
+  });
+
 
   test('+ and − work only with focus on the wheel, not from the page or a card button (WCAG 2.1.4)', async ({ page }) => {
     await open(page);

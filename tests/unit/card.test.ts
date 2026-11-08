@@ -242,37 +242,42 @@ describe('<fw-card>', () => {
 });
 
 describe('<fw-toolbar>', () => {
-  test('hiding Zoom out while it has focus (Escape, Back) emits fw-focus-lost', () => {
+  test('hiding Start over while it has focus emits fw-focus-lost', () => {
     document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
     const el = document.querySelector<FwToolbar>('fw-toolbar')!;
     let lost = 0;
     el.addEventListener('fw-focus-lost', () => lost++);
-    el.opened = true;
-    el.opened = false;
+    el.selected = true;
+    el.selected = false;
     expect(lost).toBe(0);
-    el.opened = true;
-    el.querySelector<HTMLButtonElement>('button.fw-zoom-out')!.focus();
-    el.opened = false;
+    el.selected = true;
+    el.querySelector<HTMLButtonElement>('button.fw-start-over')!.focus();
+    el.selected = false;
     expect(lost).toBe(1);
   });
 
-  test('toolbar shows Zoom out only when opened, emits close then fw-focus-lost', () => {
+  test('toolbar shows Start over only when something is selected, emits clear then fw-focus-lost', () => {
     document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
     const el = document.querySelector<FwToolbar>('fw-toolbar')!;
     const actions: unknown[] = [];
-    const themes: unknown[] = [];
     el.addEventListener('fw-action', (e) => actions.push((e as CustomEvent).detail));
     el.addEventListener('fw-focus-lost', () => actions.push('fw-focus-lost'));
-    el.addEventListener('fw-theme', (e) => themes.push((e as CustomEvent).detail));
-    el.opened = false;
-    const btn = el.querySelector<HTMLButtonElement>('button.fw-zoom-out')!;
+    el.selected = false;
+    const btn = el.querySelector<HTMLButtonElement>('button.fw-start-over')!;
     expect(btn.hidden).toBe(true);
-    el.opened = true;
+    el.selected = true;
     expect(btn.hidden).toBe(false);
-    expect(btn.textContent).toBe('Zoom out');
-    expect(btn.hasAttribute('aria-pressed')).toBe(false);
+    expect(btn.textContent).toBe('Start over');
+    expect(btn.querySelector('svg')!.getAttribute('aria-hidden')).toBe('true');
     btn.click();
-    expect(actions).toEqual([{ type: 'close' }, 'fw-focus-lost']);
+    expect(actions).toEqual([{ type: 'clear' }, 'fw-focus-lost']);
+  });
+
+  test('theme picker still emits fw-theme', () => {
+    document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+    const el = document.querySelector<FwToolbar>('fw-toolbar')!;
+    const themes: unknown[] = [];
+    el.addEventListener('fw-theme', (e) => themes.push((e as CustomEvent).detail));
     const select = el.querySelector('select')!;
     el.theme = 'dark';
     expect(select.value).toBe('dark');
@@ -281,3 +286,4 @@ describe('<fw-toolbar>', () => {
     expect(themes).toEqual(['light']);
   });
 });
+

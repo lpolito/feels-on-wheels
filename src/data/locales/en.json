@@ -16,7 +16,7 @@
     "path": "Path",
     "labelOnly": "{label}.",
     "hint": "How are you feeling? Tap a feeling or spin to explore.",
-    "zoomOut": "Zoom out",
+    "startOver": "Start over",
     "opened": "{label}, opened. In {path}.",
     "openedCore": "{label}, opened.",
     "closed": "{label}, closed."

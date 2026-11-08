@@ -55,7 +55,8 @@ test.describe('switching wheels (desktop)', () => {
   });
 
   test('Review Focus 2: fling then switch: the body wheel stays unselected', async ({ page }) => {
-    await open(page);
+    // Opened, so the fling is a ring spin whose settle would dispatch `settled` (final review #4).
+    await open(page, '#/core/fearful/scared');
     const box = (await page.locator('#wheel').boundingBox())!;
     const x = box.x + box.width * 0.4;
     await page.mouse.move(x, box.y + box.height * 0.2);
@@ -68,6 +69,36 @@ test.describe('switching wheels (desktop)', () => {
     expect(await wheelId(page)).toBe('body');
     expect((await state(page)).selected).toBeNull();
     expect(new URL(page.url()).hash).toBe('#/body');
+  });
+
+  test('final review #2: Back across wheels keeps keyboard focus in the tree', async ({ page }) => {
+    await open(page, '#/body/chest/racing-heart');
+    await switchButton(page, 'Feelings').click();
+    await idle(page);
+    await page.locator('#a11y-tree [role="treeitem"][tabindex="0"]').focus();
+    await page.goBack();
+    await idle(page);
+    expect(await wheelId(page)).toBe('body');
+    await expect(page.locator('#a11y-tree [role="treeitem"]:focus')).toHaveCount(1);
+  });
+
+  test('final review #3: a pinch just before a switch never reaches the new wheel', async ({ page, browserName }) => {
+    test.skip(browserName === 'firefox', 'Firefox ctrl+wheel needs synthetic events (see wheel.spec)');
+    await open(page, '#/body/chest/racing-heart');
+    const box = (await page.locator('#wheel').boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    // A strong pinch out on the opened word, which ends (150 ms later) by stepping out to its parent.
+    await page.keyboard.down('Control');
+    for (let i = 0; i < 4; i++) await page.mouse.wheel(0, 200);
+    await page.keyboard.up('Control');
+    await switchButton(page, 'Feelings').click();
+    // The old controller's ctrl-wheel timer ends its zoom 150 ms later.
+    await page.waitForTimeout(400);
+    await idle(page);
+    expect(await wheelId(page)).toBe('core');
+    expect((await state(page)).selected).toBeNull();
+    await expect(page.locator('fw-card')).toBeHidden();
+    expect(new URL(page.url()).hash).toBe('');
   });
 
   test('Review Focus 3: Tab from the switch reaches the tree; arrows move through areas', async ({ page }) => {

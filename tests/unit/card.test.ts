@@ -27,7 +27,7 @@ describe('cardModel', () => {
   test('cardModel: none / selected / opened', () => {
     expect(cardModel(layout, feelings, initialState)).toEqual({ kind: 'none' });
     expect(cardModel(layout, feelings, selected('angry/aggressive'))).toEqual({
-      kind: 'selected', index: idx('angry/aggressive'), title: 'Aggressive', hue: 'angry',
+      kind: 'selected', wheel: 'core', index: idx('angry/aggressive'), title: 'Aggressive', hue: 'angry',
     });
     const m = cardModel(layout, feelings, opened('angry/aggressive/hostile'));
     if (m.kind !== 'opened') throw new Error('expected opened');
@@ -455,5 +455,35 @@ describe('<fw-card> on the body wheel', () => {
     expect(rows.map((r) => r.textContent)).toEqual(['Scared ›', 'Mad ›', 'Excited ›']);
     expect(rows.map((r) => r.style.getPropertyValue('--ink'))).toEqual(['#222222', '#333333', '#444444']);
     expect(el.querySelector('h3')!.textContent).toBe('Could be');
+  });
+});
+
+describe('<fw-card> across wheels (final review #1)', () => {
+  // Segment indices are per wheel, so the same index on two wheels is two different words.
+  const i = bIdx('chest/racing-heart');
+  const coreOpened: State = { selected: i, opened: true, view: { mode: 'ring', ring: layout.segments[i]!.ring } };
+  const titleOf = (el: FwCard) => el.querySelector('.fw-card-title')!.textContent;
+
+  test('the same index on another wheel re-renders the card (opened → opened)', () => {
+    document.body.innerHTML = '<fw-card></fw-card>';
+    const el = document.querySelector<FwCard>('fw-card')!;
+    el.model = cardModel(layout, feelings, coreOpened);
+    expect(titleOf(el)).not.toBe('Racing heart');
+    el.model = cardModel(body, feelings, bOpened('chest/racing-heart'), jump);
+    expect(titleOf(el)).toBe('Racing heart');
+    expect(el.querySelector('h3')!.textContent).toBe('Could be');
+  });
+
+  test('the same index on another wheel re-renders the card (selected → opened)', () => {
+    document.body.innerHTML = '<fw-card></fw-card>';
+    const el = document.querySelector<FwCard>('fw-card')!;
+    el.model = cardModel(layout, feelings, { ...initialState, selected: i });
+    el.model = cardModel(body, feelings, bOpened('chest/racing-heart'), jump);
+    expect(titleOf(el)).toBe('Racing heart');
+  });
+
+  test('selected and opened models name their wheel', () => {
+    expect(cardModel(body, feelings, bOpened('chest'), jump)).toMatchObject({ wheel: 'body' });
+    expect(cardModel(layout, feelings, { ...initialState, selected: i })).toMatchObject({ wheel: 'core' });
   });
 });

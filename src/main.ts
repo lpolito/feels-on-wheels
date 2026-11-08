@@ -309,8 +309,12 @@ function freshTreeRoot(): HTMLElement {
   return root;
 }
 
+/** Unsubscribes the mounted store from onState; a late dispatch to an old store (a pinch's end timer) then goes nowhere. */
+let unsubscribe: () => void = () => {};
+
 function mount(next: Layout, initial: State, intro: boolean): void {
   camera?.stop();
+  unsubscribe();
   layout = next;
   jump = layout.wheelId === firstId ? undefined : { wheel: firstId, home };
   ({ vp, opts } = measure());
@@ -333,7 +337,7 @@ function mount(next: Layout, initial: State, intro: boolean): void {
   fadeStart = -Infinity;
   pulseStart = -Infinity;
   tree = createA11yTree(freshTreeRoot(), layout, dispatch);
-  store.subscribe(onState);
+  unsubscribe = store.subscribe(onState);
   wheelSwitch.current = layout.wheelId;
 
   renderer.resize(vp.width, vp.height, devicePixelRatio || 1);
@@ -364,8 +368,11 @@ app.addEventListener('fw-wheel', (e) => {
 addEventListener('popstate', () => {
   const found = fromLocation(location.hash);
   if (found.layout.wheelId !== layout.wheelId) {
+    // The tree is rebuilt, so focus inside it would fall to <body> (WCAG 2.4.3); put it back on the new tree.
+    const treeHadFocus = $<HTMLElement>('#a11y-tree').contains(document.activeElement);
     mount(found.layout, found.state ?? initialState, false);
     announce(wheelText(layout.wheelId).name);
+    if (treeHadFocus) tree.focusSelected();
     return;
   }
   const cur = store.get();

@@ -14,9 +14,11 @@ export type Section =
 
 export type CardModel =
   | { kind: 'none' }
-  | { kind: 'selected'; index: number; title: string; hue: string }
+  /** `wheel` + `index` identify the word: indices are per wheel (final review #1). */
+  | { kind: 'selected'; wheel: string; index: number; title: string; hue: string }
   | {
       kind: 'opened';
+      wheel: string;
       index: number;
       title: string;
       hue: string;
@@ -36,7 +38,7 @@ export function cardModel(layout: Layout, feelings: FeelingsDict, s: State, jump
   if (s.selected === null) return { kind: 'none' };
   const seg = layout.segments[s.selected]!;
   const title = nodeLabel(seg.node);
-  if (!s.opened) return { kind: 'selected', index: seg.index, title, hue: seg.hue };
+  if (!s.opened) return { kind: 'selected', wheel: layout.wheelId, index: seg.index, title, hue: seg.hue };
   const row = (i: number): Row => {
     const x = layout.segments[i]!;
     return { index: i, label: nodeLabel(x.node), hue: x.hue };
@@ -64,7 +66,7 @@ export function cardModel(layout: Layout, feelings: FeelingsDict, s: State, jump
     const heading = seg.node.kind === 'sensation' ? t('couldBe') : t('narrowDown');
     sections.push({ kind: 'links', heading, inline: false, rows: children });
   }
-  return { kind: 'opened', index: seg.index, title, hue: seg.hue, crumbs, sections };
+  return { kind: 'opened', wheel: layout.wheelId, index: seg.index, title, hue: seg.hue, crumbs, sections };
 }
 
 const h = <K extends keyof HTMLElementTagNameMap>(tag: K, props: Partial<HTMLElementTagNameMap[K]> = {}, ...kids: (Node | string)[]) => {
@@ -117,8 +119,9 @@ export class FwCard extends HTMLElement {
     const prev = this.#model;
     this.#model = m;
     // Same feeling in the same state: keep the DOM (and the user's focus) as it is.
-    if (prev.kind === m.kind && (m.kind === 'none' || (prev as Shown).index === m.index)) return;
-    if (prev.kind !== 'none' && m.kind !== 'none' && prev.index === m.index && this.#toggle) {
+    const sameWord = prev.kind !== 'none' && m.kind !== 'none' && prev.wheel === m.wheel && prev.index === m.index;
+    if (prev.kind === m.kind && (m.kind === 'none' || sameWord)) return;
+    if (sameWord && this.#toggle) {
       this.#update(m);
       return;
     }

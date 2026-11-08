@@ -7,6 +7,7 @@
   --gap: #ffffff;
   --focus: #1a5fd0;
   --outline: #1c1b1f;
+  --panel-edge: rgb(28 27 31 / 0.12);
 
   --hue-fearful: #C2257F;
   --hue-angry: #C62835;
@@ -27,6 +28,7 @@
     --gap: #121114;
     --focus: #7fb0ff;
   --outline: #ffffff;
+  --panel-edge: rgb(255 255 255 / 0.1);
 
     --hue-fearful: #E0559E;
     --hue-angry: #E0525C;
@@ -47,6 +49,7 @@
   --gap: #121114;
   --focus: #7fb0ff;
   --outline: #ffffff;
+  --panel-edge: rgb(255 255 255 / 0.1);
 
   --hue-fearful: #E0559E;
   --hue-angry: #E0525C;

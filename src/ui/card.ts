@@ -207,9 +207,10 @@ export class FwCard extends HTMLElement {
 
   /** Ancestors, root first, each a link, then "›". The nav is also the row that grows open (a 0fr → 1fr grid). */
   #crumbsNav(crumbs: Row[]): HTMLElement {
-    const inner = h('div', { className: 'fw-crumbs-inner' });
-    for (const c of crumbs) inner.append(this.#link(c), h('span', { className: 'fw-sep' }, '›'));
-    const nav = h('nav', { className: 'fw-crumbs fw-crumbs-wrap' }, inner);
+    // The padding lives on the row, not the clipped grid item, so the folded 0fr track really is 0 high.
+    const row = h('div', { className: 'fw-crumbs-row' });
+    for (const c of crumbs) row.append(this.#link(c), h('span', { className: 'fw-sep' }, '›'));
+    const nav = h('nav', { className: 'fw-crumbs fw-crumbs-wrap' }, h('div', { className: 'fw-crumbs-inner' }, row));
     nav.setAttribute('aria-label', t('path'));
     return nav;
   }

@@ -14,6 +14,7 @@ Each version is used before the next one is designed. Point releases (v1.1) rewo
 | v1.1: Selected and opened states, card redesign | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.1-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.1.md) |
 | v1.2: Fixes and polish from using v1.1 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.2-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.2.md) |
 | v1.3: Layout, card and controls polish from using v1.2 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.3-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.3.md) |
+| v1.3.1: Small fixes from using v1.3 | In progress | No spec; notes below |
 | v2: Strength | Planned | Not designed yet |
 | v3: Body sensations wheel | Planned | Not designed yet |
 | v4: Emoji wheel | Planned | Not designed yet |
@@ -22,6 +23,16 @@ Each version is used before the next one is designed. Point releases (v1.1) rewo
 ## Notes for later versions
 
 These are what Lucas asked for. Each version's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
+
+### v1.3.1: Small fixes from using v1.3
+
+Lucas's feedback from using v1.3 (2026-11-07), fixed without a spec. These change v1.2 §4.4 and v1.3 §5.1 as noted.
+- **The card and the message had no edge in light mode.** The shadow alone didn't separate them from the white page. They (and the theme label) now have a hairline edge, `--panel-edge`, in both themes.
+- **Space left above the name after folding a word.** The folded crumbs row kept its 0.6rem top padding, because padding on the clipped grid item holds a `0fr` row open. The padding moved onto a row inside it.
+- **Selecting a word moved its label.** v1.2 §4.4 gave the selection chevron the label box's outer 14 px, so every selected label moved 7 px inward and could shrink. Now a label moves only when its text would reach the chevron; short words stay put, and words that fill their cell (such as *Overwhelmed*) still move in.
+- **Dot to name is 1.2rem** (the toggle's gap is 0.3rem), down from v1.3 §5.1's 1.5rem.
+- **The "How are you feeling?" message is weight 600.**
+- **URL and history: open.** With a word open, each arrow key pushes a history entry, so keyboard browsing fills the history. Hash or query string doesn't change that; whether a move pushes or replaces does.
 
 ### v1.3: Layout, card and controls polish from using v1.2
 

@@ -373,7 +373,27 @@ test.describe('desktop', () => {
     const title = await box('fw-card .fw-card-title');
     expect(Math.abs(crumb.x - dot.x)).toBeLessThanOrEqual(1);
     expect(Math.abs(body.x - dot.x)).toBeLessThanOrEqual(1);
-    expect(Math.abs(title.x - (dot.x + dot.width) - 24)).toBeLessThanOrEqual(1);
+    expect(Math.abs(title.x - (dot.x + dot.width) - 19.2)).toBeLessThanOrEqual(1);
+  });
+
+  test('folding an opened word leaves no space above its name', async ({ page }) => {
+    await open(page, '#/core/angry/aggressive');
+    await page.keyboard.press('Escape');
+    await idle(page);
+    await settled(page);
+    const offset = () => page.evaluate(() => {
+      const card = document.querySelector('fw-card')!;
+      return card.querySelector('.fw-card-title')!.getBoundingClientRect().top - card.getBoundingClientRect().top;
+    });
+    const folded = await offset();
+    expect(await page.locator('fw-card nav.fw-crumbs').count()).toBe(1);
+    // A fresh card for the same word, never opened, has no crumbs at all.
+    await page.reload();
+    await page.waitForFunction(() => window.__fw !== undefined);
+    await tapPath(page, 'angry/aggressive');
+    await settled(page);
+    expect(await page.locator('fw-card nav.fw-crumbs').count()).toBe(0);
+    expect(Math.abs(folded - (await offset()))).toBeLessThanOrEqual(0.5);
   });
 
   test('the dot-and-name row sticks and the crumbs scroll away', async ({ page }) => {

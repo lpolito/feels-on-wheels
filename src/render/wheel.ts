@@ -246,15 +246,26 @@ export function createWheelRenderer(
       for (const s of layout.segments) {
         const ring = layout.rings[s.ring]!;
         if (s.index === lifted || !inWindow(s, ring, win)) continue;
-        // Spec v1.2 §4.4: a selected cell's inside chevron takes CHEVRON_ROOM px off the label box's outer end.
-        const room = s.index === f.selected && !f.opened && chevronInside(s.end - s.start, ring.outer * R) ? CHEVRON_ROOM : 0;
-        const rMid = ((ring.inner + ring.outer) / 2) * R - room / 2;
+        let rMid = ((ring.inner + ring.outer) / 2) * R;
         const angle = s.mid + cam.rotation;
-        const x = cam.cx + rMid * Math.cos(angle);
-        const y = cam.cy + rMid * Math.sin(angle);
+        let x = cam.cx + rMid * Math.cos(angle);
+        let y = cam.cy + rMid * Math.sin(angle);
         if (x < -rMid || y < -rMid || x > cssW + rMid || y > cssH + rMid) continue;
-        const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD - room, (s.end - s.start) * rMid, minPx, maxPx);
+        const boxLen = (ring.outer - ring.inner) * R - 2 * LABEL_PAD;
+        let fit = fitted(s.index, boxLen, (s.end - s.start) * rMid, minPx, maxPx);
         if (!fit) continue;
+        // A selected cell's inside chevron needs CHEVRON_ROOM px at the label box's outer end (spec v1.2 §4.4). The
+        // label stays put unless its text reaches that room; only then does it move inward and refit.
+        if (s.index === f.selected && !f.opened && chevronInside(s.end - s.start, ring.outer * R)) {
+          const len = Math.max(...fit.lines.map((l) => measure(l, fit!.px)));
+          if (len / 2 > boxLen / 2 - CHEVRON_ROOM) {
+            rMid -= CHEVRON_ROOM / 2;
+            fit = fitted(s.index, boxLen - CHEVRON_ROOM, (s.end - s.start) * rMid, minPx, maxPx);
+            if (!fit) continue;
+            x = cam.cx + rMid * Math.cos(angle);
+            y = cam.cy + rMid * Math.sin(angle);
+          }
+        }
         const lit = f.fadeT >= 0.5 ? f.lit[s.index] === 1 : f.prevLit[s.index] === 1;
         drawLabel(fit.lines, fit.px, false, x, y, angle, 1, table.label(s.hue, s.ring, lit));
       }

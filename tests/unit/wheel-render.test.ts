@@ -208,20 +208,48 @@ describe('wheel renderer', () => {
     }
   });
 
-  test('the label of a selected cell with an inside chevron moves 7px inward', () => {
-    const angry = layout.byPath.get('angry')!;
-    const dpr = 2;
-    const centreDist = (o: Partial<Frame>) => {
+  test('selecting a word leaves its label put unless the label would reach the inside chevron', () => {
+    // The chevron's room: the label box's outer 14px, inside the 6px label padding (spec v1.2 §4.4).
+    const CLEAR = 6 + 14;
+    const f0 = frame(desk);
+    const R = desk.radius * f0.cam.scale;
+    /** The single-line label's radial centre, size and outer reach, or null when it isn't drawn on one line. */
+    const placed = (i: number, o: Partial<Frame>) => {
+      const s = layout.segments[i]!;
       const { canvas, ctx, rec } = fakeCanvas();
       const r = createWheelRenderer(canvas, layout, ctx);
       r.setColors(table, palette);
-      r.resize(desk.width, desk.height, dpr);
+      r.resize(desk.width, desk.height, 1);
       const f = frame(desk, o);
       r.draw(f);
-      const at = rec.textAt.find((x) => x.text === label('angry'))!;
-      return Math.hypot(at.e / dpr - f.cam.cx, at.f / dpr - f.cam.cy);
+      const k = rec.textAt.findIndex((x) => x.text === label(s.feelingId));
+      if (k < 0) return null;
+      const angle = s.mid + f.cam.rotation;
+      const centre = (rec.textAt[k]!.e - f.cam.cx) * Math.cos(angle) + (rec.textAt[k]!.f - f.cam.cy) * Math.sin(angle);
+      const px = pxOf(rec.fonts[k]!);
+      // fakeCanvas measures 0.6em per character.
+      return { centre, px, reach: centre + (rec.textAt[k]!.text.length * px * 0.6) / 2 };
     };
-    expect(centreDist({}) - centreDist({ selected: angry })).toBeCloseTo(7, 2);
+    let stayed = 0;
+    let moved = 0;
+    for (const s of layout.segments) {
+      const ring = layout.rings[s.ring]!;
+      if ((s.end - s.start) * ring.outer * R < 22) continue; // chevron outside the cell
+      const before = placed(s.index, {});
+      const after = placed(s.index, { selected: s.index });
+      if (!before || !after) continue;
+      const limit = ring.outer * R - CLEAR;
+      if (before.reach <= limit) {
+        expect(after.centre, label(s.feelingId)).toBeCloseTo(before.centre, 6);
+        expect(after.px, label(s.feelingId)).toBe(before.px);
+        stayed++;
+      } else {
+        expect(after.reach, label(s.feelingId)).toBeLessThanOrEqual(limit + 0.5);
+        moved++;
+      }
+    }
+    expect(stayed).toBeGreaterThan(0);
+    expect(moved).toBeGreaterThan(0);
   });
 
   test('thin cell gets the chevron outside in the outline colour; wide cell gets it inside in white', () => {

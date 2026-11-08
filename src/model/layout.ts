@@ -1,3 +1,4 @@
+import { nodeRef } from '../data/node';
 import type { FeelingId, Wheel, WheelNode } from '../data/types';
 
 /** Slash-joined feeling ids from the core outward, e.g. 'angry/aggressive/hostile'. Unique per position. */
@@ -53,10 +54,11 @@ export function buildLayout(wheel: Wheel): Layout {
       const leafCount = leaves(node);
       const width = (leafCount / total) * TAU;
       const index = segments.length;
-      const path = prefix ? `${prefix}/${node.feeling}` : node.feeling;
+      const id = nodeRef(node).id;
+      const path = prefix ? `${prefix}/${id}` : id;
       const segHue = node.hue ?? hue;
       segments.push({
-        index, path, feelingId: node.feeling, ring,
+        index, path, feelingId: id, ring,
         start: cursor, end: cursor + width, mid: cursor + width / 2,
         parent, children: [], hue: segHue, leafCount,
       });

@@ -19,7 +19,11 @@
     "startOver": "Start over",
     "opened": "{label}, opened. In {path}.",
     "openedCore": "{label}, opened.",
-    "closed": "{label}, closed."
+    "closed": "{label}, closed.",
+    "couldBe": "Could be",
+    "couldAlsoBe": "Could also be",
+    "seeOnWheel": "See {label} on the feelings wheel",
+    "wheelSwitch": "Wheel"
   },
   "feelings": {
     "scared": {
@@ -568,5 +572,29 @@
     "raised-eyebrows": "Raised eyebrows",
     "gasp": "Sharp intake of breath",
     "foggy-head": "Foggy head"
+  },
+  "areas": {
+    "head": "Head and eyes",
+    "face": "Face and jaw",
+    "chest": "Chest",
+    "breath": "Breath and throat",
+    "stomach": "Stomach",
+    "arms": "Shoulders, arms and hands",
+    "whole-body": "Whole body",
+    "posture": "Posture and urges"
+  },
+  "wheels": {
+    "core": {
+      "switch": "Feelings",
+      "name": "Feelings wheel",
+      "hint": "How are you feeling? Tap or spin to explore, or {link}.",
+      "hintLink": "start from body sensations instead"
+    },
+    "body": {
+      "switch": "Body",
+      "name": "Body sensations wheel",
+      "hint": "What do you notice in your body? Tap or spin to explore, or {link}.",
+      "hintLink": "start from feelings instead"
+    }
   }
 }

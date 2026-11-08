@@ -1,7 +1,10 @@
 import { describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
 
-const { feelings, locale } = loadData();
+const { feelings, locale, wheels } = loadData();
+const feelingsUnder = (sensation: string): string[] =>
+  wheels.find((w) => w.id === 'body')!.children.flatMap((a) => a.children ?? [])
+    .find((s) => s.sensation === sensation)!.children!.map((f) => f.feeling!);
 
 describe('v1 content', () => {
   test('every feeling has a non-empty definition of 1–2 sentences', () => {
@@ -29,5 +32,15 @@ describe('v1 content', () => {
     expect(vocab.length).toBeLessThanOrEqual(50);
     const used = new Set(Object.values(feelings).flatMap((f) => f.sensations));
     for (const s of vocab) expect(used.has(s), `unused sensation ${s}`).toBe(true);
+  });
+});
+
+describe('body wheel content', () => {
+  test('racing heart leads to scared, mad and excited', () => {
+    expect(feelingsUnder('racing-heart')).toEqual(['scared', 'mad', 'excited']);
+  });
+
+  test('smiling includes happy', () => {
+    expect(feelingsUnder('smiling')).toContain('happy');
   });
 });

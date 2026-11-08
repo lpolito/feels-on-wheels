@@ -321,7 +321,9 @@ The v2 body sensations wheel ([spec](superpowers/specs/2026-11-08-feelings-wheel
 - **Queasy stomach**: Repelled, Anxious
 - **Butterflies in your stomach**: Nervous, Excited
 
-### Shoulders, arms and hands
+### Arms and hands
+
+Shortened from "Shoulders, arms and hands", which didn't fit its centre cell on phones (spec v2 §3.2). Tense shoulders stays in this area.
 
 - **Tense shoulders**: Stressed, Anxious, Frustrated
 - **Heavy arms and legs**: Tired, Depressed

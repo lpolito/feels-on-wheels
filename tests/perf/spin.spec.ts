@@ -6,7 +6,7 @@ test.skip(({ browserName }) => browserName !== 'chromium', 'heap and frame probe
 
 const p95 = (xs: number[]): number => [...xs].sort((a, b) => a - b)[Math.floor(xs.length * 0.95)] ?? 0;
 
-async function setup(page: Page): Promise<void> {
+async function setup(page: Page, hash = '#/core/angry/aggressive/hostile'): Promise<void> {
   await page.addInitScript(() => {
     const raf = window.requestAnimationFrame.bind(window);
     window.__rafCount = 0;
@@ -22,7 +22,7 @@ async function setup(page: Page): Promise<void> {
     };
     raf(probe);
   });
-  await page.goto('/#/core/angry/aggressive/hostile');
+  await page.goto(`/${hash}`);
   await page.waitForFunction(() => window.__fw !== undefined && !window.__fw.moving());
 }
 
@@ -59,6 +59,17 @@ test('spinning stays well inside the frame budget', async ({ page }) => {
   expect(draws.length).toBeGreaterThan(100);
   expect(p95(draws)).toBeLessThanOrEqual(8);
   expect(p95(deltas)).toBeLessThanOrEqual(20);
+});
+
+test('v2: spinning the body wheel stays well inside the frame budget', async ({ page }) => {
+  await setup(page, '#/body/chest/racing-heart');
+  await page.evaluate(() => { window.__probe.length = 0; });
+  await spin(page, 6000);
+  const draws = await page.evaluate(() => window.__fw.drawTimes());
+  console.log(`body wheel: draw p95 ${p95(draws).toFixed(2)} ms over ${draws.length} frames`);
+  expect(await page.evaluate(() => window.__fw.wheel())).toBe('body');
+  expect(draws.length).toBeGreaterThan(100);
+  expect(p95(draws)).toBeLessThanOrEqual(8);
 });
 
 test('memory stays flat over a minute of spinning', async ({ page }) => {

@@ -119,6 +119,18 @@ fw-toolbar .fw-theme-toggle { width: 44px; padding: 0; display: inline-grid; pla
 @media (prefers-reduced-motion: reduce) { .fw-theme-label { transition: none; } }
 fw-toolbar .fw-start-over { display: inline-flex; align-items: center; gap: 0.4rem; }
 fw-toolbar .fw-start-over[hidden] { display: none; }
+/* v2: on narrow phones the wheel switch shares the top edge, so "Start over" keeps only its icon; the words stay its name. */
+@media (max-width: 26rem) {
+  fw-toolbar .fw-start-over { width: 44px; padding: 0; justify-content: center; }
+  .fw-start-over-label {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0; border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
 .fw-icon { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ── Floating hint and card (spec §5) ───────────────────────────────── */

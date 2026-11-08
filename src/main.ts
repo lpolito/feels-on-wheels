@@ -1,7 +1,7 @@
 import { data } from './boot';
 import { createAnnouncer } from './a11y/announce';
 import { announceFor, createA11yTree, type A11yTree } from './a11y/tree';
-import { createCameraController, openedHalfHeight, useHalfWheel, type CameraController, type CameraOpts } from './camera';
+import { createCameraController, isPortrait, openedHalfHeight, restView, type CameraController, type CameraOpts } from './camera';
 import { createController, type Controller } from './controller';
 import { wheelText } from './i18n';
 import { attachGestures } from './input/gestures';
@@ -86,10 +86,9 @@ function measure(): { vp: Viewport; opts: CameraOpts } {
   const { width, height } = stage.getBoundingClientRect();
   const whole = app.getBoundingClientRect();
   const remPx = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-  // Spec v1.2 §4.3: the one portrait rule, matching the stylesheet's container query.
-  const portrait = whole.width < 720 || whole.height >= whole.width;
+  // Spec v2.1 §6.1: the one portrait rule, matching the stylesheet's container query.
   const vp = { width, height, radius: Math.max(Math.min(width, height) / 2 - 8, 1) };
-  return { vp, opts: { remPx, portrait, half: useHalfWheel(layout, vp), openedY: null } };
+  return { vp, opts: { remPx, portrait: isPortrait(whole), rest: restView(layout, vp, whole), openedY: null } };
 }
 
 let vp!: Viewport;
@@ -346,7 +345,7 @@ function mount(next: Layout, initial: State, intro: boolean): void {
   // A deep link on a phone starts with the opened word already above its card.
   opts = { ...opts, openedY: openedYFor(store.get()) };
   controller.setViewport(vp, opts);
-  if (intro && opts.half && !reducedMotion.matches) controller.playIntro();
+  if (intro && opts.rest !== 'whole' && !reducedMotion.matches) controller.playIntro();
   drawNow();
   if (TEST) live.push(new WeakRef(layout), new WeakRef(store));}
 

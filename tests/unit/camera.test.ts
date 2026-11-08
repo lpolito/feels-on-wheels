@@ -4,13 +4,13 @@ import { buildLayout } from '../../src/model/layout';
 import { TAU, normAngle, type Viewport } from '../../src/model/geometry';
 import {
   createCameraController, halfRestRotation, openedHalfHeight, overviewCamera, ringFocusCamera,
-  shouldStartZoomed, useHalfWheel, wheelCamera, type CameraController,
+  isPortrait, restView, shouldStartZoomed, useHalfWheel, wheelCamera, type CameraController,
 } from '../../src/camera';
 
 const layout = buildLayout(loadData().wheel);
 const phone: Viewport = { width: 375, height: 667, radius: 375 / 2 - 8 };
 const desk: Viewport = { width: 1440, height: 900, radius: 900 / 2 - 8 };
-const opts = { remPx: 16, portrait: false, half: false, openedY: null };
+const opts = { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null };
 
 function segHeight(ring: number, vp: Viewport, scale: number): number {
   const r = layout.rings[ring]!;
@@ -49,7 +49,7 @@ describe('resting cameras', () => {
 
   test('portrait ring camera centres the ring middle horizontally and the word vertically', () => {
     for (const ring of [0, 1, 2]) {
-      const cam = ringFocusCamera(layout, ring, phone, 0, { remPx: 16, portrait: true, half: true, openedY: null });
+      const cam = ringFocusCamera(layout, ring, phone, 0, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null });
       const r = layout.rings[ring]!;
       expect(cam.cx + ((r.inner + r.outer) / 2) * phone.radius * cam.scale).toBeCloseTo(0.5 * phone.width, 6);
       expect(cam.cy).toBe(0.5 * phone.height);
@@ -57,8 +57,8 @@ describe('resting cameras', () => {
   });
 
   test('portrait ring camera puts the opened word at openedY', () => {
-    const base = ringFocusCamera(layout, 1, phone, 0.4, { remPx: 16, portrait: true, half: true, openedY: null });
-    const cam = ringFocusCamera(layout, 1, phone, 0.4, { remPx: 16, portrait: true, half: true, openedY: 200 });
+    const base = ringFocusCamera(layout, 1, phone, 0.4, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null });
+    const cam = ringFocusCamera(layout, 1, phone, 0.4, { remPx: 16, portrait: true, rest: 'half' as const, openedY: 200 });
     expect(cam.cy).toBe(200);
     expect(cam.cx).toBe(base.cx);
     expect(cam.scale).toBe(base.scale);
@@ -66,7 +66,7 @@ describe('resting cameras', () => {
   });
 
   test('openedY null keeps the stage centre', () => {
-    expect(ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, half: true, openedY: null }).cy).toBe(phone.height / 2);
+    expect(ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null }).cy).toBe(phone.height / 2);
   });
 
   test('desktop ignores openedY', () => {
@@ -74,7 +74,7 @@ describe('resting cameras', () => {
   });
 
   test('openedHalfHeight is larger for a core word than an outer word on a phone', () => {
-    const o = { remPx: 16, portrait: true, half: true, openedY: null };
+    const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null };
     const hostile = layout.byPath.get('angry/aggressive/hostile')!;
     const core = openedHalfHeight(layout, layout.byPath.get('angry')!, phone, o);
     const outer = openedHalfHeight(layout, hostile, phone, o);
@@ -101,12 +101,12 @@ describe('resting cameras', () => {
   });
 
   test('outer ring focus on a 375×667 viewport gives focused-ring segments ≥ 44px tall', () => {
-    const cam = ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, half: false, openedY: null });
+    const cam = ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, rest: 'whole' as const, openedY: null });
     expect(segHeight(2, phone, cam.scale)).toBeGreaterThanOrEqual(44 - 1e-9);
   });
 
   test('half wheelCamera puts the centre on the left edge, halfway down, outer edge at 95% width', () => {
-    const c = wheelCamera(phone, 0.3, { remPx: 16, portrait: true, half: true, openedY: null });
+    const c = wheelCamera(layout, phone, 0.3, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null });
     expect(c.cx).toBe(0);
     expect(c.cy).toBe(phone.height / 2);
     expect(c.rotation).toBe(0.3);
@@ -114,8 +114,8 @@ describe('resting cameras', () => {
   });
 
   test('full wheelCamera equals overviewCamera', () => {
-    expect(wheelCamera(desk, 0.5, opts)).toEqual(overviewCamera(desk, 0.5));
-    expect(wheelCamera(phone, 0.5, { ...opts, portrait: true })).toEqual(overviewCamera(phone, 0.5));
+    expect(wheelCamera(layout, desk, 0.5, opts)).toEqual(overviewCamera(desk, 0.5));
+    expect(wheelCamera(layout, phone, 0.5, { ...opts, portrait: true })).toEqual(overviewCamera(phone, 0.5));
   });
 
   test("halfRestRotation centres Fearful at 3 o'clock", () => {
@@ -132,6 +132,29 @@ describe('resting cameras', () => {
     expect(useHalfWheel(layout, vp(640, 360))).toBe(false);
     expect(useHalfWheel(layout, vp(700, 500))).toBe(false);
     expect(useHalfWheel(layout, vp(1024, 1366))).toBe(false);
+  });
+
+  test('isPortrait (spec v2.1 §6.1)', () => {
+    for (const [w, h] of [[393, 851], [600, 500], [700, 700]] as const) expect(isPortrait({ width: w, height: h }), `${w}×${h}`).toBe(true);
+    for (const [w, h] of [[851, 393], [667, 375], [1280, 800]] as const) expect(isPortrait({ width: w, height: h }), `${w}×${h}`).toBe(false);
+  });
+
+  test('restView (spec v2.1 §6.2)', () => {
+    const body = buildLayout(loadData().wheels.find((w) => w.id === 'body')!);
+    const vp = (width: number, height: number): Viewport => ({ width, height, radius: Math.min(width, height) / 2 - 8 });
+    for (const l of [layout, body]) {
+      expect(restView(l, vp(393, 851), { width: 393, height: 851 })).toBe('half');
+      expect(restView(l, vp(511, 393), { width: 851, height: 393 })).toBe('side');
+      expect(restView(l, vp(400, 375), { width: 667, height: 375 })).toBe('side');
+      expect(restView(l, vp(800, 800), { width: 1280, height: 800 })).toBe('whole');
+    }
+  });
+
+  test("the side view is the core ring view, Fearful at 3 o'clock", () => {
+    const vp: Viewport = { width: 511, height: 393, radius: 393 / 2 - 8 };
+    const r = halfRestRotation(layout);
+    expect(wheelCamera(layout, vp, r, { remPx: 16, portrait: false, rest: 'side', openedY: null }))
+      .toEqual(ringFocusCamera(layout, 0, vp, r, { remPx: 16, portrait: false, rest: 'side', openedY: null }));
   });
 
   test('shouldStartZoomed true for 375×667, false for 1440×900', () => {

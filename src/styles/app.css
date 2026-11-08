@@ -371,8 +371,12 @@ fw-card[data-open] :is(.fw-crumbs-wrap, .fw-card-body) { grid-template-rows: 1fr
   fw-card[data-open] .fw-dot { animation: none; }
 }
 
-/* Narrow / portrait: full-screen wheel, hint and card float at the bottom (spec §5.3). */
-@container app (max-width: 719.98px) or (orientation: portrait) {
+/*
+ * Portrait: full-screen wheel, hint and card float at the bottom (spec §5.3). Spec v2.1 §6.1: taller than wide, or under
+ * 720px wide and at least 480px tall; a short sideways phone (iPhone SE: 667 × 375) keeps the side column. Matches
+ * isPortrait() in camera.ts.
+ */
+@container app (orientation: portrait) or ((max-width: 719.98px) and (min-height: 480px)) {
   #stage { inset: 0; }
   #float {
     top: auto;

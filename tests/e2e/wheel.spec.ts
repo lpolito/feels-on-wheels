@@ -520,7 +520,7 @@ test.describe('phone', () => {
     expect(Math.abs((await page.evaluate(() => window.__fw.camera())).cx)).toBeLessThanOrEqual(2);
   });
 
-  test('phone: turned sideways with a word selected, the half-wheel becomes the full wheel', async ({ page }) => {
+  test('phone: turned sideways with a word selected, the half-wheel becomes the side view (spec v2.1 §6.2)', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await open(page);
     await tapPath(page, 'angry');
@@ -529,8 +529,10 @@ test.describe('phone', () => {
     await page.waitForTimeout(200);
     await idle(page);
     const { cam, vp } = await page.evaluate(() => ({ cam: window.__fw.camera(), vp: window.__fw.viewport() }));
-    expect(cam.scale).toBe(1);
-    expect(Math.abs(cam.cx - vp.width / 2)).toBeLessThanOrEqual(1);
+    // The side view: zoomed on the core ring, the wheel meeting the stage's right edge, the column beside it.
+    expect(cam.scale).toBeGreaterThan(1.5);
+    expect(cam.cx).toBeLessThan(vp.width / 2);
+    expect(vp.width).toBeLessThan(667);
     expect(sameAngle(cam.rotation, rot)).toBeLessThan(1e-6);
     expect(await selectedPath(page)).toBe('angry');
     expect((await state(page)).opened).toBe(false);
@@ -737,6 +739,36 @@ test('a late stylesheet still gives the themed palette and the right start layou
   const cx = (await page.evaluate(() => window.__fw.camera())).cx;
   if (isMobile) expect(Math.abs(cx)).toBeLessThanOrEqual(2);
   else expect(cx).toBeGreaterThan(100);
+});
+
+test.describe('v2.1: phones turned sideways', () => {
+  test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'sets its own viewport'));
+
+  for (const [width, height] of [[851, 393], [667, 375]] as const) {
+    for (const hash of ['', '#/body']) {
+      test(`${width}×${height} ${hash || '#/'} at rest: the side view, labels on every ring, message beside the wheel`, async ({ page }) => {
+        await page.setViewportSize({ width, height });
+        await open(page, hash);
+        expect((await state(page)).view.mode).toBe('wheel');
+        expect((await page.evaluate(() => window.__fw.camera())).scale).toBeGreaterThan(1.5);
+        for (const n of await page.evaluate(() => window.__fw.labelsByRing())) expect(n).toBeGreaterThan(0);
+        const stage = (await page.locator('#stage').boundingBox())!;
+        const msg = (await hint(page).boundingBox())!;
+        expect(msg.x).toBeGreaterThanOrEqual(stage.x + stage.width - 1);
+      });
+    }
+  }
+
+  test('iPhone SE sideways, word opened: the card is in the column and the word is clear of the switch', async ({ page }) => {
+    await page.setViewportSize({ width: 667, height: 375 });
+    await open(page, '#/core/happy/content/joyful');
+    const stage = (await page.locator('#stage').boundingBox())!;
+    const card = (await page.locator('fw-card').boundingBox())!;
+    expect(card.x).toBeGreaterThanOrEqual(stage.x + stage.width - 1);
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('happy/content/joyful'));
+    const sw = (await page.locator('fw-wheel-switch').boundingBox())!;
+    expect(p.y > sw.y + sw.height || p.x > sw.x + sw.width).toBe(true);
+  });
 });
 
 test.describe('v2.1: the card', () => {

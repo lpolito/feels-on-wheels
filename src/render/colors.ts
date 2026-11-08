@@ -13,21 +13,21 @@ export interface Palette {
 }
 
 const HUE_PREFIX = '--hue-';
-const HUE_NAMES = ['fearful', 'angry', 'disgusted', 'sad', 'happy', 'surprised', 'bad'];
 
-export function readPalette(el: Element): Palette {
+/** `hueNames`: every centre node's hue across the wheels (spec v2 §5.2), each read from `--hue-<name>`. */
+export function readPalette(el: Element, hueNames: readonly string[]): Palette {
   if (typeof matchMedia !== 'undefined' && matchMedia('(forced-colors: active)').matches) {
     return {
       bg: 'Canvas', fg: 'CanvasText', gap: 'CanvasText', focus: 'Highlight', outline: 'Highlight', surface: 'Canvas',
       forced: true,
-      hues: Object.fromEntries(HUE_NAMES.map((h) => [h, 'Canvas'])),
+      hues: Object.fromEntries(hueNames.map((h) => [h, 'Canvas'])),
     };
   }
   const cs = getComputedStyle(el);
   const v = (name: string) => cs.getPropertyValue(name).trim().toLowerCase();
   return {
     bg: v('--bg'), fg: v('--fg'), gap: v('--gap'), focus: v('--focus'), outline: v('--outline'), surface: v('--surface'),
-    hues: Object.fromEntries(HUE_NAMES.map((h) => [h, v(HUE_PREFIX + h)])),
+    hues: Object.fromEntries(hueNames.map((h) => [h, v(HUE_PREFIX + h)])),
   };
 }
 

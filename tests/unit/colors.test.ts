@@ -20,6 +20,26 @@ const themes = [
   ['dark', palette(block(':root[data-theme="dark"]'))],
 ] as const;
 
+const FEELING_HUES = ['angry', 'bad', 'disgusted', 'fearful', 'happy', 'sad', 'surprised'];
+const AREA_HUES = ['head', 'face', 'chest', 'breath', 'stomach', 'arms', 'whole-body', 'posture'];
+
+type Lab = [number, number, number];
+/** sRGB hex → OKLab (Björn Ottosson's matrices, as in colors.ts shade()). */
+function oklab(hex: string): Lab {
+  const n = Number.parseInt(hex.slice(1), 16);
+  const lin = (c: number) => { const s = c / 255; return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4; };
+  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(lin) as Lab;
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const q = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [
+    0.2104542553 * l + 0.793617785 * m - 0.0040720468 * q,
+    1.9779984951 * l - 2.428592205 * m + 0.4505937099 * q,
+    0.0259040371 * l + 0.7827717662 * m - 0.808675766 * q,
+  ];
+}
+const dist = (a: Lab, b: Lab): number => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+
 describe('color math', () => {
   test('contrast of white on black is 21', () => {
     expect(contrast('#ffffff', '#000000')).toBeCloseTo(21, 6);
@@ -49,9 +69,23 @@ describe('color math', () => {
 });
 
 describe('palette contrast floors', () => {
-  test('tokens.css defines all seven hues in both themes', () => {
-    for (const [, p] of themes) {
-      expect(Object.keys(p.hues).sort()).toEqual(['angry', 'bad', 'disgusted', 'fearful', 'happy', 'sad', 'surprised']);
+  test('tokens.css defines the seven feeling hues and eight area hues in both themes', () => {
+    const all = [...FEELING_HUES, ...AREA_HUES].sort();
+    for (const [, p] of themes) expect(Object.keys(p.hues).sort()).toEqual(all);
+    // The system-dark block matches the manual dark block.
+    const sysDark = palette(block(':root:not([data-theme="light"]) {'));
+    expect(sysDark.hues).toEqual(themes[1][1].hues);
+  });
+
+  test('area hues are distinct: ≥ 0.055 OKLab from every other hue, after fitting for white labels', () => {
+    for (const [theme, p] of themes) {
+      const fitted = Object.fromEntries(Object.entries(p.hues).map(([h, v]) => [h, oklab(fitWhite(v))]));
+      for (const area of AREA_HUES) {
+        for (const other of Object.keys(fitted)) {
+          if (other === area) continue;
+          expect(dist(fitted[area]!, fitted[other]!), `${theme} ${area} vs ${other}`).toBeGreaterThanOrEqual(0.055);
+        }
+      }
     }
   });
 

@@ -30,6 +30,8 @@ const media = (q: string): MediaQueryList => matchMedia(q);
 
 const { wheel, feelings } = data;
 const layout = buildLayout(wheel);
+/** Every centre node's hue across all wheels (spec v2 §5.2). */
+const hueNames = data.wheels.flatMap((w) => w.children.map((n) => n.hue!));
 
 const app = $<HTMLElement>('#app');
 const stage = $<HTMLElement>('#stage');
@@ -134,7 +136,7 @@ let themePref: ThemePref = readPref(storage);
 
 function refreshColors(): void {
   applyPref(themePref, document.documentElement);
-  const palette = readPalette(document.documentElement);
+  const palette = readPalette(document.documentElement, hueNames);
   const theme = resolvedTheme(themePref, darkScheme);
   renderer.setColors(buildFillTable(palette, layout.rings.length, theme, { moreContrast: moreContrast.matches }), palette);
   // Spec v1.2 §5.2: hover ink per hue. Forced colours use the system's own link colours instead.

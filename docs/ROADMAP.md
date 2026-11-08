@@ -81,6 +81,15 @@ Still open after v1.3.1. None blocks the next version.
 
 - Lucas reviews the definitions and sensations in [content-review.md](content-review.md). This was moved out of v1.1.
 - A credits or thanks page in the app, crediting every source the content draws on. The draft text is in [reference/README.md](reference/README.md#credits). Confirm the unverified attributions there (Roberts, the reference site) first.
+- **A name.** "Feelings Wheel" is taken: it's what the [site that inspired the app](reference/core-feelings-wheel.md#the-reference-site) is called. Lucas wants something silly but memorable that people would want to visit and tell others about. Nothing is decided, and it doesn't need deciding yet.
+  - **Lucas's favourite: Wheel of Feels.** As of 2026-11-08, an iPad app of that name has been removed from the App Store and isn't on Google Play. But wheeloffeels.com is still a live emotion-wheel site with the same name. wheeloffeels.app is unregistered.
+  - **Others, for inspiration:**
+    - *Wheels of Feels*: plural, like the planned extra wheels. It was the name of an art installation of spinnable emotion wheels at 826LA. wheelsoffeels.com is unregistered but one letter from wheeloffeels.com.
+    - *Feels on Wheels*: a Meals on Wheels pun, easy to say out loud and plural. feelsonwheels.app is unregistered; feelsonwheels.com is for sale.
+    - *Feels: The Wheel (FTW)* and *Wheel: The Feels*: the joke works better written than said.
+    - *Wheeling and Feeling*.
+    - *Spin the Feels*, *Name That Feel* (not tied to the wheel shape, so it still fits if the [wizard](#wizard) arrives), *Feelodex*, *Feelris Wheel* ("Ferris Wheel of Feelings" is a common kids' classroom activity), *Feels Good Wheel*, *Wheel Talk*.
+  - These were checked against web, app-store and domain lookups only, not trademarks. Check both for the final pick.
 
 ## Content rules
 

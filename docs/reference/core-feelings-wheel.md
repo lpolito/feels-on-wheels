@@ -10,7 +10,7 @@ The source for the app's core wheel (`src/data/wheels/core.json`) and the intera
 
 ## The reference site
 
-An interactive web version of the seven-core wheel. Lucas shared screenshots in the first brainstorming session (2026-11-06); **its URL wasn't recorded**, so add it here if known.
+An interactive web version of the seven-core wheel. Lucas shared screenshots in the first brainstorming session (2026-11-06). On 2026-11-08 he named <https://feelingswheel.com/> as the site that inspired the app. It's assumed to be the site in the screenshots; this wasn't checked, because the site blocks automated visits.
 
 What it does:
 

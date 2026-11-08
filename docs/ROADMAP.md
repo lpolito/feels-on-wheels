@@ -13,6 +13,7 @@ Each version is used before the next one is designed. Point releases (v1.1) rewo
 | v1: Core wheel | Shipped | [spec](superpowers/specs/2026-11-06-feelings-wheel-v1-design.md), [plan](superpowers/plans/2026-11-06-feelings-wheel-v1.md) |
 | v1.1: Selected and opened states, card redesign | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.1-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.1.md) |
 | v1.2: Fixes and polish from using v1.1 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.2-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.2.md) |
+| v1.3: Layout, card and controls polish from using v1.2 | Next: brainstorming | Not written yet |
 | v2: Strength | Planned | Not designed yet |
 | v3: Body sensations wheel | Planned | Not designed yet |
 | v4: Emoji wheel | Planned | Not designed yet |
@@ -21,6 +22,20 @@ Each version is used before the next one is designed. Point releases (v1.1) rewo
 ## Notes for later versions
 
 These are what Lucas asked for. Each version's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
+
+### v1.3: Layout, card and controls polish from using v1.2
+
+Lucas's feedback from using v1.2 (2026-11-07):
+- **Phone opened word placement.** v1.2 centres the opened word in the whole screen. Lucas meant centred in the space between the top of the screen and the top of the open card.
+- **Breadcrumbs in the card header.** The crumbs above the name don't line up with the header. The left edge of the first crumb should line up with the left edge of the dot (at rest, not mid-pulse), as in this sketch: "Surprised › Amazed ›" on one line, then the dot and "Astonished" below, then the definition.
+- **Pinching in on an opened word drills down.** Pinching on an opened core or middle word opens its centre child (v1.1 spec §3.4). Lucas wonders whether it should do nothing.
+- **Sticky card header.** Scrolling a long card should scroll the breadcrumbs away, but the dot and name row should stick at the top, with the scrolled content passing under it (behind its background, below its padding).
+- **Tapping beside the card doesn't dismiss.** Tapping empty space next to the wheel closes or clears, but tapping above or below the card does nothing. Cause: that strip is the card's reserved column, outside the wheel's stage, so the tap never reaches the wheel.
+- **Grab cursor and spinning only on the wheel itself**, not the empty space around it.
+- **Desktop wheel looks off-centre with nothing selected**, because the card's column is always reserved. Idea: the "How are you feeling?" message takes the card's place in the column, and isn't dismissed by the first spin or selection.
+- **Theme picker as an icon toggle.** One button that cycles through the three choices (system, light, dark), its icon showing the current one. Each tap shows a short popover or tooltip naming the choice, which fades soon after.
+- **Replace "Zoom out".** The name doesn't fit. It should say it takes you back to the start, with nothing selected. "Reset" is one idea; not decided.
+- Still open from v1.2: on the phone's half-wheel, a word chosen by keyboard can be on the hidden half (see "Known bugs after v1.2" below).
 
 ### v1.2: Fixes and polish from using v1.1
 

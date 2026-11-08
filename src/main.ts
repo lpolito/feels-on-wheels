@@ -3,7 +3,7 @@ import { createAnnouncer } from './a11y/announce';
 import { announceFor, createA11yTree } from './a11y/tree';
 import { createCameraController, openedHalfHeight, useHalfWheel, type CameraOpts } from './camera';
 import { createController } from './controller';
-import { t } from './i18n';
+import { t, wheelText } from './i18n';
 import { attachGestures } from './input/gestures';
 import { keyTarget, routeKey } from './input/route';
 import { TAU, normAngle, overDisc, type Viewport } from './model/geometry';
@@ -15,12 +15,14 @@ import { createStore, initialState, type Action, type State } from './state/stor
 import { createHistoryWriter, historyOp } from './state/history';
 import { fromHash, toHash } from './state/url';
 import { cardModel, type FwCard } from './ui/card';
-import type { FwHint } from './ui/hint';
+import type { FwHint, HintContent } from './ui/hint';
 import { applyPref, readPref, resolvedTheme, safeStorage, themeName, writePref, type ThemePref } from './ui/theme';
 import type { FwToolbar } from './ui/toolbar';
+import type { FwWheelSwitch } from './ui/wheel-switch';
 import './ui/card';
 import './ui/hint';
 import './ui/toolbar';
+import './ui/wheel-switch';
 
 const FADE_MS = 150;
 const PULSE_MS = 180;
@@ -40,6 +42,9 @@ const canvas = $<HTMLCanvasElement>('#wheel');
 const card = $<FwCard>('fw-card');
 const hint = $<FwHint>('fw-hint');
 const toolbar = $<FwToolbar>('fw-toolbar');
+const wheelSwitch = $<FwWheelSwitch>('fw-wheel-switch');
+wheelSwitch.wheels = data.wheels.map((w) => ({ id: w.id, label: wheelText(w.id).switch }));
+wheelSwitch.current = layout.wheelId;
 const themeMeta = $<HTMLMetaElement>('#theme-color');
 const announce = createAnnouncer($<HTMLElement>('#announcer'));
 const storage = safeStorage();
@@ -200,8 +205,12 @@ app.addEventListener('click', (e) => {
   else if (s.selected !== null) dispatch({ type: 'clear' });
 });
 
-/** Spec v1.3 §3.1: the message shows exactly when nothing is selected. */
-const hintText = (s: State): string | null => (s.selected === null ? t('hint') : null);
+/** Spec v1.3 §3.1 and v2 §4.1: the message shows exactly when nothing is selected, with a link to another wheel. */
+function hintContent(s: State): HintContent {
+  if (s.selected !== null) return null;
+  const text = wheelText(layout.wheelId);
+  return { text: text.hint, link: { label: text.hintLink, wheel: data.suggests[layout.wheelId]! } };
+}
 
 /** Spec v1.2 §4.2: the phone card's height cap keeps it below the opened cell. */
 function setOpenedHalf(s: State): void {
@@ -245,7 +254,7 @@ function placeOpened(s: State): void {
 function renderUi(s: State): void {
   setOpenedHalf(s);
   card.model = cardModel(layout, feelings, s);
-  hint.text = hintText(s);
+  hint.content = hintContent(s);
   toolbar.selected = s.selected !== null;
   app.dataset['mode'] = s.view.mode;
   tree.update(s);

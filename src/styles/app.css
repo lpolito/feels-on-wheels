@@ -59,6 +59,24 @@ fw-toolbar {
   gap: 0.5rem;
 }
 fw-toolbar button { min-width: 44px; min-height: 44px; padding: 0 0.9rem; font-size: 1rem; }
+
+/* Spec v2 §4.1: "Feelings | Body", top left, the current wheel filled. */
+fw-wheel-switch {
+  position: absolute;
+  top: max(1rem, env(safe-area-inset-top));
+  left: max(1rem, env(safe-area-inset-left));
+  z-index: 3;
+  display: flex;
+  padding: 3px;
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--fg) 18%, transparent);
+  border-radius: 999px;
+}
+fw-wheel-switch button { min-height: 44px; padding: 0 1rem; font-size: 1rem; border-color: transparent; }
+fw-wheel-switch button[aria-pressed="true"] { background: var(--fg); color: var(--bg); font-weight: 600; }
+@media (forced-colors: active) {
+  fw-wheel-switch button[aria-pressed="true"] { background: Highlight; color: HighlightText; forced-color-adjust: none; }
+}
 /* Spec v1.3 §6.2: the theme toggle and its short-lived label. */
 .fw-theme { position: relative; display: inline-flex; }
 fw-toolbar .fw-theme-toggle { width: 44px; padding: 0; display: inline-grid; place-items: center; }
@@ -143,6 +161,18 @@ fw-hint {
   font-size: 1rem;
   font-weight: 600;
   text-align: start;
+}
+/* Spec v2 §4.1: the link to the other wheel reads as part of the sentence. */
+.fw-hint-link {
+  display: inline;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: none;
+  font: inherit;
+  text-align: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 /* Swapping the message and the card fades the newcomer in. */
 @media (prefers-reduced-motion: no-preference) {

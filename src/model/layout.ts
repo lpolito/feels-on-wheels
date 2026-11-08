@@ -18,6 +18,8 @@ export interface Segment {
   parent: number;
   children: number[];
   hue: string;
+  /** The ring whose shade the cell is drawn in: 0 for a feeling under a non-feeling (spec v2.1 §7.1), else `ring`. */
+  shadeRing: number;
   leafCount: number;
 }
 
@@ -73,10 +75,11 @@ export function buildLayout(wheel: Wheel, home?: Map<FeelingId, Home>): Layout {
       const path = prefix ? `${prefix}/${ref.id}` : ref.id;
       const own = ref.kind === 'feeling' ? home?.get(ref.id)?.hue : undefined;
       const segHue = node.hue ?? own ?? hue;
+      const borrowed = ref.kind === 'feeling' && parent >= 0 && segments[parent]!.node.kind !== 'feeling';
       segments.push({
         index, path, node: ref, ring,
         start: cursor, end: cursor + width, mid: cursor + width / 2,
-        parent, children: [], hue: segHue, leafCount,
+        parent, children: [], hue: segHue, shadeRing: borrowed ? 0 : ring, leafCount,
       });
       ringMembers[ring]!.push(index);
       if (parent >= 0) segments[parent]!.children.push(index);

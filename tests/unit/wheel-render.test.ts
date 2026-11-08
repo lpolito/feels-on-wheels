@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { label, nodeLabel, setLocale } from '../../src/i18n';
-import { buildLayout, litMask } from '../../src/model/layout';
+import { buildLayout, homes, litMask } from '../../src/model/layout';
 import { overviewCamera, ringFocusCamera } from '../../src/camera';
 import { buildFillTable, type Palette } from '../../src/render/colors';
 import { createWheelRenderer, type Frame } from '../../src/render/wheel';
@@ -109,6 +109,19 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     const { r, sizes } = drawRing0(20);
     expect(r.stats.labelsByRing[2]).toBeGreaterThan(0);
     expect(Math.min(...sizes(2))).toBeGreaterThanOrEqual(12.5);
+  });
+
+  test('a body outer cell is filled with the ring-0 shade of its hue (spec v2.1 §7.1)', () => {
+    const homed = buildLayout(bodyWheel, homes(layout));
+    const { canvas, ctx, rec } = fakeCanvas();
+    const r = createWheelRenderer(canvas, homed, ctx);
+    r.setColors(bodyTable, bodyPalette);
+    r.resize(1000, 1000, 1);
+    r.draw(frame(desk));
+    // Fills follow segment order, one per drawn segment, in overview every segment is drawn.
+    const outer = homed.segments.find((s) => s.ring === 2)!;
+    expect(rec.fills[outer.index]).toBe(bodyTable.fill(outer.hue, 0, true));
+    expect(rec.fills[outer.index]).not.toBe(bodyTable.fill(outer.hue, 2, true));
   });
 
   test('whole-wheel view keeps 8 px for every ring, and labelsByRing adds up', () => {

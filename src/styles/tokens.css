@@ -17,15 +17,15 @@
   --hue-surprised: #3E7B5E;
   --hue-bad: #5E3A87;
 
-  /* v2 body areas (spec v2 §5.2) */
-  --hue-head: #7A243B;
-  --hue-face: #5C4221;
-  --hue-chest: #7D7413;
-  --hue-breath: #387078;
+  /* v2 body areas (spec v2 §5.2). v2.1: the v2 values at 1.2x OKLab chroma, same L and hue (spec v2.1 §7.2); stomach (light) was already at the sRGB edge. */
+  --hue-head: #821538;
+  --hue-face: #604016;
+  --hue-chest: #7E7406;
+  --hue-breath: #29727C;
   --hue-stomach: #0179A3;
-  --hue-arms: #546286;
-  --hue-whole-body: #7D3B75;
-  --hue-posture: #775064;
+  --hue-arms: #51618D;
+  --hue-whole-body: #83327B;
+  --hue-posture: #7B4D65;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -48,15 +48,15 @@
     --hue-surprised: #5FA383;
     --hue-bad: #8E6BC0;
 
-    /* v2 body areas */
-    --hue-head: #A74D61;
-    --hue-face: #856947;
-    --hue-chest: #A79F47;
-    --hue-breath: #629AA2;
-    --hue-stomach: #45A4D0;
-    --hue-arms: #7C8BB1;
-    --hue-whole-body: #A963A0;
-    --hue-posture: #A2788D;
+    /* v2 body areas. v2.1: the v2 values at 1.2x OKLab chroma, same L and hue (spec v2.1 §7.2); stomach (light) was already at the sRGB edge. */
+    --hue-head: #B0435E;
+    --hue-face: #89683E;
+    --hue-chest: #AA9F2A;
+    --hue-breath: #569CA6;
+    --hue-stomach: #1FA6DB;
+    --hue-arms: #798BB8;
+    --hue-whole-body: #B05BA6;
+    --hue-posture: #A7758E;
   }
 }
 
@@ -79,13 +79,13 @@
   --hue-surprised: #5FA383;
   --hue-bad: #8E6BC0;
 
-  /* v2 body areas */
-  --hue-head: #A74D61;
-  --hue-face: #856947;
-  --hue-chest: #A79F47;
-  --hue-breath: #629AA2;
-  --hue-stomach: #45A4D0;
-  --hue-arms: #7C8BB1;
-  --hue-whole-body: #A963A0;
-  --hue-posture: #A2788D;
+  /* v2 body areas. v2.1: the v2 values at 1.2x OKLab chroma, same L and hue (spec v2.1 §7.2); stomach (light) was already at the sRGB edge. */
+  --hue-head: #B0435E;
+  --hue-face: #89683E;
+  --hue-chest: #AA9F2A;
+  --hue-breath: #569CA6;
+  --hue-stomach: #1FA6DB;
+  --hue-arms: #798BB8;
+  --hue-whole-body: #B05BA6;
+  --hue-posture: #A7758E;
 }

@@ -1,6 +1,10 @@
 // @vitest-environment happy-dom
-import { describe, expect, test } from 'vitest';
-import { applyPref, readPref, resolvedTheme, safeStorage, writePref } from '../../src/ui/theme';
+import { beforeAll, describe, expect, test } from 'vitest';
+import { loadData } from '../../src/data/load';
+import { setLocale } from '../../src/i18n';
+import { applyPref, nextTheme, readPref, resolvedTheme, safeStorage, themeName, writePref } from '../../src/ui/theme';
+
+beforeAll(() => setLocale(loadData().locale));
 
 const throwing = {
   getItem: () => { throw new Error('denied'); },
@@ -41,5 +45,17 @@ describe('theme preference', () => {
 
   test('safeStorage returns a storage or null, never throws', () => {
     expect(() => safeStorage()).not.toThrow();
+  });
+});
+
+describe('theme toggle', () => {
+  test('nextTheme cycles system → light → dark → system', () => {
+    expect(nextTheme('system')).toBe('light');
+    expect(nextTheme('light')).toBe('dark');
+    expect(nextTheme('dark')).toBe('system');
+  });
+
+  test('themeName names each choice', () => {
+    expect(['system', 'light', 'dark'].map((p) => themeName(p as 'system'))).toEqual(['Match system', 'Light', 'Dark']);
   });
 });

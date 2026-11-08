@@ -186,17 +186,30 @@ test.describe('desktop', () => {
     expect((await state(page)).opened).toBe(false);
   });
 
-  test('the theme picker keeps its choice', async ({ page }) => {
+  test('the theme toggle cycles, labels its choice and keeps it after a reload', async ({ page }) => {
     await open(page);
-    const picker = page.locator('fw-toolbar select');
-    await picker.selectOption('dark');
+    const toggle = page.locator('fw-toolbar .fw-theme-toggle');
+    const label = page.locator('fw-toolbar .fw-theme-label');
+    await expect(toggle).toHaveAttribute('aria-label', 'Theme: Match system');
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-label', 'Theme: Light');
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-label', 'Theme: Dark');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(label).toHaveText('Dark');
+    await expect(label).toBeVisible();
+    await page.mouse.move(2, 400); // away from the button, so hover doesn't keep it
+    await expect(label).toBeHidden({ timeout: 2500 });
+    await page.reload();
+    await page.waitForFunction(() => window.__fw !== undefined);
+    await expect(toggle).toHaveAttribute('aria-label', 'Theme: Dark');
     await tapPath(page, 'angry');
     await tapPath(page, 'angry');
-    expect((await state(page)).opened).toBe(true);
     await page.keyboard.press('Escape');
     await idle(page);
-    await expect(picker).toHaveValue('dark');
+    await expect(toggle).toHaveAttribute('aria-label', 'Theme: Dark');
   });
+
 
   test('the message comes back when the selection is cleared', async ({ page }) => {
     await open(page);

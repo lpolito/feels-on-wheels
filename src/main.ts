@@ -16,7 +16,7 @@ import { createHistoryWriter, historyOp } from './state/history';
 import { fromHash, toHash } from './state/url';
 import { cardModel, type FwCard } from './ui/card';
 import type { FwHint } from './ui/hint';
-import { applyPref, readPref, resolvedTheme, safeStorage, writePref, type ThemePref } from './ui/theme';
+import { applyPref, readPref, resolvedTheme, safeStorage, themeName, writePref, type ThemePref } from './ui/theme';
 import type { FwToolbar } from './ui/toolbar';
 import './ui/card';
 import './ui/hint';
@@ -150,10 +150,11 @@ for (const mq of [darkScheme, moreContrast, forcedColors]) mq.addEventListener('
 toolbar.theme = themePref;
 app.addEventListener('fw-theme', (e) => {
   themePref = (e as CustomEvent<ThemePref>).detail;
-  // Spec v1.2 §5.4: the picker's own re-syncs (on every open and close) must show the new choice.
   toolbar.theme = themePref;
   writePref(storage, themePref);
   refreshColors();
+  // Spec v1.3 §6.2: a changed button name isn't reliably read out, so announce the new choice.
+  announce(themeName(themePref));
 });
 
 // ── Accessible tree, card, hint, toolbar ─────────────────────────────────

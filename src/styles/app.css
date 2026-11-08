@@ -58,7 +58,36 @@ fw-toolbar {
   display: flex;
   gap: 0.5rem;
 }
-fw-toolbar button, fw-toolbar select { min-width: 44px; min-height: 44px; padding: 0 0.9rem; font-size: 1rem; }
+fw-toolbar button { min-width: 44px; min-height: 44px; padding: 0 0.9rem; font-size: 1rem; }
+/* Spec v1.3 §6.2: the theme toggle and its short-lived label. */
+.fw-theme { position: relative; display: inline-flex; }
+fw-toolbar .fw-theme-toggle { width: 44px; padding: 0; display: inline-grid; place-items: center; }
+.fw-theme-toggle .fw-icon { width: 1.3rem; height: 1.3rem; }
+.fw-theme-toggle svg[hidden] { display: none; }
+.fw-icon-fill { fill: currentColor; stroke: none; }
+.fw-theme-label {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  padding: 0.3rem 0.65rem;
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.15);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 300ms ease-out, visibility 0s linear 300ms;
+}
+.fw-theme-label[data-show],
+.fw-theme-toggle:is(:hover, :focus-visible) + .fw-theme-label {
+  opacity: 1;
+  visibility: visible;
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) { .fw-theme-label { transition: none; } }
 fw-toolbar .fw-start-over { display: inline-flex; align-items: center; gap: 0.4rem; }
 fw-toolbar .fw-start-over[hidden] { display: none; }
 .fw-icon { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }

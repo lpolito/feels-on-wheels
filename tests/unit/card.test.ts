@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { beforeAll, describe, expect, test } from 'vitest';
+import { beforeAll, describe, expect, test, vi } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { setLocale } from '../../src/i18n';
 import { buildLayout } from '../../src/model/layout';
@@ -273,17 +273,62 @@ describe('<fw-toolbar>', () => {
     expect(actions).toEqual([{ type: 'clear' }, 'fw-focus-lost']);
   });
 
-  test('theme picker still emits fw-theme', () => {
+  test('theme toggle shows the current choice as its icon and name', () => {
     document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
     const el = document.querySelector<FwToolbar>('fw-toolbar')!;
-    const themes: unknown[] = [];
-    el.addEventListener('fw-theme', (e) => themes.push((e as CustomEvent).detail));
-    const select = el.querySelector('select')!;
-    el.theme = 'dark';
-    expect(select.value).toBe('dark');
-    select.value = 'light';
-    select.dispatchEvent(new Event('change'));
-    expect(themes).toEqual(['light']);
+    const btn = el.querySelector<HTMLButtonElement>('button.fw-theme-toggle')!;
+    const shown = () => [...btn.querySelectorAll<SVGElement>('svg[data-theme]')].filter((i) => !i.hasAttribute('hidden')).map((i) => i.dataset['theme']);
+    for (const [p, name] of [['system', 'Match system'], ['light', 'Light'], ['dark', 'Dark']] as const) {
+      el.theme = p;
+      expect(btn.getAttribute('aria-label')).toBe(`Theme: ${name}`);
+      expect(shown()).toEqual([p]);
+      expect(el.querySelector('.fw-theme-label')!.textContent).toBe(name);
+      expect(el.querySelector('.fw-theme-label')!.getAttribute('aria-hidden')).toBe('true');
+    }
+    expect(el.querySelector('select')).toBeNull();
   });
+
+  test('clicking the theme toggle emits the next choice and shows the label for 1.5 s', () => {
+    vi.useFakeTimers();
+    try {
+      document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+      const el = document.querySelector<FwToolbar>('fw-toolbar')!;
+      const themes: unknown[] = [];
+      el.addEventListener('fw-theme', (e) => themes.push((e as CustomEvent).detail));
+      el.theme = 'system';
+      const label = el.querySelector<HTMLElement>('.fw-theme-label')!;
+      expect(label.hasAttribute('data-show')).toBe(false);
+      el.querySelector<HTMLButtonElement>('button.fw-theme-toggle')!.click();
+      expect(themes).toEqual(['light']);
+      expect(label.hasAttribute('data-show')).toBe(true);
+      vi.advanceTimersByTime(1400);
+      expect(label.hasAttribute('data-show')).toBe(true);
+      vi.advanceTimersByTime(200);
+      expect(label.hasAttribute('data-show')).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  test('clicking quickly restarts the label timer', () => {
+    vi.useFakeTimers();
+    try {
+      document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+      const el = document.querySelector<FwToolbar>('fw-toolbar')!;
+      const btn = el.querySelector<HTMLButtonElement>('button.fw-theme-toggle')!;
+      const label = el.querySelector<HTMLElement>('.fw-theme-label')!;
+      for (let k = 0; k < 3; k++) {
+        btn.click();
+        vi.advanceTimersByTime(1000);
+      }
+      vi.advanceTimersByTime(400); // 1.4 s after the last click
+      expect(label.hasAttribute('data-show')).toBe(true);
+      vi.advanceTimersByTime(200);
+      expect(label.hasAttribute('data-show')).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
 });
 

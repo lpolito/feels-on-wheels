@@ -1,3 +1,5 @@
+import { t } from '../i18n';
+
 export type ThemePref = 'system' | 'light' | 'dark';
 
 const KEY = 'fw.theme';
@@ -27,6 +29,18 @@ export function writePref(storage: Storage | null, p: ThemePref): void {
   } catch {
     // Storage unavailable: the preference lasts for this session only.
   }
+}
+
+/** System → Light → Dark → System (spec v1.3 §6.2). */
+export function nextTheme(p: ThemePref): ThemePref {
+  return PREFS[(PREFS.indexOf(p) + 1) % PREFS.length]!;
+}
+
+const NAME_KEYS: Record<ThemePref, string> = { system: 'themeSystem', light: 'themeLight', dark: 'themeDark' };
+
+/** The choice's display name. */
+export function themeName(p: ThemePref): string {
+  return t(NAME_KEYS[p]);
 }
 
 export function applyPref(p: ThemePref, root: HTMLElement): void {

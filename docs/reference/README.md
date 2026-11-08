@@ -21,6 +21,6 @@ The draft text for the app's credits page (see [Before going public](../ROADMAP.
 - **Gloria Willcox**, "The Feeling Wheel", *Transactional Analysis Journal* 12(4), 1982: the original feelings wheel.
 - **Geoffrey Roberts**, "The Feel Wheel", 2015: the seven-core wheel our core wheel's words are based on. *(Attribution not yet confirmed against a primary source.)*
 - **Tom Drummond**, "Vocabulary of Emotions", tomdrummond.com: strength levels for feeling words. *(Once strength ships.)*
-- **Lindsay Braman**, "Emotion-Sensation Wheel", 2020, lindsaybraman.com: the idea of an outer ring of body sensations. *(Once the sensations wheel ships.)*
+- **Lindsay Braman**, "Emotion-Sensation Wheel", 2020, lindsaybraman.com: the idea of a feelings wheel that includes body sensations.
 - **Nummenmaa, Glerean, Hari and Hietanen**, "Bodily maps of emotions", *PNAS*, 2014: research behind linking feelings to body sensations. *(If the sensations wheel uses it.)*
 - The interactive site whose tap-to-trace interaction inspired ours. *(Name and link to be added.)*

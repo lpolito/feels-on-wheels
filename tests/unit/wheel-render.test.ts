@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
-import { label, setLocale } from '../../src/i18n';
+import { label, nodeLabel, setLocale } from '../../src/i18n';
 import { buildLayout, litMask } from '../../src/model/layout';
 import { overviewCamera, ringFocusCamera } from '../../src/camera';
 import { buildFillTable, type Palette } from '../../src/render/colors';
@@ -222,7 +222,7 @@ describe('wheel renderer', () => {
       r.resize(desk.width, desk.height, 1);
       const f = frame(desk, o);
       r.draw(f);
-      const k = rec.textAt.findIndex((x) => x.text === label(s.feelingId));
+      const k = rec.textAt.findIndex((x) => x.text === nodeLabel(s.node));
       if (k < 0) return null;
       const angle = s.mid + f.cam.rotation;
       const centre = (rec.textAt[k]!.e - f.cam.cx) * Math.cos(angle) + (rec.textAt[k]!.f - f.cam.cy) * Math.sin(angle);
@@ -240,11 +240,11 @@ describe('wheel renderer', () => {
       if (!before || !after) continue;
       const limit = ring.outer * R - CLEAR;
       if (before.reach <= limit) {
-        expect(after.centre, label(s.feelingId)).toBeCloseTo(before.centre, 6);
-        expect(after.px, label(s.feelingId)).toBe(before.px);
+        expect(after.centre, nodeLabel(s.node)).toBeCloseTo(before.centre, 6);
+        expect(after.px, nodeLabel(s.node)).toBe(before.px);
         stayed++;
       } else {
-        expect(after.reach, label(s.feelingId)).toBeLessThanOrEqual(limit + 0.5);
+        expect(after.reach, nodeLabel(s.node)).toBeLessThanOrEqual(limit + 0.5);
         moved++;
       }
     }

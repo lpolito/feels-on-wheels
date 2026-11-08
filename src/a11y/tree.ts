@@ -1,4 +1,4 @@
-import { label, t } from '../i18n';
+import { nodeLabel, t, wheelText } from '../i18n';
 import { keyToAction } from '../input/keyboard';
 import type { Layout } from '../model/layout';
 import type { Action, State } from '../state/store';
@@ -13,21 +13,21 @@ export interface A11yTree {
 export function describe(layout: Layout, i: number): string {
   const ancestors: string[] = [];
   for (let p = layout.segments[i]!.parent; p >= 0; p = layout.segments[p]!.parent) {
-    ancestors.unshift(label(layout.segments[p]!.feelingId));
+    ancestors.unshift(nodeLabel(layout.segments[p]!.node));
   }
-  const own = label(layout.segments[i]!.feelingId);
+  const own = nodeLabel(layout.segments[i]!.node);
   return ancestors.length === 0 ? t('labelOnly', { label: own }) : t('inPath', { label: own, path: ancestors.join(', ') });
 }
 
 function ancestorLabels(layout: Layout, i: number): string[] {
   const out: string[] = [];
-  for (let p = layout.segments[i]!.parent; p >= 0; p = layout.segments[p]!.parent) out.unshift(label(layout.segments[p]!.feelingId));
+  for (let p = layout.segments[i]!.parent; p >= 0; p = layout.segments[p]!.parent) out.unshift(nodeLabel(layout.segments[p]!.node));
   return out;
 }
 
 /** Spec §6: what to announce for a transition, or null. */
 export function announceFor(layout: Layout, prev: State, next: State): string | null {
-  const own = (i: number) => label(layout.segments[i]!.feelingId);
+  const own = (i: number) => nodeLabel(layout.segments[i]!.node);
   if (next.opened && next.selected !== null && (!prev.opened || prev.selected !== next.selected)) {
     const path = ancestorLabels(layout, next.selected);
     return path.length === 0
@@ -48,7 +48,7 @@ export function createA11yTree(root: HTMLElement, layout: Layout, dispatch: (a: 
   let focusingProgrammatically = false;
 
   root.setAttribute('role', 'tree');
-  root.setAttribute('aria-label', t('wheelLabel'));
+  root.setAttribute('aria-label', wheelText(layout.wheelId).name);
   root.classList.add('visually-hidden');
   root.replaceChildren();
 
@@ -59,11 +59,11 @@ export function createA11yTree(root: HTMLElement, layout: Layout, dispatch: (a: 
       li.id = `fw-node-${i}`;
       li.setAttribute('role', 'treeitem');
       li.setAttribute('aria-level', String(s.ring + 1));
-      li.setAttribute('aria-label', label(s.feelingId));
+      li.setAttribute('aria-label', nodeLabel(s.node));
       li.tabIndex = -1;
       li.dataset['index'] = String(i);
       const name = document.createElement('span');
-      name.textContent = label(s.feelingId);
+      name.textContent = nodeLabel(s.node);
       li.append(name);
       if (s.children.length > 0) {
         li.setAttribute('aria-expanded', 'false');

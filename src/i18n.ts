@@ -1,4 +1,4 @@
-import type { FeelingId, Locale, SensationId } from './data/types';
+import type { FeelingId, Locale, NodeRef, SensationId, WheelText } from './data/types';
 
 let active: Locale | null = null;
 const warned = new Set<string>();
@@ -35,4 +35,19 @@ export function definition(id: FeelingId): string {
 
 export function sensationLabel(id: SensationId): string {
   return active?.sensations[id] ?? missing(`sensations.${id}`);
+}
+
+/** The label of any wheel cell (spec v2 §7.2). */
+export function nodeLabel(n: NodeRef): string {
+  if (n.kind === 'feeling') return label(n.id);
+  if (n.kind === 'sensation') return sensationLabel(n.id);
+  return active?.areas[n.id] ?? missing(`areas.${n.id}`);
+}
+
+/** A wheel's switch label, name and start message (spec v2 §4.1). */
+export function wheelText(id: string): WheelText {
+  const w = active?.wheels[id];
+  if (w) return w;
+  const key = missing(`wheels.${id}`);
+  return { switch: key, name: key, hint: key, hintLink: key };
 }

@@ -59,6 +59,24 @@ fw-toolbar {
   gap: 0.5rem;
 }
 fw-toolbar button { min-width: 44px; min-height: 44px; padding: 0 0.9rem; font-size: 1rem; }
+
+/* Spec v2 §4.1: "Feelings | Body", top left, the current wheel filled. */
+fw-wheel-switch {
+  position: absolute;
+  top: max(1rem, env(safe-area-inset-top));
+  left: max(1rem, env(safe-area-inset-left));
+  z-index: 3;
+  display: flex;
+  padding: 3px;
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--fg) 18%, transparent);
+  border-radius: 999px;
+}
+fw-wheel-switch button { min-height: 44px; padding: 0 1rem; font-size: 1rem; border-color: transparent; }
+fw-wheel-switch button[aria-pressed="true"] { background: var(--fg); color: var(--bg); font-weight: 600; }
+@media (forced-colors: active) {
+  fw-wheel-switch button[aria-pressed="true"] { background: Highlight; color: HighlightText; forced-color-adjust: none; }
+}
 /* Spec v1.3 §6.2: the theme toggle and its short-lived label. */
 .fw-theme { position: relative; display: inline-flex; }
 fw-toolbar .fw-theme-toggle { width: 44px; padding: 0; display: inline-grid; place-items: center; }
@@ -101,6 +119,18 @@ fw-toolbar .fw-theme-toggle { width: 44px; padding: 0; display: inline-grid; pla
 @media (prefers-reduced-motion: reduce) { .fw-theme-label { transition: none; } }
 fw-toolbar .fw-start-over { display: inline-flex; align-items: center; gap: 0.4rem; }
 fw-toolbar .fw-start-over[hidden] { display: none; }
+/* v2: on narrow phones the wheel switch shares the top edge, so "Start over" keeps only its icon; the words stay its name. */
+@media (max-width: 26rem) {
+  fw-toolbar .fw-start-over { width: 44px; padding: 0; justify-content: center; }
+  .fw-start-over-label {
+    position: absolute;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0; border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
 .fw-icon { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ── Floating hint and card (spec §5) ───────────────────────────────── */
@@ -143,6 +173,18 @@ fw-hint {
   font-size: 1rem;
   font-weight: 600;
   text-align: start;
+}
+/* Spec v2 §4.1: the link to the other wheel reads as part of the sentence. */
+.fw-hint-link {
+  display: inline;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: none;
+  font: inherit;
+  text-align: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 /* Swapping the message and the card fades the newcomer in. */
 @media (prefers-reduced-motion: no-preference) {
@@ -278,6 +320,9 @@ fw-card[data-open] :is(.fw-crumbs-wrap, .fw-card-body) { grid-template-rows: 1fr
 }
 .fw-rows .fw-link:hover { background: color-mix(in srgb, var(--ink, var(--fg)) 8%, transparent); }
 .fw-close-to { display: flex; flex-wrap: wrap; gap: 0.25rem 0.9rem; }
+/* Spec v2 §6.2: the jump to the feeling on the feelings wheel. */
+.fw-jump-row { margin: 1rem 0 0; }
+.fw-jump { min-height: 44px; text-align: start; }
 
 @media (prefers-reduced-motion: reduce) {
   .fw-card-chevron, .fw-crumbs-wrap, .fw-card-body { transition: none; }

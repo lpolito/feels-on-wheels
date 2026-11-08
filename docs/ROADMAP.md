@@ -8,7 +8,7 @@ The living list of what's built, what's next, and what's still an idea. Specs ar
 
 Each version is used before the next one is designed. Point releases (v1.1) rework what's there after using it. Whole versions add a new way to identify an emotion. The feedback behind each shipped version is in its spec, and in the git history for v1.3.1.
 
-Ideas don't have version numbers. When Lucas picks one to build, it takes the next whole version number (the next one is v2) and moves into this table.
+Ideas don't have version numbers. When Lucas picks one to build, it takes the next whole version number (the next one is v3) and moves into this table.
 
 | Version | Status | Spec and plan |
 |---|---|---|
@@ -17,16 +17,16 @@ Ideas don't have version numbers. When Lucas picks one to build, it takes the ne
 | v1.2: Fixes and polish from using v1.1 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.2-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.2.md) |
 | v1.3: Layout, card and controls polish from using v1.2 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.3-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.3.md) |
 | v1.3.1: Small fixes from using v1.3 | Shipped | No spec; commits 2210c12, e9ae2b4, 63977fa |
+| v2: Body sensations wheel | Shipped | [spec](superpowers/specs/2026-11-08-feelings-wheel-v2-body-wheel-design.md), [plan](superpowers/plans/2026-11-08-feelings-wheel-v2-body-wheel.md) |
 
 ## Ideas
 
-Not in any order; none is chosen yet. Strength was briefly v2 before it was shelved, so older docs and commits call it v2.
+Not in any order; none is chosen yet. Strength was briefly v2 before it was shelved, so older docs and commits call it v2; v2 is now the body sensations wheel.
 
 | Idea | Status |
 |---|---|
 | [Wizard](#wizard) | Idea |
 | [Strength](#strength) | Shelved (2026-11-08) |
-| [Body sensations wheel](#body-sensations-wheel) | Planned |
 | [Emoji wheel](#emoji-wheel) | Planned |
 | [Languages](#languages) | Planned |
 
@@ -51,17 +51,11 @@ What Lucas first asked for:
 - A guided flow that helps you land on a specific word already in the wheel.
 - Lucas's idea, mentioned 2026-11-08 when shelving strength. Not yet described further; ask him before designing it.
 
-### Body sensations wheel
-
-- Modelled on Lindsay Braman's [Emotion-Sensation Wheel](reference/braman-emotion-sensation-wheel.md): core feelings, then feelings, then an outer ring of body sensations.
-- On her wheel each sensation belongs to one feeling. In our data, sensations are a shared list many feelings point to, so a sensations wheel needs one parent per outer cell.
-- Uses the same renderer and gestures as the core wheel; only the wheel file is new.
-- The wording follows the content rules below.
-
 ### Emoji wheel
 
 - Very simplified: core feelings and a few middle-ring ones, because there are only so many emoji.
 - The data is ready: `Feeling.emoji` is already an optional field.
+- After v2, another wheel is a wheel file, an entry in the wheel list and its locale strings; the switch, URLs, colours and card handle it (v2 spec §7).
 
 ### Languages
 

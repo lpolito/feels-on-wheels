@@ -279,3 +279,73 @@ One entry per word. A word in two places on the wheel is listed once, where it f
     - **Indifferent**: Neither for nor against something, without strong feelings either way.  
       _Low energy · Numbness_
 
+
+## Body wheel
+
+The v2 body sensations wheel ([spec](superpowers/specs/2026-11-08-feelings-wheel-v2-body-wheel-design.md)): body areas, the sensations under each, and the 2–3 feelings each sensation leads to. These links are the body wheel's own; they don't have to match a feeling's "You might notice".
+
+### Head and eyes
+
+- **Headache**: Stressed, Frustrated, Overwhelmed
+- **Foggy head**: Confused, Tired, Depressed
+- **Tired eyes**: Tired, Depressed
+- **Wide eyes**: Scared, Amazed, Interested
+- **Raised eyebrows**: Startled, Skeptical, Curious
+- **Tearful**: Sad, Hurt, Thankful
+
+### Face and jaw
+
+- **Hot or flushed face**: Mad, Embarrassed, Ashamed
+- **Blushing**: Embarrassed, Exposed, Aroused
+- **Scrunched-up face**: Repelled, Annoyed, Confused
+- **Clenched jaw**: Mad, Resentful, Stressed
+- **Smiling**: Happy, Playful, Proud
+
+### Chest
+
+- **Racing heart**: Scared, Mad, Excited
+- **Tight chest**: Anxious, Overwhelmed, Resentful
+- **Hollow feeling in your chest**: Lonely, Hurt, Empty
+- **Warmth in your chest**: Loving, Thankful, Content
+
+### Breath and throat
+
+- **Shallow breathing**: Anxious, Stressed
+- **Slow, deep breathing**: Peaceful, Content
+- **Sharp intake of breath**: Startled, Scared
+- **Lump in your throat**: Hurt, Grief, Thankful
+
+### Stomach
+
+- **Knot in your stomach**: Anxious, Guilty, Betrayed
+- **Queasy stomach**: Repelled, Anxious
+- **Butterflies in your stomach**: Nervous, Excited
+
+### Arms and hands
+
+Shortened from "Shoulders, arms and hands", which didn't fit its centre cell on phones (spec v2 §3.2). Tense shoulders stays in this area.
+
+- **Tense shoulders**: Stressed, Anxious, Frustrated
+- **Heavy arms and legs**: Tired, Depressed
+- **Clenched fists**: Mad, Frustrated
+- **Sweaty palms**: Nervous, Excited
+- **Cold hands**: Scared, Nervous
+- **Trembling or shaky**: Scared, Furious, Excited
+
+### Whole body
+
+- **Restless, need to move**: Anxious, Bored, Eager
+- **Fidgety**: Nervous, Bored
+- **Frozen or very still**: Scared, Shocked, Powerless
+- **Low energy**: Depressed, Apathetic
+- **Numbness**: Numb, Empty, Shocked
+- **Light, floaty body**: Free, Joyful
+- **Buzzing energy**: Excited, Inspired, Anxious
+- **Relaxed muscles**: Peaceful, Trusting
+
+### Posture and urges
+
+- **Slumped posture**: Depressed, Inadequate, Tired
+- **Open, upright posture**: Confident, Accepted
+- **Urge to turn away**: Repelled, Withdrawn, Ashamed
+- **Urge to shrink or hide**: Insecure, Ashamed, Humiliated

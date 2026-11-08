@@ -69,7 +69,10 @@ export class FwToolbar extends HTMLElement {
     const startOver = document.createElement('button');
     startOver.type = 'button';
     startOver.className = 'fw-start-over';
-    startOver.append(restartIcon(), t('startOver'));
+    const startLabel = document.createElement('span');
+    startLabel.className = 'fw-start-over-label';
+    startLabel.textContent = t('startOver');
+    startOver.append(restartIcon(), startLabel);
     startOver.addEventListener('click', () => {
       this.dispatchEvent(new CustomEvent('fw-action', { detail: { type: 'clear' }, bubbles: true }));
       // The button hides once nothing is selected, so focus goes to the wheel's tree, not <body>.

@@ -1,26 +1,28 @@
 import { data } from './boot';
 import { createAnnouncer } from './a11y/announce';
-import { announceFor, createA11yTree } from './a11y/tree';
-import { createCameraController, openedHalfHeight, useHalfWheel, type CameraOpts } from './camera';
-import { createController } from './controller';
-import { t } from './i18n';
+import { announceFor, createA11yTree, type A11yTree } from './a11y/tree';
+import { createCameraController, openedHalfHeight, useHalfWheel, type CameraController, type CameraOpts } from './camera';
+import { createController, type Controller } from './controller';
+import { wheelText } from './i18n';
 import { attachGestures } from './input/gestures';
 import { keyTarget, routeKey } from './input/route';
 import { TAU, normAngle, overDisc, type Viewport } from './model/geometry';
-import { buildLayout, litMask } from './model/layout';
+import { buildLayout, homes, litMask, type Layout, type Path } from './model/layout';
 import { buildFillTable, inkFor, readPalette } from './render/colors';
 import { createSpriteCache } from './render/sprites';
-import { createWheelRenderer, labelFont } from './render/wheel';
-import { createStore, initialState, type Action, type State } from './state/store';
+import { createWheelRenderer, labelFont, type WheelRenderer } from './render/wheel';
+import { createStore, initialState, type Action, type State, type Store } from './state/store';
 import { createHistoryWriter, historyOp } from './state/history';
-import { fromHash, toHash } from './state/url';
-import { cardModel, type FwCard } from './ui/card';
-import type { FwHint } from './ui/hint';
+import { fromHash, hashWheel, toHash } from './state/url';
+import { cardModel, type FwCard, type JumpContext } from './ui/card';
+import type { FwHint, HintContent } from './ui/hint';
 import { applyPref, readPref, resolvedTheme, safeStorage, themeName, writePref, type ThemePref } from './ui/theme';
 import type { FwToolbar } from './ui/toolbar';
+import type { FwWheelSwitch } from './ui/wheel-switch';
 import './ui/card';
 import './ui/hint';
 import './ui/toolbar';
+import './ui/wheel-switch';
 
 const FADE_MS = 150;
 const PULSE_MS = 180;
@@ -28,8 +30,17 @@ const PULSE_MS = 180;
 const $ = <T extends Element>(sel: string): T => document.querySelector<T>(sel)!;
 const media = (q: string): MediaQueryList => matchMedia(q);
 
-const { wheel, feelings } = data;
-const layout = buildLayout(wheel);
+// ── Wheels (spec v2 §7) ──────────────────────────────────────────────────
+const { feelings } = data;
+const wheelIds = data.wheels.map((w) => w.id);
+const firstId = wheelIds[0]!;
+/** Each feeling's first place on the first wheel: its colour and jump target on other wheels (spec v2 §5.1, §6.2). */
+const home = homes(buildLayout(data.wheels[0]!));
+/** Every centre node's hue across all wheels (spec v2 §5.2). */
+const hueNames = data.wheels.flatMap((w) => w.children.map((n) => n.hue!));
+/** The first wheel keeps inheriting hues from its centre; later wheels colour feelings from their home (Task 2 ruling). */
+const layoutFor = (id: string): Layout =>
+  buildLayout(data.wheels.find((w) => w.id === id)!, id === firstId ? undefined : home);
 
 const app = $<HTMLElement>('#app');
 const stage = $<HTMLElement>('#stage');
@@ -38,6 +49,8 @@ const canvas = $<HTMLCanvasElement>('#wheel');
 const card = $<FwCard>('fw-card');
 const hint = $<FwHint>('fw-hint');
 const toolbar = $<FwToolbar>('fw-toolbar');
+const wheelSwitch = $<FwWheelSwitch>('fw-wheel-switch');
+wheelSwitch.wheels = data.wheels.map((w) => ({ id: w.id, label: wheelText(w.id).switch }));
 const themeMeta = $<HTMLMetaElement>('#theme-color');
 const announce = createAnnouncer($<HTMLElement>('#announcer'));
 const storage = safeStorage();
@@ -53,6 +66,22 @@ if (!getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() 
   await new Promise((resolve) => addEventListener('load', resolve, { once: true }));
 }
 
+// ── The mounted wheel ────────────────────────────────────────────────────
+// Only one wheel is live. mount() replaces all of these; everything else reaches them through these bindings, never
+// by capturing an object, so a switched-away wheel can be collected (spec v2 §4.2, plan Review Focus 6).
+let layout!: Layout;
+let store!: Store;
+let camera!: CameraController;
+let controller!: Controller;
+let renderer!: WheelRenderer;
+let tree!: A11yTree;
+let jump: JumpContext | undefined;
+let allLit!: Uint8Array;
+let lit!: Uint8Array;
+let prevLit!: Uint8Array;
+let fadeStart = -Infinity;
+let pulseStart = -Infinity;
+
 function measure(): { vp: Viewport; opts: CameraOpts } {
   const { width, height } = stage.getBoundingClientRect();
   const whole = app.getBoundingClientRect();
@@ -63,34 +92,17 @@ function measure(): { vp: Viewport; opts: CameraOpts } {
   return { vp, opts: { remPx, portrait, half: useHalfWheel(layout, vp), openedY: null } };
 }
 
-let { vp, opts } = measure();
-
-// ── State (spec v1.2 §3.1: every screen starts with nothing selected) ────
-const fromUrl = fromHash(layout, location.hash);
-const beganAtBase = fromUrl === null;
-const store = createStore(layout, fromUrl ?? initialState);
-
-const camera = createCameraController({
-  now: () => performance.now(),
-  raf: (cb) => requestAnimationFrame(cb),
-  caf: (id) => cancelAnimationFrame(id),
-  reducedMotion: () => reducedMotion.matches,
-});
-// Function declarations below are hoisted; the predictor only runs on a fling, after start-up.
-const controller = createController(layout, store, camera, vp, opts, (segment) => predictOpenedY(segment));
+let vp!: Viewport;
+let opts!: CameraOpts;
 
 // ── Rendering ────────────────────────────────────────────────────────────
 const makeCanvas = (w: number, h: number): HTMLCanvasElement | OffscreenCanvas =>
   typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(w, h) : Object.assign(document.createElement('canvas'), { width: w, height: h });
-const renderer = createWheelRenderer(canvas, layout, undefined, createSpriteCache(makeCanvas, 600, labelFont));
-const allLit = litMask(layout, null);
+/** Shared by every wheel: keyed on label, size and colour (spec v1.2 §7). */
+const sprites = createSpriteCache(makeCanvas, 600, labelFont);
 /** Spec §4.2: cells fade only while a word is opened. */
 const litFor = (s: State): Uint8Array => (s.opened ? litMask(layout, s.selected) : allLit);
 const openedKey = (s: State): number | null => (s.opened ? s.selected : null);
-let lit: Uint8Array = litFor(store.get());
-let prevLit: Uint8Array = lit;
-let fadeStart = -Infinity;
-let pulseStart = -Infinity;
 let pendingDraw = 0;
 const TEST = import.meta.env.MODE === 'test';
 const drawTimes: number[] = [];
@@ -124,17 +136,12 @@ function drawNow(): void {
   frame();
 }
 
-camera.onFrame(() => {
-  if (pendingDraw !== 0) cancelAnimationFrame(pendingDraw);
-  frame();
-});
-
 // ── Theme ────────────────────────────────────────────────────────────────
 let themePref: ThemePref = readPref(storage);
 
 function refreshColors(): void {
   applyPref(themePref, document.documentElement);
-  const palette = readPalette(document.documentElement);
+  const palette = readPalette(document.documentElement, hueNames);
   const theme = resolvedTheme(themePref, darkScheme);
   renderer.setColors(buildFillTable(palette, layout.rings.length, theme, { moreContrast: moreContrast.matches }), palette);
   // Spec v1.2 §5.2: hover ink per hue. Forced colours use the system's own link colours instead.
@@ -160,7 +167,6 @@ app.addEventListener('fw-theme', (e) => {
 
 // ── Accessible tree, card, hint, toolbar ─────────────────────────────────
 const dispatch = (a: Action): void => store.dispatch(a);
-const tree = createA11yTree($<HTMLElement>('#a11y-tree'), layout, dispatch);
 app.addEventListener('fw-action', (e) => dispatch((e as CustomEvent<Action>).detail));
 app.addEventListener('fw-focus-lost', () => tree.focusSelected());
 
@@ -198,8 +204,12 @@ app.addEventListener('click', (e) => {
   else if (s.selected !== null) dispatch({ type: 'clear' });
 });
 
-/** Spec v1.3 §3.1: the message shows exactly when nothing is selected. */
-const hintText = (s: State): string | null => (s.selected === null ? t('hint') : null);
+/** Spec v1.3 §3.1 and v2 §4.1: the message shows exactly when nothing is selected, with a link to another wheel. */
+function hintContent(s: State): HintContent {
+  if (s.selected !== null) return null;
+  const text = wheelText(layout.wheelId);
+  return { text: text.hint, link: { label: text.hintLink, wheel: data.suggests[layout.wheelId]! } };
+}
 
 /** Spec v1.2 §4.2: the phone card's height cap keeps it below the opened cell. */
 function setOpenedHalf(s: State): void {
@@ -230,7 +240,7 @@ function openedYForHeight(unfolded: number): number {
 function predictOpenedY(segment: number): number | null {
   const s = store.get();
   if (!s.opened || !opts.portrait) return null;
-  return openedYForHeight(card.unfoldedHeightFor(cardModel(layout, feelings, { ...s, selected: segment })));
+  return openedYForHeight(card.unfoldedHeightFor(cardModel(layout, feelings, { ...s, selected: segment }, jump)));
 }
 
 /** Re-measures the opened word's place after the card renders, and springs the camera to it. */
@@ -242,17 +252,18 @@ function placeOpened(s: State): void {
 
 function renderUi(s: State): void {
   setOpenedHalf(s);
-  card.model = cardModel(layout, feelings, s);
-  hint.text = hintText(s);
+  card.model = cardModel(layout, feelings, s, jump);
+  hint.content = hintContent(s);
   toolbar.selected = s.selected !== null;
   app.dataset['mode'] = s.view.mode;
   tree.update(s);
 }
 
-// ── URL & history (spec §3.6) ────────────────────────────────────────────
+// ── URL & history (spec §3.6, v2 §4.3) ───────────────────────────────────
 const writer = createHistoryWriter(history, () => performance.now());
+const urlFor = (s: State): string => toHash(layout, s, layout.wheelId === firstId) || location.pathname + location.search;
 
-store.subscribe((s, prev, a) => {
+function onState(s: State, prev: State, a: Action): void {
   if (openedKey(s) !== openedKey(prev)) {
     prevLit = lit;
     lit = litFor(s);
@@ -266,13 +277,104 @@ store.subscribe((s, prev, a) => {
   requestDraw();
   const op = historyOp(prev, s, a);
   if (op !== 'none') {
-    const url = toHash(layout, s) || location.pathname + location.search;
-    if (op === 'push') writer.push(url);
-    else writer.replace(url);
+    if (op === 'push') writer.push(urlFor(s));
+    else writer.replace(urlFor(s));
   }
+}
+
+/**
+ * The wheel and state a URL names (spec v2 §4.3). A wheel other than the first needs its base hash or a word on it;
+ * anything else, including an unknown wheel or path, is the first wheel (a bad path there gives its start view).
+ */
+function fromLocation(hash: string): { layout: Layout; state: State | null } {
+  const id = hashWheel(hash, wheelIds);
+  if (id !== null && id !== firstId) {
+    const l = layoutFor(id);
+    const s = fromHash(l, hash);
+    if (s !== null || hash === `#/${id}`) return { layout: l, state: s };
+  }
+  const l = layoutFor(firstId);
+  return { layout: l, state: fromHash(l, hash) };
+}
+
+// ── Mounting a wheel (spec v2 §4.2) ──────────────────────────────────────
+const live: WeakRef<object>[] = [];
+
+/** A fresh, empty tree root: the old one, and the listeners createA11yTree put on it, go with the old wheel. */
+function freshTreeRoot(): HTMLElement {
+  const old = $<HTMLElement>('#a11y-tree');
+  const root = document.createElement('div');
+  root.id = 'a11y-tree';
+  old.replaceWith(root);
+  return root;
+}
+
+/** Unsubscribes the mounted store from onState; a late dispatch to an old store (a pinch's end timer) then goes nowhere. */
+let unsubscribe: () => void = () => {};
+
+function mount(next: Layout, initial: State, intro: boolean): void {
+  camera?.stop();
+  unsubscribe();
+  layout = next;
+  jump = layout.wheelId === firstId ? undefined : { wheel: firstId, home };
+  ({ vp, opts } = measure());
+  store = createStore(layout, initial);
+  camera = createCameraController({
+    now: () => performance.now(),
+    raf: (cb) => requestAnimationFrame(cb),
+    caf: (id) => cancelAnimationFrame(id),
+    reducedMotion: () => reducedMotion.matches,
+  });
+  camera.onFrame(() => {
+    if (pendingDraw !== 0) cancelAnimationFrame(pendingDraw);
+    frame();
+  });
+  controller = createController(layout, store, camera, vp, opts, (segment) => predictOpenedY(segment));
+  renderer = createWheelRenderer(canvas, layout, undefined, sprites);
+  allLit = litMask(layout, null);
+  lit = litFor(store.get());
+  prevLit = lit;
+  fadeStart = -Infinity;
+  pulseStart = -Infinity;
+  tree = createA11yTree(freshTreeRoot(), layout, dispatch);
+  unsubscribe = store.subscribe(onState);
+  wheelSwitch.current = layout.wheelId;
+
+  renderer.resize(vp.width, vp.height, devicePixelRatio || 1);
+  refreshColors();
+  renderUi(store.get());
+  // A deep link on a phone starts with the opened word already above its card.
+  opts = { ...opts, openedY: openedYFor(store.get()) };
+  controller.setViewport(vp, opts);
+  if (intro && opts.half && !reducedMotion.matches) controller.playIntro();
+  drawNow();
+  if (TEST) live.push(new WeakRef(layout), new WeakRef(store));}
+
+/** Spec v2 §4.2: switching always starts fresh (or, from a jump link, opens that word) and pushes history. */
+app.addEventListener('fw-wheel', (e) => {
+  const { wheel: id, path } = (e as CustomEvent<{ wheel: string; path?: Path }>).detail;
+  if (!wheelIds.includes(id) || (id === layout.wheelId && path === undefined)) return;
+  const from = e.target;
+  const next = layoutFor(id);
+  const opened = path === undefined ? null : fromHash(next, `#/${id}/${path}`);
+  mount(next, opened ?? initialState, opened === null);
+  writer.push(urlFor(store.get()));
+  announce(opened === null ? wheelText(id).name : announceFor(layout, initialState, store.get()) ?? wheelText(id).name);
+  // Focus: the switch keeps its own button; the message's link and the card's jump are rebuilt, so focus follows.
+  if (from === hint) hint.focusLink();
+  else if (from === card && opened === null) tree.focusSelected();
 });
 
 addEventListener('popstate', () => {
+  const found = fromLocation(location.hash);
+  if (found.layout.wheelId !== layout.wheelId) {
+    // The tree is rebuilt, so focus inside it would fall to <body> (WCAG 2.4.3); put it back on the new tree.
+    const treeHadFocus = $<HTMLElement>('#a11y-tree').contains(document.activeElement);
+    mount(found.layout, found.state ?? initialState, false);
+    announce(wheelText(layout.wheelId).name);
+    if (treeHadFocus) tree.focusSelected();
+    return;
+  }
   const cur = store.get();
   // Back to the base URL: the whole wheel, keeping the last selection (spec v1.2 §3.1).
   const restored = fromHash(layout, location.hash) ?? { ...cur, opened: false, view: { mode: 'wheel' } as const };
@@ -293,14 +395,10 @@ new ResizeObserver(() => {
 }).observe(stage);
 
 // ── First load ───────────────────────────────────────────────────────────
-renderer.resize(vp.width, vp.height, devicePixelRatio || 1);
-refreshColors();
-renderUi(store.get());
-// A deep link on a phone starts with the opened word already above its card.
-opts = { ...opts, openedY: openedYFor(store.get()) };
-controller.setViewport(vp, opts);
-if (beganAtBase && opts.half && !reducedMotion.matches) controller.playIntro();
-drawNow();
+{
+  const start = fromLocation(location.hash);
+  mount(start.layout, start.state ?? initialState, start.state === null);
+}
 
 // ── Offline support (spec §6.5) ─────────────────────────────────────────
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
@@ -336,7 +434,8 @@ if (TEST) {
         const off = normAngle(layout.segments[layout.byPath.get(path)!]!.mid + camera.current.rotation);
         return Math.min(off, TAU - off);
       },
+      wheel: () => layout.wheelId,
+      liveWheels: () => live.filter((r) => r.deref() !== undefined).length,
     },
   });
 }
-

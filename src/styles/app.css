@@ -71,11 +71,41 @@ fw-wheel-switch {
   background: var(--surface);
   border: 1px solid color-mix(in srgb, var(--fg) 18%, transparent);
   border-radius: 999px;
+  isolation: isolate;
 }
-fw-wheel-switch button { min-height: 44px; padding: 0 1rem; font-size: 1rem; border-color: transparent; }
-fw-wheel-switch button[aria-pressed="true"] { background: var(--fg); color: var(--bg); font-weight: 600; }
+fw-wheel-switch button {
+  min-height: 44px;
+  padding: 0 1rem;
+  font-size: 1rem;
+  border-color: transparent;
+  background: transparent;
+  transition: color 250ms ease-out;
+}
+fw-wheel-switch button[aria-pressed="true"] { color: var(--bg); font-weight: 600; }
+/* Spec v2.1 §4.1: the pressed fill is one highlight that slides to the pressed button (wheel-switch.ts measures it). */
+.fw-switch-thumb {
+  position: absolute;
+  inset-block: 3px;
+  left: 0;
+  z-index: -1;
+  border-radius: 999px;
+  background: var(--fg);
+  pointer-events: none;
+  transition: translate 250ms ease-out, width 250ms ease-out;
+}
+fw-wheel-switch[data-instant] :is(.fw-switch-thumb, button) { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  fw-wheel-switch :is(.fw-switch-thumb, button) { transition: none; }
+}
 @media (forced-colors: active) {
-  fw-wheel-switch button[aria-pressed="true"] { background: Highlight; color: HighlightText; forced-color-adjust: none; }
+  .fw-switch-thumb { background: Highlight; forced-color-adjust: none; }
+  fw-wheel-switch button[aria-pressed="true"] { color: HighlightText; forced-color-adjust: none; }
+}
+/* Spec v2.1 §4.2: on the smallest phones, three options fit beside Start over's icon and the theme button. */
+@media (max-width: 359.98px) {
+  fw-wheel-switch { left: max(0.75rem, env(safe-area-inset-left)); top: max(0.75rem, env(safe-area-inset-top)); }
+  fw-wheel-switch button { padding: 0 0.6rem; }
+  fw-toolbar { right: max(0.75rem, env(safe-area-inset-right)); top: max(0.75rem, env(safe-area-inset-top)); gap: 0.35rem; }
 }
 /* Spec v1.3 §6.2: the theme toggle and its short-lived label. */
 .fw-theme { position: relative; display: inline-flex; }

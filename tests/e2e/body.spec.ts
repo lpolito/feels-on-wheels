@@ -217,6 +217,75 @@ test.describe('narrow phones (360 px)', () => {
   });
 });
 
+test.describe('v2.1: the wheel switch', () => {
+  test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'desktop flows'));
+
+  const thumb = (page: Page) => page.locator('fw-wheel-switch .fw-switch-thumb');
+  async function expectUnder(page: Page, label: string): Promise<void> {
+    const t = (await thumb(page).boundingBox())!;
+    const b = (await switchButton(page, label).boundingBox())!;
+    expect(Math.abs(t.x - b.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(t.width - b.width)).toBeLessThanOrEqual(1);
+  }
+
+  test('the switch highlight slides under the pressed button', async ({ page }) => {
+    await open(page);
+    await expectUnder(page, 'Feelings');
+    await switchButton(page, 'Body').click();
+    await idle(page);
+    await settled(page);
+    await expectUnder(page, 'Body');
+  });
+
+  test('quick presses end under the last pressed button', async ({ page }) => {
+    await open(page);
+    await switchButton(page, 'Body').click();
+    await switchButton(page, 'Feelings').click();
+    await idle(page);
+    await settled(page);
+    expect(await wheelId(page)).toBe('core');
+    await expectUnder(page, 'Feelings');
+  });
+
+  test('no slide with reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await open(page);
+    await switchButton(page, 'Body').click();
+    expect(await thumb(page).evaluate((el) => el.getAnimations().length)).toBe(0);
+    await expectUnder(page, 'Body');
+  });
+
+  test('forced colours: the pressed option stands out', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'forced-colors emulation is Chromium-only');
+    await page.emulateMedia({ forcedColors: 'active' });
+    await open(page);
+    const bg = (sel: string) => page.locator(sel).evaluate((el) => getComputedStyle(el).backgroundColor);
+    const color = (label: string) => switchButton(page, label).evaluate((el) => getComputedStyle(el).color);
+    expect(await bg('fw-wheel-switch .fw-switch-thumb')).not.toBe(await bg('fw-wheel-switch'));
+    expect(await color('Feelings')).not.toBe(await color('Body'));
+  });
+
+  test('three options fit at 320 px', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await open(page);
+    await tapPath(page, 'fearful');
+    await expect(page.locator('fw-toolbar .fw-start-over')).toBeVisible();
+    await page.evaluate(() => {
+      const sw = document.querySelector('fw-wheel-switch') as HTMLElement & { wheels: unknown; current: string };
+      sw.wheels = [{ id: 'core', label: 'Feelings' }, { id: 'body', label: 'Body' }, { id: 'emoji', label: '🙂', name: 'Emoji' }];
+      sw.current = 'core';
+    });
+    const sw = (await page.locator('fw-wheel-switch').boundingBox())!;
+    const tb = (await page.locator('fw-toolbar').boundingBox())!;
+    expect(sw.x).toBeGreaterThanOrEqual(0);
+    expect(sw.x + sw.width).toBeLessThanOrEqual(tb.x);
+    expect(tb.x + tb.width).toBeLessThanOrEqual(320);
+    for (const b of await page.locator('fw-wheel-switch button').all()) {
+      expect((await b.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+    }
+  });
+});
+
 test.describe('body wheel deep link (phone)', () => {
   test.beforeEach(({ isMobile }) => test.skip(!isMobile, 'phone layout'));
 

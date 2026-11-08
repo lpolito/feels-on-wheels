@@ -50,7 +50,7 @@ const card = $<FwCard>('fw-card');
 const hint = $<FwHint>('fw-hint');
 const toolbar = $<FwToolbar>('fw-toolbar');
 const wheelSwitch = $<FwWheelSwitch>('fw-wheel-switch');
-wheelSwitch.wheels = data.wheels.map((w) => ({ id: w.id, label: wheelText(w.id).switch }));
+wheelSwitch.wheels = data.wheels.map((w) => ({ id: w.id, label: wheelText(w.id).switch, name: wheelText(w.id).switchName }));
 const themeMeta = $<HTMLMetaElement>('#theme-color');
 const announce = createAnnouncer($<HTMLElement>('#announcer'));
 const storage = safeStorage();

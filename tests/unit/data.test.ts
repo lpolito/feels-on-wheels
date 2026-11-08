@@ -165,6 +165,15 @@ describe('loadData and validateLocale: wheels', () => {
     expect(() => validateLocale(partial, feelings, wheels)).toThrow(DataError);
   });
 
+  test('validateLocale accepts switchName and rejects an empty one', () => {
+    const named = structuredClone(locale);
+    named.wheels['body'] = { ...named.wheels['body']!, switchName: 'Body sensations' };
+    expect(() => validateLocale(named, feelings, wheels)).not.toThrow();
+    const empty = structuredClone(locale);
+    empty.wheels['body'] = { ...empty.wheels['body']!, switchName: '' };
+    expect(() => validateLocale(empty, feelings, wheels)).toThrow(/switchName/);
+  });
+
   test('validateLocale rejects a missing area label', () => {
     const broken = structuredClone(locale);
     delete broken.areas['chest'];

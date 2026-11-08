@@ -18,8 +18,8 @@
     "opened": "{label}, opened. In {path}.",
     "openedCore": "{label}, opened.",
     "closed": "{label}, closed.",
-    "couldBe": "Could be",
-    "couldAlsoBe": "Could also be",
+    "couldBe": "Could be feeling",
+    "couldAlsoBe": "Could also be feeling",
     "seeOnWheel": "See {label} on the feelings wheel",
     "wheelSwitch": "Wheel"
   },

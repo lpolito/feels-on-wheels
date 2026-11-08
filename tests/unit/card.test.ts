@@ -68,7 +68,7 @@ describe('cardModel', () => {
     if (m.kind !== 'opened') throw new Error('expected opened');
     expect(m.crumbs).toEqual([{ index: bIdx('chest'), label: 'Chest', hue: 'chest' }]);
     expect(m.sections).toEqual([{
-      kind: 'links', heading: 'Could be', inline: false,
+      kind: 'links', heading: 'Could be feeling', inline: false,
       rows: [['scared', 'Scared', 'fearful'], ['mad', 'Mad', 'angry'], ['excited', 'Excited', 'surprised']]
         .map(([id, label, hue]) => ({ index: bIdx(`chest/racing-heart/${id}`), label, hue })),
     }]);
@@ -82,12 +82,20 @@ describe('cardModel', () => {
     expect(m.sections).toEqual([
       { kind: 'text', text: locale.feelings['scared']!.definition },
       { kind: 'list', heading: 'You might notice', items: sens('scared') },
-      { kind: 'links', heading: 'Could also be', inline: true, rows: [
+      { kind: 'links', heading: 'Could also be feeling', inline: true, rows: [
         { index: bIdx('chest/racing-heart/mad'), label: 'Mad', hue: 'angry' },
         { index: bIdx('chest/racing-heart/excited'), label: 'Excited', hue: 'surprised' },
       ] },
       { kind: 'jump', label: 'See Scared on the feelings wheel', wheel: 'core', path: 'fearful/scared' },
     ]);
+  });
+
+  test('the feelings wheel keeps Narrow it down and Close to', () => {
+    const mid = cardModel(layout, feelings, opened('fearful/scared'));
+    const outer = cardModel(layout, feelings, opened('fearful/scared/helpless'));
+    if (mid.kind !== 'opened' || outer.kind !== 'opened') throw new Error('expected opened');
+    expect(mid.sections.flatMap((x) => (x.kind === 'links' ? [x.heading] : []))).toEqual(['Narrow it down']);
+    expect(outer.sections.flatMap((x) => (x.kind === 'links' ? [x.heading] : []))).toEqual(['Close to']);
   });
 
   test('no jump section on the first wheel', () => {
@@ -454,7 +462,7 @@ describe('<fw-card> on the body wheel', () => {
     const rows = [...el.querySelectorAll<HTMLButtonElement>('ul.fw-rows button')];
     expect(rows.map((r) => r.textContent)).toEqual(['Scared ›', 'Mad ›', 'Excited ›']);
     expect(rows.map((r) => r.style.getPropertyValue('--ink'))).toEqual(['#222222', '#333333', '#444444']);
-    expect(el.querySelector('h3')!.textContent).toBe('Could be');
+    expect(el.querySelector('h3')!.textContent).toBe('Could be feeling');
   });
 });
 
@@ -471,7 +479,7 @@ describe('<fw-card> across wheels (final review #1)', () => {
     expect(titleOf(el)).not.toBe('Racing heart');
     el.model = cardModel(body, feelings, bOpened('chest/racing-heart'), jump);
     expect(titleOf(el)).toBe('Racing heart');
-    expect(el.querySelector('h3')!.textContent).toBe('Could be');
+    expect(el.querySelector('h3')!.textContent).toBe('Could be feeling');
   });
 
   test('the same index on another wheel re-renders the card (selected → opened)', () => {

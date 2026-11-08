@@ -150,13 +150,13 @@ test.describe('body wheel cards (desktop)', () => {
 
     await tapPath(page, 'chest/racing-heart');
     await expect(title(page)).toHaveText('Racing heart');
-    await expect(headings(page)).toHaveText(['Could be']);
+    await expect(headings(page)).toHaveText(['Could be feeling']);
     expect(await rowsText(page)).toEqual(['Scared ›', 'Mad ›', 'Excited ›']);
 
     await tapPath(page, 'chest/racing-heart/scared');
     await expect(title(page)).toHaveText('Scared');
     await expect(page.locator('fw-card .fw-definition')).not.toBeEmpty();
-    await expect(headings(page)).toHaveText(['You might notice', 'Could also be']);
+    await expect(headings(page)).toHaveText(['You might notice', 'Could also be feeling']);
     await expect(page.locator('fw-card .fw-close-to button')).toHaveText(['Mad', 'Excited']);
     await expect(page.locator('fw-card .fw-jump')).toHaveText('See Scared on the feelings wheel ›');
     await expect(page.locator('fw-card nav.fw-crumbs button')).toHaveText(['Chest', 'Racing heart']);

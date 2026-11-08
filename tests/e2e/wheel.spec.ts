@@ -738,3 +738,20 @@ test('a late stylesheet still gives the themed palette and the right start layou
   if (isMobile) expect(Math.abs(cx)).toBeLessThanOrEqual(2);
   else expect(cx).toBeGreaterThan(100);
 });
+
+test.describe('v2.1: the card', () => {
+  test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'desktop flows'));
+
+  const dotAnimations = (page: Page) =>
+    page.locator('fw-card .fw-dot').evaluate((el) =>
+      el.getAnimations().map((a) => ({ name: (a as CSSAnimation).animationName, duration: a.effect?.getTiming().duration })));
+
+  test('the opened dot beats, and is still with reduced motion', async ({ page }) => {
+    await open(page, '#/core/happy');
+    expect(await dotAnimations(page)).toEqual([{ name: 'fw-heartbeat', duration: 1600 }]);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.reload();
+    await page.waitForFunction(() => window.__fw !== undefined);
+    expect(await dotAnimations(page)).toEqual([]);
+  });
+});

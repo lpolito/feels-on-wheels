@@ -252,12 +252,24 @@ fw-card[data-open] .fw-card-chevron { rotate: 90deg; }
   border-radius: 50%;
   background: var(--dot-hue);
 }
-/* Spec v1.2 §5.2: while opened, a soft halo in the dot's own colour grows and fades. */
-@keyframes fw-halo {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--dot-hue) 55%, transparent); }
-  70%, 100% { box-shadow: 0 0 0 0.55rem color-mix(in srgb, var(--dot-hue) 0%, transparent); }
+/*
+ * Spec v2.1 §3.2: while opened, the dot beats like a heart: a quick beat, a longer second beat with a halo in the
+ * dot's own colour, then a rest. `scale` never moves the name beside it.
+ */
+@keyframes fw-heartbeat {
+  0% { scale: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--dot-hue) 0%, transparent); animation-timing-function: ease-out; }
+  6% { scale: 1.35; animation-timing-function: ease-in; }
+  12% { scale: 1; }
+  18% {
+    scale: 1;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--dot-hue) 55%, transparent);
+    animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
+  }
+  30% { scale: 1.2; animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1); }
+  44% { scale: 1; }
+  60%, 100% { scale: 1; box-shadow: 0 0 0 0.55rem color-mix(in srgb, var(--dot-hue) 0%, transparent); }
 }
-fw-card[data-open] .fw-dot { animation: fw-halo 2.4s ease-out infinite; }
+fw-card[data-open] .fw-dot { animation: fw-heartbeat 1.6s infinite; }
 @media (forced-colors: active) { .fw-dot { background: CanvasText; } }
 
 /* The crumbs row and the body grow from zero height: a 0fr → 1fr grid row around a clipped inner element. */

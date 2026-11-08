@@ -412,14 +412,14 @@ describe('pinch and zoom', () => {
     expect(camera.current.scale).toBe(1);
   });
 
-  test('pinch in on an opened leaf leaves it opened and centred', () => {
-    setup(opened('angry/aggressive/hostile'));
-    step(1000);
-    const p = screenOf(idx('angry/aggressive/hostile'));
+  test('pinch in on the opened word leaves it opened and centred', () => {
+    setup(opened('angry/aggressive'));
+    step(2000);
+    const p = screenOf(idx('angry/aggressive'));
     ctl.handle([{ type: 'pinch', scale: 1.4, cx: p.x, cy: p.y }, { type: 'pinchEnd' }]);
-    step(1000);
-    expect(store.get()).toEqual(opened('angry/aggressive/hostile'));
-    expect(offCenter(idx('angry/aggressive/hostile'))).toBeLessThan(1e-9);
+    step(2000);
+    expect(store.get()).toEqual(opened('angry/aggressive'));
+    expect(offCenter(idx('angry/aggressive'))).toBeLessThan(1e-9);
   });
 
   test('pinch out on the whole wheel with a selection changes nothing and springs back', () => {

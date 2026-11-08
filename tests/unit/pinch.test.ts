@@ -24,21 +24,18 @@ describe('resolvePinch', () => {
     expect(resolvePinch(layout, opened('angry'), 2, null)).toBeNull();
   });
 
-  test('pinch in on the opened word goes to its centre child', () => {
-    expect(resolvePinch(layout, opened('angry/aggressive'), 1.4, idx('angry/aggressive'))).toEqual({ type: 'toChild' });
-    const s = opened('angry/aggressive');
-    expect(reduce(layout, s, { type: 'toChild' })).toEqual(opened('angry/aggressive/hostile'));
+  test('pinch in on the opened word does nothing', () => {
+    for (const p of ['angry', 'angry/aggressive', 'angry/aggressive/hostile']) {
+      expect(resolvePinch(layout, opened(p), 1.4, idx(p)), p).toBeNull();
+    }
+  });
+
+  test('pinch in on a child of the opened word opens that child', () => {
+    expect(resolvePinch(layout, opened('angry'), 1.4, idx('angry/aggressive'))).toEqual({ type: 'open', segment: idx('angry/aggressive') });
   });
 
   test('pinch in on another word while opened opens it', () => {
     expect(resolvePinch(layout, opened('angry/aggressive'), 1.4, idx('angry/mad'))).toEqual({ type: 'open', segment: idx('angry/mad') });
-  });
-
-  test('pinch in on an opened leaf yields toChild, which the reducer ignores', () => {
-    const s = opened('angry/aggressive/hostile');
-    const a = resolvePinch(layout, s, 1.4, idx('angry/aggressive/hostile'));
-    expect(a).toEqual({ type: 'toChild' });
-    expect(reduce(layout, s, a!)).toBe(s);
   });
 
   test('small pinch out while opened opens the parent', () => {

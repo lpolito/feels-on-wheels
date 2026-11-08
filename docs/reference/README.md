@@ -5,8 +5,8 @@ Notes on the outside sources this project draws on: what each one is, who made i
 | Source | Used for | Notes |
 |---|---|---|
 | Feelings wheel (Willcox 1982; seven-core version usually credited to Roberts 2015) and the reference site | v1 core wheel and its interaction | [core-feelings-wheel.md](core-feelings-wheel.md) |
-| Tom Drummond, Vocabulary of Emotions | v2 Strength | [drummond-vocabulary-of-emotions.md](drummond-vocabulary-of-emotions.md) |
-| Lindsay Braman, Emotion-Sensation Wheel | v3 Body sensations wheel | [braman-emotion-sensation-wheel.md](braman-emotion-sensation-wheel.md) |
+| Tom Drummond, Vocabulary of Emotions | Strength (shelved) | [drummond-vocabulary-of-emotions.md](drummond-vocabulary-of-emotions.md) |
+| Lindsay Braman, Emotion-Sensation Wheel | Body sensations wheel | [braman-emotion-sensation-wheel.md](braman-emotion-sensation-wheel.md) |
 
 ## Adding a source
 
@@ -20,7 +20,7 @@ The draft text for the app's credits page (see [Before going public](../ROADMAP.
 
 - **Gloria Willcox**, "The Feeling Wheel", *Transactional Analysis Journal* 12(4), 1982: the original feelings wheel.
 - **Geoffrey Roberts**, "The Feel Wheel", 2015: the seven-core wheel our core wheel's words are based on. *(Attribution not yet confirmed against a primary source.)*
-- **Tom Drummond**, "Vocabulary of Emotions", tomdrummond.com: strength levels for feeling words. *(Once v2 ships.)*
-- **Lindsay Braman**, "Emotion-Sensation Wheel", 2020, lindsaybraman.com: the idea of an outer ring of body sensations. *(Once v3 ships.)*
-- **Nummenmaa, Glerean, Hari and Hietanen**, "Bodily maps of emotions", *PNAS*, 2014: research behind linking feelings to body sensations. *(If v3 uses it.)*
+- **Tom Drummond**, "Vocabulary of Emotions", tomdrummond.com: strength levels for feeling words. *(Once strength ships.)*
+- **Lindsay Braman**, "Emotion-Sensation Wheel", 2020, lindsaybraman.com: the idea of an outer ring of body sensations. *(Once the sensations wheel ships.)*
+- **Nummenmaa, Glerean, Hari and Hietanen**, "Bodily maps of emotions", *PNAS*, 2014: research behind linking feelings to body sensations. *(If the sensations wheel uses it.)*
 - The interactive site whose tap-to-trace interaction inspired ours. *(Name and link to be added.)*

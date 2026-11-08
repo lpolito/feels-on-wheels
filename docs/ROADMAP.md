@@ -8,6 +8,8 @@ The living list of what's built, what's next, and what's still an idea. Specs ar
 
 Each version is used before the next one is designed. Point releases (v1.1) rework what's there after using it. Whole versions add a new way to identify an emotion. The feedback behind each shipped version is in its spec, and in the git history for v1.3.1.
 
+Ideas don't have version numbers. When Lucas picks one to build, it takes the next whole version number (the next one is v2) and moves into this table.
+
 | Version | Status | Spec and plan |
 |---|---|---|
 | v1: Core wheel | Shipped | [spec](superpowers/specs/2026-11-06-feelings-wheel-v1-design.md), [plan](superpowers/plans/2026-11-06-feelings-wheel-v1.md) |
@@ -15,17 +17,22 @@ Each version is used before the next one is designed. Point releases (v1.1) rewo
 | v1.2: Fixes and polish from using v1.1 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.2-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.2.md) |
 | v1.3: Layout, card and controls polish from using v1.2 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.3-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.3.md) |
 | v1.3.1: Small fixes from using v1.3 | Shipped | No spec; commits 2210c12, e9ae2b4, 63977fa |
-| v2: Strength | Shelved (2026-11-08) | Not designed; see the notes below |
-| Wizard | Idea, no version yet | Not designed yet |
-| v3: Body sensations wheel | Planned | Not designed yet |
-| v4: Emoji wheel | Planned | Not designed yet |
-| v5: Languages | Planned | Not designed yet |
 
-## Notes for later versions
+## Ideas
 
-These are what Lucas asked for. Each version's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
+Not in any order; none is chosen yet. Strength was briefly v2 before it was shelved, so older docs and commits call it v2.
 
-### v2: Strength (shelved)
+| Idea | Status |
+|---|---|
+| [Wizard](#wizard) | Idea |
+| [Strength](#strength) | Shelved (2026-11-08) |
+| [Body sensations wheel](#body-sensations-wheel) | Planned |
+| [Emoji wheel](#emoji-wheel) | Planned |
+| [Languages](#languages) | Planned |
+
+These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
+
+### Strength
 
 Shelved on 2026-11-08 during its first brainstorm: Lucas doesn't see it as needed right now. The [wizard](#wizard) may cover the same need by helping land on words already in the wheel. If strength comes back, start from these notes.
 
@@ -36,27 +43,27 @@ What Lucas first asked for:
 
 - A toggle for strong, medium and light, like Tom Drummond's [Vocabulary of Emotions](reference/drummond-vocabulary-of-emotions.md).
 - The panel lists a feeling's words at each strength.
-- **Open question:** Drummond's chart has 10 categories (Happiness, Caring, Depression, Inadequateness, Fear, Confusion, Hurt, Anger, Loneliness, Remorse) that don't match the wheel's 7 core feelings. The v2 design has to decide whether to map them onto the wheel, give them their own wheel, or only tag the wheel's existing words.
+- **Open question:** Drummond's chart has 10 categories (Happiness, Caring, Depression, Inadequateness, Fear, Confusion, Hurt, Anger, Loneliness, Remorse) that don't match the wheel's 7 core feelings. Its design has to decide whether to map them onto the wheel, give them their own wheel, or only tag the wheel's existing words.
 - **Data model:** the optional `Feeling.strength` field (one value per word) isn't enough. In Drummond's chart, 22 words have different strengths in different categories (*Resentful* is Anger medium and Anger light), so strength has to live on a word within a category or a wheel position.
 
 ### Wizard
 
 - A guided flow that helps you land on a specific word already in the wheel.
-- Lucas's idea, mentioned 2026-11-08 when shelving v2. Not yet described further; ask him before designing it.
+- Lucas's idea, mentioned 2026-11-08 when shelving strength. Not yet described further; ask him before designing it.
 
-### v3: Body sensations wheel
+### Body sensations wheel
 
 - Modelled on Lindsay Braman's [Emotion-Sensation Wheel](reference/braman-emotion-sensation-wheel.md): core feelings, then feelings, then an outer ring of body sensations.
 - On her wheel each sensation belongs to one feeling. In our data, sensations are a shared list many feelings point to, so a sensations wheel needs one parent per outer cell.
 - Uses the same renderer and gestures as the core wheel; only the wheel file is new.
 - The wording follows the content rules below.
 
-### v4: Emoji wheel
+### Emoji wheel
 
 - Very simplified: core feelings and a few middle-ring ones, because there are only so many emoji.
 - The data is ready: `Feeling.emoji` is already an optional field.
 
-### v5: Languages
+### Languages
 
 - Spanish first (the [reference site](reference/core-feelings-wheel.md#the-reference-site) had an Español toggle, and Braman publishes a Spanish wheel), plus a language switcher.
 - Adding a language means adding one locale file; no text is hard-coded.

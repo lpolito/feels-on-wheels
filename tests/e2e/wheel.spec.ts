@@ -248,6 +248,42 @@ test.describe('desktop', () => {
     expect((await state(page)).selected).toBeNull();
   });
 
+  test('a drag from the card, or from the wheel, released in empty space never dismisses', async ({ page }) => {
+    await open(page, '#/core/angry');
+    const def = (await page.locator('fw-card .fw-definition').boundingBox())!;
+    const card = (await page.locator('fw-card').boundingBox())!;
+    const toolbar = (await page.locator('fw-toolbar').boundingBox())!;
+    const empty = { x: card.x + card.width / 2, y: toolbar.y + toolbar.height + 20 };
+    // Drag-selecting the definition and overshooting the card.
+    await page.mouse.move(def.x + 10, def.y + def.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(empty.x, empty.y, { steps: 5 });
+    await page.mouse.up();
+    await idle(page);
+    expect((await state(page)).opened).toBe(true);
+    // A drag on the wheel released over the column. It's a swipe right, which opens the parent (on a core word it
+    // would close, by design), so start on a middle word: whatever the swipe does, nothing may be dismissed.
+    await open(page, '#/core/angry/aggressive');
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry/aggressive'));
+    await page.mouse.move(p.x, p.y);
+    await page.mouse.down();
+    await page.mouse.move(empty.x, empty.y, { steps: 5 });
+    await page.mouse.up();
+    await idle(page);
+    expect((await state(page)).opened).toBe(true);
+  });
+
+  test('a click on the theme label never dismisses', async ({ page }) => {
+    await open(page, '#/core/angry');
+    await page.locator('fw-toolbar .fw-theme-toggle').click();
+    const label = page.locator('fw-toolbar .fw-theme-label');
+    await expect(label).toBeVisible();
+    const box = (await label.boundingBox())!;
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    await idle(page);
+    expect((await state(page)).opened).toBe(true);
+  });
+
   test('clicks on the card, the message or the toolbar never dismiss', async ({ page }) => {
     await open(page, '#/core/angry');
     await page.locator('fw-card .fw-definition').click();
@@ -504,6 +540,51 @@ test.describe('phone', () => {
     await page.setViewportSize({ width: size.width, height: size.height + 100 });
     await page.waitForTimeout(200);
     const { y, mid } = await openedPlacement(page, 'fearful/scared');
+    expect(Math.abs(y - mid)).toBeLessThanOrEqual(2);
+  });
+
+  test('phone: the theme label fades by itself after a tap', async ({ page }) => {
+    await open(page);
+    await page.locator('fw-toolbar .fw-theme-toggle').tap();
+    const label = page.locator('fw-toolbar .fw-theme-label');
+    await expect(label).toBeVisible();
+    await expect(label).toBeHidden({ timeout: 3000 });
+  });
+
+  test("phone: after a spin, the word doesn't slide once the spin stops", async ({ page }) => {
+    await open(page, '#/core/fearful/scared');
+    await settled(page);
+    // Record the camera on every frame from here on.
+    await page.evaluate(() => {
+      const rec: { cy: number; rotation: number }[] = [];
+      (window as unknown as { __rec: typeof rec }).__rec = rec;
+      const tick = () => {
+        const c = window.__fw.camera();
+        rec.push({ cy: c.cy, rotation: c.rotation });
+        if (rec.length < 600) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('fearful/scared'));
+    await page.mouse.move(p.x, p.y);
+    await page.mouse.down();
+    await page.mouse.move(p.x, p.y + 60, { steps: 2 });
+    await page.mouse.move(p.x, p.y + 160, { steps: 2 });
+    await page.mouse.up();
+    await idle(page);
+    await settled(page);
+    await page.waitForTimeout(300);
+    expect(await selectedPath(page)).not.toBe('fearful/scared');
+    const rec = await page.evaluate(() => (window as unknown as { __rec: { cy: number; rotation: number }[] }).__rec);
+    const last = rec.at(-1)!;
+    const TAU = Math.PI * 2;
+    const off = (a: number) => { const d = (((a - last.rotation) % TAU) + TAU) % TAU; return Math.min(d, TAU - d); };
+    // The frame where the rotation came to rest: from there on, cy must not travel.
+    const restIdx = rec.findIndex((f, k) => k > 5 && rec.slice(k).every((g) => off(g.rotation) < 1e-3));
+    expect(restIdx).toBeGreaterThan(0);
+    expect(Math.abs(rec[restIdx]!.cy - last.cy)).toBeLessThanOrEqual(2);
+    const path = (await selectedPath(page))!;
+    const { y, mid } = await openedPlacement(page, path);
     expect(Math.abs(y - mid)).toBeLessThanOrEqual(2);
   });
 

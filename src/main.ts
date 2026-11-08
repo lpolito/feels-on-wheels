@@ -76,7 +76,8 @@ const camera = createCameraController({
   caf: (id) => cancelAnimationFrame(id),
   reducedMotion: () => reducedMotion.matches,
 });
-const controller = createController(layout, store, camera, vp, opts);
+// Function declarations below are hoisted; the predictor only runs on a fling, after start-up.
+const controller = createController(layout, store, camera, vp, opts, (segment) => predictOpenedY(segment));
 
 // ── Rendering ────────────────────────────────────────────────────────────
 const makeCanvas = (w: number, h: number): HTMLCanvasElement | OffscreenCanvas =>
@@ -184,9 +185,14 @@ canvas.addEventListener('pointermove', (e) => {
 });
 canvas.addEventListener('pointerleave', () => canvas.classList.remove('fw-over-disc'));
 
-// Spec v1.3 §3.4: a click on empty space in the card's column (desktop) is a tap outside the wheel.
+// Spec v1.3 §3.4: a click on empty space in the card's column (desktop) is a tap outside the wheel. A click whose press
+// started elsewhere (drag-selecting the card's text, a spin released over the column) lands on #app too, as the
+// common ancestor, so the press must have been on empty space as well.
+const isEmptySpace = (t: EventTarget | null): boolean => t === app || t === float;
+let pressedOnEmpty = false;
+app.addEventListener('pointerdown', (e) => { pressedOnEmpty = isEmptySpace(e.target); }, { capture: true });
 app.addEventListener('click', (e) => {
-  if (e.target !== app && e.target !== float) return;
+  if (!pressedOnEmpty || !isEmptySpace(e.target)) return;
   const s = store.get();
   if (s.opened) dispatch({ type: 'close' });
   else if (s.selected !== null) dispatch({ type: 'clear' });
@@ -207,12 +213,24 @@ function setOpenedHalf(s: State): void {
  */
 function openedYFor(s: State): number | null {
   if (!s.opened || !opts.portrait) return null;
+  return openedYForHeight(card.unfoldedHeight());
+}
+
+/** The opened word's stage y for a card that unfolds to `unfolded` px (capped like the card itself). */
+function openedYForHeight(unfolded: number): number {
   const stageTop = stage.getBoundingClientRect().top;
   const top = stageTop + (Number.parseFloat(getComputedStyle(app).paddingTop) || 0);
   const cap = Number.parseFloat(getComputedStyle(float).maxHeight);
-  const height = Math.min(card.unfoldedHeight(), Number.isFinite(cap) ? cap : Infinity);
+  const height = Math.min(unfolded, Number.isFinite(cap) ? cap : Infinity);
   const cardTop = float.getBoundingClientRect().bottom - height;
   return (top + cardTop) / 2 - stageTop;
+}
+
+/** For a spin while opened: where the word it will land on should sit, measured from that word's card. */
+function predictOpenedY(segment: number): number | null {
+  const s = store.get();
+  if (!s.opened || !opts.portrait) return null;
+  return openedYForHeight(card.unfoldedHeightFor(cardModel(layout, feelings, { ...s, selected: segment })));
 }
 
 /** Re-measures the opened word's place after the card renders, and springs the camera to it. */

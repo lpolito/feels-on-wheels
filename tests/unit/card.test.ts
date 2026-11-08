@@ -203,6 +203,17 @@ describe('<fw-card>', () => {
     expect(document.activeElement).toBe(head(el));
   });
 
+  test('unfoldedHeightFor measures another word without touching the card', () => {
+    const { el } = mount();
+    el.model = cardModel(layout, feelings, opened('angry/aggressive'));
+    const before = el.innerHTML;
+    const toggle = head(el);
+    expect(typeof el.unfoldedHeightFor(cardModel(layout, feelings, opened('angry/aggressive/hostile')))).toBe('number');
+    expect(el.innerHTML).toBe(before);
+    expect(head(el)).toBe(toggle);
+    expect(document.querySelectorAll('fw-card')).toHaveLength(1);
+  });
+
   test('a rebuild for another word scrolls the card back to the top', () => {
     const { el } = mount();
     el.model = cardModel(layout, feelings, opened('angry'));

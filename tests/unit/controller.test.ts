@@ -60,7 +60,7 @@ const phoneOpts = { remPx: 16, portrait: true, half: true, openedY: null };
 const halfScale = (0.95 * phoneVp.width) / phoneVp.radius;
 
 /** A phone (spec v1.2 §3.2): the whole-wheel view is the half-wheel. */
-function setupPhone(initial = initialState): void {
+function setupPhone(initial = initialState, predictOpenedY?: (segment: number) => number | null): void {
   now = 0; queue = new Map(); nextId = 1;
   store = createStore(layout, initial);
   camera = createCameraController({
@@ -69,7 +69,7 @@ function setupPhone(initial = initialState): void {
     caf: (id) => { queue.delete(id); },
     reducedMotion: () => false,
   });
-  ctl = createController(layout, store, camera, phoneVp, phoneOpts);
+  ctl = createController(layout, store, camera, phoneVp, phoneOpts, predictOpenedY);
   step(50);
 }
 
@@ -559,6 +559,38 @@ describe('half-wheel (phone)', () => {
 });
 
 describe('phone: the opened word above the card', () => {
+  test("a fling while opened springs cy to the destination's predicted y in the same motion", () => {
+    const asked: number[] = [];
+    setupPhone(opened('fearful/scared'), (seg) => {
+      asked.push(seg);
+      return 300;
+    });
+    step(2000);
+    const p = phoneScreenOf(idx('fearful/scared'));
+    ctl.handle([{ type: 'dragStart', x: p.x, y: p.y, axis: 'y' }, { type: 'dragEnd', vx: 0, vy: 2500 }]);
+    const dest = segmentAt(layout, 1, normAngle(-camera.target.rotation));
+    expect(dest).not.toBe(idx('fearful/scared'));
+    expect(asked).toEqual([dest]);
+    // One spring: the vertical target is set while the rotation is still flying.
+    expect(camera.target.cy).toBe(300);
+    expect(camera.moving).toBe(true);
+    step(2000);
+    expect(store.get().selected).toBe(dest);
+    expect(store.get().opened).toBe(true);
+    expect(camera.current.cy).toBeCloseTo(300, 6);
+  });
+
+  test('no prediction for a fling on the whole wheel', () => {
+    const asked: number[] = [];
+    setupPhone(initialState, (seg) => {
+      asked.push(seg);
+      return 300;
+    });
+    ctl.handle([{ type: 'dragStart', x: 300, y: 300, axis: 'y' }, { type: 'dragEnd', vx: 0, vy: 2500 }]);
+    step(2000);
+    expect(asked).toEqual([]);
+  });
+
   test('setOpenedY springs cy without moving rotation or scale', () => {
     setupPhone(opened('fearful'));
     step(2000);

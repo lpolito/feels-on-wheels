@@ -80,6 +80,11 @@ Lucas's feedback from using v1.1 (2026-11-07, mostly in Firefox). The decisions 
 - The selection chevron crowds core-word labels (its look is marked provisional).
 - Spec question: on phones, Back to the start returns to the random start word. This goes away if phones stop starting with a selection.
 
+**Small issues left open by the v1.3 review:**
+- `main.ts` keeps its own copy of the phone's opened-word position and syncs it into the controller in three places; the controller could own it.
+- The card's heading size watcher isn't disconnected when the card hides (harmless).
+- On a very short phone, when the card cap's safeguard is active, the opened word can sit under the toolbar (spec §4.2 measures the gap from the stage's top, not the toolbar's bottom).
+
 **Known bugs after v1.2:**
 - On the phone's half-wheel, choosing a word by keyboard or the accessible tree can select one on the hidden left half without turning the wheel to show it. Not pressing; Lucas wants to try it before deciding whether the wheel should turn to show it.
 

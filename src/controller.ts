@@ -32,6 +32,8 @@ const INTRO_SEGMENTS = 1.5;
 
 export function createController(
   layout: Layout, store: Store, camera: CameraController, initialVp: Viewport, initialOpts: CameraOpts,
+  /** Spec v1.3 §4.2: the opened y the word a fling will land on needs, so the spin and the vertical move are one. */
+  predictOpenedY?: (segment: number) => number | null,
 ): Controller {
   let vp = initialVp;
   let opts = initialOpts;
@@ -124,6 +126,9 @@ export function createController(
     const ring = ringOf(store.get());
     userSpin = ring !== null;
     camera.fling(v, ring, layout);
+    if (ring !== null && store.get().opened && predictOpenedY) {
+      setOpenedY(predictOpenedY(segmentAt(layout, ring, normAngle(-camera.target.rotation))));
+    }
   }
 
   store.subscribe((s, prev, a) => {

@@ -153,6 +153,23 @@ export class FwCard extends HTMLElement {
     return heading.offsetHeight + crumbs + body;
   }
 
+  /**
+   * The unfolded height `m`'s card would have (spec v1.3 §4.2), without touching this card: a hidden copy is laid out
+   * beside it at the same width, measured and removed. Used to aim a spin at the card it will land on.
+   */
+  unfoldedHeightFor(m: CardModel): number {
+    if (m.kind !== 'opened' || !this.parentElement) return 0;
+    const probe = document.createElement('fw-card') as FwCard;
+    probe.setAttribute('aria-hidden', 'true');
+    probe.inert = true;
+    Object.assign(probe.style, { position: 'absolute', visibility: 'hidden', pointerEvents: 'none', width: `${this.offsetWidth}px` });
+    probe.model = m;
+    this.parentElement.append(probe);
+    const height = probe.unfoldedHeight();
+    probe.remove();
+    return height;
+  }
+
   #applyInk(): void {
     const m = this.#model;
     const ink = m.kind === 'none' ? undefined : this.#inks[m.hue];

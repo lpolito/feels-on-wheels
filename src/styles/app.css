@@ -81,11 +81,22 @@ fw-toolbar .fw-theme-toggle { width: 44px; padding: 0; display: inline-grid; pla
   visibility: hidden;
   transition: opacity 300ms ease-out, visibility 0s linear 300ms;
 }
+/* Touch screens keep :hover on a tapped button until the next tap elsewhere, so only real hover shows the label. */
 .fw-theme-label[data-show],
-.fw-theme-toggle:is(:hover, :focus-visible) + .fw-theme-label {
+.fw-theme-toggle:focus-visible + .fw-theme-label {
   opacity: 1;
   visibility: visible;
   transition: none;
+  /* A visible label takes its own clicks, so clicking it never reaches the empty space beneath. */
+  pointer-events: auto;
+}
+@media (hover: hover) {
+  .fw-theme-toggle:hover + .fw-theme-label {
+    opacity: 1;
+    visibility: visible;
+    transition: none;
+    pointer-events: auto;
+  }
 }
 @media (prefers-reduced-motion: reduce) { .fw-theme-label { transition: none; } }
 fw-toolbar .fw-start-over { display: inline-flex; align-items: center; gap: 0.4rem; }

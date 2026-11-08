@@ -15,7 +15,8 @@ Each version is used before the next one is designed. Point releases (v1.1) rewo
 | v1.2: Fixes and polish from using v1.1 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.2-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.2.md) |
 | v1.3: Layout, card and controls polish from using v1.2 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.3-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.3.md) |
 | v1.3.1: Small fixes from using v1.3 | Shipped | No spec; commits 2210c12, e9ae2b4, 63977fa |
-| v2: Strength | **Next** | Not designed yet |
+| v2: Strength | Shelved (2026-11-08) | Not designed; see the notes below |
+| Wizard | Idea, no version yet | Not designed yet |
 | v3: Body sensations wheel | Planned | Not designed yet |
 | v4: Emoji wheel | Planned | Not designed yet |
 | v5: Languages | Planned | Not designed yet |
@@ -24,12 +25,24 @@ Each version is used before the next one is designed. Point releases (v1.1) rewo
 
 These are what Lucas asked for. Each version's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
 
-### v2: Strength
+### v2: Strength (shelved)
+
+Shelved on 2026-11-08 during its first brainstorm: Lucas doesn't see it as needed right now. The [wizard](#wizard) may cover the same need by helping land on words already in the wheel. If strength comes back, start from these notes.
+
+- **Purpose, if revived:** naming *how much* of a feeling already found (irked, then irritated, then seething), not entering the wheel by intensity or adding Drummond's whole vocabulary.
+- **Where it was heading:** Drummond's columns fit the wheel's middle ring better than its core feelings (*lonely* is Loneliness, *guilty* is Remorse, *hurt* is Hurt, *depressed* is Depression, *confused* is Confusion, *mad* is Anger, *scared* is Fear, *trusting* is Caring). Mapping to core feelings would put four columns under Sad. Still undecided: core only, a ladder per middle word (outer words showing their parent's), or a ladder per word.
+
+What Lucas first asked for:
 
 - A toggle for strong, medium and light, like Tom Drummond's [Vocabulary of Emotions](reference/drummond-vocabulary-of-emotions.md).
 - The panel lists a feeling's words at each strength.
 - **Open question:** Drummond's chart has 10 categories (Happiness, Caring, Depression, Inadequateness, Fear, Confusion, Hurt, Anger, Loneliness, Remorse) that don't match the wheel's 7 core feelings. The v2 design has to decide whether to map them onto the wheel, give them their own wheel, or only tag the wheel's existing words.
 - **Data model:** the optional `Feeling.strength` field (one value per word) isn't enough. In Drummond's chart, 22 words have different strengths in different categories (*Resentful* is Anger medium and Anger light), so strength has to live on a word within a category or a wheel position.
+
+### Wizard
+
+- A guided flow that helps you land on a specific word already in the wheel.
+- Lucas's idea, mentioned 2026-11-08 when shelving v2. Not yet described further; ask him before designing it.
 
 ### v3: Body sensations wheel
 
@@ -50,7 +63,7 @@ These are what Lucas asked for. Each version's brainstorm starts here. The sourc
 
 ## Known issues
 
-Still open after v1.3.1. None blocks v2.
+Still open after v1.3.1. None blocks the next version.
 
 - **Keyboard selection on the phone's half-wheel.** Choosing a word by keyboard or the accessible tree can select one on the hidden left half without turning the wheel to show it. Lucas wants to try it before deciding whether the wheel should turn to show it.
 - **Opened-word position lives in two places.** `main.ts` keeps its own copy of the phone's opened-word position and syncs it into the controller in three places; the controller could own it. (v1.3 review)

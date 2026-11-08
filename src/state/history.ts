@@ -3,10 +3,17 @@ import type { Action, State } from './store';
 const sameHash = (a: State, b: State): boolean =>
   a.opened === b.opened && (!a.opened || a.selected === b.selected);
 
-/** How a transition writes history (spec §3.6). */
+/** Stepping through words rather than choosing one: arrow keys, swipes, a spin settling. */
+const MOVES = new Set<Action['type']>(['settled', 'step', 'toChild', 'toParent', 'stepOut']);
+
+/**
+ * How a transition writes history (spec §3.6, changed in v1.3.1). Moving from one opened word to the next replaces
+ * the entry, so browsing by keys or spins doesn't fill the history; opening a word by tap, link or Enter, and
+ * closing, push. Back steps through the words chosen, then to the whole wheel.
+ */
 export function historyOp(prev: State, next: State, a: Action): 'push' | 'replace' | 'none' {
   if (a.type === 'restore' || sameHash(prev, next)) return 'none';
-  if (a.type === 'settled' && prev.opened && next.opened) return 'replace';
+  if (prev.opened && next.opened && MOVES.has(a.type)) return 'replace';
   return 'push';
 }
 

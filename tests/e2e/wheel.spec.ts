@@ -36,6 +36,26 @@ test.describe('desktop', () => {
     expect(await selectedPath(page)).toBe('angry');
   });
 
+  test('arrowing through opened words keeps one history entry: one Back returns to the whole wheel', async ({ page }) => {
+    await open(page);
+    await tapPath(page, 'angry');
+    await tapPath(page, 'angry');
+    const entries = await page.evaluate(() => history.length);
+    for (let i = 0; i < 4; i++) {
+      await page.keyboard.press('ArrowDown');
+      // Past the 250ms burst window, so each press would have pushed before.
+      await page.waitForTimeout(300);
+    }
+    await idle(page);
+    const hash = await page.evaluate(() => location.hash);
+    expect(hash).not.toBe('#/core/angry');
+    expect(await page.evaluate(() => history.length)).toBe(entries);
+    await page.goBack();
+    await idle(page);
+    expect(await page.evaluate(() => location.hash)).toBe('');
+    expect(await state(page)).toMatchObject({ opened: false, view: { mode: 'wheel' } });
+  });
+
   test('narrow-it-down row opens Aggressive with an Angry crumb; crumb reopens Angry', async ({ page }) => {
     await open(page, '#/core/angry');
     await page.locator('fw-card ul.fw-rows button', { hasText: 'Aggressive' }).click();

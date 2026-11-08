@@ -82,6 +82,18 @@ describe('historyOp', () => {
     expect(op(opn, { type: 'settled', segment: idx('sad') })).toBe('replace');
     expect(op(opn, { type: 'close' })).toBe('push');
     expect(op(sel, { type: 'restore', state: opn })).toBe('none');
-    expect(op(opn, { type: 'step', delta: 1 })).toBe('push');
+  });
+
+  test('moving between opened words by keys, swipes or spins replaces; deliberate opens push', () => {
+    const outer: State = { selected: idx('angry/aggressive/hostile'), opened: true, view: { mode: 'ring', ring: 2 } };
+    expect(op(opn, { type: 'step', delta: 1 })).toBe('replace');
+    expect(op(opn, { type: 'toChild' })).toBe('replace');
+    expect(op(outer, { type: 'toParent' })).toBe('replace');
+    expect(op(outer, { type: 'stepOut' })).toBe('replace');
+    // Tapping another word or following a card link is a deliberate jump.
+    expect(op(opn, { type: 'open', segment: idx('sad') })).toBe('push');
+    // Opening from the wheel (Enter) and closing (← on a core word) still push.
+    expect(op(sel, { type: 'activate' })).toBe('push');
+    expect(op(opn, { type: 'toParent' })).toBe('push');
   });
 });

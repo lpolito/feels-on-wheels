@@ -203,6 +203,23 @@ describe('<fw-card>', () => {
     expect(document.activeElement).toBe(head(el));
   });
 
+  test('a rebuild for another word scrolls the card back to the top', () => {
+    const { el } = mount();
+    el.model = cardModel(layout, feelings, opened('angry'));
+    el.scrollTop = 120;
+    expect(el.scrollTop).toBe(120);
+    el.model = cardModel(layout, feelings, opened('sad'));
+    expect(el.scrollTop).toBe(0);
+  });
+
+  test('an in-place close keeps the scroll position', () => {
+    const { el } = mount();
+    el.model = cardModel(layout, feelings, opened('angry'));
+    el.scrollTop = 120;
+    el.model = cardModel(layout, feelings, selected('angry'));
+    expect(el.scrollTop).toBe(120);
+  });
+
   test('rapid open/close/open leaves data-open and aria-expanded matching the last model', () => {
     const { el } = mount();
     const sel = cardModel(layout, feelings, selected('angry/aggressive'));

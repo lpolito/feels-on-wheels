@@ -326,6 +326,48 @@ test.describe('desktop', () => {
     expect(await page.evaluate(() => document.activeElement?.className)).toBe('fw-card-toggle');
   });
 
+  test('the dot, the first crumb and the body share one left edge', async ({ page }) => {
+    await open(page, '#/core/angry/aggressive');
+    await settled(page);
+    const box = async (sel: string) => (await page.locator(sel).first().boundingBox())!;
+    const dot = await box('fw-card .fw-card-toggle .fw-dot');
+    const crumb = await box('fw-card nav.fw-crumbs button');
+    const body = await box('fw-card .fw-definition');
+    const title = await box('fw-card .fw-card-title');
+    expect(Math.abs(crumb.x - dot.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(body.x - dot.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(title.x - (dot.x + dot.width) - 24)).toBeLessThanOrEqual(1);
+  });
+
+  test('the dot-and-name row sticks and the crumbs scroll away', async ({ page }) => {
+    // Short enough that Aggressive's card (which has breadcrumbs) overflows.
+    await page.setViewportSize({ width: 1280, height: 380 });
+    await open(page, '#/core/angry/aggressive');
+    await settled(page);
+    const card = page.locator('fw-card');
+    expect(await card.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true);
+    await card.evaluate((el) => { el.scrollTop = el.scrollHeight; });
+    const c = (await card.boundingBox())!;
+    const heading = (await page.locator('fw-card .fw-card-heading').boundingBox())!;
+    const crumbs = (await page.locator('fw-card nav.fw-crumbs').boundingBox())!;
+    expect(Math.abs(heading.y - c.y)).toBeLessThanOrEqual(1);
+    expect(crumbs.y + crumbs.height).toBeLessThanOrEqual(c.y + 1);
+  });
+
+  test('a focused row is never under the sticky row', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 500 });
+    await open(page, '#/core/angry');
+    await settled(page);
+    const card = page.locator('fw-card');
+    await card.evaluate((el) => { el.scrollTop = el.scrollHeight; });
+    const rows = page.locator('fw-card ul.fw-rows button');
+    // Walk focus up from the last row to the first, as Shift+Tab would.
+    for (let k = (await rows.count()) - 1; k >= 0; k--) await rows.nth(k).focus();
+    const first = (await rows.first().boundingBox())!;
+    const heading = (await page.locator('fw-card .fw-card-heading').boundingBox())!;
+    expect(first.y).toBeGreaterThanOrEqual(heading.y + heading.height - 1);
+  });
+
   test('the card never moves the wheel', async ({ page }) => {
     await open(page);
     const none = await wheelBox(page);

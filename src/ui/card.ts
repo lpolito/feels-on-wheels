@@ -126,6 +126,21 @@ export class FwCard extends HTMLElement {
     return b;
   }
 
+  #headingObserver: ResizeObserver | null = null;
+
+  /**
+   * Spec v1.3 §5.2 (WCAG 2.4.11): keep `scroll-padding-top` at the sticky row's height, so an element focused while
+   * scrolling up lands below the row, not under it.
+   */
+  #watchHeading(heading: HTMLElement): void {
+    if (typeof ResizeObserver === 'undefined') return;
+    this.#headingObserver?.disconnect();
+    this.#headingObserver = new ResizeObserver(() => {
+      this.style.scrollPaddingTop = `${heading.offsetHeight}px`;
+    });
+    this.#headingObserver.observe(heading);
+  }
+
   #applyInk(): void {
     const m = this.#model;
     const ink = m.kind === 'none' ? undefined : this.#inks[m.hue];
@@ -198,6 +213,8 @@ export class FwCard extends HTMLElement {
     const m = this.#model;
     this.hidden = m.kind === 'none';
     this.#toggle = this.#head = this.#crumbs = this.#body = null;
+    // Another word: start at the top, with its breadcrumbs showing (spec v1.3 §5.2).
+    this.scrollTop = 0;
     this.#applyInk();
     if (m.kind === 'none') {
       this.removeAttribute('data-open');
@@ -208,7 +225,9 @@ export class FwCard extends HTMLElement {
       dot(m.hue), h('span', { className: 'fw-card-title' }, m.title), chevronIcon());
     toggle.addEventListener('click', () => this.#emit(this.#model.kind === 'opened' ? { type: 'close' } : { type: 'activate' }));
     // Accordion pattern: the toggle sits inside a heading, so the sections below have a parent.
-    const head = h('div', { className: 'fw-card-head' }, h('h2', { className: 'fw-card-heading' }, toggle));
+    const heading = h('h2', { className: 'fw-card-heading' }, toggle);
+    const head = h('div', { className: 'fw-card-head' }, heading);
+    this.#watchHeading(heading);
     this.#toggle = toggle;
     this.#head = head;
     if (m.kind === 'opened') {

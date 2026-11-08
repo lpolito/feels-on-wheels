@@ -11,8 +11,8 @@ import type { FwToolbar } from '../../src/ui/toolbar';
 const { wheel, feelings, locale } = loadData();
 const layout = buildLayout(wheel);
 const idx = (p: string): number => layout.byPath.get(p)!;
-const selected = (p: string): State => ({ ...initialState, selected: idx(p), hinted: false });
-const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { mode: 'ring', ring: layout.segments[idx(p)]!.ring }, hinted: false });
+const selected = (p: string): State => ({ ...initialState, selected: idx(p) });
+const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { mode: 'ring', ring: layout.segments[idx(p)]!.ring } });
 beforeAll(() => setLocale(locale));
 
 describe('cardModel', () => {

@@ -1,7 +1,7 @@
 // The test-only hook main.ts exposes in `vite build --mode test`, plus the perf probes.
 export {};
 
-interface FwState { selected: number | null; opened: boolean; view: { mode: string; ring?: number }; hinted: boolean }
+interface FwState { selected: number | null; opened: boolean; view: { mode: string; ring?: number } }
 
 declare global {
   interface Window {

@@ -8,19 +8,19 @@ const idx = (p: string): number => layout.byPath.get(p)!;
 const run = (s: State, ...actions: Action[]): State => actions.reduce((acc, a) => reduce(layout, acc, a), s);
 const wheel = { mode: 'wheel' } as const;
 const ring = (r: number) => ({ mode: 'ring', ring: r }) as const;
-const selected = (p: string, extra: Partial<State> = {}): State => ({ ...initialState, selected: idx(p), hinted: false, ...extra });
-const opened = (p: string): State => ({ selected: idx(p), opened: true, view: ring(layout.segments[idx(p)]!.ring), hinted: false });
+const selected = (p: string, extra: Partial<State> = {}): State => ({ ...initialState, selected: idx(p), ...extra });
+const opened = (p: string): State => ({ selected: idx(p), opened: true, view: ring(layout.segments[idx(p)]!.ring) });
 
 describe('initial state', () => {
   test('nothing selected, whole wheel, hint showing', () => {
-    expect(initialState).toEqual({ selected: null, opened: false, view: wheel, hinted: true });
+    expect(initialState).toEqual({ selected: null, opened: false, view: wheel });
   });
 });
 
 describe('select', () => {
   test('select on the wheel selects without opening or moving the view', () => {
     const s = run(initialState, { type: 'select', segment: idx('angry/aggressive') });
-    expect(s).toEqual({ selected: idx('angry/aggressive'), opened: false, view: wheel, hinted: false });
+    expect(s).toEqual({ selected: idx('angry/aggressive'), opened: false, view: wheel });
   });
 
   test('select another word moves the selection', () => {
@@ -48,7 +48,7 @@ describe('open / close / clear / escape', () => {
 
   test('close keeps the selection and returns to wheel', () => {
     const s = run(opened('angry/aggressive'), { type: 'close' });
-    expect(s).toEqual({ selected: idx('angry/aggressive'), opened: false, view: wheel, hinted: false });
+    expect(s).toEqual({ selected: idx('angry/aggressive'), opened: false, view: wheel });
   });
 
   test('close when only selected is a no-op (same object)', () => {
@@ -57,14 +57,14 @@ describe('open / close / clear / escape', () => {
   });
 
   test('clear drops the selection and returns to wheel', () => {
-    expect(run(opened('angry'), { type: 'clear' })).toEqual({ ...initialState, hinted: false });
-    expect(run(selected('angry'), { type: 'clear' })).toEqual({ ...initialState, hinted: false });
+    expect(run(opened('angry'), { type: 'clear' })).toEqual({ ...initialState });
+    expect(run(selected('angry'), { type: 'clear' })).toEqual({ ...initialState });
   });
 
   test('escape closes then clears', () => {
     const closed = run(opened('angry/aggressive'), { type: 'escape' });
     expect(closed).toEqual(selected('angry/aggressive'));
-    expect(run(closed, { type: 'escape' })).toEqual({ ...initialState, hinted: false });
+    expect(run(closed, { type: 'escape' })).toEqual({ ...initialState });
   });
 });
 
@@ -77,7 +77,7 @@ describe('step', () => {
 
   test('step while selected selects the ring neighbour, wrapping', () => {
     const last = layout.rings[0]!.segments[6]!;
-    const s = run({ ...initialState, selected: last, hinted: false }, { type: 'step', delta: 1 });
+    const s = run({ ...initialState, selected: last }, { type: 'step', delta: 1 });
     expect(s).toEqual(selected('fearful'));
     expect(run(selected('angry'), { type: 'step', delta: 1 }).selected).toBe(idx('disgusted'));
   });
@@ -125,11 +125,10 @@ describe('toChild / toParent', () => {
     expect(run(opened('angry'), { type: 'stepOut' })).toEqual(selected('angry'));
   });
 
-  test('stepOut while only selected is a no-op apart from hinted', () => {
+  test('stepOut while only selected is a no-op', () => {
     const s = selected('angry/aggressive');
     expect(reduce(layout, s, { type: 'stepOut' })).toBe(s);
-    expect(run({ ...s, hinted: true }, { type: 'stepOut' })).toEqual(s);
-    expect(reduce(layout, { ...initialState, hinted: false }, { type: 'stepOut' }).selected).toBeNull();
+    expect(reduce(layout, initialState, { type: 'stepOut' })).toBe(initialState);
   });
 
   test('centerChild(angry/aggressive) is hostile', () => {
@@ -183,12 +182,11 @@ describe('reachable states', () => {
         { type: 'select', segment: rand(n) }, { type: 'open', segment: rand(n) }, { type: 'close' }, { type: 'clear' },
         { type: 'step', delta: 1 }, { type: 'step', delta: -1 }, { type: 'toChild' }, { type: 'toParent' },
         { type: 'stepOut' }, { type: 'activate' }, { type: 'escape' }, { type: 'settled', segment: rand(n) },
-        { type: 'dismissHint' },
       ];
       return all[rand(all.length)]!;
     };
-    // Start states: the base URL, and every deep link (opened, hint showing).
-    const starts: State[] = [initialState, ...layout.segments.map((g) => ({ ...opened(g.path), hinted: true }))];
+    // Start states: the base URL, and every deep link.
+    const starts: State[] = [initialState, ...layout.segments.map((g) => opened(g.path))];
     for (const start of starts) {
       let st = start;
       for (let k = 0; k < 60; k++) {
@@ -204,23 +202,10 @@ describe('reachable states', () => {
   });
 });
 
-describe('hint and restore', () => {
-  test('every user action clears hinted; restore and settled keep it', () => {
-    const user: Action[] = [
-      { type: 'select', segment: idx('sad') }, { type: 'open', segment: idx('sad') }, { type: 'close' }, { type: 'clear' },
-      { type: 'step', delta: 1 }, { type: 'toChild' }, { type: 'toParent' }, { type: 'activate' }, { type: 'escape' },
-      { type: 'dismissHint' }, { type: 'stepOut' },
-    ];
-    const deepLink: State = { ...opened('angry/aggressive'), hinted: true };
-    for (const a of user) expect(run(deepLink, a).hinted, a.type).toBe(false);
-    expect(run(deepLink, { type: 'settled', segment: idx('angry/mad') }).hinted).toBe(true);
-    const target: State = { ...opened('happy'), hinted: true };
+describe('restore', () => {
+  test('restore replaces the state', () => {
+    const target = opened('happy');
     expect(run(initialState, { type: 'restore', state: target })).toBe(target);
-  });
-
-  test('dismissHint twice is a no-op the second time', () => {
-    const s = run(initialState, { type: 'dismissHint' });
-    expect(reduce(layout, s, { type: 'dismissHint' })).toBe(s);
   });
 
   test('restore of an equal state keeps identity', () => {

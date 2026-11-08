@@ -20,5 +20,5 @@ export function fromHash(layout: Layout, hash: string): State | null {
   if (parts[0] !== layout.wheelId) return null;
   const i = layout.byPath.get(parts.slice(1).join('/'));
   if (i === undefined) return null;
-  return { selected: i, opened: true, view: { mode: 'ring', ring: layout.segments[i]!.ring }, hinted: false };
+  return { selected: i, opened: true, view: { mode: 'ring', ring: layout.segments[i]!.ring } };
 }

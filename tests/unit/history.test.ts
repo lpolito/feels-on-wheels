@@ -71,8 +71,8 @@ describe('history writer', () => {
 });
 
 describe('historyOp', () => {
-  const sel: State = { ...initialState, selected: idx('angry'), hinted: false };
-  const opn: State = { selected: idx('angry'), opened: true, view: { mode: 'ring', ring: 0 }, hinted: false };
+  const sel: State = { ...initialState, selected: idx('angry') };
+  const opn: State = { selected: idx('angry'), opened: true, view: { mode: 'ring', ring: 0 } };
   const op = (prev: State, a: Action) => historyOp(prev, reduce(layout, prev, a), a);
 
   test('historyOp table: select → none; open → push; settled while opened → replace; close → push; restore → none', () => {

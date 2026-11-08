@@ -178,6 +178,16 @@ test.describe('desktop', () => {
     await expect(picker).toHaveValue('dark');
   });
 
+  test('the message comes back when the selection is cleared', async ({ page }) => {
+    await open(page);
+    await tapPath(page, 'angry');
+    await expect(hint(page)).toBeHidden();
+    await expect(page.locator('fw-card')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(hint(page)).toBeVisible();
+    await expect(page.locator('fw-card')).toBeHidden();
+  });
+
   test('the hint reads the same on desktop', async ({ page }) => {
     await open(page);
     expect((await state(page)).selected).toBeNull();
@@ -307,7 +317,7 @@ test.describe('phone', () => {
     expect((await state(page)).opened).toBe(false);
   });
 
-  test('phone: first drag hides the hint and keeps the URL', async ({ page }) => {
+  test('phone: spinning keeps the message', async ({ page }) => {
     await open(page);
     const box = (await wheelBox(page))!;
     const x = box.x + box.width * 0.7;
@@ -317,7 +327,7 @@ test.describe('phone', () => {
     await page.mouse.move(x, box.y + box.height * 0.4, { steps: 4 });
     await page.mouse.up();
     await idle(page);
-    await expect(hint(page)).toBeHidden();
+    await expect(hint(page)).toBeVisible();
     expect(await page.evaluate(() => location.hash)).toBe('');
     expect((await state(page)).opened).toBe(false);
   });

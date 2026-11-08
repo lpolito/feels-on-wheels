@@ -6,7 +6,7 @@ import { initialState, reduce, type State } from '../../src/state/store';
 
 const layout = buildLayout(loadData().wheel);
 const idx = (p: string): number => layout.byPath.get(p)!;
-const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { mode: 'ring', ring: layout.segments[idx(p)]!.ring }, hinted: false });
+const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { mode: 'ring', ring: layout.segments[idx(p)]!.ring } });
 
 describe('resolvePinch', () => {
   test('thresholds match the spec', () => {
@@ -15,7 +15,7 @@ describe('resolvePinch', () => {
 
   test('pinch in on the whole wheel opens the word under the fingers', () => {
     expect(resolvePinch(layout, initialState, 1.5, idx('sad'))).toEqual({ type: 'open', segment: idx('sad') });
-    const sel = { ...initialState, selected: idx('angry'), hinted: false };
+    const sel = { ...initialState, selected: idx('angry') };
     expect(resolvePinch(layout, sel, 1.4, idx('sad/hurt'))).toEqual({ type: 'open', segment: idx('sad/hurt') });
   });
 
@@ -51,7 +51,7 @@ describe('resolvePinch', () => {
   });
 
   test('pinch out on the whole wheel with a selection does nothing', () => {
-    const sel: State = { ...initialState, selected: idx('angry'), hinted: false };
+    const sel: State = { ...initialState, selected: idx('angry') };
     for (const ratio of [0.7, 0.3]) expect(resolvePinch(layout, sel, ratio, null), String(ratio)).toBeNull();
     // A ring view that isn't opened no longer occurs; even so, pinching out of it does nothing.
     expect(resolvePinch(layout, { ...sel, view: { mode: 'ring', ring: 0 } }, 0.5, null)).toBeNull();

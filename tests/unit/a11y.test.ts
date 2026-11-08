@@ -22,8 +22,8 @@ beforeEach(() => {
 
 const items = () => [...root.querySelectorAll<HTMLElement>('[role="treeitem"]')];
 const item = (i: number) => document.getElementById(`fw-node-${i}`)!;
-const sel = (p: string): State => ({ ...initialState, selected: idx(p), hinted: false });
-const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { mode: 'ring', ring: layout.segments[idx(p)]!.ring }, hinted: false });
+const sel = (p: string): State => ({ ...initialState, selected: idx(p) });
+const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { mode: 'ring', ring: layout.segments[idx(p)]!.ring } });
 
 describe('a11y tree', () => {
   test('renders 130 treeitems with correct aria-level inside a labelled tree', () => {
@@ -161,7 +161,7 @@ describe('announceFor', () => {
   });
 
   test('nothing to say: null', () => {
-    expect(announceFor(layout, sel('angry'), { ...sel('angry'), hinted: true })).toBeNull();
+    expect(announceFor(layout, sel('angry'), { ...sel('angry') })).toBeNull();
     expect(announceFor(layout, sel('angry'), initialState)).toBeNull();
   });
 });

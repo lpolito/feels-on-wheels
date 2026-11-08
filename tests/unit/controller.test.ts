@@ -88,7 +88,7 @@ const expectHalf = (rotation?: number): void => {
   if (rotation !== undefined) expect(sameAngle(camera.current.rotation, rotation)).toBeLessThan(1e-6);
 };
 
-const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { mode: 'ring', ring: layout.segments[idx(p)]!.ring }, hinted: false });
+const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { mode: 'ring', ring: layout.segments[idx(p)]!.ring } });
 
 /** A screen point over no word (outside the wheel or in the hole). */
 function missPoint(): { x: number; y: number } {
@@ -389,7 +389,7 @@ describe('pinch and zoom', () => {
     step(1000);
     expect(store.get().selected).toBeNull();
     expect(store.get().opened).toBe(false);
-    expect(seen.map((a) => a.type)).toEqual(['dismissHint']);
+    expect(seen).toEqual([]);
     expect(camera.current.scale).toBeCloseTo(before.scale, 6);
     expect(camera.current.cx).toBeCloseTo(before.cx, 3);
   });

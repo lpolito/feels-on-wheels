@@ -176,7 +176,8 @@ canvas.addEventListener('pointerup', (e) => {
   if (e.pointerType === 'mouse') tree.focusSelected();
 });
 
-const hintText = (s: State): string | null => (s.hinted ? t('hint') : null);
+/** Spec v1.3 §3.1: the message shows exactly when nothing is selected. */
+const hintText = (s: State): string | null => (s.selected === null ? t('hint') : null);
 
 /** Spec v1.2 §4.2: the phone card's height cap keeps it below the opened cell. */
 function setOpenedHalf(s: State): void {
@@ -219,8 +220,7 @@ addEventListener('popstate', () => {
   const cur = store.get();
   // Back to the base URL: the whole wheel, keeping the last selection (spec v1.2 §3.1).
   const restored = fromHash(layout, location.hash) ?? { ...cur, opened: false, view: { mode: 'wheel' } as const };
-  // The hint never comes back once dismissed.
-  store.dispatch({ type: 'restore', state: { ...restored, hinted: cur.hinted && restored.hinted } });
+  store.dispatch({ type: 'restore', state: restored });
 });
 
 // ── Input & resize ───────────────────────────────────────────────────────

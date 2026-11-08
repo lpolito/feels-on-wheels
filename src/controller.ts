@@ -71,14 +71,9 @@ export function createController(
 
   const goToRest = (): void => camera.animateTo(restingCamera(store.get()));
 
-  function dismissHint(): void {
-    if (store.get().hinted) store.dispatch({ type: 'dismissHint' });
-  }
-
   /** The user is about to rotate the camera directly. */
   function grab(): void {
     camera.stop();
-    dismissHint();
   }
 
   function zoomAbout(scale: number, x: number, y: number): void {
@@ -93,7 +88,6 @@ export function createController(
   function startZoom(x: number, y: number): void {
     if (zoom) return;
     camera.stop();
-    dismissHint();
     userSpin = false;
     zoom = { startScale: cam.scale, base: { ...cam }, ax: x, ay: y, x, y };
   }

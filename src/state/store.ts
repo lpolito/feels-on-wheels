@@ -10,8 +10,6 @@ export interface State {
   selected: number | null;
   opened: boolean;
   view: View;
-  /** The floating hint is still showing. */
-  hinted: boolean;
 }
 
 export type Action =
@@ -30,7 +28,6 @@ export type Action =
   | { type: 'escape' }
   /** The camera came to rest in a ring view with `segment` at 3 o'clock. */
   | { type: 'settled'; segment: number }
-  | { type: 'dismissHint' }
   | { type: 'restore'; state: State };
 
 const WHEEL: View = Object.freeze({ mode: 'wheel' }) as View;
@@ -39,7 +36,6 @@ export const initialState: State = Object.freeze({
   selected: null,
   opened: false,
   view: WHEEL,
-  hinted: true,
 }) as State;
 
 const ringView = (ring: number): View => ({ mode: 'ring', ring });
@@ -49,7 +45,7 @@ function sameView(a: View, b: View): boolean {
 }
 
 function sameState(a: State, b: State): boolean {
-  return a.selected === b.selected && a.opened === b.opened && a.hinted === b.hinted && sameView(a.view, b.view);
+  return a.selected === b.selected && a.opened === b.opened && sameView(a.view, b.view);
 }
 
 /** The child whose [start, end) contains the parent's mid: the one at 3 o'clock once the parent is centred. */
@@ -119,8 +115,6 @@ function next(layout: Layout, s: State, a: Action): State {
       if (!s.opened || s.view.mode !== 'ring' || seg(a.segment).ring !== s.view.ring) return s;
       return open(layout, s, a.segment);
     }
-    case 'dismissHint':
-      return s;
     case 'restore':
       return a.state;
   }
@@ -128,8 +122,7 @@ function next(layout: Layout, s: State, a: Action): State {
 
 /** Pure transition. Returns `s` itself when nothing changed. */
 export function reduce(layout: Layout, s: State, a: Action): State {
-  let n = next(layout, s, a);
-  if (a.type !== 'restore' && a.type !== 'settled' && n.hinted) n = { ...n, hinted: false };
+  const n = next(layout, s, a);
   return n === s || sameState(n, s) ? s : n;
 }
 

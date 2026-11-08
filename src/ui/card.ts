@@ -141,6 +141,18 @@ export class FwCard extends HTMLElement {
     this.#headingObserver.observe(heading);
   }
 
+  /**
+   * Spec v1.3 §4.2: the card's height once fully unfolded (the heading, the crumbs' and the body's natural heights),
+   * measurable as soon as it renders, before the unfold has run. 0 while hidden.
+   */
+  unfoldedHeight(): number {
+    if (this.#model.kind === 'none' || !this.#toggle) return 0;
+    const heading = this.#toggle.parentElement as HTMLElement;
+    const crumbs = this.#crumbs?.querySelector<HTMLElement>('.fw-crumbs-inner')?.scrollHeight ?? 0;
+    const body = this.#body?.querySelector<HTMLElement>('.fw-card-body-inner')?.scrollHeight ?? 0;
+    return heading.offsetHeight + crumbs + body;
+  }
+
   #applyInk(): void {
     const m = this.#model;
     const ink = m.kind === 'none' ? undefined : this.#inks[m.hue];

@@ -8,6 +8,8 @@ export interface CameraOpts {
   portrait: boolean;
   /** The whole-wheel view is the half-wheel (spec v1.2 §3.2): phones, where the full wheel's labels would be too small. */
   half: boolean;
+  /** Portrait ring views: the stage y (CSS px) for the opened word's centre (spec v1.3 §4.2); null centres it. */
+  openedY: number | null;
 }
 
 /** Spec §4.2 constants. */
@@ -74,7 +76,8 @@ export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rota
   const cx = o.portrait
     ? 0.5 * vp.width - rMid * R
     : Math.max(vp.width - (R + LIFT_RADIAL_PX + OUTLINE_OUTSIDE_PX), o.remPx - (r.inner * R - LIFT_RADIAL_PX));
-  return { scale, rotation, cx, cy: vp.height / 2 };
+  const cy = o.portrait && o.openedY !== null ? o.openedY : vp.height / 2;
+  return { scale, rotation, cx, cy };
 }
 
 /**

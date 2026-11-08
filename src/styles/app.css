@@ -211,7 +211,8 @@ fw-card[data-open] .fw-dot { animation: fw-halo 2.4s ease-out infinite; }
   grid-template-rows: 0fr;
   transition: grid-template-rows var(--unfold), opacity var(--unfold);
 }
-.fw-crumbs-wrap { opacity: 0; }
+/* The wrap clips the folded crumbs, padding included, so unfoldedHeight can read their full size at once. */
+.fw-crumbs-wrap { opacity: 0; overflow: hidden; }
 fw-card[data-open] :is(.fw-crumbs-wrap, .fw-card-body) { grid-template-rows: 1fr; opacity: 1; }
 .fw-crumbs-inner, .fw-card-body-inner { min-height: 0; overflow: hidden; }
 .fw-crumbs-inner {
@@ -224,8 +225,7 @@ fw-card[data-open] :is(.fw-crumbs-wrap, .fw-card-body) { grid-template-rows: 1fr
 }
 /* The first crumb's text, not its padding, starts on the left edge. */
 .fw-crumbs-inner .fw-link { padding-inline: 0; }
-fw-card[data-open] .fw-crumbs-inner { padding-top: 0.6rem; }
-.fw-crumbs-inner { transition: padding-top var(--unfold); }
+.fw-crumbs-inner { padding-top: 0.6rem; }
 .fw-sep { color: var(--muted); }
 
 .fw-card-content { padding: 0 1.25rem 1.25rem var(--edge); }
@@ -267,7 +267,7 @@ fw-card[data-open] .fw-crumbs-inner { padding-top: 0.6rem; }
 .fw-close-to { display: flex; flex-wrap: wrap; gap: 0.25rem 0.9rem; }
 
 @media (prefers-reduced-motion: reduce) {
-  .fw-card-chevron, .fw-crumbs-wrap, .fw-card-body, .fw-crumbs-inner { transition: none; }
+  .fw-card-chevron, .fw-crumbs-wrap, .fw-card-body { transition: none; }
   fw-card[data-open] .fw-dot { animation: none; }
 }
 
@@ -281,7 +281,11 @@ fw-card[data-open] .fw-crumbs-inner { padding-top: 0.6rem; }
     bottom: calc(12px + env(safe-area-inset-bottom));
     width: auto;
     /* Spec v1.2 §4.2: ends 12px below the opened cell, which main.ts measures into --opened-half. */
-    max-height: calc(50dvh - var(--opened-half, 0px) - 24px - env(safe-area-inset-bottom));
+    /* Spec v1.3 §4.2: at most 55% of the screen, and always leaving room above for the opened cell + 12 px each side. */
+    max-height: min(
+      calc(55dvh - 12px - env(safe-area-inset-bottom)),
+      calc(100dvh - 2 * var(--opened-half, 0px) - 36px - env(safe-area-inset-top) - env(safe-area-inset-bottom))
+    );
     justify-content: flex-end;
   }
 }

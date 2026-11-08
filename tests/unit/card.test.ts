@@ -220,6 +220,23 @@ describe('<fw-card>', () => {
     expect(el.scrollTop).toBe(120);
   });
 
+  test('unfoldedHeight is the heading plus the crumbs\' and body\'s natural heights', () => {
+    const { el } = mount();
+    expect(el.unfoldedHeight()).toBe(0);
+    el.model = cardModel(layout, feelings, opened('angry/aggressive'));
+    const stub = (sel: string, prop: 'offsetHeight' | 'scrollHeight', v: number) =>
+      Object.defineProperty(el.querySelector(sel)!, prop, { configurable: true, get: () => v });
+    stub('.fw-card-heading', 'offsetHeight', 56);
+    stub('.fw-crumbs-inner', 'scrollHeight', 30);
+    stub('.fw-card-body-inner', 'scrollHeight', 250);
+    expect(el.unfoldedHeight()).toBe(336);
+    // A core word has no crumbs.
+    el.model = cardModel(layout, feelings, opened('angry'));
+    stub('.fw-card-heading', 'offsetHeight', 56);
+    stub('.fw-card-body-inner', 'scrollHeight', 400);
+    expect(el.unfoldedHeight()).toBe(456);
+  });
+
   test('rapid open/close/open leaves data-open and aria-expanded matching the last model', () => {
     const { el } = mount();
     const sel = cardModel(layout, feelings, selected('angry/aggressive'));

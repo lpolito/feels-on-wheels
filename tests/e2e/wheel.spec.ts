@@ -312,8 +312,9 @@ test.describe('desktop', () => {
     const card = (await page.locator('fw-card').boundingBox())!;
     expect(card.y + card.height).toBeGreaterThan(900 - 12 - 2);
     expect(card.x).toBeLessThan(20);
+    const { y, mid } = await openedPlacement(page, 'angry');
+    expect(Math.abs(y - mid)).toBeLessThanOrEqual(2);
     const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
-    expect(Math.abs(p.y - 450)).toBeLessThanOrEqual(2);
     expect(Math.abs(p.x - 450)).toBeLessThanOrEqual(2);
   });
 
@@ -390,6 +391,17 @@ test.describe('desktop', () => {
   });
 });
 
+/** The opened word's y against the gap between the stage's top and the unfolded card's top (spec v1.3 §4.2). */
+async function openedPlacement(page: Page, path: string) {
+  await idle(page);
+  await settled(page);
+  const y = (await page.evaluate((p) => window.__fw.segmentScreenPoint(p), path)).y;
+  const stage = (await wheelBox(page))!;
+  const card = (await page.locator('fw-card').boundingBox())!;
+  const half = await page.evaluate(() => Number.parseFloat(getComputedStyle(document.getElementById('app')!).getPropertyValue('--opened-half')));
+  return { y, mid: (stage.y + card.y) / 2, cardTop: card.y, half };
+}
+
 test.describe('phone', () => {
   test.beforeEach(({ isMobile }) => test.skip(!isMobile, 'phone-only behaviour'));
 
@@ -463,19 +475,43 @@ test.describe('phone', () => {
     expect((await state(page)).opened).toBe(false);
   });
 
-  test('phone: opened word is centred vertically and above the card', async ({ page }) => {
-    await open(page);
-    await tapPath(page, 'angry');
-    await tapPath(page, 'angry');
-    expect((await state(page)).opened).toBe(true);
-    await expect(page.locator('fw-card .fw-card-body')).toBeVisible();
-    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
-    const stage = (await wheelBox(page))!;
-    expect(Math.abs(p.y - (stage.y + stage.height / 2))).toBeLessThanOrEqual(2);
-    const half = await page.evaluate(() => Number.parseFloat(getComputedStyle(document.getElementById('app')!).getPropertyValue('--opened-half')));
-    expect(half).toBeGreaterThan(20);
-    const card = (await page.locator('fw-card').boundingBox())!;
-    expect(p.y + half).toBeLessThan(card.y);
+  test('phone: the opened word is centred between the top and the unfolded card', async ({ page }) => {
+    for (const path of ['fearful', 'fearful/scared', 'fearful/scared/helpless']) {
+      await open(page, `#/core/${path}`);
+      const { y, mid, cardTop, half } = await openedPlacement(page, path);
+      expect(Math.abs(y - mid), path).toBeLessThanOrEqual(2);
+      expect(half, path).toBeGreaterThan(20);
+      expect(y + half, path).toBeLessThan(cardTop);
+    }
+  });
+
+  test('phone: moving to a word with a different card height re-centres it', async ({ page }) => {
+    // A middle word, then one of its outer words: their cards differ in height on every phone.
+    await open(page, '#/core/fearful/scared');
+    await settled(page);
+    const before = (await page.locator('fw-card').boundingBox())!;
+    await page.locator('fw-card ul.fw-rows button').first().click();
+    const path = (await selectedPath(page))!;
+    expect(path).toBe('fearful/scared/helpless');
+    const { y, mid, cardTop } = await openedPlacement(page, path);
+    expect(Math.abs(cardTop - before.y)).toBeGreaterThan(5);
+    expect(Math.abs(y - mid)).toBeLessThanOrEqual(2);
+  });
+
+  test('phone: resize while opened keeps the word centred above the card', async ({ page }) => {
+    await open(page, '#/core/fearful/scared');
+    const size = page.viewportSize()!;
+    await page.setViewportSize({ width: size.width, height: size.height + 100 });
+    await page.waitForTimeout(200);
+    const { y, mid } = await openedPlacement(page, 'fearful/scared');
+    expect(Math.abs(y - mid)).toBeLessThanOrEqual(2);
+  });
+
+  test('phone: on a short screen the opened cell still fits above the card', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 600 });
+    await open(page, '#/core/fearful');
+    const { y, cardTop, half } = await openedPlacement(page, 'fearful');
+    expect(cardTop).toBeGreaterThanOrEqual(y + half + 12 - 1);
   });
 
   test('phone: Back from an opened word returns to the whole wheel with it selected', async ({ page }) => {

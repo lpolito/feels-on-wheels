@@ -60,7 +60,7 @@ function measure(): { vp: Viewport; opts: CameraOpts } {
   // Spec v1.2 §4.3: the one portrait rule, matching the stylesheet's container query.
   const portrait = whole.width < 720 || whole.height >= whole.width;
   const vp = { width, height, radius: Math.max(Math.min(width, height) / 2 - 8, 1) };
-  return { vp, opts: { remPx, portrait, half: useHalfWheel(layout, vp) } };
+  return { vp, opts: { remPx, portrait, half: useHalfWheel(layout, vp), openedY: null } };
 }
 
 let { vp, opts } = measure();
@@ -201,6 +201,27 @@ function setOpenedHalf(s: State): void {
   app.style.setProperty('--opened-half', `${half}px`);
 }
 
+/**
+ * Spec v1.3 §4.2: on portrait stages, the stage y that centres the opened word between the top (below the safe area)
+ * and the top of the card once fully unfolded. Null when nothing is opened or the stage isn't portrait.
+ */
+function openedYFor(s: State): number | null {
+  if (!s.opened || !opts.portrait) return null;
+  const stageTop = stage.getBoundingClientRect().top;
+  const top = stageTop + (Number.parseFloat(getComputedStyle(app).paddingTop) || 0);
+  const cap = Number.parseFloat(getComputedStyle(float).maxHeight);
+  const height = Math.min(card.unfoldedHeight(), Number.isFinite(cap) ? cap : Infinity);
+  const cardTop = float.getBoundingClientRect().bottom - height;
+  return (top + cardTop) / 2 - stageTop;
+}
+
+/** Re-measures the opened word's place after the card renders, and springs the camera to it. */
+function placeOpened(s: State): void {
+  const y = openedYFor(s);
+  opts = { ...opts, openedY: y };
+  controller.setOpenedY(y);
+}
+
 function renderUi(s: State): void {
   setOpenedHalf(s);
   card.model = cardModel(layout, feelings, s);
@@ -223,6 +244,7 @@ store.subscribe((s, prev, a) => {
   const message = announceFor(layout, prev, s);
   if (message) announce(message);
   renderUi(s);
+  placeOpened(s);
   requestDraw();
   const op = historyOp(prev, s, a);
   if (op !== 'none') {
@@ -245,8 +267,10 @@ attachGestures(canvas, (intents) => controller.handle(intents));
 new ResizeObserver(() => {
   ({ vp, opts } = measure());
   renderer.resize(vp.width, vp.height, devicePixelRatio || 1);
-  controller.setViewport(vp, opts);
+  // The card's cap depends on --opened-half, and the opened word's place on the card: set both before the camera.
   setOpenedHalf(store.get());
+  opts = { ...opts, openedY: openedYFor(store.get()) };
+  controller.setViewport(vp, opts);
   drawNow();
 }).observe(stage);
 
@@ -254,6 +278,9 @@ new ResizeObserver(() => {
 renderer.resize(vp.width, vp.height, devicePixelRatio || 1);
 refreshColors();
 renderUi(store.get());
+// A deep link on a phone starts with the opened word already above its card.
+opts = { ...opts, openedY: openedYFor(store.get()) };
+controller.setViewport(vp, opts);
 if (beganAtBase && opts.half && !reducedMotion.matches) controller.playIntro();
 drawNow();
 

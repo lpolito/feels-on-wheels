@@ -9,7 +9,7 @@ import { createController, type Controller } from '../../src/controller';
 const layout = buildLayout(loadData().wheel);
 const idx = (p: string): number => layout.byPath.get(p)!;
 const desk: Viewport = { width: 1200, height: 900, radius: 442 };
-const opts = { remPx: 16, portrait: false, half: false };
+const opts = { remPx: 16, portrait: false, half: false, openedY: null };
 
 let now = 0;
 let queue: Map<number, FrameRequestCallback>;
@@ -56,7 +56,7 @@ function setup(initial = initialState): void {
 beforeEach(() => setup());
 
 const phoneVp: Viewport = { width: 390, height: 844, radius: 187 };
-const phoneOpts = { remPx: 16, portrait: true, half: true };
+const phoneOpts = { remPx: 16, portrait: true, half: true, openedY: null };
 const halfScale = (0.95 * phoneVp.width) / phoneVp.radius;
 
 /** A phone (spec v1.2 §3.2): the whole-wheel view is the half-wheel. */
@@ -543,7 +543,7 @@ describe('half-wheel (phone)', () => {
     const rot = camera.current.rotation;
     const before = store.get();
     const land: Viewport = { width: 844, height: 390, radius: 187 };
-    ctl.setViewport(land, { remPx: 16, portrait: false, half: false });
+    ctl.setViewport(land, { remPx: 16, portrait: false, half: false, openedY: null });
     step(2000);
     expect(store.get()).toBe(before);
     expect(before).toMatchObject({ selected: idx('angry'), opened: false, view: { mode: 'wheel' } });
@@ -558,11 +558,50 @@ describe('half-wheel (phone)', () => {
   });
 });
 
+describe('phone: the opened word above the card', () => {
+  test('setOpenedY springs cy without moving rotation or scale', () => {
+    setupPhone(opened('fearful'));
+    step(2000);
+    const { rotation, scale, cx } = camera.current;
+    ctl.setOpenedY(300);
+    expect(camera.moving).toBe(true);
+    step(2000);
+    expect(camera.current.cy).toBeCloseTo(300, 6);
+    expect(sameAngle(camera.current.rotation, rotation)).toBeLessThan(1e-9);
+    expect(camera.current.scale).toBeCloseTo(scale, 9);
+    expect(camera.current.cx).toBeCloseTo(cx, 6);
+  });
+
+  test('setOpenedY during a settle joins it', () => {
+    setupPhone(opened('fearful/scared'));
+    step(2000);
+    store.dispatch({ type: 'step', delta: 1 });
+    const next = store.get().selected!;
+    step(50);
+    expect(camera.moving).toBe(true);
+    ctl.setOpenedY(300);
+    step(2000);
+    expect(offCenter(next)).toBeLessThan(1e-9);
+    expect(camera.current.cy).toBeCloseTo(300, 6);
+  });
+
+  test('setOpenedY on the whole wheel only records it', () => {
+    setupPhone();
+    const before = { ...camera.current };
+    ctl.setOpenedY(300);
+    expect(camera.moving).toBe(false);
+    expect(camera.current).toEqual(before);
+    store.dispatch({ type: 'open', segment: idx('fearful') });
+    step(2000);
+    expect(camera.current.cy).toBeCloseTo(300, 6);
+  });
+});
+
 describe('viewport', () => {
   test('setViewport while opened keeps the same word centred at angle 0', () => {
     setup(opened('angry/aggressive/hostile'));
     step(1000);
-    ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true, half: false });
+    ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true, half: false, openedY: null });
     step(1000);
     expect(offCenter(idx('angry/aggressive/hostile'))).toBeLessThan(1e-9);
     expect(camera.current.cx + 0.81 * 342 * camera.current.scale).toBeCloseTo(350, 6);

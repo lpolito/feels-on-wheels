@@ -11,6 +11,11 @@ export interface Controller {
   handle(intents: Intent[]): void;
   /** Re-targets the current resting state for a new viewport, keeping the intended word centred. */
   setViewport(vp: Viewport, o: CameraOpts): void;
+  /**
+   * Spec v1.3 §4.2: the stage y for the opened word on phones. Springs cy (joining any rotation in flight); outside
+   * ring views it is only recorded.
+   */
+  setOpenedY(y: number | null): void;
   /** Phone start (spec v1.2 §3.2): on the half-wheel, spin in to the resting rotation. Dispatches nothing. */
   playIntro(): void;
   readonly camera: CameraController;
@@ -242,9 +247,18 @@ export function createController(
     }
   }
 
+  function setOpenedY(y: number | null): void {
+    if (y === opts.openedY) return;
+    opts = { ...opts, openedY: y };
+    const s = store.get();
+    if (ringOf(s) === null || zoom) return;
+    camera.animateTo({ cy: restingCamera(s).cy });
+  }
+
   function setViewport(next: Viewport, o: CameraOpts): void {
     const unchanged = next.width === vp.width && next.height === vp.height && next.radius === vp.radius
-      && o.remPx === opts.remPx && o.portrait === opts.portrait && o.half === opts.half;
+      && o.remPx === opts.remPx && o.portrait === opts.portrait && o.half === opts.half
+      && o.openedY === opts.openedY;
     if (unchanged) return;
     vp = next;
     opts = o;
@@ -287,6 +301,7 @@ export function createController(
       for (const i of intents) handleOne(i);
     },
     setViewport,
+    setOpenedY,
     playIntro,
   };
 }

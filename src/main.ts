@@ -117,7 +117,7 @@ function frame(): void {
   renderer.draw({
     cam: camera.current, vp, lit, prevLit, fadeT, pulseT,
     selected: s.selected, opened: s.opened,
-    mode: s.view.mode, remPx: opts.remPx, moreContrast: moreContrast.matches,
+    mode: s.view.mode, ring: s.view.mode === 'ring' ? s.view.ring : null, remPx: opts.remPx, moreContrast: moreContrast.matches,
   });
   if (TEST) {
     drawTimes.push(performance.now() - t0);
@@ -436,6 +436,7 @@ if (TEST) {
       },
       wheel: () => layout.wheelId,
       liveWheels: () => live.filter((r) => r.deref() !== undefined).length,
+      labelsByRing: () => renderer.stats.labelsByRing.slice(),
     },
   });
 }

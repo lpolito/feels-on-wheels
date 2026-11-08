@@ -19,6 +19,8 @@ export interface Frame {
   /** 0..1 progress of the open pulse (1 = done). */
   pulseT: number;
   mode: 'wheel' | 'ring';
+  /** The view ring in ring mode, else null: rings outside it get the smaller label floor (spec v2.1 §5). */
+  ring: number | null;
   remPx: number;
   /** prefers-contrast: more → thicker gaps. */
   moreContrast?: boolean;
@@ -28,7 +30,7 @@ export interface WheelRenderer {
   resize(cssW: number, cssH: number, dpr: number): void;
   setColors(t: FillTable, p: Palette): void;
   draw(f: Frame): void;
-  stats: { segmentsDrawn: number; labelsDrawn: number; labelFits: number };
+  stats: { segmentsDrawn: number; labelsDrawn: number; labelFits: number; /** Labels drawn per ring this frame. */ labelsByRing: number[] };
 }
 
 const FONT_STACK = 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
@@ -73,7 +75,7 @@ export function createWheelRenderer(
   let dpr = 1;
   let table: FillTable | null = null;
   let palette: Palette | null = null;
-  const stats = { segmentsDrawn: 0, labelsDrawn: 0, labelFits: 0 };
+  const stats = { segmentsDrawn: 0, labelsDrawn: 0, labelFits: 0, labelsByRing: layout.rings.map(() => 0) };
   const boldFonts = new Map<number, string>();
 
   const font = (px: number, bold = false): string => {
@@ -200,11 +202,14 @@ export function createWheelRenderer(
       stats.segmentsDrawn = 0;
       stats.labelsDrawn = 0;
       stats.labelFits = 0;
+      stats.labelsByRing.fill(0);
       if (!table || !palette) return;
       const { cam, vp } = f;
       const R = vp.radius * cam.scale;
       const k = f.remPx / 16;
-      const minPx = (f.mode === 'ring' ? 12 : 8) * k;
+      // Spec v2.1 §5: 8 px in the whole-wheel view; in a ring view 12 px on the view ring and inside it, 10 px outside.
+      const floor = (ring: number): number =>
+        (f.mode !== 'ring' ? 8 : f.ring !== null && ring > f.ring ? 10 : 12) * k;
       // Quantised so pinch frames keep reusing label fits.
       const maxPx = Math.floor(Math.min(Math.max(16 * k * cam.scale, 16 * k), 24 * k) * 2) / 2;
       const lifted = f.opened ? f.selected : null;
@@ -252,7 +257,7 @@ export function createWheelRenderer(
         let y = cam.cy + rMid * Math.sin(angle);
         if (x < -rMid || y < -rMid || x > cssW + rMid || y > cssH + rMid) continue;
         const boxLen = (ring.outer - ring.inner) * R - 2 * LABEL_PAD;
-        let fit = fitted(s.index, boxLen, (s.end - s.start) * rMid, minPx, maxPx);
+        let fit = fitted(s.index, boxLen, (s.end - s.start) * rMid, floor(s.ring), maxPx);
         if (!fit) continue;
         // A selected cell's inside chevron needs CHEVRON_ROOM px at the label box's outer end (spec v1.2 §4.4). The
         // label stays put unless its text reaches that room; only then does it move inward and refit.
@@ -260,7 +265,7 @@ export function createWheelRenderer(
           const len = Math.max(...fit.lines.map((l) => measure(l, fit!.px)));
           if (len / 2 > boxLen / 2 - CHEVRON_ROOM) {
             rMid -= CHEVRON_ROOM / 2;
-            fit = fitted(s.index, boxLen - CHEVRON_ROOM, (s.end - s.start) * rMid, minPx, maxPx);
+            fit = fitted(s.index, boxLen - CHEVRON_ROOM, (s.end - s.start) * rMid, floor(s.ring), maxPx);
             if (!fit) continue;
             x = cam.cx + rMid * Math.cos(angle);
             y = cam.cy + rMid * Math.sin(angle);
@@ -268,6 +273,7 @@ export function createWheelRenderer(
         }
         const lit = f.fadeT >= 0.5 ? f.lit[s.index] === 1 : f.prevLit[s.index] === 1;
         drawLabel(fit.lines, fit.px, false, x, y, angle, 1, table.label(s.hue, s.ring, lit));
+        stats.labelsByRing[s.ring]!++;
       }
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
 
@@ -309,8 +315,11 @@ export function createWheelRenderer(
       g.shadowOffsetY = 0;
       g.shadowColor = 'transparent';
       outline(cam.cx, cam.cy, r0, r1, a0 - side, a1 + side, ink, palette.gap);
-      const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, minPx, maxPx);
-      if (fit) drawLabel(fit.lines, fit.px * LIFT_LABEL, true, x, y, angle, p, table.label(s.hue, s.ring, true));
+      const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, floor(s.ring), maxPx);
+      if (fit) {
+        drawLabel(fit.lines, fit.px * LIFT_LABEL, true, x, y, angle, p, table.label(s.hue, s.ring, true));
+        stats.labelsByRing[s.ring]!++;
+      }
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
     },
   };

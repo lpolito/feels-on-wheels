@@ -67,11 +67,61 @@ function frame(vp: Viewport, overrides: Partial<Frame> = {}): Frame {
   const all = litMask(layout, null);
   return {
     cam: overviewCamera(vp, 0), vp, lit: all, prevLit: all, fadeT: 1,
-    selected: null, opened: false, pulseT: 1, mode: 'wheel', remPx: 16, ...overrides,
+    selected: null, opened: false, pulseT: 1, mode: 'wheel', ring: null, remPx: 16, ...overrides,
   };
 }
 
 const desk: Viewport = { width: 1000, height: 1000, radius: 492 };
+
+describe('label floors by ring (spec v2.1 §5)', () => {
+  const bodyWheel = loadData().wheels.find((w) => w.id === 'body')!;
+  const body = buildLayout(bodyWheel);
+  const bodyPalette: Palette = {
+    ...palette,
+    hues: { ...palette.hues, head: '#7a243b', face: '#5c4221', chest: '#7d7413', breath: '#387078', stomach: '#0179a3', arms: '#546286', 'whole-body': '#7d3b75', posture: '#775064' },
+  };
+  const bodyTable = buildFillTable(bodyPalette, 3, 'light');
+  const phone: Viewport = { width: 393, height: 851, radius: 188.5 };
+  const labelsOn = (ring: number) => new Set(body.rings[ring]!.segments.map((i) => nodeLabel(body.segments[i]!.node)));
+  const pxOf = (font: string) => Number(/([\d.]+)px/.exec(font)![1]);
+
+  function drawRing0(remPx: number) {
+    const { canvas, ctx, rec } = fakeCanvas();
+    const r = createWheelRenderer(canvas, body, ctx);
+    r.setColors(bodyTable, bodyPalette);
+    r.resize(phone.width, phone.height, 1);
+    const all = litMask(body, null);
+    const cam = ringFocusCamera(body, 0, phone, 0, { remPx, portrait: true, half: false, openedY: null });
+    r.draw({ cam, vp: phone, lit: all, prevLit: all, fadeT: 1, selected: null, opened: false, pulseT: 1, mode: 'ring', ring: 0, remPx });
+    const sizes = (ring: number) => rec.texts.flatMap((t, k) => (labelsOn(ring).has(t) ? [pxOf(rec.fonts[k]!)] : []));
+    return { r, sizes };
+  }
+
+  test('ring view: 12 px floor on the focused ring and inside it, 10 px outside it', () => {
+    const { r, sizes } = drawRing0(16);
+    expect(r.stats.labelsByRing[2]).toBeGreaterThan(0);
+    expect(Math.min(...sizes(2))).toBeGreaterThanOrEqual(10);
+    expect(Math.min(...sizes(2))).toBeLessThan(12);
+    expect(Math.min(...sizes(0))).toBeGreaterThanOrEqual(12);
+  });
+
+  test('the floors scale with remPx', () => {
+    const { r, sizes } = drawRing0(20);
+    expect(r.stats.labelsByRing[2]).toBeGreaterThan(0);
+    expect(Math.min(...sizes(2))).toBeGreaterThanOrEqual(12.5);
+  });
+
+  test('whole-wheel view keeps 8 px for every ring, and labelsByRing adds up', () => {
+    const tiny: Viewport = { width: 300, height: 300, radius: 142 };
+    const { canvas, ctx, rec } = fakeCanvas();
+    const r = createWheelRenderer(canvas, layout, ctx);
+    r.setColors(table, palette);
+    r.resize(300, 300, 1);
+    r.draw(frame(tiny));
+    expect(Math.min(...rec.fonts.map(pxOf))).toBeGreaterThanOrEqual(8);
+    expect(r.stats.labelsByRing.reduce((a, b) => a + b, 0)).toBe(r.stats.labelsDrawn);
+  });
+});
 
 describe('wheel renderer', () => {
   test('overview draws all 130 segments', () => {

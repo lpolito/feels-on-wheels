@@ -286,6 +286,16 @@ test.describe('v2.1: the wheel switch', () => {
   });
 });
 
+test.describe('v2.1: context rings', () => {
+  test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'sets its own viewport'));
+  test.use({ viewport: { width: 393, height: 851 } });
+
+  test('portrait phone, Head and eyes opened: the outer ring has labels', async ({ page }) => {
+    await open(page, '#/body/head');
+    expect((await page.evaluate(() => window.__fw.labelsByRing()))[2]).toBeGreaterThan(0);
+  });
+});
+
 test.describe('body wheel deep link (phone)', () => {
   test.beforeEach(({ isMobile }) => test.skip(!isMobile, 'phone layout'));
 

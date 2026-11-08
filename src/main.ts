@@ -6,7 +6,7 @@ import { createController } from './controller';
 import { t } from './i18n';
 import { attachGestures } from './input/gestures';
 import { keyTarget, routeKey } from './input/route';
-import { TAU, normAngle, type Viewport } from './model/geometry';
+import { TAU, normAngle, overDisc, type Viewport } from './model/geometry';
 import { buildLayout, litMask } from './model/layout';
 import { buildFillTable, inkFor, readPalette } from './render/colors';
 import { createSpriteCache } from './render/sprites';
@@ -33,6 +33,7 @@ const layout = buildLayout(wheel);
 
 const app = $<HTMLElement>('#app');
 const stage = $<HTMLElement>('#stage');
+const float = $<HTMLElement>('#float');
 const canvas = $<HTMLCanvasElement>('#wheel');
 const card = $<FwCard>('fw-card');
 const hint = $<FwHint>('fw-hint');
@@ -174,6 +175,20 @@ document.addEventListener('keydown', (e) => {
 // A mouse click on the wheel puts keyboard focus in the tree, so the arrows work at once.
 canvas.addEventListener('pointerup', (e) => {
   if (e.pointerType === 'mouse') tree.focusSelected();
+});
+
+// Spec v1.3 §3.5: the grab cursor only over the wheel's disc. Dragging still spins from anywhere.
+canvas.addEventListener('pointermove', (e) => {
+  if (e.pointerType === 'mouse') canvas.classList.toggle('fw-over-disc', overDisc(camera.current, vp, e.offsetX, e.offsetY));
+});
+canvas.addEventListener('pointerleave', () => canvas.classList.remove('fw-over-disc'));
+
+// Spec v1.3 §3.4: a click on empty space in the card's column (desktop) is a tap outside the wheel.
+app.addEventListener('click', (e) => {
+  if (e.target !== app && e.target !== float) return;
+  const s = store.get();
+  if (s.opened) dispatch({ type: 'close' });
+  else if (s.selected !== null) dispatch({ type: 'clear' });
 });
 
 /** Spec v1.3 §3.1: the message shows exactly when nothing is selected. */

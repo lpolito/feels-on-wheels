@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { buildLayout } from '../../src/model/layout';
 import {
-  TAU, hitTest, inWindow, normAngle, ringAt, rotationToCenter, segmentAt, snapRotation, toPolar, viewWindow,
+  TAU, hitTest, inWindow, normAngle, overDisc, ringAt, rotationToCenter, segmentAt, snapRotation, toPolar, viewWindow,
   type Camera, type Viewport,
 } from '../../src/model/geometry';
 
@@ -117,5 +117,18 @@ describe('view window', () => {
     expect(inWindow(layout.segments[layout.rings[0]!.segments[0]!]!, layout.rings[0]!, w)).toBe(false);
     const visible = layout.segments.filter((s) => inWindow(s, layout.rings[s.ring]!, w)).length;
     expect(visible).toBeLessThan(40);
+  });
+});
+
+describe('overDisc', () => {
+  test('overDisc is true inside the outer edge and in the hole, false outside', () => {
+    const v: Viewport = { width: 1000, height: 1000, radius: 492 };
+    const cam: Camera = { scale: 1, rotation: 0.3, cx: 500, cy: 500 };
+    expect(overDisc(cam, v, 500, 500)).toBe(true);
+    expect(overDisc(cam, v, 500 + 491, 500)).toBe(true);
+    expect(overDisc(cam, v, 500 + 493, 500)).toBe(false);
+    expect(overDisc(cam, v, 2, 2)).toBe(false);
+    // Scale counts: at 2× the edge is twice as far out.
+    expect(overDisc({ ...cam, scale: 2 }, v, 500, 500 + 900)).toBe(true);
   });
 });

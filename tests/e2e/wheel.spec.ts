@@ -188,6 +188,51 @@ test.describe('desktop', () => {
     await expect(page.locator('fw-card')).toBeHidden();
   });
 
+  test('the grab cursor shows only over the wheel', async ({ page }) => {
+    await open(page);
+    const cursor = () => page.evaluate(() => getComputedStyle(document.getElementById('wheel')!).cursor);
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
+    await page.mouse.move(p.x, p.y);
+    await expect.poll(cursor).toBe('grab');
+    const box = (await wheelBox(page))!;
+    await page.mouse.move(box.x + 3, box.y + 3);
+    await expect.poll(cursor).toBe('auto');
+  });
+
+  test('clicking empty space above the card closes, then clears', async ({ page }) => {
+    await open(page, '#/core/angry');
+    const card = (await page.locator('fw-card').boundingBox())!;
+    const toolbar = (await page.locator('fw-toolbar').boundingBox())!;
+    const x = card.x + card.width / 2;
+    const y = toolbar.y + toolbar.height + 20;
+    expect(y).toBeLessThan(card.y);
+    await page.mouse.click(x, y);
+    await idle(page);
+    expect((await state(page)).opened).toBe(false);
+    expect(await selectedPath(page)).toBe('angry');
+    await page.mouse.click(x, y);
+    await idle(page);
+    expect((await state(page)).selected).toBeNull();
+  });
+
+  test('clicks on the card, the message or the toolbar never dismiss', async ({ page }) => {
+    await open(page, '#/core/angry');
+    await page.locator('fw-card .fw-definition').click();
+    await idle(page);
+    expect((await state(page)).opened).toBe(true);
+    await page.locator('fw-toolbar').click({ position: { x: 2, y: 2 } });
+    expect((await state(page)).opened).toBe(true);
+    await page.keyboard.press('Escape');
+    await page.keyboard.press('Escape');
+    await idle(page);
+    expect(await state(page)).toEqual({ selected: null, opened: false, view: { mode: 'wheel' } });
+    await page.locator('fw-hint').click();
+    const box = (await page.locator('fw-hint').boundingBox())!;
+    await page.mouse.click(box.x + box.width / 2, box.y - 40);
+    await idle(page);
+    expect(await state(page)).toEqual({ selected: null, opened: false, view: { mode: 'wheel' } });
+  });
+
   test('the hint reads the same on desktop', async ({ page }) => {
     await open(page);
     expect((await state(page)).selected).toBeNull();

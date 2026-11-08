@@ -36,7 +36,9 @@ canvas { touch-action: none; }
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 #stage { position: absolute; inset: 0; }
-#wheel { width: 100%; height: 100%; max-width: none; cursor: grab; }
+#wheel { width: 100%; height: 100%; max-width: none; }
+/* Spec v1.3 §3.5: the grab cursor only over the wheel's disc (main.ts sets the class). */
+#wheel.fw-over-disc { cursor: grab; }
 #wheel:active { cursor: grabbing; }
 
 button, select {

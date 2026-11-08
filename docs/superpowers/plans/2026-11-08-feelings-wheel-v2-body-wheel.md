@@ -61,6 +61,7 @@
 3. **Keyboard right after switching.** With focus on the switch, Tab reaches the new wheel's tree, and arrow keys move through body areas, not feelings. Test in Task 6.
 4. **Theme toggled on the body wheel.** The fills rebuild with the area hues and the body wheel's ring count, with no missing-hue errors. Light, dark and forced colours all render. Test in Task 6.
 5. **A bad hash.** `#/body/nowhere` and `#/nowhere` both load the feelings wheel's start view. Test in Task 6.
+6. **Switching back and forth many times.** Only the current wheel's objects stay alive. A listener that captures an old store, layout or controller directly, instead of going through the current bindings, would keep a whole wheel in memory per switch. Test in Task 6.
 
 ---
 
@@ -73,7 +74,7 @@
 | `src/styles/tokens.css`, `src/render/colors.ts` | Area hues; the palette reads hue names from the wheels | 3 |
 | `src/ui/card.ts`, `src/styles/app.css` | Sections model, per-row ink, the jump link | 4 |
 | `src/ui/hint.ts`, `src/ui/wheel-switch.ts` (new), `src/styles/app.css`, `index.html` | Message with a link; the switch | 5 |
-| `src/state/url.ts`, `src/main.ts`, `tests/fw-window.d.ts` | Mountable wheel, switching, URLs, history | 6 |
+| `src/state/url.ts`, `src/main.ts`, `tests/fw-window.d.ts`, `tests/perf/switch.spec.ts` (new) | Mountable wheel, switching, URLs, history, leak probe | 6 |
 | `tests/e2e/body.spec.ts` (new), `docs/ROADMAP.md`, `docs/reference/README.md` | End-to-end, axe, gates, docs | 7 |
 
 ---
@@ -301,7 +302,7 @@ export type HintContent = { text: string; link?: { label: string; wheel: string 
 
 **Files:**
 - Modify: `src/state/url.ts`, `src/main.ts`, `tests/fw-window.d.ts`.
-- Tests: `tests/unit/url.test.ts`, `tests/e2e/body.spec.ts` (new; Task 7 adds more to it).
+- Tests: `tests/unit/url.test.ts`, `tests/e2e/body.spec.ts` (new; Task 7 adds more to it), `tests/perf/switch.spec.ts` (new).
 
 **Interfaces:**
 - Consumes: everything above.
@@ -337,6 +338,7 @@ export function hashWheel(hash: string, ids: string[]): string | null;
 - **History writes** use `toHash(layout, s, layout.wheelId === firstId)`.
 - **The hint's content:** `{ text: wheelText(id).hint, link: { label: wheelText(id).hintLink, wheel: suggests[id] } }` when nothing is selected. Remove `ui.hint` from `en.json`; update `wheel.spec.ts`'s message assertions to the new core text.
 - **The test hook** gains `wheel: () => layout.wheelId`. The other entries read the current bindings.
+- **Leak probe (test builds only):** `mount` adds a `WeakRef` to each new layout and each new store to a list. The hook gains `liveWheels: () => number`, which counts the refs still alive. The hook itself must not hold strong references to old layouts or stores.
 
 - [ ] **Step 1: Unit tests** (`url.test.ts`):
   - `body base URL is #/body`;
@@ -352,9 +354,14 @@ export function hashWheel(hash: string, ids: string[]): string | null;
   - `Review Focus 4: theme toggled on the body wheel` (no console errors; the `drawTimes` count grows).
   - `Review Focus 5: #/body/nowhere and #/nowhere load the feelings wheel's start view`.
   - `deep link #/body/chest/racing-heart/scared opens it on load` (phone: the word sits above the card, as in v1.3 §4.2).
-- [ ] **Step 3:** `npm run build:test && npm run test:e2e -- tests/e2e/body.spec.ts` → FAIL.
+- [ ] **Step 2b: Leak test** (`tests/perf/switch.spec.ts`, Chromium only: `test.skip(browserName !== 'chromium')`):
+  - `Review Focus 6: 20 switches leave only the current wheel alive`.
+  - Open `/`, open *Chest › Racing heart* on the body wheel once (so the card, tree and camera have all been used), then click the switch 20 times, ending on Body, waiting for `idle` after each.
+  - Then, through a CDP session, call `HeapProfiler.collectGarbage` twice, in separate `page.evaluate` turns, so `WeakRef`s from the last job can clear.
+  - Expect `liveWheels()` to be 2: the current layout and its store.
+- [ ] **Step 3:** `npm run build:test && npm run test:e2e -- tests/e2e/body.spec.ts` → FAIL; `npx playwright test tests/perf/switch.spec.ts --project=chromium --workers=1` → FAIL.
 - [ ] **Step 4:** Implement.
-- [ ] **Step 5:** `npx tsc --noEmit && npm test && npm run build:test && npm run test:e2e` → PASS, including all of `wheel.spec.ts` unchanged.
+- [ ] **Step 5:** `npx tsc --noEmit && npm test && npm run build:test && npm run test:e2e` → PASS, including all of `wheel.spec.ts` unchanged. Then `npx playwright test tests/perf/switch.spec.ts --project=chromium --workers=1` → PASS.
 - [ ] **Step 6:** Commit `feat: switch between the feelings and body wheels`.
 
 ---

@@ -550,22 +550,38 @@ test('the message and the card never show together', async ({ page }) => {
 });
 
 for (const colorScheme of ['light', 'dark'] as const) {
-  test(`axe: no violations with nothing selected, selected, opened (${colorScheme})`, async ({ page }) => {
-    await page.emulateMedia({ colorScheme });
-    await open(page, '#/core/angry/aggressive/hostile');
-    // Let the unfold finish, so axe reads the settled colours.
-    await settled(page);
-    expect((await new AxeBuilder({ page }).analyze()).violations, 'opened').toEqual([]);
-    await page.keyboard.press('Escape');
-    await idle(page);
-    await expect(title(page)).toHaveText('Hostile');
-    await settled(page);
-    expect((await new AxeBuilder({ page }).analyze()).violations, 'selected').toEqual([]);
-    await page.keyboard.press('Escape');
-    await expect(page.locator('fw-card')).toBeHidden();
-    // The message fades in (150 ms); let it finish so axe reads its settled contrast.
-    await settled(page);
-    expect((await new AxeBuilder({ page }).analyze()).violations, 'nothing').toEqual([]);
+  // Axe is slow in Firefox, and these run several passes; under the full parallel suite 30 s isn't enough.
+  test.describe(`axe (${colorScheme})`, () => {
+    test.describe.configure({ timeout: 60_000 });
+
+    test(`axe: no violations with nothing selected, selected, opened (${colorScheme})`, async ({ page }) => {
+      await page.emulateMedia({ colorScheme });
+      await open(page, '#/core/angry/aggressive/hostile');
+      // Let the unfold finish, so axe reads the settled colours.
+      await settled(page);
+      expect((await new AxeBuilder({ page }).analyze()).violations, 'opened').toEqual([]);
+      await page.keyboard.press('Escape');
+      await idle(page);
+      await expect(title(page)).toHaveText('Hostile');
+      await settled(page);
+      expect((await new AxeBuilder({ page }).analyze()).violations, 'selected').toEqual([]);
+      await page.keyboard.press('Escape');
+      await expect(page.locator('fw-card')).toBeHidden();
+      // The message fades in (150 ms); let it finish so axe reads its settled contrast.
+      await settled(page);
+      expect((await new AxeBuilder({ page }).analyze()).violations, 'nothing').toEqual([]);
+    });
+
+    test(`axe: no violations with the opened card scrolled (${colorScheme})`, async ({ page, isMobile }) => {
+      await page.emulateMedia({ colorScheme });
+      if (!isMobile) await page.setViewportSize({ width: 1280, height: 500 });
+      await open(page, '#/core/angry');
+      await settled(page);
+      const card = page.locator('fw-card');
+      expect(await card.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true);
+      await card.evaluate((el) => { el.scrollTop = el.scrollHeight; });
+      expect((await new AxeBuilder({ page }).analyze()).violations, 'opened and scrolled').toEqual([]);
+    });
   });
 }
 

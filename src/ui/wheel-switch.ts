@@ -13,6 +13,7 @@ export class FwWheelSwitch extends HTMLElement {
   #current = '';
   #thumb: HTMLSpanElement;
   #placed = false;
+  #at = { x: 0, w: 0 };
   #resize: ResizeObserver | null = null;
   #frame = 0;
 
@@ -70,9 +71,16 @@ export class FwWheelSwitch extends HTMLElement {
   #place(animate: boolean): void {
     const b = this.#buttons.get(this.#current);
     if (!b) return;
+    const x = b.offsetLeft;
+    const w = b.offsetWidth;
+    // A press bolds the pressed label, which resizes the switch: the observer then re-measures the same place, and
+    // jumping there would cancel the slide that's running (final review #1). Compare numbers, not the style strings:
+    // browsers normalise `translate`.
+    if (this.#placed && x === this.#at.x && w === this.#at.w) return;
     if (!animate) this.setAttribute('data-instant', '');
-    this.#thumb.style.translate = `${b.offsetLeft}px 0`;
-    this.#thumb.style.width = `${b.offsetWidth}px`;
+    this.#thumb.style.translate = `${x}px 0`;
+    this.#thumb.style.width = `${w}px`;
+    this.#at = { x, w };
     this.#placed = true;
     if (!animate) {
       // Commit the jump before transitions come back.

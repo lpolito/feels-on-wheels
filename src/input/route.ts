@@ -20,13 +20,13 @@ export function keyTarget(el: Element | null): KeyTarget {
 
 /**
  * The action for a document-level keydown (focus is not on the wheel), or null to leave it to the browser
- * (spec v1.2 §3.6). Fields keep every key but Escape; buttons keep Enter and Space; links keep Enter (spec v2.1 §6.3);
+ * (spec v1.2 §3.6). Fields keep every key but Escape; buttons and links (spec v2.1 §6.3) keep Enter and Space;
  * character shortcuts stay with the wheel.
  */
 export function routeKey(key: string, where: KeyTarget, modified: boolean): Action | null {
   if (modified || CHARACTER_KEYS.has(key)) return null;
   if (where === 'field' && key !== 'Escape') return null;
   if (where === 'button' && (key === 'Enter' || key === ' ')) return null;
-  if (where === 'link' && key === 'Enter') return null;
+  if (where === 'link' && (key === 'Enter' || key === ' ')) return null;
   return keyToAction(key);
 }

@@ -237,6 +237,22 @@ test.describe('v2.1: the wheel switch', () => {
     await expectUnder(page, 'Body');
   });
 
+  test('the highlight is still sliding two frames after a press (final review #1)', async ({ page }) => {
+    await open(page);
+    // Drive the switch itself (as main.ts does after a press), so mounting the other wheel's work can't eat the 250 ms
+    // slide on a slow headless run; what's under test is the switch's own re-measuring cancelling it.
+    const { running, elapsed } = await thumb(page).evaluate(async (el) => {
+      const sw = document.querySelector('fw-wheel-switch') as HTMLElement & { current: string };
+      const t0 = performance.now();
+      sw.current = 'body';
+      for (let k = 0; k < 2; k++) await new Promise((r) => requestAnimationFrame(r));
+      return { running: el.getAnimations().filter((a) => a.playState === 'running').length, elapsed: performance.now() - t0 };
+    });
+    // Two frames normally take ~33 ms; past 200 ms the slide may honestly be over, so the sample proves nothing.
+    test.skip(elapsed > 200, `two frames took ${Math.round(elapsed)} ms`);
+    expect(running).toBeGreaterThan(0);
+  });
+
   test('quick presses end under the last pressed button', async ({ page }) => {
     await open(page);
     await switchButton(page, 'Body').click();

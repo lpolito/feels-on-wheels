@@ -14,8 +14,10 @@ describe('routeKey', () => {
     expect(routeKey(' ', 'button', false)).toBeNull();
   });
 
-  test('link target (spec v2.1 §6.3): Enter is left to the link; other keys still route', () => {
+  test('link target (spec v2.1 §6.3): Enter and Space are left to the link; other keys still route', () => {
     expect(routeKey('Enter', 'link', false)).toBeNull();
+    // Final review #2: Space on the message link must not select a word (and drop focus as the message hides).
+    expect(routeKey(' ', 'link', false)).toBeNull();
     expect(routeKey('ArrowDown', 'link', false)).toEqual({ type: 'step', delta: 1 });
     expect(routeKey('Escape', 'link', false)).toEqual({ type: 'escape' });
   });

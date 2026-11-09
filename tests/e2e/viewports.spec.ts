@@ -18,10 +18,18 @@ const SIZES: [number, number][] = [
   [600, 500], [700, 700], [719, 480], [720, 479], [1000, 400], [500, 300],
   // Extremes: a folded Galaxy Fold, iPad Pro sideways, a large monitor
   [280, 653], [1366, 1024], [2560, 1440],
+  // Small split-screen windows wider than tall, and the sideways width floor (final review #3)
+  [400, 350], [470, 460], [360, 340], [559, 320], [560, 320],
 ];
 
+/**
+ * Known before v2.1 (roadmap Known issues): on tiny, short windows the body wheel's whole-wheel view is too small for
+ * any area label ("Breath and throat" needs a bigger cell), so it rests unlabelled. The feelings wheel's short words fit.
+ */
+const BODY_UNLABELLED = new Set(['500×300', '559×320', '360×340']);
+
 /** Spec v2.1 §6.1, as camera.ts isPortrait (the app fills the viewport). */
-const portrait = (w: number, h: number) => h >= w || (w < 720 && h >= 480);
+const portrait = (w: number, h: number) => h >= w || (w < 720 && h >= 480) || w < 560;
 
 type Box = { x: number; y: number; width: number; height: number };
 const box = async (l: Locator): Promise<Box> => (await l.boundingBox())!;
@@ -47,7 +55,13 @@ test.describe('viewport sweep', () => {
         await open(page, hash);
         await controls(page, w, h);
         expect(inside(await box(hint(page)), w, h), 'message inside viewport').toBe(true);
-        expect((await page.evaluate(() => window.__fw.labelsByRing()))[0], 'core labels').toBeGreaterThan(0);
+        const core = (await page.evaluate(() => window.__fw.labelsByRing()))[0]!;
+        if (hash === '#/body' && BODY_UNLABELLED.has(`${w}×${h}`)) {
+          test.info().annotations.push({ type: 'known issue', description: 'body wheel too small for area labels at rest' });
+          expect(core, 'still unlabelled; if this now draws labels, drop the size from BODY_UNLABELLED').toBe(0);
+        } else {
+          expect(core, 'core labels').toBeGreaterThan(0);
+        }
         expect((await state(page)).view.mode).toBe('wheel');
         const app = await box(page.locator('#app'));
         const stage = await box(page.locator('#stage'));
@@ -69,6 +83,8 @@ test.describe('viewport sweep', () => {
         await controls(page, w, h);
         const card = await box(page.locator('fw-card'));
         expect(inside(card, w, h), 'card inside viewport').toBe(true);
+        const title = page.locator('fw-card .fw-card-title');
+        expect(await title.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), 'card title not truncated').toBe(true);
         const p = await page.evaluate((x) => window.__fw.segmentScreenPoint(x), path);
         expect(contains(await box(page.locator('#stage')), p), 'opened word on the stage').toBe(true);
         expect(contains(card, p), 'opened word under the card').toBe(false);

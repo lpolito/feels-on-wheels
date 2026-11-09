@@ -136,7 +136,9 @@ describe('resting cameras', () => {
 
   test('isPortrait (spec v2.1 §6.1)', () => {
     for (const [w, h] of [[393, 851], [600, 500], [700, 700]] as const) expect(isPortrait({ width: w, height: h }), `${w}×${h}`).toBe(true);
-    for (const [w, h] of [[851, 393], [667, 375], [1280, 800]] as const) expect(isPortrait({ width: w, height: h }), `${w}×${h}`).toBe(false);
+    for (const [w, h] of [[851, 393], [667, 375], [1280, 800], [568, 320], [560, 320]] as const) expect(isPortrait({ width: w, height: h }), `${w}×${h}`).toBe(false);
+    // Final review #3: small near-square windows (split screen) keep the portrait layout; the column would be too thin.
+    for (const [w, h] of [[400, 350], [470, 460], [360, 340], [559, 320]] as const) expect(isPortrait({ width: w, height: h }), `${w}×${h}`).toBe(true);
   });
 
   test('restView (spec v2.1 §6.2)', () => {

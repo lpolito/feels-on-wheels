@@ -53,10 +53,16 @@ export function wheelCamera(layout: Layout, vp: Viewport, rotation: number, o: C
   return overviewCamera(vp, rotation);
 }
 
-/** Spec v2.1 §6.1: the portrait layout, measured on the whole app; the stylesheet's container query matches it. */
+/**
+ * Spec v2.1 §6.1: the portrait layout, measured on the whole app; the stylesheet's container query matches it. Plus a
+ * floor from the final review (#3): under 560 px wide the side column would be too thin for the card, so small
+ * near-square windows (split screen) keep the portrait layout, as they did before v2.1.
+ */
 export function isPortrait(app: { width: number; height: number }): boolean {
-  return app.height >= app.width || (app.width < 720 && app.height >= 480);
+  return app.height >= app.width || (app.width < 720 && app.height >= 480) || app.width < SIDEWAYS_MIN_WIDTH_PX;
 }
+
+const SIDEWAYS_MIN_WIDTH_PX = 560;
 
 /** Spec v2.1 §6.2: which whole-wheel view rests on this stage (`vp`) inside this app. */
 export function restView(layout: Layout, vp: Viewport, app: { width: number; height: number }): RestView {

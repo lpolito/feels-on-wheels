@@ -31,7 +31,9 @@ jobs:
 
   e2e:
     name: e2e (${{ matrix.project }})
-    runs-on: ubuntu-latest
+    # macOS, not Ubuntu: the layout tests measure text, and Ubuntu's fallback font (DejaVu Sans) is much wider than
+    # the system fonts on Apple, Android and Windows devices. See the roadmap's known issues.
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:

@@ -123,7 +123,7 @@ Still open after v2.2.1. None blocks the next version.
 
 The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens in two steps: first shareable, then launched.
 
-### Step 1: shareable (in progress)
+### Step 1: shareable (built, deploying)
 
 [Spec](superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md), [plan](superpowers/plans/2026-11-09-feels-on-wheels-going-public.md). Online at `lpolito.github.io/feels-on-wheels/` so Lucas can share it and use it across devices, but not announced or indexed. It covers:
 
@@ -132,7 +132,7 @@ The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens
 - **Licence:** PolyForm Noncommercial 1.0.0 for code, CC BY-NC-SA 4.0 for content. Source-available, not open source: nobody may sell it. Contributors license their work under the same terms and let Lucas relicense it.
 - A README, CONTRIBUTING.md and a PR template.
 - A GitHub Pages deploy, the SEO and social preview tags, a preview image, robots.txt and a sitemap. All absolute URLs come from one setting, `site.config.ts`.
-- An **About page** with the credits, linked from the toolbar. Its draft text is in [reference/README.md](reference/README.md#credits).
+- An **About page** with the credits, linked from the toolbar (on phones it gives way to Start over while a word is selected). Both unconfirmed attributions were confirmed on 2026-11-09: Roberts's wheel is still on imgur, and feelingswheel.com credits him. See [core-feelings-wheel.md](reference/core-feelings-wheel.md).
 - An **icon kit for lucaspolito.dev** in `docs/website-icon/`, not added to the site yet.
 
 ### Step 2: before launching it
@@ -149,7 +149,6 @@ Still open. Nothing here is started.
   - Installs and saved themes at the github.io address don't carry over.
 - **Optional, after the move:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
 - **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, grey like the site's other icons; on hover it takes the wheel's seven colours and spins once, settling.
-- **Unconfirmed credits:** any the step 1 research couldn't confirm (the Roberts attribution, the reference site).
 - **The old private repo:** archive or delete `lpolito/feelings-wheel` once the public one is settled.
 - **The URL structure:** decide on [cleaner URLs, ready for languages](#cleaner-urls-ready-for-languages) before launch, while no links are out in the world. Moving to a domain is the natural moment.
 - **Known issues:** decide whether any should be fixed before announcing it.

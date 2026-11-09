@@ -1,7 +1,7 @@
 import { data } from './boot';
 import { createAnnouncer } from './a11y/announce';
 import { announceFor, createA11yTree, type A11yTree } from './a11y/tree';
-import { createCameraController, openedHalfHeight, useHalfWheel, type CameraController, type CameraOpts } from './camera';
+import { createCameraController, isPortrait, openedHalfHeight, restView, type CameraController, type CameraOpts } from './camera';
 import { createController, type Controller } from './controller';
 import { wheelText } from './i18n';
 import { attachGestures } from './input/gestures';
@@ -50,7 +50,7 @@ const card = $<FwCard>('fw-card');
 const hint = $<FwHint>('fw-hint');
 const toolbar = $<FwToolbar>('fw-toolbar');
 const wheelSwitch = $<FwWheelSwitch>('fw-wheel-switch');
-wheelSwitch.wheels = data.wheels.map((w) => ({ id: w.id, label: wheelText(w.id).switch }));
+wheelSwitch.wheels = data.wheels.map((w) => ({ id: w.id, label: wheelText(w.id).switch, name: wheelText(w.id).switchName }));
 const themeMeta = $<HTMLMetaElement>('#theme-color');
 const announce = createAnnouncer($<HTMLElement>('#announcer'));
 const storage = safeStorage();
@@ -86,10 +86,9 @@ function measure(): { vp: Viewport; opts: CameraOpts } {
   const { width, height } = stage.getBoundingClientRect();
   const whole = app.getBoundingClientRect();
   const remPx = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-  // Spec v1.2 §4.3: the one portrait rule, matching the stylesheet's container query.
-  const portrait = whole.width < 720 || whole.height >= whole.width;
+  // Spec v2.1 §6.1: the one portrait rule, matching the stylesheet's container query.
   const vp = { width, height, radius: Math.max(Math.min(width, height) / 2 - 8, 1) };
-  return { vp, opts: { remPx, portrait, half: useHalfWheel(layout, vp), openedY: null } };
+  return { vp, opts: { remPx, portrait: isPortrait(whole), rest: restView(layout, vp, whole), openedY: null } };
 }
 
 let vp!: Viewport;
@@ -117,7 +116,7 @@ function frame(): void {
   renderer.draw({
     cam: camera.current, vp, lit, prevLit, fadeT, pulseT,
     selected: s.selected, opened: s.opened,
-    mode: s.view.mode, remPx: opts.remPx, moreContrast: moreContrast.matches,
+    mode: s.view.mode, ring: s.view.mode === 'ring' ? s.view.ring : null, remPx: opts.remPx, moreContrast: moreContrast.matches,
   });
   if (TEST) {
     drawTimes.push(performance.now() - t0);
@@ -208,7 +207,10 @@ app.addEventListener('click', (e) => {
 function hintContent(s: State): HintContent {
   if (s.selected !== null) return null;
   const text = wheelText(layout.wheelId);
-  return { text: text.hint, link: { label: text.hintLink, wheel: data.suggests[layout.wheelId]! } };
+  const wheel = data.suggests[layout.wheelId]!;
+  // Spec v2.1 §6.3: the other wheel's own URL (v2 §4.3), so a new tab opens that wheel.
+  const href = wheel === firstId ? location.pathname + location.search : `#/${wheel}`;
+  return { text: text.hint, link: { label: text.hintLink, wheel, href } };
 }
 
 /** Spec v1.2 §4.2: the phone card's height cap keeps it below the opened cell. */
@@ -346,7 +348,7 @@ function mount(next: Layout, initial: State, intro: boolean): void {
   // A deep link on a phone starts with the opened word already above its card.
   opts = { ...opts, openedY: openedYFor(store.get()) };
   controller.setViewport(vp, opts);
-  if (intro && opts.half && !reducedMotion.matches) controller.playIntro();
+  if (intro && opts.rest !== 'whole' && !reducedMotion.matches) controller.playIntro();
   drawNow();
   if (TEST) live.push(new WeakRef(layout), new WeakRef(store));}
 
@@ -436,6 +438,7 @@ if (TEST) {
       },
       wheel: () => layout.wheelId,
       liveWheels: () => live.filter((r) => r.deref() !== undefined).length,
+      labelsByRing: () => renderer.stats.labelsByRing.slice(),
     },
   });
 }

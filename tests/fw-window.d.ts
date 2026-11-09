@@ -18,6 +18,8 @@ declare global {
       wheel(): string;
       /** v2 leak probe: layouts and stores still alive (WeakRefs). */
       liveWheels(): number;
+      /** v2.1: labels drawn per ring in the last frame. */
+      labelsByRing(): number[];
     };
     __rafCount: number;
     __probe: number[];

@@ -89,6 +89,28 @@ describe('palette contrast floors', () => {
     }
   });
 
+  test('every area core-ring fill is ≥ 0.055 OKLab from every feeling fill at every ring (spec v2.1 §7.2)', () => {
+    for (const [theme, p] of themes) {
+      for (const area of AREA_HUES) {
+        const a = oklab(shade(fitWhite(p.hues[area]!), -0.07));
+        for (const f of FEELING_HUES) {
+          for (const dL of [-0.07, -0.035, 0]) {
+            expect(dist(a, oklab(shade(fitWhite(p.hues[f]!), dL))), `${theme} ${area} vs ${f} ${dL}`).toBeGreaterThanOrEqual(0.055);
+          }
+        }
+      }
+    }
+  });
+
+  test('area tokens are the v2 values at 1.2x chroma (spec v2.1 §7.2)', () => {
+    const [, light] = themes[0]!;
+    const [, dark] = themes[1]!;
+    expect(light.hues['head']!.toLowerCase()).toBe('#821538');
+    expect(dark.hues['head']!.toLowerCase()).toBe('#b0435e');
+    expect(light.hues['stomach']!.toLowerCase()).toBe('#0179a3');
+    expect(dark.hues['whole-body']!.toLowerCase()).toBe('#b05ba6');
+  });
+
   test('for both themes, every hue × ring: lit label is white at ≥ 4.5, faded label ≥ 3', () => {
     for (const [theme, p] of themes) {
       const table = buildFillTable(p, 3, theme);

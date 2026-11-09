@@ -2,12 +2,17 @@ import type { Layout } from './model/layout';
 import { normAngle, snapRotation, type Camera, type Viewport } from './model/geometry';
 import { LIFT_RADIAL_PX, LIFT_SIDE_PX, OUTLINE_OUTSIDE_PX } from './render/selection';
 
+export type RestView = 'whole' | 'half' | 'side';
+
 export interface CameraOpts {
   remPx: number;
-  /** The stage is portrait (spec v1.2 §4.3: width < 720 or height ≥ width): ring views centre the ring. */
+  /** The layout is portrait (spec v2.1 §6.1, `isPortrait`): ring views centre the ring. */
   portrait: boolean;
-  /** The whole-wheel view is the half-wheel (spec v1.2 §3.2): phones, where the full wheel's labels would be too small. */
-  half: boolean;
+  /**
+   * The whole-wheel resting view: the whole wheel; the half-wheel (spec v1.2 §3.2) on portrait phones; or the side view
+   * (spec v2.1 §6.2) on short sideways screens.
+   */
+  rest: RestView;
   /** Portrait ring views: the stage y (CSS px) for the opened word's centre (spec v1.3 §4.2); null centres it. */
   openedY: number | null;
 }
@@ -40,11 +45,33 @@ export function overviewCamera(vp: Viewport, rotation: number): Camera {
 /** The half-wheel's outer edge reaches this fraction of the stage width. */
 const HALF_REACH = 0.95;
 
-/** The whole-wheel resting camera: centred in the stage, or the half-wheel when o.half. */
-export function wheelCamera(vp: Viewport, rotation: number, o: CameraOpts): Camera {
-  if (!o.half) return overviewCamera(vp, rotation);
-  return { scale: (HALF_REACH * vp.width) / vp.radius, rotation, cx: 0, cy: vp.height / 2 };
+/** The whole-wheel resting camera for `o.rest`: centred in the stage, the half-wheel, or the side view. */
+export function wheelCamera(layout: Layout, vp: Viewport, rotation: number, o: CameraOpts): Camera {
+  if (o.rest === 'half') return { scale: (HALF_REACH * vp.width) / vp.radius, rotation, cx: 0, cy: vp.height / 2 };
+  // Spec v2.1 §6.2: the core ring view, with nothing selected.
+  if (o.rest === 'side') return ringFocusCamera(layout, 0, vp, rotation, { ...o, openedY: null });
+  return overviewCamera(vp, rotation);
 }
+
+/**
+ * Spec v2.1 §6.1: the portrait layout, measured on the whole app; the stylesheet's container query matches it. Plus a
+ * floor from the final review (#3): under 560 px wide the side column would be too thin for the card, so small
+ * near-square windows (split screen) keep the portrait layout, as they did before v2.1.
+ */
+export function isPortrait(app: { width: number; height: number }): boolean {
+  return app.height >= app.width || (app.width < 720 && app.height >= 480) || app.width < SIDEWAYS_MIN_WIDTH_PX;
+}
+
+const SIDEWAYS_MIN_WIDTH_PX = 560;
+
+/** Spec v2.1 §6.2: which whole-wheel view rests on this stage (`vp`) inside this app. */
+export function restView(layout: Layout, vp: Viewport, app: { width: number; height: number }): RestView {
+  if (isPortrait(app)) return useHalfWheel(layout, vp) ? 'half' : 'whole';
+  return app.height < SIDE_BELOW_PX ? 'side' : 'whole';
+}
+
+/** Sideways screens shorter than this rest on the side view (spec v2.1 §6.2). */
+const SIDE_BELOW_PX = 480;
 
 /**
  * Spec v1.2 §3.2: the whole wheel is a half-wheel where the full wheel's labels would be too small, but only while

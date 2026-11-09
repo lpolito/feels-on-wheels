@@ -150,13 +150,13 @@ test.describe('body wheel cards (desktop)', () => {
 
     await tapPath(page, 'chest/racing-heart');
     await expect(title(page)).toHaveText('Racing heart');
-    await expect(headings(page)).toHaveText(['Could be']);
+    await expect(headings(page)).toHaveText(['Could be feeling']);
     expect(await rowsText(page)).toEqual(['Scared ›', 'Mad ›', 'Excited ›']);
 
     await tapPath(page, 'chest/racing-heart/scared');
     await expect(title(page)).toHaveText('Scared');
     await expect(page.locator('fw-card .fw-definition')).not.toBeEmpty();
-    await expect(headings(page)).toHaveText(['You might notice', 'Could also be']);
+    await expect(headings(page)).toHaveText(['You might notice', 'Could also be feeling']);
     await expect(page.locator('fw-card .fw-close-to button')).toHaveText(['Mad', 'Excited']);
     await expect(page.locator('fw-card .fw-jump')).toHaveText('See Scared on the feelings wheel ›');
     await expect(page.locator('fw-card nav.fw-crumbs button')).toHaveText(['Chest', 'Racing heart']);
@@ -214,6 +214,130 @@ test.describe('narrow phones (360 px)', () => {
     const tb = (await startOver.boundingBox())!;
     expect(sw.x + sw.width).toBeLessThanOrEqual(tb.x);
     await expect(startOver).toHaveAccessibleName('Start over');
+  });
+});
+
+test.describe('v2.1: the wheel switch', () => {
+  test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'desktop flows'));
+
+  const thumb = (page: Page) => page.locator('fw-wheel-switch .fw-switch-thumb');
+  async function expectUnder(page: Page, label: string): Promise<void> {
+    const t = (await thumb(page).boundingBox())!;
+    const b = (await switchButton(page, label).boundingBox())!;
+    expect(Math.abs(t.x - b.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(t.width - b.width)).toBeLessThanOrEqual(1);
+  }
+
+  test('the switch highlight slides under the pressed button', async ({ page }) => {
+    await open(page);
+    await expectUnder(page, 'Feelings');
+    await switchButton(page, 'Body').click();
+    await idle(page);
+    await settled(page);
+    await expectUnder(page, 'Body');
+  });
+
+  test('the highlight is still sliding two frames after a press (final review #1)', async ({ page }) => {
+    await open(page);
+    // Drive the switch itself (as main.ts does after a press), so mounting the other wheel's work can't eat the 250 ms
+    // slide on a slow headless run; what's under test is the switch's own re-measuring cancelling it.
+    const { running, elapsed } = await thumb(page).evaluate(async (el) => {
+      const sw = document.querySelector('fw-wheel-switch') as HTMLElement & { current: string };
+      const t0 = performance.now();
+      sw.current = 'body';
+      for (let k = 0; k < 2; k++) await new Promise((r) => requestAnimationFrame(r));
+      return { running: el.getAnimations().filter((a) => a.playState === 'running').length, elapsed: performance.now() - t0 };
+    });
+    // Two frames normally take ~33 ms; past 200 ms the slide may honestly be over, so the sample proves nothing.
+    test.skip(elapsed > 200, `two frames took ${Math.round(elapsed)} ms`);
+    expect(running).toBeGreaterThan(0);
+  });
+
+  test('quick presses end under the last pressed button', async ({ page }) => {
+    await open(page);
+    await switchButton(page, 'Body').click();
+    await switchButton(page, 'Feelings').click();
+    await idle(page);
+    await settled(page);
+    expect(await wheelId(page)).toBe('core');
+    await expectUnder(page, 'Feelings');
+  });
+
+  test('no slide with reduced motion', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await open(page);
+    await switchButton(page, 'Body').click();
+    expect(await thumb(page).evaluate((el) => el.getAnimations().length)).toBe(0);
+    await expectUnder(page, 'Body');
+  });
+
+  test('forced colours: the pressed option stands out', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'forced-colors emulation is Chromium-only');
+    await page.emulateMedia({ forcedColors: 'active' });
+    await open(page);
+    const bg = (sel: string) => page.locator(sel).evaluate((el) => getComputedStyle(el).backgroundColor);
+    const color = (label: string) => switchButton(page, label).evaluate((el) => getComputedStyle(el).color);
+    expect(await bg('fw-wheel-switch .fw-switch-thumb')).not.toBe(await bg('fw-wheel-switch'));
+    expect(await color('Feelings')).not.toBe(await color('Body'));
+  });
+
+  test('three options fit at 320 px', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await open(page);
+    await tapPath(page, 'fearful');
+    await expect(page.locator('fw-toolbar .fw-start-over')).toBeVisible();
+    await page.evaluate(() => {
+      const sw = document.querySelector('fw-wheel-switch') as HTMLElement & { wheels: unknown; current: string };
+      sw.wheels = [{ id: 'core', label: 'Feelings' }, { id: 'body', label: 'Body' }, { id: 'emoji', label: '🙂', name: 'Emoji' }];
+      sw.current = 'core';
+    });
+    const sw = (await page.locator('fw-wheel-switch').boundingBox())!;
+    const tb = (await page.locator('fw-toolbar').boundingBox())!;
+    expect(sw.x).toBeGreaterThanOrEqual(0);
+    expect(sw.x + sw.width).toBeLessThanOrEqual(tb.x);
+    expect(tb.x + tb.width).toBeLessThanOrEqual(320);
+    for (const b of await page.locator('fw-wheel-switch button').all()) {
+      expect((await b.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+    }
+  });
+});
+
+test.describe('v2.1: the message link', () => {
+  test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'desktop flows'));
+
+  test('Enter on the message link switches in place', async ({ page }) => {
+    await open(page);
+    const before = await page.evaluate(() => history.length);
+    await hintLink(page).focus();
+    await page.keyboard.press('Enter');
+    await idle(page);
+    expect(await wheelId(page)).toBe('body');
+    expect(new URL(page.url()).hash).toBe('#/body');
+    expect(await page.evaluate(() => history.length)).toBe(before + 1);
+  });
+
+  test('the link wraps with the sentence', async ({ page }) => {
+    await page.setViewportSize({ width: 851, height: 393 });
+    await open(page);
+    const { rects, stop } = await hintLink(page).evaluate((a) => {
+      const rects = [...a.getClientRects()].map((r) => ({ top: r.top }));
+      const after = a.nextSibling!;
+      const range = document.createRange();
+      range.selectNodeContents(after);
+      return { rects, stop: range.getBoundingClientRect().top };
+    });
+    expect(rects.length).toBeGreaterThan(1);
+    expect(Math.abs(stop - rects[rects.length - 1]!.top)).toBeLessThanOrEqual(2);
+  });
+});
+
+test.describe('v2.1: context rings', () => {
+  test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'sets its own viewport'));
+  test.use({ viewport: { width: 393, height: 851 } });
+
+  test('portrait phone, Head and eyes opened: the outer ring has labels', async ({ page }) => {
+    await open(page, '#/body/head');
+    expect((await page.evaluate(() => window.__fw.labelsByRing()))[2]).toBeGreaterThan(0);
   });
 });
 

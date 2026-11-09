@@ -18,6 +18,28 @@ const mount = (): { el: FwWheelSwitch; got: unknown[] } => {
   return { el, got };
 };
 const buttons = (el: HTMLElement) => [...el.querySelectorAll<HTMLButtonElement>('button')];
+const THREE = [...WHEELS, { id: 'emoji', label: '🙂', name: 'Emoji' }];
+
+describe('<fw-wheel-switch> v2.1', () => {
+  test('three wheels: text and accessible names', () => {
+    const { el } = mount();
+    el.wheels = THREE;
+    expect(buttons(el).map((b) => b.textContent)).toEqual(['Feelings', 'Body', '🙂']);
+    expect(buttons(el).map((b) => b.getAttribute('aria-label'))).toEqual([null, null, 'Emoji']);
+    expect(buttons(el).map((b) => b.getAttribute('aria-pressed'))).toEqual(['true', 'false', 'false']);
+  });
+
+  test('the highlight is one aria-hidden span before the buttons', () => {
+    const { el } = mount();
+    const thumb = el.firstElementChild!;
+    expect(thumb.className).toBe('fw-switch-thumb');
+    expect(thumb.getAttribute('aria-hidden')).toBe('true');
+    el.current = 'body';
+    el.wheels = THREE;
+    expect(el.querySelectorAll('.fw-switch-thumb')).toHaveLength(1);
+    expect(el.firstElementChild).toBe(thumb);
+  });
+});
 
 describe('<fw-wheel-switch>', () => {
   test('one button per wheel, in order, with aria-pressed on the current one', () => {

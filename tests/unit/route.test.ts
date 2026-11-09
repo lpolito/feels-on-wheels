@@ -14,6 +14,20 @@ describe('routeKey', () => {
     expect(routeKey(' ', 'button', false)).toBeNull();
   });
 
+  test('link target (spec v2.1 §6.3): Enter and Space are left to the link; other keys still route', () => {
+    expect(routeKey('Enter', 'link', false)).toBeNull();
+    // Final review #2: Space on the message link must not select a word (and drop focus as the message hides).
+    expect(routeKey(' ', 'link', false)).toBeNull();
+    expect(routeKey('ArrowDown', 'link', false)).toEqual({ type: 'step', delta: 1 });
+    expect(routeKey('Escape', 'link', false)).toEqual({ type: 'escape' });
+  });
+
+  test('keyTarget classifies a link with an href as link', () => {
+    document.body.innerHTML = '<p><a href="#/body"><span>go</span></a><a>no href</a></p>';
+    expect(keyTarget(document.querySelector('a[href] span'))).toBe('link');
+    expect(keyTarget(document.querySelector('a:not([href])'))).toBe('other');
+  });
+
   test('field target: only Escape routes', () => {
     expect(routeKey('Escape', 'field', false)).toEqual({ type: 'escape' });
     for (const k of ['ArrowDown', 'ArrowLeft', 'Enter', ' ', '+', '-', '=']) expect(routeKey(k, 'field', false), k).toBeNull();

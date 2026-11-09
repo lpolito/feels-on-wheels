@@ -2,14 +2,14 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { buildLayout } from '../../src/model/layout';
 import { TAU, hitTest, normAngle, segmentAt, type Camera, type Viewport } from '../../src/model/geometry';
-import { createCameraController, type CameraController } from '../../src/camera';
+import { createCameraController, ringFocusCamera, type CameraController } from '../../src/camera';
 import { createStore, initialState, type Action, type State, type Store } from '../../src/state/store';
 import { createController, type Controller } from '../../src/controller';
 
 const layout = buildLayout(loadData().wheel);
 const idx = (p: string): number => layout.byPath.get(p)!;
 const desk: Viewport = { width: 1200, height: 900, radius: 442 };
-const opts = { remPx: 16, portrait: false, half: false, openedY: null };
+const opts = { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null };
 
 let now = 0;
 let queue: Map<number, FrameRequestCallback>;
@@ -56,7 +56,7 @@ function setup(initial = initialState): void {
 beforeEach(() => setup());
 
 const phoneVp: Viewport = { width: 390, height: 844, radius: 187 };
-const phoneOpts = { remPx: 16, portrait: true, half: true, openedY: null };
+const phoneOpts = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null };
 const halfScale = (0.95 * phoneVp.width) / phoneVp.radius;
 
 /** A phone (spec v1.2 §3.2): the whole-wheel view is the half-wheel. */
@@ -468,6 +468,91 @@ describe('intro and restore', () => {
   });
 });
 
+describe('side view (sideways phone, spec v2.1 §6.2)', () => {
+  const sideVp: Viewport = { width: 511, height: 393, radius: 393 / 2 - 8 };
+  const sideOpts = { remPx: 16, portrait: false, rest: 'side' as const, openedY: null };
+  const sideCam = (rotation: number) => ringFocusCamera(layout, 0, sideVp, rotation, sideOpts);
+
+  function setupSide(initial = initialState): void {
+    now = 0; queue = new Map(); nextId = 1;
+    store = createStore(layout, initial);
+    camera = createCameraController({
+      now: () => now,
+      raf: (cb) => { const id = nextId++; queue.set(id, cb); return id; },
+      caf: (id) => { queue.delete(id); },
+      reducedMotion: () => false,
+    });
+    ctl = createController(layout, store, camera, sideVp, sideOpts);
+    step(50);
+  }
+  const sideScreenOf = (i: number): { x: number; y: number } => {
+    const s = layout.segments[i]!;
+    const ring = layout.rings[s.ring]!;
+    const c = camera.current;
+    const d = ((ring.inner + ring.outer) / 2) * sideVp.radius * c.scale;
+    return { x: c.cx + d * Math.cos(s.mid + c.rotation), y: c.cy + d * Math.sin(s.mid + c.rotation) };
+  };
+  const expectSide = (rotation?: number): void => {
+    const want = sideCam(camera.current.rotation);
+    expect(camera.current.scale).toBeCloseTo(want.scale, 9);
+    expect(camera.current.cx).toBeCloseTo(want.cx, 9);
+    expect(camera.current.cy).toBeCloseTo(want.cy, 9);
+    if (rotation !== undefined) expect(sameAngle(camera.current.rotation, rotation)).toBeLessThan(1e-6);
+  };
+
+  test("starts on the side view with Fearful at 3 o'clock", () => {
+    setupSide();
+    expectSide();
+    expect(camera.current.scale).toBeGreaterThan(1.5);
+    expect(offCenter(idx('fearful'))).toBeLessThan(1e-9);
+  });
+
+  test('playIntro only spins', () => {
+    setupSide();
+    const rest = camera.current.rotation;
+    ctl.playIntro();
+    expect(camera.moving).toBe(true);
+    step(2000);
+    expectSide(rest);
+    expect(store.get()).toBe(initialState);
+  });
+
+  test('a tap selects without moving the camera', () => {
+    setupSide();
+    const before = { ...camera.current };
+    ctl.handle([{ type: 'tap', ...sideScreenOf(idx('fearful')) }]);
+    step(1000);
+    expect(store.get()).toMatchObject({ selected: idx('fearful'), opened: false, view: { mode: 'wheel' } });
+    expect(camera.current).toEqual(before);
+  });
+
+  test('closing an opened word lands on the side view', () => {
+    setupSide(opened('fearful/scared'));
+    step(2000);
+    const rot = camera.current.rotation;
+    store.dispatch({ type: 'close' });
+    step(2000);
+    expectSide(rot);
+  });
+
+  test('turning the phone: half-wheel ↔ side view, and an opened word keeps its ring view', () => {
+    setupPhone();
+    ctl.setViewport(sideVp, sideOpts);
+    step(1000);
+    expectSide();
+    ctl.setViewport(phoneVp, phoneOpts);
+    step(1000);
+    expectHalf();
+    setupPhone(opened('angry/mad'));
+    step(2000);
+    ctl.setViewport(sideVp, sideOpts);
+    step(2000);
+    const want = ringFocusCamera(layout, 1, sideVp, camera.current.rotation, sideOpts);
+    expect(camera.current.scale).toBeCloseTo(want.scale, 9);
+    expect(camera.current.cx).toBeCloseTo(want.cx, 9);
+  });
+});
+
 describe('half-wheel (phone)', () => {
   const medianCore = (): number => {
     const w = layout.rings[0]!.segments.map((k) => layout.segments[k]!.end - layout.segments[k]!.start).sort((x, y) => x - y);
@@ -543,7 +628,7 @@ describe('half-wheel (phone)', () => {
     const rot = camera.current.rotation;
     const before = store.get();
     const land: Viewport = { width: 844, height: 390, radius: 187 };
-    ctl.setViewport(land, { remPx: 16, portrait: false, half: false, openedY: null });
+    ctl.setViewport(land, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null });
     step(2000);
     expect(store.get()).toBe(before);
     expect(before).toMatchObject({ selected: idx('angry'), opened: false, view: { mode: 'wheel' } });
@@ -633,7 +718,7 @@ describe('viewport', () => {
   test('setViewport while opened keeps the same word centred at angle 0', () => {
     setup(opened('angry/aggressive/hostile'));
     step(1000);
-    ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true, half: false, openedY: null });
+    ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true, rest: 'whole' as const, openedY: null });
     step(1000);
     expect(offCenter(idx('angry/aggressive/hostile'))).toBeLessThan(1e-9);
     expect(camera.current.cx + 0.81 * 342 * camera.current.scale).toBeCloseTo(350, 6);

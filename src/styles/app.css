@@ -48,7 +48,7 @@ button, select {
   border-radius: 999px;
   cursor: pointer;
 }
-:is(button, select, [role="treeitem"]):focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+:is(button, select, a, [role="treeitem"]):focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
 fw-toolbar {
   position: absolute;
@@ -71,11 +71,41 @@ fw-wheel-switch {
   background: var(--surface);
   border: 1px solid color-mix(in srgb, var(--fg) 18%, transparent);
   border-radius: 999px;
+  isolation: isolate;
 }
-fw-wheel-switch button { min-height: 44px; padding: 0 1rem; font-size: 1rem; border-color: transparent; }
-fw-wheel-switch button[aria-pressed="true"] { background: var(--fg); color: var(--bg); font-weight: 600; }
+fw-wheel-switch button {
+  min-height: 44px;
+  padding: 0 1rem;
+  font-size: 1rem;
+  border-color: transparent;
+  background: transparent;
+  transition: color 250ms ease-out;
+}
+fw-wheel-switch button[aria-pressed="true"] { color: var(--bg); font-weight: 600; }
+/* Spec v2.1 §4.1: the pressed fill is one highlight that slides to the pressed button (wheel-switch.ts measures it). */
+.fw-switch-thumb {
+  position: absolute;
+  inset-block: 3px;
+  left: 0;
+  z-index: -1;
+  border-radius: 999px;
+  background: var(--fg);
+  pointer-events: none;
+  transition: translate 250ms ease-out, width 250ms ease-out;
+}
+fw-wheel-switch[data-instant] :is(.fw-switch-thumb, button) { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  fw-wheel-switch :is(.fw-switch-thumb, button) { transition: none; }
+}
 @media (forced-colors: active) {
-  fw-wheel-switch button[aria-pressed="true"] { background: Highlight; color: HighlightText; forced-color-adjust: none; }
+  .fw-switch-thumb { background: Highlight; forced-color-adjust: none; }
+  fw-wheel-switch button[aria-pressed="true"] { color: HighlightText; forced-color-adjust: none; }
+}
+/* Spec v2.1 §4.2: on the smallest phones, three options fit beside Start over's icon and the theme button. */
+@media (max-width: 359.98px) {
+  fw-wheel-switch { left: max(0.75rem, env(safe-area-inset-left)); top: max(0.75rem, env(safe-area-inset-top)); }
+  fw-wheel-switch button { padding: 0 0.6rem; }
+  fw-toolbar { right: max(0.75rem, env(safe-area-inset-right)); top: max(0.75rem, env(safe-area-inset-top)); gap: 0.35rem; }
 }
 /* Spec v1.3 §6.2: the theme toggle and its short-lived label. */
 .fw-theme { position: relative; display: inline-flex; }
@@ -174,15 +204,10 @@ fw-hint {
   font-weight: 600;
   text-align: start;
 }
-/* Spec v2 §4.1: the link to the other wheel reads as part of the sentence. */
+/* Spec v2 §4.1, v2.1 §6.3: the link to the other wheel is a real link, so it wraps as part of the sentence. */
 .fw-hint-link {
-  display: inline;
-  padding: 0;
-  border: 0;
   border-radius: 2px;
-  background: none;
-  font: inherit;
-  text-align: inherit;
+  color: inherit;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -252,12 +277,24 @@ fw-card[data-open] .fw-card-chevron { rotate: 90deg; }
   border-radius: 50%;
   background: var(--dot-hue);
 }
-/* Spec v1.2 §5.2: while opened, a soft halo in the dot's own colour grows and fades. */
-@keyframes fw-halo {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--dot-hue) 55%, transparent); }
-  70%, 100% { box-shadow: 0 0 0 0.55rem color-mix(in srgb, var(--dot-hue) 0%, transparent); }
+/*
+ * Spec v2.1 §3.2: while opened, the dot beats like a heart: a quick beat, a longer second beat with a halo in the
+ * dot's own colour, then a rest. `scale` never moves the name beside it.
+ */
+@keyframes fw-heartbeat {
+  0% { scale: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--dot-hue) 0%, transparent); animation-timing-function: ease-out; }
+  6% { scale: 1.35; animation-timing-function: ease-in; }
+  12% { scale: 1; }
+  18% {
+    scale: 1;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--dot-hue) 55%, transparent);
+    animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
+  }
+  30% { scale: 1.2; animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1); }
+  44% { scale: 1; }
+  60%, 100% { scale: 1; box-shadow: 0 0 0 0.55rem color-mix(in srgb, var(--dot-hue) 0%, transparent); }
 }
-fw-card[data-open] .fw-dot { animation: fw-halo 2.4s ease-out infinite; }
+fw-card[data-open] .fw-dot { animation: fw-heartbeat 1.6s infinite; }
 @media (forced-colors: active) { .fw-dot { background: CanvasText; } }
 
 /* The crumbs row and the body grow from zero height: a 0fr → 1fr grid row around a clipped inner element. */
@@ -329,8 +366,12 @@ fw-card[data-open] :is(.fw-crumbs-wrap, .fw-card-body) { grid-template-rows: 1fr
   fw-card[data-open] .fw-dot { animation: none; }
 }
 
-/* Narrow / portrait: full-screen wheel, hint and card float at the bottom (spec §5.3). */
-@container app (max-width: 719.98px) or (orientation: portrait) {
+/*
+ * Portrait: full-screen wheel, hint and card float at the bottom (spec §5.3). Spec v2.1 §6.1: taller than wide, or under
+ * 720px wide and at least 480px tall, or under 560px wide (final review #3); a short sideways phone (iPhone SE:
+ * 667 × 375) keeps the side column. Matches isPortrait() in camera.ts.
+ */
+@container app (orientation: portrait) or ((max-width: 719.98px) and (min-height: 480px)) or (max-width: 559.98px) {
   #stage { inset: 0; }
   #float {
     top: auto;

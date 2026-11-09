@@ -16,7 +16,7 @@ Notes on the outside sources this project draws on: what each one is, who made i
 
 ## Credits
 
-What the app's About page credits (its text lives in `src/data/locales/en.json`, `page.about`). Credit everything the app's content draws on, even where no licence requires it. Attributions were confirmed on 2026-11-09; see each note.
+What the app's About page credits (its text lives in `src/data/locales/en.json`, `page.about`). Credit everything the app's content draws on, even where no license requires it. Attributions were confirmed on 2026-11-09; see each note.
 
 - **Gloria Willcox**, "The Feeling Wheel", *Transactional Analysis Journal* 12(4), 1982: the original feelings wheel.
 - **Geoffrey Roberts**, "I Feel – Emotional Word Wheel – The Feel Wheel", imgur, 2015: the seven-core wheel our core wheel's words are based on.

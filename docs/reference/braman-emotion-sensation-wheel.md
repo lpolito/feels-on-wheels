@@ -1,6 +1,6 @@
 # Lindsay Braman: Emotion-Sensation Wheel
 
-The model for v2, the **body sensations wheel** ([spec](../superpowers/specs/2026-11-08-feelings-wheel-v2-body-wheel-design.md)). Ours turns her layout inside out: body areas in the centre, sensations in the middle, feelings on the edge.
+The model for v2, the **body sensations wheel** ([spec](../superpowers/specs/2026-11-08-feelings-wheel-v2-body-wheel-design.md)). Ours turns her layout inside out: body areas in the center, sensations in the middle, feelings on the edge.
 
 ## What it is
 
@@ -15,13 +15,13 @@ The model for v2, the **body sensations wheel** ([spec](../superpowers/specs/202
 From the handout page (paraphrased):
 
 - An adaptation of the feelings wheel used by therapists and educators, with common body-based sensations added.
-- Naming emotions is "an intellectual exercise" for people who haven't practised it. Starting from the body makes it more concrete, especially for very literal people or people on the autism spectrum.
+- Naming emotions is "an intellectual exercise" for people who haven't practiced it. Starting from the body makes it more concrete, especially for very literal people or people on the autism spectrum.
 - Meant as a jumping-off point, a conversation starter, a reference sheet, or a fill-in-the-blank worksheet. "Not intended as an assessment tool or scientific measure."
 - She links two studies without naming them:
   - emotions often register in the body before we're aware of them (Columbia University, [PMC2858766](https://pmc.ncbi.nlm.nih.gov/articles/PMC2858766/));
   - the bodily feel of a given emotion is fairly consistent across people (researchers in Finland, [PMC3896150](https://pmc.ncbi.nlm.nih.gov/articles/PMC3896150/)).
 
-  Neither link could be opened to confirm the title. The Finnish study is very likely Nummenmaa, Glerean, Hari and Hietanen, "Bodily maps of emotions", *PNAS* 111(2), 2014, [doi:10.1073/pnas.1321664111](https://doi.org/10.1073/pnas.1321664111). It's worth reading directly for the sensations wheel: 701 people coloured body maps for different emotions, and the patterns held across Finnish, Swedish and Taiwanese samples.
+  Neither link could be opened to confirm the title. The Finnish study is very likely Nummenmaa, Glerean, Hari and Hietanen, "Bodily maps of emotions", *PNAS* 111(2), 2014, [doi:10.1073/pnas.1321664111](https://doi.org/10.1073/pnas.1321664111). It's worth reading directly for the sensations wheel: 701 people colored body maps for different emotions, and the patterns held across Finnish, Swedish and Taiwanese samples.
 
 ## Her usage terms
 
@@ -47,7 +47,7 @@ The word lists themselves were transcribed here during research and removed on 2
 ## Takeaways for this project
 
 1. **Different core set from our wheel.** Six cores, with no "Bad", and Disgust and Surprise as small sections. Its middle ring is close to the core wheel's middle ring, but some words move: Hurt and Insecure sit under Anger, not Sad and Fear. A sensations wheel has to decide whether to reuse our core and middle rings with a new outer ring, or adopt a different structure.
-2. **The outer ring mixes several kinds of thing**, and that's part of why it works: sensations (a racing heart), posture and movement (slouching), facial expressions (a scowl), behaviour (hiding) and qualities of energy (feeling still).
+2. **The outer ring mixes several kinds of thing**, and that's part of why it works: sensations (a racing heart), posture and movement (slouching), facial expressions (a scowl), behavior (hiding) and qualities of energy (feeling still).
 3. **Short, literal labels.** Most are one or two words. Our v1 sensations are phrased as longer descriptions ("Knot in your stomach", "Urge to shrink or hide").
 4. **Overlap with our v1 sensations is already large, and that's expected.** A racing heart, sweaty palms, trembling and a lump in the throat appear in both, among many others. There are only so many ways to name a body sensation.
 5. **Each sensation belongs to one feeling on her wheel.** In our data, sensations are a shared list that many feelings point to. That suits a panel ("You might notice…"); a sensations *wheel* needs each outer cell to have one parent, or a chosen primary feeling per sensation.

@@ -4,12 +4,12 @@ The source for the app's core wheel (`src/data/wheels/core.json`) and the intera
 
 ## Lineage
 
-- **Gloria Willcox, "The Feeling Wheel" (1982).** *Transactional Analysis Journal* 12(4), 274–276. The usual origin of feelings wheels: a few core feelings in the centre, more specific words further out. Its six cores are Mad, Sad, Scared, Joyful, Powerful and Peaceful.
+- **Gloria Willcox, "The Feeling Wheel" (1982).** *Transactional Analysis Journal* 12(4), 274–276. The usual origin of feelings wheels: a few core feelings in the center, more specific words further out. Its six cores are Mad, Sad, Scared, Joyful, Powerful and Peaceful.
 - **Geoffrey Roberts, "I Feel – Emotional Word Wheel – The Feel Wheel" (2015).** A widely shared variation rooted in Willcox's wheel, and the seven-core version with Happy, Surprised, Bad, Fearful, Angry, Disgusted and Sad.
   - Posted on imgur on March 5, 2015: <https://imgur.com/tCWChf6> (still online on 2026-11-09; archived at <http://web.archive.org/web/20180505024944/https://imgur.com/tCWChf6>).
   - Confirmed on 2026-11-09 by two independent sources. [datavizblog.com](https://datavizblog.com/2020/03/20/the-feel-wheel-how-are-all-of-you-doing-out-there/) cites the imgur post and quotes Roberts. The [reference site](#the-reference-site) credits him: "Wheel content based on Geoffrey Roberts' Feel Wheel."
   - In the quoted text, Roberts says the first wheel in this style was Dr. Gloria Willcox's, in the early 1980s. He also says the wheel he based his on may have been by a teacher named Kaitlin Robb. That isn't confirmed, and sources spell the name differently, so we don't credit it.
-- A later remix on Observable ([ajwwong/feelings-wheel](https://observablehq.com/@ajwwong/feelings-wheel)) points out that some of its outer words aren't feelings but judgements about other people's behaviour, e.g. *Disrespected*.
+- A later remix on Observable ([ajwwong/feelings-wheel](https://observablehq.com/@ajwwong/feelings-wheel)) points out that some of its outer words aren't feelings but judgments about other people's behavior, e.g. *Disrespected*.
 
 ## The reference site
 
@@ -25,9 +25,9 @@ An interactive web version of the seven-core wheel. Lucas shared screenshots in 
 What it does:
 
 - Shows the wheel as one large SVG with three rings: 7 core feelings, 41 middle and 82 outer words. Labels run outward along each spoke, so the left half reads upside down.
-- **Tap a feeling to trace its path.** A tooltip shows the path ("Surprised → Startled → Shocked"). After tapping, the path stays in full colour, everything else fades, and the path appears as chips across the top (Angry → Aggressive → Provoked).
-- Has a **Reset** button in the centre to clear the selection.
-- Offers toggles for **New colors / Original** colour schemes and **Español**.
+- **Tap a feeling to trace its path.** A tooltip shows the path ("Surprised → Startled → Shocked"). After tapping, the path stays in full color, everything else fades, and the path appears as chips across the top (Angry → Aggressive → Provoked).
+- Has a **Reset** button in the center to clear the selection.
+- Offers toggles for **New colors / Original** color schemes and **Español**.
 
 What Lucas wanted different:
 
@@ -39,5 +39,5 @@ What Lucas wanted different:
 ## Takeaways for this project
 
 1. The wheel's words come from this widely shared seven-core version, not from Willcox's original. Credit both.
-2. Some outer words are judgements of others (Disrespected, Ridiculed, Betrayed, Persecuted) rather than feelings. Worth keeping in mind when writing definitions; the definition can name the feeling underneath.
+2. Some outer words are judgments of others (Disrespected, Ridiculed, Betrayed, Persecuted) rather than feelings. Worth keeping in mind when writing definitions; the definition can name the feeling underneath.
 3. A few words appear twice on the wheel (Overwhelmed, Embarrassed, Inferior, Disappointed). The app gives each position its own id but one shared definition.

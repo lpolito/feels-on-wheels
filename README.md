@@ -8,12 +8,6 @@ It's fast, works offline, installs as an app, works with a keyboard and screen r
 
 ![The feelings wheel with "Curious" opened: its definition, what you might notice in your body, and a close word.](docs/screenshot.png)
 
-## Licence
-
-Feels on Wheels is **source-available, not open source**. You're welcome to read, copy, change and translate it for any non-commercial purpose, as long as you give credit. Selling it, running ads on a copy, or making a paid app from it isn't allowed.
-
-The code is under the [PolyForm Noncommercial License 1.0.0](LICENSES/PolyForm-Noncommercial-1.0.0.md). The words (everything in `src/data/`: wheel layouts, definitions, sensations, translations) and the docs are under [CC BY-NC-SA 4.0](LICENSES/CC-BY-NC-SA-4.0.txt). See [LICENSE](LICENSE).
-
 ## Running it
 
 Needs Node.js 26.
@@ -45,15 +39,8 @@ Feels on Wheels draws on feelings wheels by Gloria Willcox, Geoffrey Roberts and
 
 Made by [Lucas Polito](https://lucaspolito.dev/).
 
-## Moving to a domain
+## License
 
-The app's public address is set in one place, `site.config.ts`. To move it to its own domain:
+Feels on Wheels is **source-available, not open source**. You're welcome to read, copy, change and translate it for any non-commercial purpose, as long as you give credit. Selling it, running ads on a copy, or making a paid app from it isn't allowed.
 
-1. Buy the domain. Check the trademark first.
-2. Set `site.url` to it (ending in `/`) and `indexable: true`, which removes the `noindex` tag.
-3. Add `public/CNAME` containing the bare domain. In the repo's Pages settings, set the custom domain and turn on "Enforce HTTPS". Point the domain's DNS at GitHub Pages.
-4. Update the repo's homepage: `gh repo edit --homepage https://<domain>/`.
-5. Deploy, then check the preview tags with `curl` and a link-preview checker.
-6. Then follow [docs/website-icon/README.md](docs/website-icon/README.md) to add the app to lucaspolito.dev.
-
-Installs and saved themes at the old address don't carry over to the new one.
+The code is under the [PolyForm Noncommercial License 1.0.0](LICENSES/PolyForm-Noncommercial-1.0.0.md). The words (everything in `src/data/`: wheel layouts, definitions, sensations, translations) and the docs are under [CC BY-NC-SA 4.0](LICENSES/CC-BY-NC-SA-4.0.txt). See [LICENSE](LICENSE).

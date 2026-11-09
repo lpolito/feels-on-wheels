@@ -125,7 +125,7 @@ describe('taps', () => {
     expect(camera.current).toEqual(before);
   });
 
-  test('tap on the selected word opens it: ring view, centred at angle 0', () => {
+  test('tap on the selected word opens it: ring view, centered at angle 0', () => {
     const hostile = idx('angry/aggressive/hostile');
     ctl.handle([{ type: 'tap', ...screenOf(hostile) }]);
     step(500);
@@ -135,7 +135,7 @@ describe('taps', () => {
     expect(offCenter(hostile)).toBeLessThan(1e-9);
   });
 
-  test('tapping another word while opened opens it and centres it', () => {
+  test('tapping another word while opened opens it and centers it', () => {
     setup(opened('angry/aggressive/hostile'));
     step(1000);
     const other = visibleIn(2, idx('angry/aggressive/hostile'));
@@ -325,7 +325,7 @@ describe('spinning', () => {
     expect(offCenter(store.get().selected!)).toBeLessThan(1e-9);
   });
 
-  test('swipe right while opened opens the parent; swipe left opens the centre child', () => {
+  test('swipe right while opened opens the parent; swipe left opens the center child', () => {
     setup(opened('angry/aggressive'));
     step(1000);
     ctl.handle([{ type: 'swipe', dir: 'left', vx: -900, vy: 0 }]);
@@ -338,7 +338,7 @@ describe('spinning', () => {
     expect(offCenter(idx('angry/aggressive'))).toBeLessThan(1e-9);
   });
 
-  test('swipe left on an opened leaf leaves it opened and centred', () => {
+  test('swipe left on an opened leaf leaves it opened and centered', () => {
     setup(opened('angry/aggressive/hostile'));
     step(1000);
     ctl.handle([{ type: 'swipe', dir: 'left', vx: -900, vy: 0 }]);
@@ -347,7 +347,7 @@ describe('spinning', () => {
     expect(offCenter(idx('angry/aggressive/hostile'))).toBeLessThan(1e-9);
   });
 
-  test('ArrowDown (step) while opened opens and centres the next word', () => {
+  test('ArrowDown (step) while opened opens and centers the next word', () => {
     setup(opened('angry'));
     step(1000);
     store.dispatch({ type: 'step', delta: 1 });
@@ -412,7 +412,7 @@ describe('pinch and zoom', () => {
     expect(camera.current.scale).toBe(1);
   });
 
-  test('pinch in on the opened word leaves it opened and centred', () => {
+  test('pinch in on the opened word leaves it opened and centered', () => {
     setup(opened('angry/aggressive'));
     step(2000);
     const p = screenOf(idx('angry/aggressive'));
@@ -566,7 +566,7 @@ describe('half-wheel (phone)', () => {
     expect(camera.moving).toBe(false);
   });
 
-  test('playIntro only spins: scale and centre stay those of the half-wheel, nothing is dispatched', () => {
+  test('playIntro only spins: scale and center stay those of the half-wheel, nothing is dispatched', () => {
     setupPhone();
     const rest = camera.current.rotation;
     const seen: Action[] = [];
@@ -715,7 +715,7 @@ describe('phone: the opened word above the card', () => {
 });
 
 describe('viewport', () => {
-  test('setViewport while opened keeps the same word centred at angle 0', () => {
+  test('setViewport while opened keeps the same word centered at angle 0', () => {
     setup(opened('angry/aggressive/hostile'));
     step(1000);
     ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true, rest: 'whole' as const, openedY: null });
@@ -752,7 +752,7 @@ describe('viewport', () => {
     expect(camera.moving).toBe(true);
   });
 
-  test("resize mid-fling keeps the fling's destination centred", () => {
+  test("resize mid-fling keeps the fling's destination centered", () => {
     setup(opened('angry/aggressive/hostile'));
     step(1000);
     ctl.handle([{ type: 'dragStart', x: 500, y: 450, axis: 'y' }, { type: 'dragEnd', vx: 0, vy: 2500 }]);

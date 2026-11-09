@@ -19,3 +19,7 @@
 ## Site URL
 
 `site.config.ts` is the only place the public URL lives. Never hard-code it elsewhere; the build fills canonical URLs, preview tags, robots.txt and the sitemap from it.
+
+## Spelling
+
+Use US spelling everywhere: app text, docs, code and comments (color, license, center, gray, behavior, toward). Approved specs and plans stay as written.

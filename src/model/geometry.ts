@@ -36,7 +36,7 @@ function angleDiff(a: number, b: number): number {
   return d > Math.PI ? d - TAU : d;
 }
 
-/** The point (canvas CSS px) is within the wheel's outer edge, the centre hole included (spec v1.3 §3.5). */
+/** The point (canvas CSS px) is within the wheel's outer edge, the center hole included (spec v1.3 §3.5). */
 export function overDisc(cam: Camera, vp: Viewport, x: number, y: number): boolean {
   return Math.hypot(x - cam.cx, y - cam.cy) <= vp.radius * cam.scale;
 }

@@ -180,7 +180,7 @@ fw-toolbar .fw-start-over[hidden] { display: none; }
   --edge: 1.1rem;
   position: absolute;
   z-index: 2;
-  /* Centred in the reserved column, below the toolbar. */
+  /* Centered in the reserved column, below the toolbar. */
   top: calc(max(1rem, env(safe-area-inset-top)) + 44px + 1rem);
   bottom: max(1rem, env(safe-area-inset-bottom));
   right: max(1.5rem, env(safe-area-inset-right));
@@ -285,7 +285,7 @@ fw-card[data-open] .fw-card-chevron { rotate: 90deg; }
   border-radius: 50%;
   background: var(--dot-hue);
 }
-/* Spec v2.2 §4.3 (v1.2 §5.2's halo, faster): while opened, a soft halo in the dot's own colour grows and fades. */
+/* Spec v2.2 §4.3 (v1.2 §5.2's halo, faster): while opened, a soft halo in the dot's own color grows and fades. */
 @keyframes fw-halo {
   0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--dot-hue) 55%, transparent); }
   70%, 100% { box-shadow: 0 0 0 0.55rem color-mix(in srgb, var(--dot-hue) 0%, transparent); }

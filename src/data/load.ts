@@ -40,8 +40,8 @@ export function validateWheel(
       const kind = kinds[0]!;
       const id = n[kind] as string;
       if (!known[kind](id)) fail(`wheel ${w.id}: unknown ${kind} "${id}"`);
-      if (depth === 0 && typeof n.hue !== 'string') fail(`wheel ${w.id}: centre "${id}" needs a hue`);
-      if (depth > 0 && n.hue !== undefined) fail(`wheel ${w.id}: only centre nodes may set hue ("${id}")`);
+      if (depth === 0 && typeof n.hue !== 'string') fail(`wheel ${w.id}: center "${id}" needs a hue`);
+      if (depth > 0 && n.hue !== undefined) fail(`wheel ${w.id}: only center nodes may set hue ("${id}")`);
       if (n.children !== undefined) {
         if (!Array.isArray(n.children) || n.children.length === 0) fail(`wheel ${w.id}: "${id}" has empty children`);
         visit(n.children, depth + 1);

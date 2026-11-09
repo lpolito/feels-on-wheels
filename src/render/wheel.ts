@@ -109,9 +109,9 @@ export function createWheelRenderer(
 
   function drawLabel(lines: string[], px: number, bold: boolean, x: number, y: number, angle: number, scale: number, color: string): void {
     const rot = labelRotation(angle);
-    // Forced colours draw live: system colours must resolve on the page canvas, and stay current on theme change.
+    // Forced colors draw live: system colors must resolve on the page canvas, and stay current on theme change.
     if (sprites && !bold && !palette?.forced) {
-      // Each line's centre, offset along the label's rotated vertical axis.
+      // Each line's center, offset along the label's rotated vertical axis.
       const lineGap = px * LINE_HEIGHT;
       const top = -((lines.length - 1) * lineGap) / 2;
       const ux = -Math.sin(rot);
@@ -135,7 +135,7 @@ export function createWheelRenderer(
   }
 
   /**
-   * Two-tone outline: ink on the edge, a gap-coloured line just inside it. The line sits a fixed distance inside
+   * Two-tone outline: ink on the edge, a gap-colored line just inside it. The line sits a fixed distance inside
    * every edge (spec v1.2 §4.4): each arc gets its own angular inset, distance / radius, so the sides stay
    * parallel to the cell's on every ring.
    */
@@ -257,7 +257,7 @@ export function createWheelRenderer(
         return;
       }
 
-      // Opened: lifted past its ring, with one shadow, pulsing in about its centre.
+      // Opened: lifted past its ring, with one shadow, pulsing in about its center.
       const r0 = Math.max(0, ring.inner * R - LIFT_RADIAL_PX);
       const r1 = ring.outer * R + LIFT_RADIAL_PX;
       const rMid = ((ring.inner + ring.outer) / 2) * R;

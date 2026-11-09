@@ -272,7 +272,7 @@ test.describe('v2.1: the wheel switch', () => {
     await expectUnder(page, 'Body');
   });
 
-  test('forced colours: the pressed option stands out', async ({ page, browserName }) => {
+  test('forced colors: the pressed option stands out', async ({ page, browserName }) => {
     test.skip(browserName !== 'chromium', 'forced-colors emulation is Chromium-only');
     await page.emulateMedia({ forcedColors: 'active' });
     await open(page);

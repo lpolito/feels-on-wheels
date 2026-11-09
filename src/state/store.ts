@@ -48,7 +48,7 @@ function sameState(a: State, b: State): boolean {
   return a.selected === b.selected && a.opened === b.opened && sameView(a.view, b.view);
 }
 
-/** The child whose [start, end) contains the parent's mid: the one at 3 o'clock once the parent is centred. */
+/** The child whose [start, end) contains the parent's mid: the one at 3 o'clock once the parent is centered. */
 export function centerChild(layout: Layout, i: number): number | null {
   const seg = layout.segments[i]!;
   for (const c of seg.children) {

@@ -6,14 +6,14 @@ export type RestView = 'whole' | 'half' | 'side';
 
 export interface CameraOpts {
   remPx: number;
-  /** The layout is portrait (spec v2.1 §6.1, `isPortrait`): ring views centre the ring. */
+  /** The layout is portrait (spec v2.1 §6.1, `isPortrait`): ring views center the ring. */
   portrait: boolean;
   /**
    * The whole-wheel resting view: the whole wheel; the half-wheel (spec v1.2 §3.2) on portrait phones; or the side view
    * (spec v2.1 §6.2) on short sideways screens.
    */
   rest: RestView;
-  /** Portrait ring views: the stage y (CSS px) for the opened word's centre (spec v1.3 §4.2); null centres it. */
+  /** Portrait ring views: the stage y (CSS px) for the opened word's center (spec v1.3 §4.2); null centers it. */
   openedY: number | null;
   /** v2.2.1: the left safe-area inset (a sideways phone's notch); the ring view's 1rem left margin starts after it. */
   insetLeft?: number;
@@ -47,7 +47,7 @@ export function overviewCamera(vp: Viewport, rotation: number): Camera {
 /** The half-wheel's outer edge reaches this fraction of the stage width. */
 const HALF_REACH = 0.95;
 
-/** The whole-wheel resting camera for `o.rest`: centred in the stage, the half-wheel, or the side view. */
+/** The whole-wheel resting camera for `o.rest`: centered in the stage, the half-wheel, or the side view. */
 export function wheelCamera(layout: Layout, vp: Viewport, rotation: number, o: CameraOpts): Camera {
   if (o.rest === 'half') return { scale: (HALF_REACH * vp.width) / vp.radius, rotation, cx: 0, cy: vp.height / 2 };
   // Spec v2.1 §6.2: the core ring view, with nothing selected.
@@ -83,7 +83,7 @@ export function useHalfWheel(layout: Layout, vp: Viewport): boolean {
   return vp.height >= vp.width && shouldStartZoomed(layout, vp);
 }
 
-/** Rotation that centres the first core word (Fearful) at 3 o'clock. */
+/** Rotation that centers the first core word (Fearful) at 3 o'clock. */
 export function halfRestRotation(layout: Layout): number {
   return -layout.segments[layout.rings[0]!.segments[0]!]!.mid;
 }
@@ -99,7 +99,7 @@ export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rota
     MIN_RING_SCALE,
   );
   const R = vp.radius * scale;
-  // Spec v1.2 §4.1–§4.2: phones centre the ring's middle; elsewhere the wheel meets the stage's right edge (the
+  // Spec v1.2 §4.1–§4.2: phones center the ring's middle; elsewhere the wheel meets the stage's right edge (the
   // card's column) — its outer edge plus the opened cell's lift and outline, so an opened outer word isn't clipped —
   // unless that would start the opened cell (with its lift) within 1rem of the left — of the notch, if any (v2.2.1).
   const cx = o.portrait

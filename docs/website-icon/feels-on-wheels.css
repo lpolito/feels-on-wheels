@@ -1,7 +1,7 @@
 /*
  * Feels on Wheels link icon for lucaspolito.dev (going-public spec §9).
- * Add after the .icon-linkedin rule in css/styles.css. It reuses the site's .icon mask and ::after colour layer:
- * grey at rest like the other icons; on hover, focus or tap it takes the wheel's seven core-feeling colours
+ * Add after the .icon-linkedin rule in css/styles.css. It reuses the site's .icon mask and ::after color layer:
+ * gray at rest like the other icons; on hover, focus or tap it takes the wheel's seven core-feeling colors
  * (the app's dark-theme hues) and spins once, settling.
  *
  * Contrast on --background #121214, all above the site's 3:1 rule:
@@ -12,7 +12,7 @@
   --icon: url("../icons/feels-on-wheels.svg");
   transition: rotate 0s;
 
-  /* The colours sit exactly on the silhouette's wedges, so no gradient offset or tilt. */
+  /* The colors sit exactly on the silhouette's wedges, so no gradient offset or tilt. */
   &::after {
     inset: 0;
     rotate: 0deg;
@@ -51,7 +51,7 @@ a:focus-visible .icon-feels {
   }
 }
 
-/* Forced colours: the site's .icon rule shows the silhouette in LinkText; no colour layer. */
+/* Forced colors: the site's .icon rule shows the silhouette in LinkText; no color layer. */
 @media (forced-colors: active) {
   .icon-feels::after {
     display: none;

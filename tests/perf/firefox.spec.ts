@@ -39,7 +39,7 @@ async function spin(page: Page, ms: number): Promise<void> {
 }
 
 /**
- * Spec v1.2 §7: ctrl+wheel bursts at the wheel's centre, 8 zooming in then 8 zooming out every 120 ms. Each burst is
+ * Spec v1.2 §7: ctrl+wheel bursts at the wheel's center, 8 zooming in then 8 zooming out every 120 ms. Each burst is
  * synthetic WheelEvents in one task: Playwright's Firefox delays its first real wheel event by about 380 ms.
  */
 async function pinch(page: Page, ms: number): Promise<void> {

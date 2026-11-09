@@ -18,7 +18,7 @@ Ideas don't have version numbers. When Lucas picks one to build, it takes the ne
 | v1.3: Layout, card and controls polish from using v1.2 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.3-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.3.md) |
 | v1.3.1: Small fixes from using v1.3 | Shipped | No spec; commits 3fb060e, def355a, b340a1a |
 | v2: Body sensations wheel | Shipped | [spec](superpowers/specs/2026-11-08-feelings-wheel-v2-body-wheel-design.md), [plan](superpowers/plans/2026-11-08-feelings-wheel-v2-body-wheel.md) |
-| v2.1: Polish from using v2 (card headings, heartbeat, sliding switch, context-ring labels, sideways phones, body colours) | Shipped | [spec](superpowers/specs/2026-11-08-feelings-wheel-v2.1-design.md), [plan](superpowers/plans/2026-11-08-feelings-wheel-v2.1.md). One change from the spec's §6.1: the sideways layout also needs 560 px of width, so small split-screen windows keep the portrait layout instead of a column too thin for the card. |
+| v2.1: Polish from using v2 (card headings, heartbeat, sliding switch, context-ring labels, sideways phones, body colors) | Shipped | [spec](superpowers/specs/2026-11-08-feelings-wheel-v2.1-design.md), [plan](superpowers/plans/2026-11-08-feelings-wheel-v2.1.md). One change from the spec's §6.1: the sideways layout also needs 560 px of width, so small split-screen windows keep the portrait layout instead of a column too thin for the card. |
 | v2.2: Polish from using v2.1 (wheel under the card's column, one-line breadcrumbs, halo dot, core feeling on the body wheel, message heading, no wheel chevron) | Shipped | [spec](superpowers/specs/2026-11-08-feelings-wheel-v2.2-design.md), [plan](superpowers/plans/2026-11-08-feelings-wheel-v2.2.md) |
 | v2.2.1: Sideways phones with the notch on the left: the opened word keeps 1rem clear of the notch, not the screen's edge | Shipped | No spec; the fix for the known issue found using v2.2 (the camera's left margin now starts after `safe-area-inset-left`). Commits on main after 9fc8944. |
 
@@ -33,7 +33,7 @@ Not in any order; none is chosen yet. Strength was briefly v2 before it was shel
 | [Emoji wheel](#emoji-wheel) | Planned |
 | [Languages](#languages) | Planned |
 | [Return to the word you jumped from](#return-to-the-word-you-jumped-from) | Idea |
-| [Feeling links underlined in their feeling's colour](#feeling-links-underlined-in-their-feelings-colour) | Idea |
+| [Feeling links underlined in their feeling's color](#feeling-links-underlined-in-their-feelings-color) | Idea |
 | [Cleaner URLs, ready for languages](#cleaner-urls-ready-for-languages) | Idea |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
@@ -61,7 +61,7 @@ What Lucas first asked for:
 
 - Very simplified: core feelings and a few middle-ring ones, because there are only so many emoji.
 - The data is ready: `Feeling.emoji` is already an optional field.
-- After v2, another wheel is a wheel file, an entry in the wheel list and its locale strings; the switch, URLs, colours and card handle it (v2 spec §7).
+- After v2, another wheel is a wheel file, an entry in the wheel list and its locale strings; the switch, URLs, colors and card handle it (v2 spec §7).
 
 ### Languages
 
@@ -75,16 +75,16 @@ What Lucas first asked for:
 - Today the only way back is the browser's Back (the jump pushes history, v2 §4.2), which is the awkward gesture in the [going back on phones](#known-issues) known issue. This idea may cover part of that.
 - To decide when designing: what the control says ("Back to Wide eyes"?), when it disappears (after moving on, switching wheels by hand, or Start over), and whether it also works the other way, or for the emoji wheel once there are three wheels.
 
-### Feeling links underlined in their feeling's colour
+### Feeling links underlined in their feeling's color
 
-- Every link to a feeling is underlined in that feeling's colour, wherever it appears, for consistency: breadcrumbs, the "Narrow it down" and "Could be feeling" rows, the "Close to" and "Could also be feeling" words, v2.2's core-feeling link in the definition, and the jump to the feelings wheel.
+- Every link to a feeling is underlined in that feeling's color, wherever it appears, for consistency: breadcrumbs, the "Narrow it down" and "Could be feeling" rows, the "Close to" and "Could also be feeling" words, v2.2's core-feeling link in the definition, and the jump to the feelings wheel.
 - Lucas's idea, 2026-11-09.
-- Today (v2.2.1): feeling links are underlined in a 45% tint of the text colour, and take their feeling's ink (`--ink`, from `colors.ts` `inkFor`) only on hover or focus. The rows have no underline, only a grey divider below. Breadcrumbs don't carry their own feeling's ink: on hover they take the opened word's.
+- Today (v2.2.1): feeling links are underlined in a 45% tint of the text color, and take their feeling's ink (`--ink`, from `colors.ts` `inkFor`) only on hover or focus. The rows have no underline, only a gray divider below. Breadcrumbs don't carry their own feeling's ink: on hover they take the opened word's.
 - To decide when designing:
   - the ink (contrast-checked against the card, so it shows in both themes) or the wheel's own fill (truer to the wheel, but some are too dark or light to see on the card);
-  - whether the rows' dividers take the colour too, or they get underlines;
+  - whether the rows' dividers take the color too, or they get underlines;
   - what areas and sensations do, since they're links too but not feelings;
-  - forced colours, where links keep the system's link colour.
+  - forced colors, where links keep the system's link color.
 
 ### Cleaner URLs, ready for languages
 
@@ -127,9 +127,9 @@ The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens
 
 [Spec](superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md), [plan](superpowers/plans/2026-11-09-feels-on-wheels-going-public.md). Live at <https://lpolito.github.io/feels-on-wheels/> so Lucas can share it and use it across devices, but not announced or indexed. It covers:
 
-- **The name:** Feels on Wheels, everywhere a person sees it. Lucas leaned towards "Wheels of Feels", but it's one letter from [wheeloffeels.com](https://wheeloffeels.com), a live commercial emotion-wheel app (Julian Dev, LLC), so people hearing it would find theirs. No app or site used "Feels on Wheels" as of 2026-11-09. feelsonwheels.app was unregistered; feelsonwheels.com is parked for sale; the .org and .net are taken.
+- **The name:** Feels on Wheels, everywhere a person sees it. Lucas leaned toward "Wheels of Feels", but it's one letter from [wheeloffeels.com](https://wheeloffeels.com), a live commercial emotion-wheel app (Julian Dev, LLC), so people hearing it would find theirs. No app or site used "Feels on Wheels" as of 2026-11-09. feelsonwheels.app was unregistered; feelsonwheels.com is parked for sale; the .org and .net are taken.
 - **A new public repo**, `lpolito/feels-on-wheels`, with history rewritten to drop the Braman and Drummond word-list transcriptions. The private `lpolito/feelings-wheel` stays as a backup.
-- **Licence:** PolyForm Noncommercial 1.0.0 for code, CC BY-NC-SA 4.0 for content. Source-available, not open source: nobody may sell it. Contributors license their work under the same terms and let Lucas relicense it.
+- **License:** PolyForm Noncommercial 1.0.0 for code, CC BY-NC-SA 4.0 for content. Source-available, not open source: nobody may sell it. Contributors license their work under the same terms and let Lucas relicense it.
 - A README, CONTRIBUTING.md and a PR template.
 - A GitHub Pages deploy, the SEO and social preview tags, a preview image, robots.txt and a sitemap. All absolute URLs come from one setting, `site.config.ts`.
 - An **About page** with the credits, linked from the toolbar (on phones it gives way to Start over while a word is selected). Both unconfirmed attributions were confirmed on 2026-11-09: Roberts's wheel is still on imgur, and feelingswheel.com credits him. See [core-feelings-wheel.md](reference/core-feelings-wheel.md).
@@ -148,7 +148,7 @@ Still open. Nothing here is started.
   - deploy and re-check the link previews.
   - Installs and saved themes at the github.io address don't carry over.
 - **Optional, after the move:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
-- **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, grey like the site's other icons; on hover it takes the wheel's seven colours and spins once, settling.
+- **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, gray like the site's other icons; on hover it takes the wheel's seven colors and spins once, settling.
 - **The old private repo:** archive or delete `lpolito/feelings-wheel` once the public one is settled.
 - **The URL structure:** decide on [cleaner URLs, ready for languages](#cleaner-urls-ready-for-languages) before launch, while no links are out in the world. Moving to a domain is the natural moment.
 - **Known issues:** decide whether any should be fixed before announcing it.
@@ -158,4 +158,4 @@ Still open. Nothing here is started.
 - There are only so many ways to describe a feeling or a body sensation, so overlap with existing wheels and word lists is unavoidable and fine.
 - Don't copy any source verbatim, and don't reproduce a source's full layout or word list wholesale.
 - Definitions are short, plain-language prose (see v1 spec §3.4).
-- Credit every source we draw on, in [reference/](reference/README.md) and on the app's credits page, whether or not a licence requires it.
+- Credit every source we draw on, in [reference/](reference/README.md) and on the app's credits page, whether or not a license requires it.

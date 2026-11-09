@@ -31,6 +31,6 @@ The app doesn't have a language switcher yet: it's [planned](docs/ROADMAP.md#lan
 
 ## Contribution terms
 
-By contributing, you agree that your contribution is licensed under this repository's licences (PolyForm Noncommercial 1.0.0 for code, CC BY-NC-SA 4.0 for content), and you grant Lucas Polito a perpetual, worldwide, irrevocable, royalty-free licence to use, change and relicense your contribution under any terms, including commercial ones. You keep the copyright on your work, and you confirm you have the right to contribute it.
+By contributing, you agree that your contribution is licensed under this repository's licenses (PolyForm Noncommercial 1.0.0 for code, CC BY-NC-SA 4.0 for content), and you grant Lucas Polito a perpetual, worldwide, irrevocable, royalty-free license to use, change and relicense your contribution under any terms, including commercial ones. You keep the copyright on your work, and you confirm you have the right to contribute it.
 
 The pull request template asks you to tick a box agreeing to these terms.

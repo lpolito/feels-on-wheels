@@ -5,7 +5,7 @@ copy, change and translate it for any non-commercial purpose, as long as you
 give credit. Selling it, running ads on a copy of it, or making a paid app from
 it isn't allowed.
 
-This project uses two licences:
+This project uses two licenses:
 
   Code: everything outside src/data/ and docs/
     PolyForm Noncommercial License 1.0.0
@@ -20,7 +20,7 @@ This project uses two licences:
 
 Required Notice: Copyright Lucas Polito (https://lucaspolito.dev/)
 
-These licences cover only this project's own work. The feelings wheels, word
+These licenses cover only this project's own work. The feelings wheels, word
 lists and research it draws on, credited on the app's About page and described
 in docs/reference/, belong to their authors and keep their own rights. So do the
 tools and libraries the project uses.

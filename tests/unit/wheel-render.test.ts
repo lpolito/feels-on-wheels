@@ -272,7 +272,7 @@ describe('wheel renderer', () => {
   });
 
   test('selecting a word never moves or resizes its label (spec v2.2 §6)', () => {
-    /** The single-line label's radial centre and size, or null when it isn't drawn on one line. */
+    /** The single-line label's radial center and size, or null when it isn't drawn on one line. */
     const placed = (i: number, o: Partial<Frame>) => {
       const s = layout.segments[i]!;
       const { canvas, ctx, rec } = fakeCanvas();
@@ -284,15 +284,15 @@ describe('wheel renderer', () => {
       const k = rec.textAt.findIndex((x) => x.text === nodeLabel(s.node));
       if (k < 0) return null;
       const angle = s.mid + f.cam.rotation;
-      const centre = (rec.textAt[k]!.e - f.cam.cx) * Math.cos(angle) + (rec.textAt[k]!.f - f.cam.cy) * Math.sin(angle);
-      return { centre, px: pxOf(rec.fonts[k]!) };
+      const center = (rec.textAt[k]!.e - f.cam.cx) * Math.cos(angle) + (rec.textAt[k]!.f - f.cam.cy) * Math.sin(angle);
+      return { center, px: pxOf(rec.fonts[k]!) };
     };
     let checked = 0;
     for (const s of layout.segments) {
       const before = placed(s.index, {});
       const after = placed(s.index, { selected: s.index });
       if (!before || !after) continue;
-      expect(after.centre, nodeLabel(s.node)).toBeCloseTo(before.centre, 6);
+      expect(after.center, nodeLabel(s.node)).toBeCloseTo(before.center, 6);
       expect(after.px, nodeLabel(s.node)).toBe(before.px);
       checked++;
     }
@@ -349,7 +349,7 @@ describe('wheel renderer', () => {
     expect(sprited).not.toContain(label('hostile'));
   });
 
-  test('forced colours draw labels with fillText, never from sprite bitmaps', () => {
+  test('forced colors draw labels with fillText, never from sprite bitmaps', () => {
     const forced: Palette = { ...palette, bg: 'Canvas', fg: 'CanvasText', gap: 'CanvasText', focus: 'Highlight', outline: 'Highlight', forced: true };
     const sprited: string[] = [];
     const sprites = { size: 0, setScale: () => {}, draw: (_g: unknown, text: string) => { sprited.push(text); } };

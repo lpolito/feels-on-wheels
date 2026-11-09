@@ -2,7 +2,7 @@ type AnyCanvas = HTMLCanvasElement | OffscreenCanvas;
 type Ctx2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 
 export interface SpriteCache {
-  /** Draws `text` centred at (x, y) in CSS px, rotated by `rot`, from a cached bitmap. */
+  /** Draws `text` centered at (x, y) in CSS px, rotated by `rot`, from a cached bitmap. */
   draw(g: CanvasRenderingContext2D, text: string, px: number, color: string, x: number, y: number, rot: number): void;
   /** Device pixel ratio the bitmaps are rendered at; changing it drops every sprite. */
   setScale(dpr: number): void;
@@ -24,7 +24,7 @@ const canvasElement = (w: number, h: number): AnyCanvas =>
   Object.assign(document.createElement('canvas'), { width: w, height: h });
 
 /**
- * Spec §7: label text rendered once per (label, px, colour) and blitted with drawImage, because Firefox re-rasterises
+ * Spec §7: label text rendered once per (label, px, color) and blitted with drawImage, because Firefox re-rasterises
  * rotated fillText on every frame. Keyed on px rounded to 0.5. Least recently used sprites go once there are more
  * than `limit` or their bitmaps pass `o.maxBytes`. When `makeCanvas` can't give a 2D context, every later sprite
  * uses `o.fallback` (a <canvas> element by default).

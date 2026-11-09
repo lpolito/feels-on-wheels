@@ -71,7 +71,7 @@ describe('resting cameras', () => {
     expect(innerX(1, mid)).toBeCloseTo(16, 6);
   });
 
-  test('portrait ring camera centres the ring middle horizontally and the word vertically', () => {
+  test('portrait ring camera centers the ring middle horizontally and the word vertically', () => {
     for (const ring of [0, 1, 2]) {
       const cam = ringFocusCamera(layout, ring, phone, 0, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null });
       const r = layout.rings[ring]!;
@@ -89,7 +89,7 @@ describe('resting cameras', () => {
     expect(cam.rotation).toBe(0.4);
   });
 
-  test('openedY null keeps the stage centre', () => {
+  test('openedY null keeps the stage center', () => {
     expect(ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null }).cy).toBe(phone.height / 2);
   });
 
@@ -129,7 +129,7 @@ describe('resting cameras', () => {
     expect(segHeight(2, phone, cam.scale)).toBeGreaterThanOrEqual(44 - 1e-9);
   });
 
-  test('half wheelCamera puts the centre on the left edge, halfway down, outer edge at 95% width', () => {
+  test('half wheelCamera puts the center on the left edge, halfway down, outer edge at 95% width', () => {
     const c = wheelCamera(layout, phone, 0.3, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null });
     expect(c.cx).toBe(0);
     expect(c.cy).toBe(phone.height / 2);
@@ -142,7 +142,7 @@ describe('resting cameras', () => {
     expect(wheelCamera(layout, phone, 0.5, { ...opts, portrait: true })).toEqual(overviewCamera(phone, 0.5));
   });
 
-  test("halfRestRotation centres Fearful at 3 o'clock", () => {
+  test("halfRestRotation centers Fearful at 3 o'clock", () => {
     const fearful = layout.segments[layout.byPath.get('fearful')!]!;
     const off = normAngle(fearful.mid + halfRestRotation(layout));
     expect(Math.min(off, TAU - off)).toBeLessThan(1e-12);

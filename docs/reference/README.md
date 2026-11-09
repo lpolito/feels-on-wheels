@@ -4,7 +4,7 @@ Notes on the outside sources this project draws on: what each one is, who made i
 
 | Source | Used for | Notes |
 |---|---|---|
-| Feelings wheel (Willcox 1982; seven-core version usually credited to Roberts 2015) and the reference site | v1 core wheel and its interaction | [core-feelings-wheel.md](core-feelings-wheel.md) |
+| Feelings wheel (Willcox 1982; seven-core version by Roberts 2015) and the reference site | v1 core wheel and its interaction | [core-feelings-wheel.md](core-feelings-wheel.md) |
 | Tom Drummond, Vocabulary of Emotions | Strength (shelved) | [drummond-vocabulary-of-emotions.md](drummond-vocabulary-of-emotions.md) |
 | Lindsay Braman, Emotion-Sensation Wheel | Body sensations wheel | [braman-emotion-sensation-wheel.md](braman-emotion-sensation-wheel.md) |
 
@@ -12,7 +12,7 @@ Notes on the outside sources this project draws on: what each one is, who made i
 
 - Add one file per source: what it is, author, date, link, usage terms if stated, what we take from it, and anything unverified marked as such.
 - Add it to the table above and to [Credits](#credits) below.
-- These are research notes, not app content. Word lists are transcribed here so we can compare and decide; the [content rules](../ROADMAP.md#content-rules) decide what ships. If the repository goes public, check whether any transcription should come out first.
+- These are research notes, not app content; the [content rules](../ROADMAP.md#content-rules) decide what ships. Notes describe a source and may quote a few words as examples. They never transcribe its word list or layout.
 
 ## Credits
 

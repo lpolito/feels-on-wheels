@@ -22,7 +22,7 @@ test('manifest is linked and valid', async ({ page, request }) => {
   const res = await request.get(new URL(href!, page.url()).toString());
   expect(res.ok()).toBe(true);
   const m = await res.json();
-  expect(m.name).toBe('Feelings Wheel');
+  expect(m.name).toBe('Feels on Wheels');
   expect(m.display).toBe('standalone');
   expect(m.icons.some((i: { purpose?: string }) => i.purpose === 'maskable')).toBe(true);
   for (const icon of m.icons as { src: string }[]) {

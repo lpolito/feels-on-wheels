@@ -759,6 +759,17 @@ test.describe('v2.1: phones turned sideways', () => {
     }
   }
 
+  test('axe: sideways side view at rest and opened', async ({ page }) => {
+    test.setTimeout(60_000);
+    await page.setViewportSize({ width: 851, height: 393 });
+    await open(page);
+    await settled(page);
+    expect((await new AxeBuilder({ page }).analyze()).violations, 'at rest').toEqual([]);
+    await open(page, '#/body/head/headache');
+    await settled(page);
+    expect((await new AxeBuilder({ page }).analyze()).violations, 'opened').toEqual([]);
+  });
+
   test('iPhone SE sideways, word opened: the card is in the column and the word is clear of the switch', async ({ page }) => {
     await page.setViewportSize({ width: 667, height: 375 });
     await open(page, '#/core/happy/content/joyful');

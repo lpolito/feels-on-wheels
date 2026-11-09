@@ -1,4 +1,4 @@
-# Roadmap
+# Roadmap: Feels on Wheels
 
 The living list of what's built, what's next, and what's still an idea. Specs are frozen once approved; this file is not. Update it when a spec is approved, when a version ships, and whenever new or later work comes up, so nothing lives only in a chat.
 
@@ -102,25 +102,37 @@ Still open after v2.2.1. None blocks the next version.
 
 ## Before going public
 
-- Lucas reviews the definitions and sensations in [content-review.md](content-review.md). This was moved out of v1.1.
-- A credits or thanks page in the app, crediting every source the content draws on. The draft text is in [reference/README.md](reference/README.md#credits). Confirm the unverified attributions there (Roberts, the reference site) first.
-- **Opening the repo: a README, a licence and a contributing guide.** Lucas plans to make the GitHub repo public, link it from a personal website, maybe buy a domain (see the name, below), and invite contributions, especially new languages and ideas. Added 2026-11-09. Nothing is decided yet; this isn't legal advice.
-  - **README.md:** what the app is and who it's for, a link to the live site, how to run it and its tests (`npm ci`, `npm run dev`, `npm test`, `npm run test:e2e`), how to add a language (one locale file, see [Languages](#languages)), and where ideas live (this roadmap).
-  - **A licence.** Without one, a public repo can be read but not legally reused or built on, so contributors have nothing to contribute under. Lucas doesn't want the app sold, and that rules out a true open-source licence: those (by the OSI's definition) all allow selling. The choices:
-    - *Copyleft open source* (GPL-3.0, or AGPL-3.0, which also covers running a copy as a website): anyone may sell it, but only by sharing their whole source under the same licence, which makes selling it pointless in practice.
-    - *Non-commercial, "source-available"* (PolyForm Noncommercial for the code, CC BY-NC-SA 4.0 for the written content): really forbids selling, but isn't open source, and some contributors avoid such projects.
-    - The code and the content (definitions, sensations, wheel layouts, translations) can take different licences.
-  - **Copyright** is automatic: Lucas owns the code and writing as soon as it exists, with no registration needed (in the US, registering only matters before suing). A line like "Copyright (c) 2026 Lucas Polito" in the LICENSE file is enough. It covers only Lucas's own work: the sources in [reference/](reference/README.md) keep their own rights (Braman says republishing her wheel without permission is infringement), which is why the [content rules](#content-rules) forbid copying them. The licence mustn't claim them.
-  - **CONTRIBUTING.md:** how to add a language, the content rules, running the tests, and that ideas start in this roadmap. Contributors keep the copyright on what they add and license it under the repo's licence. If Lucas might change the licence later, decide before the first outside contribution whether to ask for a sign-off (a DCO) or a contributor agreement (a CLA) that allows it.
-- **A name.** "Feelings Wheel" is taken: it's what the [site that inspired the app](reference/core-feelings-wheel.md#the-reference-site) is called. Lucas wants something silly but memorable that people would want to visit and tell others about. Nothing is decided, and it doesn't need deciding yet.
-  - **Lucas's favourite: Wheel of Feels.** As of 2026-11-08, an iPad app of that name has been removed from the App Store and isn't on Google Play. But wheeloffeels.com is still a live emotion-wheel site with the same name. wheeloffeels.app is unregistered.
-  - **Others, for inspiration:**
-    - *Wheels of Feels*: plural, like the planned extra wheels. It was the name of an art installation of spinnable emotion wheels at 826LA. wheelsoffeels.com is unregistered but one letter from wheeloffeels.com.
-    - *Feels on Wheels*: a Meals on Wheels pun, easy to say out loud and plural. feelsonwheels.app is unregistered; feelsonwheels.com is for sale.
-    - *Feels: The Wheel (FTW)* and *Wheel: The Feels*: the joke works better written than said.
-    - *Wheeling and Feeling*.
-    - *Spin the Feels*, *Name That Feel* (not tied to the wheel shape, so it still fits if the [wizard](#wizard) arrives), *Feelodex*, *Feelris Wheel* ("Ferris Wheel of Feelings" is a common kids' classroom activity), *Feels Good Wheel*, *Wheel Talk*.
-  - These were checked against web, app-store and domain lookups only, not trademarks. Check both for the final pick.
+The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens in two steps: first shareable, then launched.
+
+### Step 1: shareable (spec written)
+
+[Spec](superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md). Online at `lpolito.github.io/feels-on-wheels/` so Lucas can share it and use it across devices, but not announced or indexed. It covers:
+
+- **The name:** Feels on Wheels, everywhere a person sees it. Lucas leaned towards "Wheels of Feels", but it's one letter from [wheeloffeels.com](https://wheeloffeels.com), a live commercial emotion-wheel app (Julian Dev, LLC), so people hearing it would find theirs. No app or site used "Feels on Wheels" as of 2026-11-09. feelsonwheels.app was unregistered; feelsonwheels.com is parked for sale; the .org and .net are taken.
+- **A new public repo**, `lpolito/feels-on-wheels`, with history rewritten to drop the Braman and Drummond word-list transcriptions. The private `lpolito/feelings-wheel` stays as a backup.
+- **Licence:** PolyForm Noncommercial 1.0.0 for code, CC BY-NC-SA 4.0 for content. Source-available, not open source: nobody may sell it. Contributors license their work under the same terms and let Lucas relicense it.
+- A README, CONTRIBUTING.md and a PR template.
+- A GitHub Pages deploy, the SEO and social preview tags, a preview image, robots.txt and a sitemap. All absolute URLs come from one setting, `site.config.ts`.
+- An **About page** with the credits, linked from the toolbar. Its draft text is in [reference/README.md](reference/README.md#credits).
+- An **icon kit for lucaspolito.dev** in `docs/website-icon/`, not added to the site yet.
+
+### Step 2: before launching it
+
+Still open. Nothing here is started.
+
+- **Lucas reviews the definitions and sensations** in [content-review.md](content-review.md). This was moved out of v1.1.
+- **Trademark check** on "Feels on Wheels" (USPTO search) before buying a domain. The name was only checked against web, app-store and domain lookups.
+- **Move to a domain** (spec §3.3; Lucas wants a real domain before linking it from his site). feelsonwheels.app is the likely one:
+  - set `site.url` in `site.config.ts` (this changes the canonical URL, `og:url`, `og:image`, the JSON-LD, robots.txt and the sitemap) and `indexable: true` (removes `noindex`);
+  - add `public/CNAME`, set the custom domain and "Enforce HTTPS" in the repo's Pages settings, and point DNS at GitHub Pages;
+  - update the repo's homepage (`gh repo edit --homepage`);
+  - deploy and re-check the link previews.
+  - Installs and saved themes at the github.io address don't carry over.
+- **Optional, after the move:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
+- **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, grey like the site's other icons; on hover it takes the wheel's seven colours and spins once, settling.
+- **Unconfirmed credits:** any the step 1 research couldn't confirm (the Roberts attribution, the reference site).
+- **The old private repo:** archive or delete `lpolito/feelings-wheel` once the public one is settled.
+- **Known issues:** decide whether any should be fixed before announcing it.
 
 ## Content rules
 

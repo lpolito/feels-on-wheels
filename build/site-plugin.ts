@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Plugin } from 'vite';
 import { site } from '../site.config.ts';
-import { escapeHtml, headTags, renderAbout, robotsTxt, sitemapXml, webManifest, type PageId, type PageStrings } from './site.ts';
+import { aboutLinks, headTags, linkify, renderAbout, robotsTxt, sitemapXml, webManifest, type PageId, type PageStrings } from './site.ts';
 
 /**
  * Going-public spec §7–§8: fills each page's head (<!--site:head-->) and noscript text (<!--site:noscript-->) from
@@ -25,7 +25,7 @@ export function sitePlugin(): Plugin {
       const s = strings();
       return html
         .replace('<!--site:head-->', headTags(pageOf(ctx.path), site, s))
-        .replace('<!--site:noscript-->', escapeHtml(s.noscript))
+        .replace('<!--site:noscript-->', linkify(s.noscript, aboutLinks(site)))
         .replace('<!--site:about-->', renderAbout(s.about, site));
     },
     configureServer(server) {

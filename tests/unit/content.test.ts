@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
 import en from '../../src/data/locales/en.json';
@@ -57,6 +58,14 @@ describe('going public (spec 2026-11-09)', () => {
     expect(page.description?.length).toBeLessThanOrEqual(160);
     expect(page.imageAlt?.trim()).toBeTruthy();
     expect(page.noscript?.trim()).toBeTruthy();
+  });
+
+  test('the lockfile carries the package name', () => {
+    const pkg = JSON.parse(readFileSync('package.json', 'utf8')) as { name: string };
+    const lock = JSON.parse(readFileSync('package-lock.json', 'utf8')) as { name: string; packages: Record<string, { name?: string }> };
+    expect(pkg.name).toBe('feels-on-wheels');
+    expect(lock.name).toBe(pkg.name);
+    expect(lock.packages['']?.name).toBe(pkg.name);
   });
 
   test('site config has a URL ending in /', () => {

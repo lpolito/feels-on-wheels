@@ -104,7 +104,13 @@ describe('About page', () => {
       contributing: 'https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md',
       author: 'https://lucaspolito.dev/',
       home: './',
+      about: './about.html',
     });
+  });
+
+  test('the noscript message links to About (spec §7.2)', () => {
+    const noscript = (en as unknown as { page: PageStrings }).page.noscript;
+    expect(linkify(noscript, links)).toContain('<a href="./about.html">');
   });
 
   test('linkify escapes text and turns [label](target) into links', () => {

@@ -166,7 +166,7 @@ fw-toolbar .fw-start-over[hidden] { display: none; }
 /* ── Floating hint and card (spec §5) ───────────────────────────────── */
 /* Spec v1.2 §4.1: the card's column; the card sits 1.5rem in from each side of it. */
 #app { --column: min(30rem, 40vw); }
-#stage { inset: 0 var(--column) 0 0; }
+/* Spec v2.2 §3.1: the wheel draws under the column too; main.ts aims the camera left of the card (§3.2). */
 
 #float {
   /* Spec v1.3 §5.1: the card's and the message's shared left edge. */
@@ -372,7 +372,6 @@ fw-card[data-open] :is(.fw-crumbs-wrap, .fw-card-body) { grid-template-rows: 1fr
  * 667 × 375) keeps the side column. Matches isPortrait() in camera.ts.
  */
 @container app (orientation: portrait) or ((max-width: 719.98px) and (min-height: 480px)) or (max-width: 559.98px) {
-  #stage { inset: 0; }
   #float {
     top: auto;
     left: calc(12px + env(safe-area-inset-left));

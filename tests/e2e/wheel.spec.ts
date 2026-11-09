@@ -263,6 +263,8 @@ test.describe('desktop', () => {
     await idle(page);
     expect((await state(page)).opened).toBe(false);
     expect(await selectedPath(page)).toBe('angry');
+    // v2.2 §3.1: the column is the wheel's canvas now, so a second click inside 300 ms would be a double tap.
+    await page.waitForTimeout(320);
     await page.mouse.click(x, y);
     await idle(page);
     expect((await state(page)).selected).toBeNull();
@@ -754,9 +756,10 @@ test.describe('v2.1: phones turned sideways', () => {
         expect((await state(page)).view.mode).toBe('wheel');
         expect((await page.evaluate(() => window.__fw.camera())).scale).toBeGreaterThan(1.5);
         for (const n of await page.evaluate(() => window.__fw.labelsByRing())) expect(n).toBeGreaterThan(0);
-        const stage = (await page.locator('#stage').boundingBox())!;
+        // v2.2 §3.2: the wheel aims left of the column (the canvas itself now spans the app).
+        const aim = (await page.evaluate(() => window.__fw.viewport())).width;
         const msg = (await hint(page).boundingBox())!;
-        expect(msg.x).toBeGreaterThanOrEqual(stage.x + stage.width - 1);
+        expect(msg.x).toBeGreaterThanOrEqual(aim - 1);
       });
     }
   }
@@ -775,9 +778,9 @@ test.describe('v2.1: phones turned sideways', () => {
   test('iPhone SE sideways, word opened: the card is in the column and the word is clear of the switch', async ({ page }) => {
     await page.setViewportSize({ width: 667, height: 375 });
     await open(page, '#/core/happy/content/joyful');
-    const stage = (await page.locator('#stage').boundingBox())!;
+    const aim = (await page.evaluate(() => window.__fw.viewport())).width;
     const card = (await page.locator('fw-card').boundingBox())!;
-    expect(card.x).toBeGreaterThanOrEqual(stage.x + stage.width - 1);
+    expect(card.x).toBeGreaterThanOrEqual(aim - 1);
     const p = await page.evaluate(() => window.__fw.segmentScreenPoint('happy/content/joyful'));
     const sw = (await page.locator('fw-wheel-switch').boundingBox())!;
     expect(p.y > sw.y + sw.height || p.x > sw.x + sw.width).toBe(true);
@@ -798,5 +801,118 @@ test.describe('v2.1: the card', () => {
     await page.reload();
     await page.waitForFunction(() => window.__fw !== undefined);
     expect(await dotAnimations(page)).toEqual([]);
+  });
+});
+
+test.describe('v2.2: the wheel under the column', () => {
+  test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'sets its own viewport'));
+
+  /**
+   * Stands in for env(safe-area-inset-*), which Playwright can't set: the app's padding and the card's right margin, as
+   * the stylesheet derives them. Put in <head> as soon as the parser makes it, before main.ts first measures.
+   */
+  const withInset = (page: Page, side: 'right' | 'left', px = 59) =>
+    page.addInitScript(([s, n]) => {
+      const style = document.createElement('style');
+      style.textContent = s === 'right'
+        ? `#app { padding-right: ${n}px !important } #float { right: max(1.5rem, ${n}px) !important }`
+        : `#app { padding-left: ${n}px !important }`;
+      const place = () => { if (document.head && !style.isConnected) document.head.append(style); };
+      new MutationObserver(place).observe(document, { childList: true, subtree: true });
+      place();
+    }, [side, px] as const);
+
+  const RING_OUTER = [0.32, 0.62, 1];
+  /** The opened cell's right end at 3 o'clock: its outer edge, 10 px lift and 2 px of outline (spec v1.2 §4.1). */
+  const opened = (page: Page) => page.evaluate(() => ({
+    cam: window.__fw.camera(), vp: window.__fw.viewport(), ring: window.__fw.state().view.ring!,
+  }));
+  const box = async (page: Page, sel: string) => (await page.locator(sel).boundingBox())!;
+
+  async function expectClearOfCard(page: Page, label: string): Promise<void> {
+    const { cam, vp, ring } = await opened(page);
+    const edge = cam.cx + RING_OUTER[ring]! * vp.radius * cam.scale + 12;
+    const card = await box(page, 'fw-card');
+    const app = await box(page, '#app');
+    expect(edge, `${label}: the opened word ends at the aim width`).toBeLessThanOrEqual(vp.width + 0.5);
+    expect(vp.width + 24, `${label}: 1.5rem before the card`).toBeLessThanOrEqual(card.x + 1);
+    expect(Math.abs((await box(page, '#stage')).width - app.width), `${label}: the stage is the whole app`).toBeLessThanOrEqual(1);
+    expect(Math.abs(vp.drawWidth - app.width), `${label}: the canvas is the whole app`).toBeLessThanOrEqual(1);
+  }
+
+  for (const [w, h, inset] of [[852, 393, 'right'], [852, 393, null], [895, 470, null], [1280, 800, null]] as const) {
+    test(`${w}×${h}${inset ? ` ${inset} inset` : ''}: the opened word ends 1.5rem before the card`, async ({ page }) => {
+      if (inset) await withInset(page, inset);
+      await page.setViewportSize({ width: w, height: h });
+      for (const hash of ['#/core/happy/content/joyful', '#/core/happy/content', '#/body/head/wide-eyes']) {
+        await open(page, hash);
+        await settled(page);
+        await expectClearOfCard(page, hash);
+      }
+    });
+  }
+
+  test('852×393 left inset: the aim width is unchanged', async ({ page, context }) => {
+    await page.setViewportSize({ width: 852, height: 393 });
+    await open(page, '#/core/happy/content/joyful');
+    const plain = (await opened(page)).vp.width;
+    const other = await context.newPage();
+    await withInset(other, 'left');
+    await other.setViewportSize({ width: 852, height: 393 });
+    await open(other, '#/core/happy/content/joyful');
+    expect((await opened(other)).vp.width).toBeCloseTo(plain, 3);
+  });
+
+  test('resizing to sideways re-aims at the card', async ({ page }) => {
+    await withInset(page, 'right');
+    await page.setViewportSize({ width: 393, height: 852 });
+    await open(page, '#/core/happy/content/joyful');
+    await page.setViewportSize({ width: 852, height: 393 });
+    await page.waitForTimeout(200);
+    await idle(page);
+    await settled(page);
+    await expectClearOfCard(page, 'after resize');
+  });
+
+  /** A point in the card's column on the outer ring, clear of the card and the toolbar. */
+  async function columnPointOnWheel(page: Page): Promise<{ x: number; y: number }> {
+    const { cam, vp } = await opened(page);
+    const card = await box(page, 'fw-card');
+    const toolbar = await box(page, 'fw-toolbar');
+    const R = vp.radius * cam.scale;
+    for (let y = toolbar.y + toolbar.height + 6; y < card.y - 6; y += 2) {
+      for (let x = vp.width + 24; x < card.x + card.width; x += 2) {
+        const r = Math.hypot(x - cam.cx, y - cam.cy) / R;
+        if (r > 0.66 && r < 0.96) return { x, y };
+      }
+    }
+    throw new Error('no point of the outer ring shows in the column');
+  }
+
+  test('a tap in the column on the wheel opens that word', async ({ page }) => {
+    await page.setViewportSize({ width: 895, height: 470 });
+    await open(page, '#/body/head/wide-eyes');
+    await settled(page);
+    const p = await columnPointOnWheel(page);
+    await page.waitForTimeout(320);
+    await page.mouse.click(p.x, p.y);
+    await idle(page);
+    const s = await state(page);
+    expect(s.opened).toBe(true);
+    expect((await page.evaluate((i) => window.__fw.pathOf(i), s.selected))!.split('/')).toHaveLength(3);
+  });
+
+  test('a drag starting in the column spins the wheel', async ({ page }) => {
+    await page.setViewportSize({ width: 895, height: 470 });
+    await open(page, '#/body/head/wide-eyes');
+    await settled(page);
+    const p = await columnPointOnWheel(page);
+    const before = (await page.evaluate(() => window.__fw.camera())).rotation;
+    await page.mouse.move(p.x, p.y);
+    await page.mouse.down();
+    await page.mouse.move(p.x, p.y + 80, { steps: 5 });
+    await page.mouse.up();
+    await idle(page);
+    expect(sameAngle((await page.evaluate(() => window.__fw.camera())).rotation, before)).toBeGreaterThan(0.01);
   });
 });

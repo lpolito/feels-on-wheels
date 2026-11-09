@@ -2,17 +2,39 @@
 
 A free feelings wheel and body sensations wheel, to help you find the word for what you feel. Start from a few core feelings and narrow down, or start from what you notice in your body. Open a word to read what it means.
 
-It's fast, works offline, installs as an app, works with a keyboard and screen readers, and supports light and dark mode. There are no accounts and no tracking.
-
 **Try it: <https://lpolito.github.io/feels-on-wheels/>**
 
 ![The feelings wheel with "Curious" opened: its definition, what you might notice in your body, and a close word.](docs/screenshot.png)
 
-## Licence
+## What went into it
 
-Feels on Wheels is **source-available, not open source**. You're welcome to read, copy, change and translate it for any non-commercial purpose, as long as you give credit. Selling it, running ads on a copy, or making a paid app from it isn't allowed.
+It's meant to have everything you'd want from a modern web app, with accessibility and performance treated as features, not afterthoughts.
 
-The code is under the [PolyForm Noncommercial License 1.0.0](LICENSES/PolyForm-Noncommercial-1.0.0.md). The words (everything in `src/data/`: wheel layouts, definitions, sensations, translations) and the docs are under [CC BY-NC-SA 4.0](LICENSES/CC-BY-NC-SA-4.0.txt). See [LICENSE](LICENSE).
+- **Accessible.** The wheel is drawn on a canvas, but every word is also in a real tree that works with a keyboard and screen readers. It follows your light or dark mode, and respects reduced motion and forced colors (high contrast). Automated accessibility checks (axe) run in the tests.
+- **Fast.** Spinning stays smooth: in performance tests, 95% of frames come less than 20 ms apart, in Chromium and Firefox.
+- **Small.** No frameworks and no runtime dependencies. Everything a first visit downloads, including every word and definition, is about 34 KB gzipped, against a 60 KB budget that every deploy checks.
+- **Offline and installable.** After one visit it works with no connection, and most browsers can install it as an app.
+- **Any screen.** Layouts are tested from 280 px phones to 2560 px monitors, in Chromium, Firefox and WebKit, and on Android and iPhone.
+- **Private.** No accounts, no tracking, no analytics.
+
+## Built with AI
+
+Feels on Wheels was built with AI, openly and on purpose. It's the first project Lucas made this way.
+
+- **[Claude Code](https://claude.com/claude-code)**, Anthropic's AI coding assistant, wrote the code and helped weigh up how to build each piece.
+- **[Superpowers](https://github.com/obra/superpowers)**, Jesse Vincent's skills plugin for Claude Code, shaped how every version was made, and was used heavily:
+  - brainstorming each version into a written design;
+  - turning that design into a step-by-step plan;
+  - building it test first;
+  - a fresh code review before anything shipped.
+  
+  Its visual companion showed mockups in the browser when a choice was easier to see than describe.
+
+The ideas are Lucas's: what the app does, how it looks and how it feels to use. He made every usability and design call, and used each version before the next one was planned. The point was to see how fast, and how complete, an app can get when AI does the building and a person stays in the loop on what makes it good to use.
+
+The whole process is in the repo. Every version's design is in [docs/superpowers/specs](docs/superpowers/specs), and every build plan is in [docs/superpowers/plans](docs/superpowers/plans).
+
+The app itself is plain TypeScript, built with [Vite](https://vite.dev/). It's tested with [Vitest](https://vitest.dev/) and [Playwright](https://playwright.dev/) (with [axe-core](https://github.com/dequelabs/axe-core) for accessibility), and deployed to GitHub Pages by GitHub Actions.
 
 ## Running it
 
@@ -45,15 +67,8 @@ Feels on Wheels draws on feelings wheels by Gloria Willcox, Geoffrey Roberts and
 
 Made by [Lucas Polito](https://lucaspolito.dev/).
 
-## Moving to a domain
+## License
 
-The app's public address is set in one place, `site.config.ts`. To move it to its own domain:
+Feels on Wheels is **source-available, not open source**. You're welcome to read, copy, change and translate it for any non-commercial purpose, as long as you give credit. Selling it, running ads on a copy, or making a paid app from it isn't allowed.
 
-1. Buy the domain. Check the trademark first.
-2. Set `site.url` to it (ending in `/`) and `indexable: true`, which removes the `noindex` tag.
-3. Add `public/CNAME` containing the bare domain. In the repo's Pages settings, set the custom domain and turn on "Enforce HTTPS". Point the domain's DNS at GitHub Pages.
-4. Update the repo's homepage: `gh repo edit --homepage https://<domain>/`.
-5. Deploy, then check the preview tags with `curl` and a link-preview checker.
-6. Then follow [docs/website-icon/README.md](docs/website-icon/README.md) to add the app to lucaspolito.dev.
-
-Installs and saved themes at the old address don't carry over to the new one.
+The code is under the [PolyForm Noncommercial License 1.0.0](LICENSES/PolyForm-Noncommercial-1.0.0.md). The words (everything in `src/data/`: wheel layouts, definitions, sensations, translations) and the docs are under [CC BY-NC-SA 4.0](LICENSES/CC-BY-NC-SA-4.0.txt). See [LICENSE](LICENSE).

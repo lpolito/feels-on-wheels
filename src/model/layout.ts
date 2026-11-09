@@ -1,7 +1,7 @@
 import { nodeRef } from '../data/node';
 import type { FeelingId, NodeRef, Wheel, WheelNode } from '../data/types';
 
-/** Slash-joined node ids from the centre outward, e.g. 'angry/aggressive/hostile' or 'chest/racing-heart/scared'. Unique per position. */
+/** Slash-joined node ids from the center outward, e.g. 'angry/aggressive/hostile' or 'chest/racing-heart/scared'. Unique per position. */
 export type Path = string;
 
 export interface Segment {
@@ -59,7 +59,7 @@ export function homes(core: Layout): Map<FeelingId, Home> {
   return out;
 }
 
-/** Without `home`, hues inherit from the centre node. With it, feeling nodes take home.get(id).hue (spec v2 §5.1). */
+/** Without `home`, hues inherit from the center node. With it, feeling nodes take home.get(id).hue (spec v2 §5.1). */
 export function buildLayout(wheel: Wheel, home?: Map<FeelingId, Home>): Layout {
   const segments: Segment[] = [];
   const ringMembers: number[][] = wheel.rings.map(() => []);

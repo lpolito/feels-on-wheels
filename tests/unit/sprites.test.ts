@@ -46,7 +46,7 @@ describe('sprite cache', () => {
     expect(cache.size).toBe(1);
   });
 
-  test('a different colour or text is a different sprite', () => {
+  test('a different color or text is a different sprite', () => {
     const { made, makeCanvas, g } = fakes();
     const cache = createSpriteCache(makeCanvas, 600, font);
     cache.draw(g, 'Angry', 14, '#ffffff', 0, 0, 0);

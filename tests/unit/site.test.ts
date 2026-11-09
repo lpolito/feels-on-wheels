@@ -97,7 +97,7 @@ describe('About page', () => {
   const about = (en as unknown as { page: PageStrings }).page.about;
   const html = renderAbout(about, site);
 
-  test('the link map points at the repo, licence, contributing guide, author and the wheel', () => {
+  test('the link map points at the repo, license, contributing guide, author and the wheel', () => {
     expect(links).toEqual({
       repo: 'https://github.com/lpolito/feels-on-wheels',
       license: 'https://github.com/lpolito/feels-on-wheels/blob/main/LICENSE',

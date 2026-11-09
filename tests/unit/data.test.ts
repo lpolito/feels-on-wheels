@@ -135,8 +135,8 @@ describe('validateWheel: node kinds', () => {
     ['unknown area', (w) => { w.children[0]!.area = 'elbow'; }],
     ['unknown sensation', (w) => { w.children[0]!.children![0]!.sensation = 'itchy'; }],
     ['unknown feeling', (w) => { w.children[0]!.children![0]!.children![0]!.feeling = 'nope'; }],
-    ['hue off the centre', (w) => { w.children[0]!.children![0]!.hue = 'head'; }],
-    ['centre without hue', (w) => { delete w.children[0]!.hue; }],
+    ['hue off the center', (w) => { w.children[0]!.children![0]!.hue = 'head'; }],
+    ['center without hue', (w) => { delete w.children[0]!.hue; }],
   ];
   for (const [name, mutate] of cases) {
     test(`validateWheel rejects ${name}`, () => {

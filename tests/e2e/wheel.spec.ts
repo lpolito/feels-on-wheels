@@ -482,7 +482,7 @@ async function openedPlacement(page: Page, path: string) {
 }
 
 test.describe('phone', () => {
-  test.beforeEach(({ isMobile }) => test.skip(!isMobile, 'phone-only behaviour'));
+  test.beforeEach(({ isMobile }) => test.skip(!isMobile, 'phone-only behavior'));
 
   test('phone: base URL starts with nothing selected and the hint "How are you feeling? …"', async ({ page }) => {
     await open(page);
@@ -496,7 +496,7 @@ test.describe('phone', () => {
     await expect(hint(page).locator('.fw-hint-text')).toHaveText('Tap or spin to explore, or start from body sensations instead.');
   });
 
-  test("phone: the wheel's centre is on the left edge", async ({ page }) => {
+  test("phone: the wheel's center is on the left edge", async ({ page }) => {
     await open(page);
     const cam = await page.evaluate(() => window.__fw.camera());
     expect(Math.abs(cam.cx)).toBeLessThanOrEqual(2);
@@ -557,7 +557,7 @@ test.describe('phone', () => {
     expect((await state(page)).opened).toBe(false);
   });
 
-  test('phone: the opened word is centred between the top and the unfolded card', async ({ page }) => {
+  test('phone: the opened word is centered between the top and the unfolded card', async ({ page }) => {
     for (const path of ['fearful', 'fearful/scared', 'fearful/scared/helpless']) {
       await open(page, `#/core/${path}`);
       const { y, mid, cardTop, half } = await openedPlacement(page, path);
@@ -567,7 +567,7 @@ test.describe('phone', () => {
     }
   });
 
-  test('phone: moving to a word with a different card height re-centres it', async ({ page }) => {
+  test('phone: moving to a word with a different card height re-centers it', async ({ page }) => {
     // A middle word, then one of its outer words: their cards differ in height on every phone.
     await open(page, '#/core/fearful/scared');
     await settled(page);
@@ -580,7 +580,7 @@ test.describe('phone', () => {
     expect(Math.abs(y - mid)).toBeLessThanOrEqual(2);
   });
 
-  test('phone: resize while opened keeps the word centred above the card', async ({ page }) => {
+  test('phone: resize while opened keeps the word centered above the card', async ({ page }) => {
     await open(page, '#/core/fearful/scared');
     const size = page.viewportSize()!;
     await page.setViewportSize({ width: size.width, height: size.height + 100 });
@@ -684,7 +684,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
     test(`axe: no violations with nothing selected, selected, opened (${colorScheme})`, async ({ page }) => {
       await page.emulateMedia({ colorScheme });
       await open(page, '#/core/angry/aggressive/hostile');
-      // Let the unfold finish, so axe reads the settled colours.
+      // Let the unfold finish, so axe reads the settled colors.
       await settled(page);
       expect((await new AxeBuilder({ page }).analyze()).violations, 'opened').toEqual([]);
       await page.keyboard.press('Escape');

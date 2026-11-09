@@ -92,7 +92,7 @@ describe('toChild / toParent', () => {
     expect(run(selected('angry'), { type: 'toChild' })).toEqual(selected('angry/let-down'));
   });
 
-  test('toChild while opened opens the centre child', () => {
+  test('toChild while opened opens the center child', () => {
     expect(run(opened('angry/aggressive'), { type: 'toChild' })).toEqual(opened('angry/aggressive/hostile'));
   });
 

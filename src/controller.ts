@@ -9,7 +9,7 @@ import type { State, Store } from './state/store';
 
 export interface Controller {
   handle(intents: Intent[]): void;
-  /** Re-targets the current resting state for a new viewport, keeping the intended word centred. */
+  /** Re-targets the current resting state for a new viewport, keeping the intended word centered. */
   setViewport(vp: Viewport, o: CameraOpts): void;
   /**
    * Spec v1.3 §4.2: the stage y for the opened word on phones. Springs cy (joining any rotation in flight); outside
@@ -64,7 +64,7 @@ export function createController(
     Math.max(...layout.rings.map((r) => ringFocusCamera(layout, r.index, vp, 0, opts).scale)) * MAX_SCALE_HEADROOM;
   const clampScale = (s: number): number => Math.min(Math.max(s, MIN_SCALE), maxScale());
 
-  /** The resting camera for a state (spec §3.1): the whole wheel, or the view ring centred on the selection. */
+  /** The resting camera for a state (spec §3.1): the whole wheel, or the view ring centered on the selection. */
   function restingCamera(s: State): Camera {
     const ring = ringOf(s);
     // Spec v1.2 §3.3: the whole wheel keeps the rotation it is at (or heading to), so closing never spins back.
@@ -291,7 +291,7 @@ export function createController(
     const widths = layout.rings[0]!.segments.map((k) => seg(k).end - seg(k).start).sort((a, b) => a - b);
     const median = widths[Math.floor(widths.length / 2)]!;
     const rest = halfRestRotation(layout);
-    // Only the rotation moves: scale and centre are the resting view's throughout.
+    // Only the rotation moves: scale and center are the resting view's throughout.
     camera.jump(wheelCamera(layout, vp, rest - INTRO_SEGMENTS * median, opts));
     userSpin = false;
     camera.animateTo(wheelCamera(layout, vp, rest, opts));

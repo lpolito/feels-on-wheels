@@ -34,11 +34,11 @@ const media = (q: string): MediaQueryList => matchMedia(q);
 const { feelings } = data;
 const wheelIds = data.wheels.map((w) => w.id);
 const firstId = wheelIds[0]!;
-/** Each feeling's first place on the first wheel: its colour and jump target on other wheels (spec v2 §5.1, §6.2). */
+/** Each feeling's first place on the first wheel: its color and jump target on other wheels (spec v2 §5.1, §6.2). */
 const home = homes(buildLayout(data.wheels[0]!));
-/** Every centre node's hue across all wheels (spec v2 §5.2). */
+/** Every center node's hue across all wheels (spec v2 §5.2). */
 const hueNames = data.wheels.flatMap((w) => w.children.map((n) => n.hue!));
-/** The first wheel keeps inheriting hues from its centre; later wheels colour feelings from their home (Task 2 ruling). */
+/** The first wheel keeps inheriting hues from its center; later wheels color feelings from their home (Task 2 ruling). */
 const layoutFor = (id: string): Layout =>
   buildLayout(data.wheels.find((w) => w.id === id)!, id === firstId ? undefined : home);
 
@@ -107,7 +107,7 @@ let opts!: CameraOpts;
 // ── Rendering ────────────────────────────────────────────────────────────
 const makeCanvas = (w: number, h: number): HTMLCanvasElement | OffscreenCanvas =>
   typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(w, h) : Object.assign(document.createElement('canvas'), { width: w, height: h });
-/** Shared by every wheel: keyed on label, size and colour (spec v1.2 §7). */
+/** Shared by every wheel: keyed on label, size and color (spec v1.2 §7). */
 const sprites = createSpriteCache(makeCanvas, 600, labelFont);
 /** Spec §4.2: cells fade only while a word is opened. */
 const litFor = (s: State): Uint8Array => (s.opened ? litMask(layout, s.selected) : allLit);
@@ -153,7 +153,7 @@ function refreshColors(): void {
   const palette = readPalette(document.documentElement, hueNames);
   const theme = resolvedTheme(themePref, darkScheme);
   renderer.setColors(buildFillTable(palette, layout.rings.length, theme, { moreContrast: moreContrast.matches }), palette);
-  // Spec v1.2 §5.2: hover ink per hue. Forced colours use the system's own link colours instead.
+  // Spec v1.2 §5.2: hover ink per hue. Forced colors use the system's own link colors instead.
   card.inks = palette.forced
     ? {}
     : Object.fromEntries(Object.entries(palette.hues).map(([hue, base]) => [hue, inkFor(base, theme, palette.surface)]));
@@ -220,7 +220,7 @@ function setOpenedHalf(s: State): void {
 }
 
 /**
- * Spec v1.3 §4.2: on portrait stages, the stage y that centres the opened word between the top (below the safe area)
+ * Spec v1.3 §4.2: on portrait stages, the stage y that centers the opened word between the top (below the safe area)
  * and the top of the card once fully unfolded. Null when nothing is opened or the stage isn't portrait.
  */
 function openedYFor(s: State): number | null {

@@ -3,9 +3,9 @@ export interface Palette {
   fg: string;
   gap: string;
   focus: string;
-  /** Selection outline colour: ink in light, white in dark, Highlight in forced colours. */
+  /** Selection outline color: ink in light, white in dark, Highlight in forced colors. */
   outline: string;
-  /** The card's background (--surface); 'Canvas' in forced colours. */
+  /** The card's background (--surface); 'Canvas' in forced colors. */
   surface: string;
   hues: Record<string, string>;
   /** Windows high-contrast mode: values are CSS system color keywords, not hex. */
@@ -14,7 +14,7 @@ export interface Palette {
 
 const HUE_PREFIX = '--hue-';
 
-/** `hueNames`: every centre node's hue across the wheels (spec v2 §5.2), each read from `--hue-<name>`. */
+/** `hueNames`: every center node's hue across the wheels (spec v2 §5.2), each read from `--hue-<name>`. */
 export function readPalette(el: Element, hueNames: readonly string[]): Palette {
   if (typeof matchMedia !== 'undefined' && matchMedia('(forced-colors: active)').matches) {
     return {
@@ -115,7 +115,7 @@ const ROW_TINT = 0.08;
 const INK_MIN = 4.5;
 
 /**
- * Text colour for a feeling on the card surface: the base hue shifted in OKLab L (darker in light, lighter in dark)
+ * Text color for a feeling on the card surface: the base hue shifted in OKLab L (darker in light, lighter in dark)
  * until ≥ 4.5:1 against `surface`, and against a hovered row's faint tint of itself.
  */
 export function inkFor(base: string, theme: 'light' | 'dark', surface: string): string {
@@ -131,7 +131,7 @@ export function inkFor(base: string, theme: 'light' | 'dark', surface: string): 
 
 /** Per-ring OKLab-L shift after fitting (core, middle, outer). */
 const RING_SHIFT = [-0.07, -0.035, 0];
-const FADE_GREY = { light: '#8d8a93', dark: '#3a383e' } as const;
+const FADE_GRAY = { light: '#8d8a93', dark: '#3a383e' } as const;
 const FADE = 0.72;
 
 export function buildFillTable(
@@ -152,7 +152,7 @@ export function buildFillTable(
     const l: string[] = [];
     for (let ring = 0; ring < rings; ring++) {
       const lit = shade(fitted, RING_SHIFT[Math.min(ring, RING_SHIFT.length - 1)]!);
-      const mixed = mix(lit, FADE_GREY[theme], FADE);
+      const mixed = mix(lit, FADE_GRAY[theme], FADE);
       // More contrast: faded labels are plain white, so the faded fill is darkened just enough for 4.5:1.
       const faded = o.moreContrast ? fitWhite(mixed, 4.5) : mixed;
       f[ring * 2] = faded;

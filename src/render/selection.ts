@@ -5,7 +5,7 @@
 
 /** The selection outline's stroke width; half of it falls outside the cell's edge. */
 export const OUTLINE_PX = 4;
-/** The gap-coloured line just inside the outline. */
+/** The gap-colored line just inside the outline. */
 export const OUTLINE_INNER_PX = 2;
 /** The outline's reach past the cell's edge. */
 export const OUTLINE_OUTSIDE_PX = OUTLINE_PX / 2;

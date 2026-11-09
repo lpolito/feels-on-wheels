@@ -33,6 +33,7 @@ Not in any order; none is chosen yet. Strength was briefly v2 before it was shel
 | [Emoji wheel](#emoji-wheel) | Planned |
 | [Languages](#languages) | Planned |
 | [Return to the word you jumped from](#return-to-the-word-you-jumped-from) | Idea |
+| [Feeling links underlined in their feeling's colour](#feeling-links-underlined-in-their-feelings-colour) | Idea |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
 
@@ -72,6 +73,17 @@ What Lucas first asked for:
 - Lucas's idea, 2026-11-09. Where it goes is open: on the opened card, as a toolbar button like Start over, or something else.
 - Today the only way back is the browser's Back (the jump pushes history, v2 §4.2), which is the awkward gesture in the [going back on phones](#known-issues) known issue. This idea may cover part of that.
 - To decide when designing: what the control says ("Back to Wide eyes"?), when it disappears (after moving on, switching wheels by hand, or Start over), and whether it also works the other way, or for the emoji wheel once there are three wheels.
+
+### Feeling links underlined in their feeling's colour
+
+- Every link to a feeling is underlined in that feeling's colour, wherever it appears, for consistency: breadcrumbs, the "Narrow it down" and "Could be feeling" rows, the "Close to" and "Could also be feeling" words, v2.2's core-feeling link in the definition, and the jump to the feelings wheel.
+- Lucas's idea, 2026-11-09.
+- Today (v2.2.1): feeling links are underlined in a 45% tint of the text colour, and take their feeling's ink (`--ink`, from `colors.ts` `inkFor`) only on hover or focus. The rows have no underline, only a grey divider below. Breadcrumbs don't carry their own feeling's ink: on hover they take the opened word's.
+- To decide when designing:
+  - the ink (contrast-checked against the card, so it shows in both themes) or the wheel's own fill (truer to the wheel, but some are too dark or light to see on the card);
+  - whether the rows' dividers take the colour too, or they get underlines;
+  - what areas and sensations do, since they're links too but not feelings;
+  - forced colours, where links keep the system's link colour.
 
 ## Known issues
 

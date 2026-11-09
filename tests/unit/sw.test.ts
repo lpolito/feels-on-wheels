@@ -1,13 +1,13 @@
 import { describe, expect, test, vi } from 'vitest';
 import { precacheManifest } from '../../build/sw-plugin';
-import { navigationResponse } from '../../src/sw/strategy';
+import { navigationResponse, navigationUrls } from '../../src/sw/strategy';
 
 describe('service worker navigation strategy', () => {
   test('serves the cached shell and never fetches or writes a newer index from the old worker', async () => {
     const cached = new Response('old shell');
     const cache = { match: vi.fn(async () => cached), put: vi.fn() };
     const network = vi.fn(async () => new Response('new shell'));
-    const res = await navigationResponse(cache, 'https://x/index.html', network);
+    const res = await navigationResponse(cache, ['https://x/index.html'], network);
     expect(await res.text()).toBe('old shell');
     expect(network).not.toHaveBeenCalled();
     expect(cache.put).not.toHaveBeenCalled();
@@ -16,9 +16,31 @@ describe('service worker navigation strategy', () => {
 
   test('falls back to the network when nothing is cached, and to an error response offline', async () => {
     const empty = { match: vi.fn(async () => undefined) };
-    expect(await (await navigationResponse(empty, 'u', async () => new Response('net'))).text()).toBe('net');
-    const offline = await navigationResponse(empty, 'u', async () => { throw new TypeError('offline'); });
+    expect(await (await navigationResponse(empty, ['u'], async () => new Response('net'))).text()).toBe('net');
+    const offline = await navigationResponse(empty, ['u'], async () => { throw new TypeError('offline'); });
     expect(offline.type).toBe('error');
+  });
+
+  const pages: Record<string, string> = { 'https://x/index.html': 'wheel', 'https://x/about.html': 'about' };
+  const site = { match: vi.fn(async (url: string) => (pages[url] ? new Response(pages[url]) : undefined)) };
+
+  test('a precached page is served for its own navigation', async () => {
+    const network = vi.fn(async () => new Response('net'));
+    const res = await navigationResponse(site, ['https://x/about.html', 'https://x/index.html'], network);
+    expect(await res.text()).toBe('about');
+    expect(network).not.toHaveBeenCalled();
+  });
+
+  test('an unknown page falls back to the index', async () => {
+    const network = vi.fn(async () => new Response('net'));
+    const res = await navigationResponse(site, ['https://x/nope.html', 'https://x/index.html'], network);
+    expect(await res.text()).toBe('wheel');
+    expect(network).not.toHaveBeenCalled();
+  });
+
+  test('navigationUrls strips search and hash, then falls back to the index', () => {
+    expect(navigationUrls('https://x/about.html?ref=a#b', 'https://x/index.html')).toEqual(['https://x/about.html', 'https://x/index.html']);
+    expect(navigationUrls('https://x/', 'https://x/index.html')).toEqual(['https://x/', 'https://x/index.html']);
   });
 });
 

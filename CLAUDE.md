@@ -1,4 +1,4 @@
-# Feelings wheel
+# Feels on Wheels
 
 ## Roadmap
 
@@ -10,7 +10,12 @@
 
 ## Sources and credits
 
-`docs/reference/` has a note for every outside source the project draws on (wheels, word lists, research), plus the draft text for the app's credits page.
+`docs/reference/` has a note for every outside source the project draws on (wheels, word lists, research), plus the text of the app's credits.
 
-- When a spec, the roadmap or the content uses a new source, add a note there and add it to the Credits list in `docs/reference/README.md`.
+- When a spec, the roadmap or the content uses a new source, add a note there, add it to the Credits list in `docs/reference/README.md`, and credit it on the About page (`page.about` in `src/data/locales/en.json`).
 - Never name a source without linking its note.
+- Never transcribe a source's word list or layout into the repo, not even in notes. Quote a few words as examples at most.
+
+## Site URL
+
+`site.config.ts` is the only place the public URL lives. Never hard-code it elsewhere; the build fills canonical URLs, preview tags, robots.txt and the sitemap from it.

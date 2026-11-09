@@ -5,12 +5,22 @@ The source for the app's core wheel (`src/data/wheels/core.json`) and the intera
 ## Lineage
 
 - **Gloria Willcox, "The Feeling Wheel" (1982).** *Transactional Analysis Journal* 12(4), 274–276. The usual origin of feelings wheels: a few core feelings in the centre, more specific words further out. Its six cores are Mad, Sad, Scared, Joyful, Powerful and Peaceful.
-- **Geoffrey Roberts, "The Feel Wheel" (2015).** A widely shared variation rooted in Willcox's wheel. The seven-core version with Happy, Surprised, Bad, Fearful, Angry, Disgusted and Sad is usually credited to Roberts, but this wasn't confirmed against a primary source. The original high-resolution image is reportedly no longer online.
+- **Geoffrey Roberts, "I Feel – Emotional Word Wheel – The Feel Wheel" (2015).** A widely shared variation rooted in Willcox's wheel, and the seven-core version with Happy, Surprised, Bad, Fearful, Angry, Disgusted and Sad.
+  - Posted on imgur on March 5, 2015: <https://imgur.com/tCWChf6> (still online on 2026-11-09; archived at <http://web.archive.org/web/20180505024944/https://imgur.com/tCWChf6>).
+  - Confirmed on 2026-11-09 by two independent sources. [datavizblog.com](https://datavizblog.com/2020/03/20/the-feel-wheel-how-are-all-of-you-doing-out-there/) cites the imgur post and quotes Roberts. The [reference site](#the-reference-site) credits him: "Wheel content based on Geoffrey Roberts' Feel Wheel."
+  - In the quoted text, Roberts says the first wheel in this style was Dr. Gloria Willcox's, in the early 1980s. He also says the wheel he based his on may have been by a teacher named Kaitlin Robb. That isn't confirmed, and sources spell the name differently, so we don't credit it.
 - A later remix on Observable ([ajwwong/feelings-wheel](https://observablehq.com/@ajwwong/feelings-wheel)) points out that some of its outer words aren't feelings but judgements about other people's behaviour, e.g. *Disrespected*.
 
 ## The reference site
 
-An interactive web version of the seven-core wheel. Lucas shared screenshots in the first brainstorming session (2026-11-06). On 2026-11-08 he named <https://feelingswheel.com/> as the site that inspired the app. It's assumed to be the site in the screenshots; this wasn't checked, because the site blocks automated visits.
+An interactive web version of the seven-core wheel. Lucas shared screenshots in the first brainstorming session (2026-11-06). On 2026-11-08 he named <https://feelingswheel.com/> as the site that inspired the app.
+
+- **Confirmed 2026-11-09.** The live site still blocks automated visits, so an Internet Archive copy from 2026-07-14 was checked instead: <http://web.archive.org/web/20260714032040/https://www.feelingswheel.com/>.
+  - It has the same Reset button and "New colors" / "Original" toggles as the screenshots.
+  - Its page title is "Feelings Wheel — a free tool to help you name what you're feeling".
+  - It credits "Wheel content based on Geoffrey Roberts' Feel Wheel".
+  - It names no author on the page. It calls itself "a free resource for anybody who might find it useful" and isn't run for profit.
+  - The Español toggle wasn't visible in the archived page's HTML, probably because a script draws it.
 
 What it does:
 

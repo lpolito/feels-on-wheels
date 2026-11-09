@@ -1,10 +1,13 @@
 import feelingsJson from './feelings.json';
-import en from './locales/en.json';
+// Named imports only, so en.json's `page` strings (for the HTML pages, built at build time) stay out of the app's JS.
+import { meta, ui, feelings as feelingStrings, sensations, areas, wheels as wheelStrings } from './locales/en.json';
 import { wheelSources } from './wheels/index';
 import { KINDS, nodeRef } from './node';
 import type { FeelingsDict, Locale, NodeRef, Wheel, WheelNode } from './types';
 
 export { nodeRef };
+
+const en = { meta, ui, feelings: feelingStrings, sensations, areas, wheels: wheelStrings };
 
 export class DataError extends Error {
   override name = 'DataError';

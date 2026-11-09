@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Feels on Wheels' silhouette, for use as a CSS mask on lucaspolito.dev: the app icon's wheel with its
+       hole, core ring and seven spokes at the real wedge boundaries (0°, 52.7°, 122.9°, 158°, 210.7°, 289.8°, 324.9°). -->
+  <defs>
+    <mask id="m">
+      <circle cx="256" cy="256" r="240" fill="#fff"/>
+      <circle cx="256" cy="256" r="78" fill="#000"/>
+      <g stroke="#000" stroke-width="20">
+        <line x1="256" y1="256" x2="256.00" y2="6.00"/>
+        <line x1="256" y1="256" x2="454.87" y2="104.50"/>
+        <line x1="256" y1="256" x2="465.90" y2="391.79"/>
+        <line x1="256" y1="256" x2="349.65" y2="487.80"/>
+        <line x1="256" y1="256" x2="128.36" y2="470.96"/>
+        <line x1="256" y1="256" x2="20.78" y2="171.32"/>
+        <line x1="256" y1="256" x2="112.25" y2="51.46"/>
+      </g>
+      <circle cx="256" cy="256" r="148.8" fill="none" stroke="#000" stroke-width="16"/>
+    </mask>
+  </defs>
+  <rect width="512" height="512" mask="url(#m)"/>
+</svg>

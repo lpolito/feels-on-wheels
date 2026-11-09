@@ -5,7 +5,7 @@ import { buildLayout, homes, litMask } from '../../src/model/layout';
 import { overviewCamera, ringFocusCamera } from '../../src/camera';
 import { buildFillTable, type Palette } from '../../src/render/colors';
 import { createWheelRenderer, type Frame } from '../../src/render/wheel';
-import type { Viewport } from '../../src/model/geometry';
+import { drawWidthOf, type Viewport } from '../../src/model/geometry';
 
 const { wheel, locale } = loadData();
 const layout = buildLayout(wheel);
@@ -200,14 +200,14 @@ describe('wheel renderer', () => {
   };
   const pxOf = (font: string): number => Number(/([\d.]+)px/.exec(font)![1]);
 
-  test('selected not opened: outline drawn in palette.outline, chevron drawn, no shadow', () => {
+  test('selected not opened: outline drawn in palette.outline, no chevron, no shadow', () => {
     const angry = layout.byPath.get('angry')!;
     const none = draw(desk, {}).rec;
     const sel = draw(desk, { selected: angry }).rec;
     expect(none.strokes).not.toContain(palette.outline);
     expect(sel.strokes.filter((x) => x === palette.outline).length).toBeGreaterThanOrEqual(1);
-    // outline ring, inner gap line, chevron
-    expect(sel.strokes.length - none.strokes.length).toBe(3);
+    // Spec v2.2 §6: the outline ring and the inner gap line; no chevron.
+    expect(sel.strokes.length - none.strokes.length).toBe(2);
     expect(sel.shadowSets).toBe(0);
   });
 
@@ -271,12 +271,8 @@ describe('wheel renderer', () => {
     }
   });
 
-  test('selecting a word leaves its label put unless the label would reach the inside chevron', () => {
-    // The chevron's room: the label box's outer 14px, inside the 6px label padding (spec v1.2 §4.4).
-    const CLEAR = 6 + 14;
-    const f0 = frame(desk);
-    const R = desk.radius * f0.cam.scale;
-    /** The single-line label's radial centre, size and outer reach, or null when it isn't drawn on one line. */
+  test('selecting a word never moves or resizes its label (spec v2.2 §6)', () => {
+    /** The single-line label's radial centre and size, or null when it isn't drawn on one line. */
     const placed = (i: number, o: Partial<Frame>) => {
       const s = layout.segments[i]!;
       const { canvas, ctx, rec } = fakeCanvas();
@@ -289,38 +285,18 @@ describe('wheel renderer', () => {
       if (k < 0) return null;
       const angle = s.mid + f.cam.rotation;
       const centre = (rec.textAt[k]!.e - f.cam.cx) * Math.cos(angle) + (rec.textAt[k]!.f - f.cam.cy) * Math.sin(angle);
-      const px = pxOf(rec.fonts[k]!);
-      // fakeCanvas measures 0.6em per character.
-      return { centre, px, reach: centre + (rec.textAt[k]!.text.length * px * 0.6) / 2 };
+      return { centre, px: pxOf(rec.fonts[k]!) };
     };
-    let stayed = 0;
-    let moved = 0;
+    let checked = 0;
     for (const s of layout.segments) {
-      const ring = layout.rings[s.ring]!;
-      if ((s.end - s.start) * ring.outer * R < 22) continue; // chevron outside the cell
       const before = placed(s.index, {});
       const after = placed(s.index, { selected: s.index });
       if (!before || !after) continue;
-      const limit = ring.outer * R - CLEAR;
-      if (before.reach <= limit) {
-        expect(after.centre, nodeLabel(s.node)).toBeCloseTo(before.centre, 6);
-        expect(after.px, nodeLabel(s.node)).toBe(before.px);
-        stayed++;
-      } else {
-        expect(after.reach, nodeLabel(s.node)).toBeLessThanOrEqual(limit + 0.5);
-        moved++;
-      }
+      expect(after.centre, nodeLabel(s.node)).toBeCloseTo(before.centre, 6);
+      expect(after.px, nodeLabel(s.node)).toBe(before.px);
+      checked++;
     }
-    expect(stayed).toBeGreaterThan(0);
-    expect(moved).toBeGreaterThan(0);
-  });
-
-  test('thin cell gets the chevron outside in the outline colour; wide cell gets it inside in white', () => {
-    const wide = draw(desk, { selected: layout.byPath.get('angry')! }).rec;
-    expect(wide.strokes.at(-1)).toBe('#ffffff');
-    const small: Viewport = { width: 300, height: 300, radius: 140 };
-    const thin = draw(small, { selected: layout.byPath.get('angry/aggressive/hostile')! }).rec;
-    expect(thin.strokes.at(-1)).toBe(palette.outline);
+    expect(checked).toBeGreaterThan(50);
   });
 
   test('forced palette outlines in Highlight', () => {
@@ -384,5 +360,22 @@ describe('wheel renderer', () => {
     r.draw(frame(desk));
     expect(sprited).toEqual([]);
     expect(rec.texts.length).toBeGreaterThan(100);
+  });
+});
+
+describe('the canvas under the column (spec v2.2 §3.1)', () => {
+  test('draws labels in the column when drawWidth is wider', () => {
+    // The outer ring starts at x = 100 + 0.62 × 192 × 4 ≈ 576: past the aim width, inside the canvas.
+    const vp: Viewport = { width: 500, height: 400, radius: 192 };
+    const cam = { scale: 4, rotation: 0, cx: 100, cy: 200 };
+    const outerLabels = (v: Viewport) => {
+      const { canvas, ctx } = fakeCanvas();
+      const r = createWheelRenderer(canvas, layout, ctx);
+      r.setColors(table, palette);
+      r.resize(drawWidthOf(v), v.height, 1);
+      r.draw(frame(v, { cam, mode: 'ring', ring: 1 }));
+      return r.stats.labelsByRing[2]!;
+    };
+    expect(outerLabels({ ...vp, drawWidth: 1000 })).toBeGreaterThan(outerLabels(vp));
   });
 });

@@ -66,10 +66,11 @@ test.describe('viewport sweep', () => {
         const app = await box(page.locator('#app'));
         const stage = await box(page.locator('#stage'));
         const scale = (await page.evaluate(() => window.__fw.camera())).scale;
-        if (portrait(w, h)) {
-          expect(Math.abs(stage.width - app.width), 'portrait: the stage is the whole app').toBeLessThanOrEqual(1);
-        } else {
-          expect((await box(hint(page))).x, 'sideways: message beside the wheel').toBeGreaterThanOrEqual(stage.x + stage.width - 1);
+        // Spec v2.2 §3.1: the canvas is the whole app in every layout; sideways, the camera aims left of the column.
+        expect(Math.abs(stage.width - app.width), 'the stage is the whole app').toBeLessThanOrEqual(1);
+        if (!portrait(w, h)) {
+          const aim = (await page.evaluate(() => window.__fw.viewport())).width;
+          expect((await box(hint(page))).x, 'sideways: message beside the wheel').toBeGreaterThanOrEqual(aim - 1);
           if (h < 480) expect(scale, 'short sideways: side view').toBeGreaterThan(1.5);
           else expect(scale, 'tall sideways: whole wheel').toBeLessThanOrEqual(1.5);
         }
@@ -86,7 +87,8 @@ test.describe('viewport sweep', () => {
         const title = page.locator('fw-card .fw-card-title');
         expect(await title.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), 'card title not truncated').toBe(true);
         const p = await page.evaluate((x) => window.__fw.segmentScreenPoint(x), path);
-        expect(contains(await box(page.locator('#stage')), p), 'opened word on the stage').toBe(true);
+        const aim = (await page.evaluate(() => window.__fw.viewport())).width;
+        expect(p.x <= aim && p.y >= 0 && p.y <= h, 'opened word within the aim area').toBe(true);
         expect(contains(card, p), 'opened word under the card').toBe(false);
         expect(contains(await box(page.locator('fw-wheel-switch')), p), 'opened word under the switch').toBe(false);
         expect(contains(await box(page.locator('fw-toolbar')), p), 'opened word under the toolbar').toBe(false);

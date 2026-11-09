@@ -98,7 +98,9 @@
     },
     "fearful": {
       "label": "Fearful",
-      "definition": "Sensing danger or that something bad might happen, and wanting to protect yourself."
+      "definition": "Sensing danger or that something bad might happen, and wanting to protect yourself.",
+      "kind": "A {link} feeling.",
+      "kindLink": "fearful"
     },
     "let-down": {
       "label": "Let Down",
@@ -198,7 +200,9 @@
     },
     "angry": {
       "label": "Angry",
-      "definition": "A strong feeling that something is wrong or unfair, with an urge to push back."
+      "definition": "A strong feeling that something is wrong or unfair, with an urge to push back.",
+      "kind": "An {link} feeling.",
+      "kindLink": "angry"
     },
     "disapproving": {
       "label": "Disapproving",
@@ -250,7 +254,9 @@
     },
     "disgusted": {
       "label": "Disgusted",
-      "definition": "Strong dislike of something that feels gross, wrong, or offensive."
+      "definition": "Strong dislike of something that feels gross, wrong, or offensive.",
+      "kind": "A {link} feeling.",
+      "kindLink": "disgusted"
     },
     "hurt": {
       "label": "Hurt",
@@ -314,7 +320,9 @@
     },
     "sad": {
       "label": "Sad",
-      "definition": "A heavy feeling of loss, disappointment, or hurt."
+      "definition": "A heavy feeling of loss, disappointment, or hurt.",
+      "kind": "A {link} feeling.",
+      "kindLink": "sad"
     },
     "optimistic": {
       "label": "Optimistic",
@@ -426,7 +434,9 @@
     },
     "happy": {
       "label": "Happy",
-      "definition": "A light, good feeling of pleasure or well-being."
+      "definition": "A light, good feeling of pleasure or well-being.",
+      "kind": "A {link} feeling.",
+      "kindLink": "happy"
     },
     "excited": {
       "label": "Excited",
@@ -478,7 +488,9 @@
     },
     "surprised": {
       "label": "Surprised",
-      "definition": "A quick reaction to something unexpected."
+      "definition": "A quick reaction to something unexpected.",
+      "kind": "A {link} feeling.",
+      "kindLink": "surprised"
     },
     "tired": {
       "label": "Tired",
@@ -526,7 +538,9 @@
     },
     "bad": {
       "label": "Bad",
-      "definition": "Generally unwell or off, without one clear emotion."
+      "definition": "Generally unwell or off, without one clear emotion.",
+      "kind": "A {link} feeling.",
+      "kindLink": "bad"
     }
   },
   "sensations": {
@@ -585,13 +599,15 @@
     "core": {
       "switch": "Feelings",
       "name": "Feelings wheel",
-      "hint": "How are you feeling? Tap or spin to explore, or {link}.",
+      "hintTitle": "How are you feeling?",
+      "hint": "Tap or spin to explore, or {link}.",
       "hintLink": "start from body sensations instead"
     },
     "body": {
       "switch": "Body",
       "name": "Body sensations wheel",
-      "hint": "What do you notice in your body? Tap or spin to explore, or {link}.",
+      "hintTitle": "What do you notice in your body?",
+      "hint": "Tap or spin to explore, or {link}.",
       "hintLink": "start from feelings instead"
     }
   }

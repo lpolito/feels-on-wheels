@@ -165,6 +165,42 @@ describe('loadData and validateLocale: wheels', () => {
     expect(() => validateLocale(partial, feelings, wheels)).toThrow(DataError);
   });
 
+  test('every core feeling has kind with one {link} and a kindLink (spec v2.2 §4.4)', () => {
+    for (const n of wheel.children) {
+      const f = locale.feelings[n.feeling!]!;
+      expect(f.kind, n.feeling).toMatch(/^[^{]*\{link\}[^{]*$/);
+      expect(f.kindLink, n.feeling).toBeTruthy();
+    }
+  });
+
+  test('each wheel\'s message has its question as hintTitle (spec v2.2 §5)', () => {
+    expect(locale.wheels['core']!.hintTitle).toBe('How are you feeling?');
+    expect(locale.wheels['body']!.hintTitle).toBe('What do you notice in your body?');
+    expect(locale.wheels['core']!.hint).toBe('Tap or spin to explore, or {link}.');
+    expect(locale.wheels['body']!.hint).toBe('Tap or spin to explore, or {link}.');
+    const partial = structuredClone(locale);
+    partial.wheels['body'] = { ...partial.wheels['body']!, hintTitle: '' };
+    expect(() => validateLocale(partial, feelings, wheels)).toThrow(/hintTitle/);
+  });
+
+  test('angry takes "An", happy takes "A"', () => {
+    expect(locale.feelings['angry']!.kind).toBe('An {link} feeling.');
+    expect(locale.feelings['happy']!.kind).toBe('A {link} feeling.');
+    expect(locale.feelings['happy']!.kindLink).toBe('happy');
+  });
+
+  test('validateLocale rejects a core feeling without kind, kindLink or exactly one {link}', () => {
+    const noKind = structuredClone(locale);
+    delete noKind.feelings['fearful']!.kind;
+    expect(() => validateLocale(noKind, feelings, wheels)).toThrow(/fearful.*kind/);
+    const noLink = structuredClone(locale);
+    noLink.feelings['fearful']!.kindLink = '';
+    expect(() => validateLocale(noLink, feelings, wheels)).toThrow(/fearful.*kindLink/);
+    const twice = structuredClone(locale);
+    twice.feelings['fearful']!.kind = 'A {link} {link} feeling.';
+    expect(() => validateLocale(twice, feelings, wheels)).toThrow(/fearful.*kind/);
+  });
+
   test('validateLocale accepts switchName and rejects an empty one', () => {
     const named = structuredClone(locale);
     named.wheels['body'] = { ...named.wheels['body']!, switchName: 'Body sensations' };

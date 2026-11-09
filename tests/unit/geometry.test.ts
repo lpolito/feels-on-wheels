@@ -132,3 +132,20 @@ describe('overDisc', () => {
     expect(overDisc({ ...cam, scale: 2 }, v, 500, 500 + 900)).toBe(true);
   });
 });
+
+describe('drawWidth (spec v2.2 §3.1)', () => {
+  const wide: Viewport = { width: 500, height: 400, radius: 192, drawWidth: 800 };
+  const cam: Camera = { scale: 4, rotation: 0, cx: 100, cy: 200 };
+
+  test('hitTest accepts points between width and drawWidth, rejects past drawWidth', () => {
+    // On the outer ring at 3 o'clock: x = 100 + 0.81 × 192 × 4 ≈ 722.
+    expect(hitTest(layout, cam, wide, 722, 200)).not.toBeNull();
+    expect(hitTest(layout, cam, { ...wide, drawWidth: undefined }, 722, 200)).toBeNull();
+    expect(hitTest(layout, cam, wide, 801, 200)).toBeNull();
+  });
+
+  test('viewWindow reaches the canvas corners, not the aim width', () => {
+    const off: Camera = { scale: 4, rotation: 0, cx: -300, cy: 200 };
+    expect(viewWindow(off, wide).rMax).toBeCloseTo(Math.hypot(800 + 300, 200) / (192 * 4), 6);
+  });
+});

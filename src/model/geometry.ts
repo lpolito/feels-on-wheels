@@ -5,7 +5,14 @@ export interface Viewport {
   height: number;
   /** Wheel radius R in CSS px at scale 1. */
   radius: number;
+  /**
+   * Spec v2.2 §3.1: the canvas's CSS width, at least `width`. The cameras aim within `width`; drawing, culling and hit
+   * testing reach `drawWidth` (the wheel draws under the card's column). Absent means `width`.
+   */
+  drawWidth?: number;
 }
+
+export const drawWidthOf = (vp: Viewport): number => vp.drawWidth ?? vp.width;
 
 export interface Camera {
   scale: number;
@@ -59,7 +66,7 @@ export function segmentAt(layout: Layout, ring: number, theta: number): number {
 }
 
 export function hitTest(layout: Layout, cam: Camera, vp: Viewport, x: number, y: number): number | null {
-  if (x < 0 || y < 0 || x > vp.width || y > vp.height) return null;
+  if (x < 0 || y < 0 || x > drawWidthOf(vp) || y > vp.height) return null;
   const { r, theta } = toPolar(x, y, cam, vp);
   const ring = ringAt(layout, r);
   return ring === null ? null : segmentAt(layout, ring, theta);
@@ -92,25 +99,26 @@ const CORNER_Y = [0, 0, 1, 1];
 export function viewWindow(cam: Camera, vp: Viewport, out?: ViewWindow): ViewWindow {
   const w = out ?? { rMin: 0, rMax: 0, full: true, from: 0, to: TAU };
   const unit = vp.radius * cam.scale;
+  const width = drawWidthOf(vp);
   let maxDist = 0;
   for (let k = 0; k < 4; k++) {
-    maxDist = Math.max(maxDist, Math.hypot(CORNER_X[k]! * vp.width - cam.cx, CORNER_Y[k]! * vp.height - cam.cy));
+    maxDist = Math.max(maxDist, Math.hypot(CORNER_X[k]! * width - cam.cx, CORNER_Y[k]! * vp.height - cam.cy));
   }
   w.rMax = maxDist / unit;
-  const inside = cam.cx >= 0 && cam.cx <= vp.width && cam.cy >= 0 && cam.cy <= vp.height;
+  const inside = cam.cx >= 0 && cam.cx <= width && cam.cy >= 0 && cam.cy <= vp.height;
   if (inside) {
     w.rMin = 0; w.full = true; w.from = 0; w.to = TAU;
     return w;
   }
-  const nearX = Math.min(Math.max(cam.cx, 0), vp.width);
+  const nearX = Math.min(Math.max(cam.cx, 0), width);
   const nearY = Math.min(Math.max(cam.cy, 0), vp.height);
   w.rMin = Math.hypot(nearX - cam.cx, nearY - cam.cy) / unit;
   // The rectangle is convex and excludes the center, so it spans < π as seen from the center.
-  const toRect = Math.atan2(vp.height / 2 - cam.cy, vp.width / 2 - cam.cx);
+  const toRect = Math.atan2(vp.height / 2 - cam.cy, width / 2 - cam.cx);
   let lo = 0;
   let hi = 0;
   for (let k = 0; k < 4; k++) {
-    const d = angleDiff(Math.atan2(CORNER_Y[k]! * vp.height - cam.cy, CORNER_X[k]! * vp.width - cam.cx), toRect);
+    const d = angleDiff(Math.atan2(CORNER_Y[k]! * vp.height - cam.cy, CORNER_X[k]! * width - cam.cx), toRect);
     lo = Math.min(lo, d);
     hi = Math.max(hi, d);
   }

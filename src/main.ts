@@ -6,7 +6,7 @@ import { createController, type Controller } from './controller';
 import { wheelText } from './i18n';
 import { attachGestures } from './input/gestures';
 import { keyTarget, routeKey } from './input/route';
-import { TAU, normAngle, overDisc, type Viewport } from './model/geometry';
+import { TAU, drawWidthOf, normAngle, overDisc, type Viewport } from './model/geometry';
 import { buildLayout, homes, litMask, type Layout, type Path } from './model/layout';
 import { buildFillTable, inkFor, readPalette } from './render/colors';
 import { createSpriteCache } from './render/sprites';
@@ -82,13 +82,21 @@ let prevLit!: Uint8Array;
 let fadeStart = -Infinity;
 let pulseStart = -Infinity;
 
+/** Spec v2.2 §3.2: in the sideways layout the camera's aim width ends this far left of the card. */
+const CARD_GAP_REM = 1.5;
+
 function measure(): { vp: Viewport; opts: CameraOpts } {
-  const { width, height } = stage.getBoundingClientRect();
+  const box = stage.getBoundingClientRect();
   const whole = app.getBoundingClientRect();
   const remPx = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
   // Spec v2.1 §6.1: the one portrait rule, matching the stylesheet's container query.
-  const vp = { width, height, radius: Math.max(Math.min(width, height) / 2 - 8, 1) };
-  return { vp, opts: { remPx, portrait: isPortrait(whole), rest: restView(layout, vp, whole), openedY: null } };
+  const portrait = isPortrait(whole);
+  // Spec v2.2 §3.1–§3.2: the canvas is the whole stage; sideways, the camera aims left of the card itself, so a
+  // safe-area inset that pushes the card left can't cover the opened word.
+  const width = portrait ? box.width : Math.max(float.getBoundingClientRect().left - box.left - CARD_GAP_REM * remPx, 1);
+  const { height } = box;
+  const vp = { width, height, radius: Math.max(Math.min(width, height) / 2 - 8, 1), drawWidth: box.width };
+  return { vp, opts: { remPx, portrait, rest: restView(layout, vp, whole), openedY: null } };
 }
 
 let vp!: Viewport;
@@ -190,18 +198,8 @@ canvas.addEventListener('pointermove', (e) => {
 });
 canvas.addEventListener('pointerleave', () => canvas.classList.remove('fw-over-disc'));
 
-// Spec v1.3 §3.4: a click on empty space in the card's column (desktop) is a tap outside the wheel. A click whose press
-// started elsewhere (drag-selecting the card's text, a spin released over the column) lands on #app too, as the
-// common ancestor, so the press must have been on empty space as well.
-const isEmptySpace = (t: EventTarget | null): boolean => t === app || t === float;
-let pressedOnEmpty = false;
-app.addEventListener('pointerdown', (e) => { pressedOnEmpty = isEmptySpace(e.target); }, { capture: true });
-app.addEventListener('click', (e) => {
-  if (!pressedOnEmpty || !isEmptySpace(e.target)) return;
-  const s = store.get();
-  if (s.opened) dispatch({ type: 'close' });
-  else if (s.selected !== null) dispatch({ type: 'clear' });
-});
+// Spec v2.2 §3.1: the card's column is the wheel's canvas now, so a click on its empty space is the wheel's own tap
+// off the wheel (close, then clear), which replaces v1.3 §3.4's click handler on #app.
 
 /** Spec v1.3 §3.1 and v2 §4.1: the message shows exactly when nothing is selected, with a link to another wheel. */
 function hintContent(s: State): HintContent {
@@ -210,7 +208,7 @@ function hintContent(s: State): HintContent {
   const wheel = data.suggests[layout.wheelId]!;
   // Spec v2.1 §6.3: the other wheel's own URL (v2 §4.3), so a new tab opens that wheel.
   const href = wheel === firstId ? location.pathname + location.search : `#/${wheel}`;
-  return { text: text.hint, link: { label: text.hintLink, wheel, href } };
+  return { title: text.hintTitle, text: text.hint, link: { label: text.hintLink, wheel, href } };
 }
 
 /** Spec v1.2 §4.2: the phone card's height cap keeps it below the opened cell. */
@@ -342,7 +340,7 @@ function mount(next: Layout, initial: State, intro: boolean): void {
   unsubscribe = store.subscribe(onState);
   wheelSwitch.current = layout.wheelId;
 
-  renderer.resize(vp.width, vp.height, devicePixelRatio || 1);
+  renderer.resize(drawWidthOf(vp), vp.height, devicePixelRatio || 1);
   refreshColors();
   renderUi(store.get());
   // A deep link on a phone starts with the opened word already above its card.
@@ -386,15 +384,26 @@ addEventListener('popstate', () => {
 // ── Input & resize ───────────────────────────────────────────────────────
 attachGestures(canvas, (intents) => controller.handle(intents));
 
-new ResizeObserver(() => {
-  ({ vp, opts } = measure());
-  renderer.resize(vp.width, vp.height, devicePixelRatio || 1);
+/** `onlyIfChanged`: skip when the viewport and options measure the same (the card resizing as it unfolds). */
+function remeasure(onlyIfChanged: boolean): void {
+  const next = measure();
+  if (onlyIfChanged && next.vp.width === vp.width && next.vp.height === vp.height && drawWidthOf(next.vp) === drawWidthOf(vp)
+    && next.opts.remPx === opts.remPx && next.opts.portrait === opts.portrait && next.opts.rest === opts.rest) return;
+  ({ vp, opts } = next);
+  renderer.resize(drawWidthOf(vp), vp.height, devicePixelRatio || 1);
   // The card's cap depends on --opened-half, and the opened word's place on the card: set both before the camera.
   setOpenedHalf(store.get());
   opts = { ...opts, openedY: openedYFor(store.get()) };
   controller.setViewport(vp, opts);
   drawNow();
-}).observe(stage);
+}
+
+new ResizeObserver(() => remeasure(false)).observe(stage);
+// Spec v2.2 §3.2 (final review #1): the aim width follows the card, which a safe-area inset (the app's padding) or a
+// text-size change (the card's width) can move without resizing the stage.
+const aimWatch = new ResizeObserver(() => remeasure(true));
+aimWatch.observe(app);
+aimWatch.observe(float);
 
 // ── First load ───────────────────────────────────────────────────────────
 {
@@ -428,7 +437,7 @@ if (TEST) {
       segmentScreenPoint: pointOf,
       state: () => store.get(),
       camera: () => ({ ...camera.current }),
-      viewport: () => ({ ...vp }),
+      viewport: () => ({ ...vp, drawWidth: drawWidthOf(vp) }),
       moving: () => camera.moving,
       drawTimes: () => drawTimes.slice(),
       pathOf: (i: number | null) => (i === null ? null : layout.segments[i]!.path),

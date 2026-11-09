@@ -9,7 +9,8 @@ declare global {
       segmentScreenPoint(path: string): { x: number; y: number };
       state(): FwState;
       camera(): { scale: number; rotation: number; cx: number; cy: number };
-      viewport(): { width: number; height: number; radius: number };
+      /** `width` is the camera's aim width; `drawWidth` the canvas's (spec v2.2 §3.1). */
+      viewport(): { width: number; height: number; radius: number; drawWidth: number };
       moving(): boolean;
       pathOf(i: number | null): string | null;
       offCenter(path: string): number;

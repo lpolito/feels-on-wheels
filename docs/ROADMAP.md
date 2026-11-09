@@ -123,9 +123,9 @@ Still open after v2.2.1. None blocks the next version.
 
 The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens in two steps: first shareable, then launched.
 
-### Step 1: shareable (built, deploying)
+### Step 1: shareable (shipped 2026-11-09)
 
-[Spec](superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md), [plan](superpowers/plans/2026-11-09-feels-on-wheels-going-public.md). Online at `lpolito.github.io/feels-on-wheels/` so Lucas can share it and use it across devices, but not announced or indexed. It covers:
+[Spec](superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md), [plan](superpowers/plans/2026-11-09-feels-on-wheels-going-public.md). Live at <https://lpolito.github.io/feels-on-wheels/> so Lucas can share it and use it across devices, but not announced or indexed. It covers:
 
 - **The name:** Feels on Wheels, everywhere a person sees it. Lucas leaned towards "Wheels of Feels", but it's one letter from [wheeloffeels.com](https://wheeloffeels.com), a live commercial emotion-wheel app (Julian Dev, LLC), so people hearing it would find theirs. No app or site used "Feels on Wheels" as of 2026-11-09. feelsonwheels.app was unregistered; feelsonwheels.com is parked for sale; the .org and .net are taken.
 - **A new public repo**, `lpolito/feels-on-wheels`, with history rewritten to drop the Braman and Drummond word-list transcriptions. The private `lpolito/feelings-wheel` stays as a backup.

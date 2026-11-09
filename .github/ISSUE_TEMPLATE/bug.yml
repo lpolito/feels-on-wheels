@@ -1,0 +1,32 @@
+name: Bug
+description: Something doesn't work or looks wrong.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead. A screenshot helps.
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link
+      description: The address in your browser when it happened. It includes the word you had open.
+      placeholder: https://lpolito.github.io/feels-on-wheels/#/core/happy/interested/curious
+  - type: input
+    id: device
+    attributes:
+      label: Device and browser
+      placeholder: iPhone 15, Safari; or Windows, Chrome
+    validations:
+      required: true
+  - type: dropdown
+    id: installed
+    attributes:
+      label: Were you using it installed as an app?
+      options:
+        - "No, in the browser"
+        - "Yes, installed"
+        - Not sure

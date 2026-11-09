@@ -1,16 +1,16 @@
 # Contributing to Feels on Wheels
 
-Thanks for wanting to help. Ideas and new languages are especially welcome.
+Thanks for wanting to help. Ideas and new languages are especially welcome. Everyone taking part agrees to the [code of conduct](CODE_OF_CONDUCT.md). To report a security issue, see [SECURITY.md](SECURITY.md) rather than opening a public issue.
 
 ## Ideas
 
-[Open an issue](https://github.com/lpolito/feels-on-wheels/issues) describing what you'd like and why. Lucas decides what goes on the [roadmap](docs/ROADMAP.md); ideas he picks are designed there before anything is built.
+[Open an Idea issue](https://github.com/lpolito/feels-on-wheels/issues/new?template=idea.yml) describing what you'd like and why. Lucas decides what goes on the [roadmap](docs/ROADMAP.md); ideas he picks are designed there before anything is built.
 
 ## Languages
 
 Every word the app shows lives in one file per language. English is `src/data/locales/en.json`.
 
-1. **Open an issue first** naming the language, so two people don't translate the same one.
+1. **Open a [New language issue](https://github.com/lpolito/feels-on-wheels/issues/new?template=language.yml) first** naming the language, so two people don't translate the same one.
 2. Copy `en.json` to the language's code (for example `es.json`) and translate every string:
    - `ui`: buttons, labels and messages;
    - `feelings`: every feeling's label and definition;

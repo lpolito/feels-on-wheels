@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Try the app
+    url: https://lpolito.github.io/feels-on-wheels/
+    about: Feels on Wheels, live.
+  - name: Contributing guide
+    url: https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md
+    about: How ideas, translations and code changes work here.
+  - name: Report a security issue privately
+    url: https://github.com/lpolito/feels-on-wheels/security/advisories/new
+    about: Please don't report vulnerabilities in a public issue.

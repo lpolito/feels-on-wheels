@@ -260,9 +260,9 @@ export class FwCard extends HTMLElement {
       } else if (s.kind === 'links') {
         content.append(h('h3', {}, s.heading), s.inline
           ? h('p', { className: 'fw-close-to' }, ...s.rows.map((r) => this.#inkedLink(r)))
-          : h('ul', { className: 'fw-rows' }, ...s.rows.map((r) => h('li', {}, this.#inkedLink(r, ' ›')))));
+          : h('ul', { className: 'fw-rows' }, ...s.rows.map((r) => h('li', {}, this.#inkedLink(r, '\u00A0›')))));
       } else {
-        const jump = h('button', { type: 'button', className: 'fw-link fw-jump' }, `${s.label} ›`);
+        const jump = h('button', { type: 'button', className: 'fw-link fw-jump' }, `${s.label}\u00A0›`);
         jump.addEventListener('click', () => {
           this.dispatchEvent(new CustomEvent('fw-wheel', { detail: { wheel: s.wheel, path: s.path }, bubbles: true }));
         });

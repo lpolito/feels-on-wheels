@@ -388,8 +388,6 @@ test.describe('desktop', () => {
   test('the dot, the first crumb and the body share one left edge', async ({ page }) => {
     await open(page, '#/core/angry/aggressive');
     await settled(page);
-    // v2.1 §3.2: the heartbeat scales the dot; measure it at rest (1000 ms is in the cycle's 44–100% rest).
-    await page.locator('fw-card .fw-dot').evaluate((el) => el.getAnimations().forEach((a) => { a.pause(); a.currentTime = 1000; }));
     const box = async (sel: string) => (await page.locator(sel).first().boundingBox())!;
     const dot = await box('fw-card .fw-card-toggle .fw-dot');
     const crumb = await box('fw-card nav.fw-crumbs button');
@@ -794,9 +792,10 @@ test.describe('v2.1: the card', () => {
     page.locator('fw-card .fw-dot').evaluate((el) =>
       el.getAnimations().map((a) => ({ name: (a as CSSAnimation).animationName, duration: a.effect?.getTiming().duration })));
 
-  test('the opened dot beats, and is still with reduced motion', async ({ page }) => {
+  test('the opened dot glows, and is still with reduced motion', async ({ page }) => {
     await open(page, '#/core/happy');
-    expect(await dotAnimations(page)).toEqual([{ name: 'fw-heartbeat', duration: 1600 }]);
+    // Spec v2.2 §4.3: v1.2's halo, on a 2 s cycle.
+    expect(await dotAnimations(page)).toEqual([{ name: 'fw-halo', duration: 2000 }]);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.reload();
     await page.waitForFunction(() => window.__fw !== undefined);

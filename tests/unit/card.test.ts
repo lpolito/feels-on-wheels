@@ -449,7 +449,7 @@ describe('<fw-card> on the body wheel', () => {
     document.body.addEventListener('fw-wheel', (e) => got.push((e as CustomEvent).detail));
     el.model = cardModel(body, feelings, bOpened('chest/racing-heart/scared'), jump);
     const b = el.querySelector<HTMLButtonElement>('.fw-jump')!;
-    expect(b.textContent).toBe('See Scared on the feelings wheel ›');
+    expect(b.textContent).toBe('See Scared on the feelings wheel\u00A0›');
     b.click();
     expect(got).toEqual([{ wheel: 'core', path: 'fearful/scared' }]);
   });
@@ -460,7 +460,7 @@ describe('<fw-card> on the body wheel', () => {
     el.inks = { chest: '#111111', fearful: '#222222', angry: '#333333', surprised: '#444444' };
     el.model = cardModel(body, feelings, bOpened('chest/racing-heart'), jump);
     const rows = [...el.querySelectorAll<HTMLButtonElement>('ul.fw-rows button')];
-    expect(rows.map((r) => r.textContent)).toEqual(['Scared ›', 'Mad ›', 'Excited ›']);
+    expect(rows.map((r) => r.textContent)).toEqual(['Scared\u00A0›', 'Mad\u00A0›', 'Excited\u00A0›']);
     expect(rows.map((r) => r.style.getPropertyValue('--ink'))).toEqual(['#222222', '#333333', '#444444']);
     expect(el.querySelector('h3')!.textContent).toBe('Could be feeling');
   });

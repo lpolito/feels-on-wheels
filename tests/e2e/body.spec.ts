@@ -146,19 +146,19 @@ test.describe('body wheel cards (desktop)', () => {
     await tapPath(page, 'chest');
     await expect(title(page)).toHaveText('Chest');
     await expect(headings(page)).toHaveText(['Narrow it down']);
-    expect(await rowsText(page)).toEqual(['Racing heart ›', 'Tight chest ›', 'Hollow feeling in your chest ›', 'Warmth in your chest ›']);
+    expect(await rowsText(page)).toEqual(['Racing heart\u00A0›', 'Tight chest\u00A0›', 'Hollow feeling in your chest\u00A0›', 'Warmth in your chest\u00A0›']);
 
     await tapPath(page, 'chest/racing-heart');
     await expect(title(page)).toHaveText('Racing heart');
     await expect(headings(page)).toHaveText(['Could be feeling']);
-    expect(await rowsText(page)).toEqual(['Scared ›', 'Mad ›', 'Excited ›']);
+    expect(await rowsText(page)).toEqual(['Scared\u00A0›', 'Mad\u00A0›', 'Excited\u00A0›']);
 
     await tapPath(page, 'chest/racing-heart/scared');
     await expect(title(page)).toHaveText('Scared');
     await expect(page.locator('fw-card .fw-definition')).not.toBeEmpty();
     await expect(headings(page)).toHaveText(['You might notice', 'Could also be feeling']);
     await expect(page.locator('fw-card .fw-close-to button')).toHaveText(['Mad', 'Excited']);
-    await expect(page.locator('fw-card .fw-jump')).toHaveText('See Scared on the feelings wheel ›');
+    await expect(page.locator('fw-card .fw-jump')).toHaveText('See Scared on the feelings wheel\u00A0›');
     await expect(page.locator('fw-card nav.fw-crumbs button')).toHaveText(['Chest', 'Racing heart']);
   });
 
@@ -338,6 +338,44 @@ test.describe('v2.1: context rings', () => {
   test('portrait phone, Head and eyes opened: the outer ring has labels', async ({ page }) => {
     await open(page, '#/body/head');
     expect((await page.evaluate(() => window.__fw.labelsByRing()))[2]).toBeGreaterThan(0);
+  });
+});
+
+test.describe('v2.2: the card at 320 px', () => {
+  test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'sets its own viewport'));
+  test.use({ viewport: { width: 320, height: 568 } });
+  const LONGEST = '#/body/posture/shrinking/insecure';
+
+  test('crumbs stay on one line; only the parent shortens, and stays a focusable link', async ({ page }) => {
+    await open(page, LONGEST);
+    await settled(page);
+    const links = page.locator('fw-card nav.fw-crumbs .fw-link');
+    const middles = await page.locator('fw-card nav.fw-crumbs :is(.fw-link, .fw-sep)').evaluateAll((els) =>
+      els.map((e) => { const r = e.getBoundingClientRect(); return r.top + r.height / 2; }));
+    for (const m of middles) expect(Math.abs(m - middles[0]!)).toBeLessThanOrEqual(2);
+    expect(await links.evaluateAll((els) => els.map((e) => e.scrollWidth <= e.clientWidth + 1))).toEqual([true, false]);
+    await expect(links.last()).toHaveText('Urge to shrink or hide');
+    // Review Focus 4: the shortened crumb keeps its focus ring and still opens the parent.
+    // A key press first, so focusing it counts as keyboard focus (WebKit's Tab skips buttons).
+    await page.keyboard.press('Shift');
+    await links.last().focus();
+    await expect(links.last()).toBeFocused();
+    expect(await links.last().evaluate((e) => getComputedStyle(e).outlineStyle)).toBe('solid');
+    await links.last().click();
+    await idle(page);
+    await expect(title(page)).toHaveText('Urge to shrink or hide');
+  });
+
+  test('"›" never sits alone on a line', async ({ page }) => {
+    await open(page, LONGEST);
+    await settled(page);
+    const tops = await page.locator('fw-card .fw-jump').evaluate((el) => {
+      const text = el.firstChild!;
+      const len = text.textContent!.length;
+      const topOf = (i: number) => { const r = document.createRange(); r.setStart(text, i); r.setEnd(text, i + 1); return r.getClientRects()[0]!.top; };
+      return { arrow: topOf(len - 1), word: topOf(len - 3) };
+    });
+    expect(Math.abs(tops.arrow - tops.word)).toBeLessThanOrEqual(1);
   });
 });
 

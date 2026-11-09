@@ -45,16 +45,8 @@ const GAP_PX_MORE = 2.5;
 const LIFT_LABEL = 1.15;
 const SHADOW = { blur: 12, color: 'rgba(0,0,0,.35)', offsetY: 3 } as const;
 const PULSE_FROM = 0.96;
-const CHEVRON_INSIDE_MIN_ARC = 22;
-const CHEVRON_HALF = 4;
-const CHEVRON_OFFSET = 9;
-/** Label box px given up at the outer end to an inside chevron. */
-const CHEVRON_ROOM = 14;
-/** The selection's chevron fits inside the cell when the outer arc is long enough. */
-const chevronInside = (width: number, outerR: number): boolean => width * outerR >= CHEVRON_INSIDE_MIN_ARC;
 /** Label fits are reused while the box stays within this many px (pinch frames). */
 const FIT_TOLERANCE = 1;
-const WHITE = '#ffffff';
 
 interface LabelCache { w: number; h: number; min: number; max: number; result: { lines: string[]; px: number } | null }
 
@@ -169,21 +161,6 @@ export function createWheelRenderer(
     g.stroke();
   }
 
-  /** A small outward-pointing chevron at radius r on the cell's mid angle (decoration only). */
-  function chevron(cx: number, cy: number, r: number, angle: number, color: string): void {
-    const cos = Math.cos(angle);
-    const sin = Math.sin(angle);
-    const at = (dr: number, dt: number): [number, number] => [cx + (r + dr) * cos - dt * sin, cy + (r + dr) * sin + dt * cos];
-    g.beginPath();
-    g.moveTo(...at(-CHEVRON_HALF / 2, -CHEVRON_HALF));
-    g.lineTo(...at(CHEVRON_HALF / 2, 0));
-    g.lineTo(...at(-CHEVRON_HALF / 2, CHEVRON_HALF));
-    g.lineWidth = 2;
-    g.lineCap = 'round';
-    g.strokeStyle = color;
-    g.stroke();
-  }
-
   return {
     stats,
     resize(w, h, ratio) {
@@ -251,26 +228,14 @@ export function createWheelRenderer(
       for (const s of layout.segments) {
         const ring = layout.rings[s.ring]!;
         if (s.index === lifted || !inWindow(s, ring, win)) continue;
-        let rMid = ((ring.inner + ring.outer) / 2) * R;
+        const rMid = ((ring.inner + ring.outer) / 2) * R;
         const angle = s.mid + cam.rotation;
-        let x = cam.cx + rMid * Math.cos(angle);
-        let y = cam.cy + rMid * Math.sin(angle);
+        const x = cam.cx + rMid * Math.cos(angle);
+        const y = cam.cy + rMid * Math.sin(angle);
         if (x < -rMid || y < -rMid || x > cssW + rMid || y > cssH + rMid) continue;
         const boxLen = (ring.outer - ring.inner) * R - 2 * LABEL_PAD;
-        let fit = fitted(s.index, boxLen, (s.end - s.start) * rMid, floor(s.ring), maxPx);
+        const fit = fitted(s.index, boxLen, (s.end - s.start) * rMid, floor(s.ring), maxPx);
         if (!fit) continue;
-        // A selected cell's inside chevron needs CHEVRON_ROOM px at the label box's outer end (spec v1.2 §4.4). The
-        // label stays put unless its text reaches that room; only then does it move inward and refit.
-        if (s.index === f.selected && !f.opened && chevronInside(s.end - s.start, ring.outer * R)) {
-          const len = Math.max(...fit.lines.map((l) => measure(l, fit!.px)));
-          if (len / 2 > boxLen / 2 - CHEVRON_ROOM) {
-            rMid -= CHEVRON_ROOM / 2;
-            fit = fitted(s.index, boxLen - CHEVRON_ROOM, (s.end - s.start) * rMid, floor(s.ring), maxPx);
-            if (!fit) continue;
-            x = cam.cx + rMid * Math.cos(angle);
-            y = cam.cy + rMid * Math.sin(angle);
-          }
-        }
         const lit = f.fadeT >= 0.5 ? f.lit[s.index] === 1 : f.prevLit[s.index] === 1;
         drawLabel(fit.lines, fit.px, false, x, y, angle, 1, table.label(s.hue, s.shadeRing, lit));
         stats.labelsByRing[s.ring]!++;
@@ -287,12 +252,8 @@ export function createWheelRenderer(
       const angle = s.mid + cam.rotation;
 
       if (!f.opened) {
+        // Spec v2.2 §6: a selected word is outlined, with no chevron.
         outline(cam.cx, cam.cy, ring.inner * R, ring.outer * R, a0, a1, ink, palette.gap);
-        if (chevronInside(s.end - s.start, ring.outer * R)) {
-          chevron(cam.cx, cam.cy, ring.outer * R - CHEVRON_OFFSET, angle, palette.forced ? ink : WHITE);
-        } else {
-          chevron(cam.cx, cam.cy, ring.outer * R + CHEVRON_OFFSET, angle, ink);
-        }
         return;
       }
 

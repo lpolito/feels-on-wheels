@@ -1,0 +1,29 @@
+Copyright (c) 2026 Lucas Polito
+
+Feels on Wheels is source-available, not open source. You're welcome to read,
+copy, change and translate it for any non-commercial purpose, as long as you
+give credit. Selling it, running ads on a copy of it, or making a paid app from
+it isn't allowed.
+
+This project uses two licences:
+
+  Code: everything outside src/data/ and docs/
+    PolyForm Noncommercial License 1.0.0
+    See LICENSES/PolyForm-Noncommercial-1.0.0.md
+    or https://polyformproject.org/licenses/noncommercial/1.0.0
+
+  Content: everything in src/data/ (wheel layouts, words, definitions,
+  sensations and translations) and in docs/
+    Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+    See LICENSES/CC-BY-NC-SA-4.0.txt
+    or https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+Required Notice: Copyright Lucas Polito (https://lucaspolito.dev/)
+
+These licences cover only this project's own work. The feelings wheels, word
+lists and research it draws on, credited on the app's About page and described
+in docs/reference/, belong to their authors and keep their own rights. So do the
+tools and libraries the project uses.
+
+Questions about other uses: open an issue at
+https://github.com/lpolito/feels-on-wheels/issues

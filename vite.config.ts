@@ -10,6 +10,8 @@ export default defineConfig({
   build: {
     target: 'es2022',
     rollupOptions: {
+      // The About page is a second, static page (going-public spec §8.1).
+      input: { index: 'index.html', about: 'about.html' },
       output: {
         manualChunks(id) {
           if (id.includes('/src/data/')) return 'data';

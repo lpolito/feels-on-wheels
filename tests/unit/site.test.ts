@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest';
-import { headTags, robotsTxt, sitemapXml, webManifest, type PageStrings } from '../../build/site';
+import { aboutLinks, headTags, linkify, renderAbout, robotsTxt, sitemapXml, webManifest, type PageStrings } from '../../build/site';
+import en from '../../src/data/locales/en.json';
 import type { SiteConfig } from '../../site.config';
 
 const site: SiteConfig = {
@@ -88,5 +89,56 @@ describe('generated files', () => {
   test('the sitemap lists the wheel and About', () => {
     const locs = [...sitemapXml(site).matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
     expect(locs).toEqual(['https://lpolito.github.io/feels-on-wheels/', 'https://lpolito.github.io/feels-on-wheels/about.html']);
+  });
+});
+
+describe('About page', () => {
+  const links = aboutLinks(site);
+  const about = (en as unknown as { page: PageStrings }).page.about;
+  const html = renderAbout(about, site);
+
+  test('the link map points at the repo, licence, contributing guide, author and the wheel', () => {
+    expect(links).toEqual({
+      repo: 'https://github.com/lpolito/feels-on-wheels',
+      license: 'https://github.com/lpolito/feels-on-wheels/blob/main/LICENSE',
+      contributing: 'https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md',
+      author: 'https://lucaspolito.dev/',
+      home: './',
+    });
+  });
+
+  test('linkify escapes text and turns [label](target) into links', () => {
+    expect(linkify('[Repo]({repo}) & co', links)).toBe('<a href="https://github.com/lpolito/feels-on-wheels">Repo</a> &amp; co');
+    expect(linkify('see [this](https://example.com/a?b=1&c=2)', links)).toBe('see <a href="https://example.com/a?b=1&amp;c=2">this</a>');
+  });
+
+  test('linkify refuses unknown link keys', () => {
+    expect(() => linkify('[x]({nope})', links)).toThrow(/nope/);
+  });
+
+  test('one h1, then the sections in order', () => {
+    expect(html.match(/<h1[ >]/g)?.length).toBe(1);
+    const ids = [...html.matchAll(/<section id="([^"]+)">\s*<h2>/g)].map((m) => m[1]);
+    expect(ids).toEqual(['what', 'how', 'private', 'credits', 'made-by', 'source', 'translate']);
+  });
+
+  test('every credit links to its source', () => {
+    const credits = /<section id="credits">([\s\S]*?)<\/section>/.exec(html)![1]!;
+    const items = credits.match(/<li>[\s\S]*?<\/li>/g) ?? [];
+    expect(items.length).toBeGreaterThanOrEqual(4);
+    for (const li of items) expect(li).toContain('<a href="https://');
+  });
+
+  test('no placeholders or empty elements are left', () => {
+    expect(html).not.toMatch(/[{}]/);
+    expect(html).not.toMatch(/<(p|li)>\s*<\/\1>/);
+  });
+
+  test('it ends with the way back to the wheel', () => {
+    expect(html.trimEnd()).toMatch(/<a href="\.\/">Back to the wheel<\/a><\/p>\s*<\/main>$/);
+  });
+
+  test('the About head uses the About title', () => {
+    expect(headTags('about', site, (en as unknown as { page: PageStrings }).page)).toContain('<title>About Feels on Wheels</title>');
   });
 });

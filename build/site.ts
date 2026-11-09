@@ -96,6 +96,50 @@ export function webManifest(strings: PageStrings): Record<string, unknown> {
   };
 }
 
+/** The `{key}` link targets the About strings may use. */
+export function aboutLinks(site: SiteConfig): Record<string, string> {
+  return {
+    repo: site.repo,
+    license: `${site.repo}/blob/main/LICENSE`,
+    contributing: `${site.repo}/blob/main/CONTRIBUTING.md`,
+    author: site.author.url,
+    home: './',
+  };
+}
+
+/** Escapes `text`, then turns `[label](https://…)` and `[label]({key})` into links. Unknown keys throw. */
+export function linkify(text: string, links: Record<string, string>): string {
+  return escapeHtml(text).replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label: string, target: string) => {
+    const key = /^\{(\w[\w-]*)\}$/.exec(target)?.[1];
+    if (key !== undefined && links[key] === undefined) throw new Error(`about: unknown link key {${key}}`);
+    // `target` is already escaped; a known key's URL is escaped here.
+    const href = key !== undefined ? escapeHtml(links[key]!) : target;
+    if (key === undefined && !href.startsWith('https://')) throw new Error(`about: link target must be https:// or {key}: ${target}`);
+    return `<a href="${href}">${label}</a>`;
+  });
+}
+
+/** The About page's <main>, rendered at build time from en.json's `page.about` (going-public spec §8.2). */
+export function renderAbout(about: AboutStrings, site: SiteConfig): string {
+  const links = aboutLinks(site);
+  const text = (s: string): string => linkify(s, links);
+  const sections = about.sections.map((sec) => [
+    `  <section id="${escapeHtml(sec.id)}">`,
+    `    <h2>${escapeHtml(sec.heading)}</h2>`,
+    ...sec.body.map((p) => `    <p>${text(p)}</p>`),
+    ...(sec.items?.length ? ['    <ul>', ...sec.items.map((li) => `      <li>${text(li)}</li>`), '    </ul>'] : []),
+    '  </section>',
+  ].join('\n'));
+  return [
+    '<main class="about">',
+    `  <h1>${escapeHtml(about.heading)}</h1>`,
+    `  <p class="about-summary">${text(about.summary)}</p>`,
+    ...sections,
+    `  <p class="about-back"><a href="./">${escapeHtml(about.back)}</a></p>`,
+    '</main>',
+  ].join('\n');
+}
+
 export function robotsTxt(site: SiteConfig): string {
   return `User-agent: *\nAllow: /\nSitemap: ${site.url}sitemap.xml\n`;
 }

@@ -610,5 +610,14 @@
       "hint": "Tap or spin to explore, or {link}.",
       "hintLink": "start from feelings instead"
     }
+  },
+  "page": {
+    "name": "Feels on Wheels",
+    "shortName": "Feels",
+    "title": "Feels on Wheels: name what you feel",
+    "description": "A free feelings wheel and body sensations wheel that helps you find the word for what you feel. Fast, accessible, and works offline.",
+    "imageAlt": "The Feels on Wheels icon, a wheel of seven coloured feelings, beside the words \"Feels on Wheels: Name what you feel\".",
+    "noscript": "Feels on Wheels needs JavaScript to draw the wheel.",
+    "about": {}
   }
 }

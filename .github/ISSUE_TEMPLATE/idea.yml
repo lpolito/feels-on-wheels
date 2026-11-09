@@ -1,0 +1,21 @@
+name: Idea
+description: Suggest something for Feels on Wheels.
+labels: [idea]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for the idea. Check the [roadmap](https://github.com/lpolito/feels-on-wheels/blob/main/docs/ROADMAP.md) first, in case it's already there.
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      description: Describe it in a few sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why?
+      description: What would it help you do, or what's hard today without it?
+    validations:
+      required: true

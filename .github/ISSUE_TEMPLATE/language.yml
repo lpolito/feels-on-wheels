@@ -1,0 +1,29 @@
+name: New language
+description: Offer to translate Feels on Wheels, or ask for a language.
+labels: [language]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you. A language is one file of words; [CONTRIBUTING.md](https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md#languages) explains what to translate.
+  - type: input
+    id: language
+    attributes:
+      label: Which language?
+      placeholder: Spanish (es)
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: Would you like to translate it?
+      options:
+        - Yes, I'd like to translate it
+        - I can help review a translation
+        - No, I'm asking for it
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else?
+      description: For example, a region or variant (Latin American or European Spanish), or a feelings wheel already used in that language.

@@ -19,11 +19,22 @@ It's meant to have everything you'd want from a modern web app, with accessibili
 
 ## Built with AI
 
-Feels on Wheels was built with AI, openly and on purpose. It's the first project Lucas made this way: an AI coding assistant ([Claude Code](https://claude.com/claude-code)) wrote the code and helped weigh up how to build each piece.
+Feels on Wheels was built with AI, openly and on purpose. It's the first project Lucas made this way.
+
+- **[Claude Code](https://claude.com/claude-code)**, Anthropic's AI coding assistant, wrote the code and helped weigh up how to build each piece.
+- **[Superpowers](https://github.com/obra/superpowers)**, Jesse Vincent's skills plugin for Claude Code, shaped how every version was made, and was used heavily:
+  - brainstorming each version into a written design;
+  - turning that design into a step-by-step plan;
+  - building it test first;
+  - a fresh code review before anything shipped.
+  
+  Its visual companion showed mockups in the browser when a choice was easier to see than describe.
 
 The ideas are Lucas's: what the app does, how it looks and how it feels to use. He made every usability and design call, and used each version before the next one was planned. The point was to see how fast, and how complete, an app can get when AI does the building and a person stays in the loop on what makes it good to use.
 
 The whole process is in the repo. Every version's design is in [docs/superpowers/specs](docs/superpowers/specs), and every build plan is in [docs/superpowers/plans](docs/superpowers/plans).
+
+The app itself is plain TypeScript, built with [Vite](https://vite.dev/). It's tested with [Vitest](https://vitest.dev/) and [Playwright](https://playwright.dev/) (with [axe-core](https://github.com/dequelabs/axe-core) for accessibility), and deployed to GitHub Pages by GitHub Actions.
 
 ## Running it
 

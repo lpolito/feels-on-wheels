@@ -667,7 +667,7 @@
           "id": "made-by",
           "heading": "Made by",
           "body": [
-            "[Lucas Polito]({author}). The ideas and every design decision are his. The code was written with AI, as an experiment in how quickly and how completely an app can be built that way, with a person deciding what makes it good to use."
+            "[Lucas Polito]({author}). The ideas and every design decision are his. The code was written with AI ([Claude Code](https://claude.com/claude-code) and the [Superpowers](https://github.com/obra/superpowers) plugin), as an experiment in how quickly and how completely an app can be built that way, with a person deciding what makes it good to use."
           ]
         },
         {

@@ -724,6 +724,25 @@ describe('viewport', () => {
     expect(camera.current.cx + 0.81 * 342 * camera.current.scale).toBeCloseTo(350, 6);
   });
 
+  test('setViewport with only drawWidth changed still takes the new viewport (spec v2.2 §3.1)', () => {
+    // 1024 × 768 with the column: the middle ring's 1rem safeguard pushes the outer ring past the aim width.
+    const narrow: Viewport = { width: 614, height: 768, radius: 299 };
+    setup(opened('angry/aggressive'));
+    ctl.setViewport(narrow, opts);
+    step(1500);
+    const c = camera.current;
+    // Near the outer ring's outer edge at 3 o'clock.
+    const p = { x: c.cx + 0.95 * narrow.radius * c.scale, y: c.cy };
+    expect(p.x).toBeGreaterThan(narrow.width);
+    ctl.setViewport({ ...narrow, drawWidth: 1024 }, opts);
+    step(400);
+    ctl.handle([{ type: 'tap', ...p }]);
+    step(50);
+    const s = store.get();
+    expect(s.opened).toBe(true);
+    expect(layout.segments[s.selected!]!.ring).toBe(2);
+  });
+
   test('setViewport with an unchanged viewport does not interrupt motion', () => {
     setup(opened('angry'));
     step(1000);

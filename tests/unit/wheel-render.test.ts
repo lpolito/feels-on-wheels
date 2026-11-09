@@ -5,7 +5,7 @@ import { buildLayout, homes, litMask } from '../../src/model/layout';
 import { overviewCamera, ringFocusCamera } from '../../src/camera';
 import { buildFillTable, type Palette } from '../../src/render/colors';
 import { createWheelRenderer, type Frame } from '../../src/render/wheel';
-import type { Viewport } from '../../src/model/geometry';
+import { drawWidthOf, type Viewport } from '../../src/model/geometry';
 
 const { wheel, locale } = loadData();
 const layout = buildLayout(wheel);
@@ -384,5 +384,22 @@ describe('wheel renderer', () => {
     r.draw(frame(desk));
     expect(sprited).toEqual([]);
     expect(rec.texts.length).toBeGreaterThan(100);
+  });
+});
+
+describe('the canvas under the column (spec v2.2 §3.1)', () => {
+  test('draws labels in the column when drawWidth is wider', () => {
+    // The outer ring starts at x = 100 + 0.62 × 192 × 4 ≈ 576: past the aim width, inside the canvas.
+    const vp: Viewport = { width: 500, height: 400, radius: 192 };
+    const cam = { scale: 4, rotation: 0, cx: 100, cy: 200 };
+    const outerLabels = (v: Viewport) => {
+      const { canvas, ctx } = fakeCanvas();
+      const r = createWheelRenderer(canvas, layout, ctx);
+      r.setColors(table, palette);
+      r.resize(drawWidthOf(v), v.height, 1);
+      r.draw(frame(v, { cam, mode: 'ring', ring: 1 }));
+      return r.stats.labelsByRing[2]!;
+    };
+    expect(outerLabels({ ...vp, drawWidth: 1000 })).toBeGreaterThan(outerLabels(vp));
   });
 });

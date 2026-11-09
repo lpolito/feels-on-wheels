@@ -2,7 +2,7 @@ import { halfRestRotation, ringFocusCamera, wheelCamera, type CameraController, 
 import type { Intent } from './input/gestures';
 import type { Layout } from './model/layout';
 import {
-  TAU, hitTest, normAngle, rotationToCenter, segmentAt, snapRotation, type Camera, type Viewport,
+  TAU, drawWidthOf, hitTest, normAngle, rotationToCenter, segmentAt, snapRotation, type Camera, type Viewport,
 } from './model/geometry';
 import { resolvePinch } from './model/pinch';
 import type { State, Store } from './state/store';
@@ -262,6 +262,7 @@ export function createController(
 
   function setViewport(next: Viewport, o: CameraOpts): void {
     const unchanged = next.width === vp.width && next.height === vp.height && next.radius === vp.radius
+      && drawWidthOf(next) === drawWidthOf(vp)
       && o.remPx === opts.remPx && o.portrait === opts.portrait && o.rest === opts.rest
       && o.openedY === opts.openedY;
     if (unchanged) return;

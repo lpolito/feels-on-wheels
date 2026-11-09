@@ -34,6 +34,7 @@ Not in any order; none is chosen yet. Strength was briefly v2 before it was shel
 | [Languages](#languages) | Planned |
 | [Return to the word you jumped from](#return-to-the-word-you-jumped-from) | Idea |
 | [Feeling links underlined in their feeling's colour](#feeling-links-underlined-in-their-feelings-colour) | Idea |
+| [Cleaner URLs, ready for languages](#cleaner-urls-ready-for-languages) | Idea |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
 
@@ -85,6 +86,24 @@ What Lucas first asked for:
   - what areas and sensations do, since they're links too but not feelings;
   - forced colours, where links keep the system's link colour.
 
+### Cleaner URLs, ready for languages
+
+- Lucas's idea, 2026-11-09: he doesn't like the `/core/` prefix on the feelings wheel's URLs, and wants the URL structure to leave room for [languages](#languages).
+- **Today (v2.2.1):** everything is in the hash. The feelings wheel at rest has none. An opened word is `#/core/happy/playful/…`, and the body wheel is `#/body` or `#/body/…`. `core` is the feelings wheel's internal id (`src/state/url.ts`, v2 spec §4.3).
+- **Worth deciding before launch** ([step 2](#step-2-before-launching-it)): once links are shared and indexed, every change needs redirects that last for good. Old `#/core/…` links must keep working either way.
+- To decide when designing:
+  - **Dropping `core`:** the feelings wheel's words at `#/happy/…` and other wheels under their own name (`#/body/…`). That needs a rule so a wheel's name can never be a core feeling's id. Or each wheel gets a public name (`feelings`, `body`) separate from its internal id.
+  - **Hash or real paths:**
+    - Hash (`#/happy/playful`) works anywhere with no server help, but search engines see one page.
+    - Real paths (`/happy/playful`) look cleaner. They could give every feeling its own indexable page, with its definition as the description, a big win for search.
+    - On GitHub Pages, real paths need either a `404.html` that hands the path to the app, or a static page generated for each word at build time. The second is what search needs.
+  - **Where the language goes:**
+    - A **path prefix** (`/es/…`) works on one domain and on GitHub Pages, and is what search engines handle best (with `hreflang` links between languages).
+    - A **subdomain** (`es.feelsonwheels.app`) needs DNS per language. GitHub Pages allows one custom domain per repo, so it's a poor fit.
+    - A **query** (`?lang=es`) or a choice saved only on the device is invisible to search.
+  - **Slugs:** stable English ids in every language (`/es/happy/…`) or translated ones (`/es/feliz/…`).
+  - **What the address bar shows:** with real paths, whether opening a word still pushes history the way it does today (v2 §4.2), and how that meets the [going back on phones](#known-issues) known issue.
+
 ## Known issues
 
 Still open after v2.2.1. None blocks the next version.
@@ -132,6 +151,7 @@ Still open. Nothing here is started.
 - **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, grey like the site's other icons; on hover it takes the wheel's seven colours and spins once, settling.
 - **Unconfirmed credits:** any the step 1 research couldn't confirm (the Roberts attribution, the reference site).
 - **The old private repo:** archive or delete `lpolito/feelings-wheel` once the public one is settled.
+- **The URL structure:** decide on [cleaner URLs, ready for languages](#cleaner-urls-ready-for-languages) before launch, while no links are out in the world. Moving to a domain is the natural moment.
 - **Known issues:** decide whether any should be fixed before announcing it.
 
 ## Content rules

@@ -1,5 +1,5 @@
 import type { FeelingId, FeelingsDict } from '../data/types';
-import { definition, nodeLabel, sensationLabel, t } from '../i18n';
+import { coreKind, definition, nodeLabel, sensationLabel, t } from '../i18n';
 import { siblings, type Home, type Layout, type Path } from '../model/layout';
 import type { Action, State } from '../state/store';
 
@@ -7,7 +7,8 @@ export type Row = { index: number; label: string; hue: string };
 
 /** One block of an opened card (spec v2 §6.1). `inline` links sit in a row of words; the others are one per line. */
 export type Section =
-  | { kind: 'text'; text: string }
+  /** `core`: on other wheels, the sentence naming the feeling's core feeling on the first wheel (spec v2.2 §4.4). */
+  | { kind: 'text'; text: string; core?: { before: string; label: string; after: string; hue: string; wheel: string; path: Path } }
   | { kind: 'list'; heading: string; items: string[] }
   | { kind: 'links'; heading: string; inline: boolean; rows: Row[] }
   | { kind: 'jump'; label: string; wheel: string; path: Path };
@@ -49,7 +50,12 @@ export function cardModel(layout: Layout, feelings: FeelingsDict, s: State, jump
   const sections: Section[] = [];
   if (seg.node.kind === 'feeling') {
     const id = seg.node.id;
-    sections.push({ kind: 'text', text: definition(id) });
+    const home = jump?.home.get(id);
+    // Spec v2.2 §4.4: name the core feeling, unless this is one (its home is a single segment).
+    const coreId = home && home.path.includes('/') ? home.path.split('/')[0]! : null;
+    sections.push(jump && home && coreId
+      ? { kind: 'text', text: definition(id), core: { ...coreKind(coreId), hue: home.hue, wheel: jump.wheel, path: coreId } }
+      : { kind: 'text', text: definition(id) });
     const notice = (feelings[id]?.sensations ?? []).map(sensationLabel);
     if (notice.length > 0) sections.push({ kind: 'list', heading: t('youMightNotice'), items: notice });
     if (children.length > 0) {
@@ -60,7 +66,6 @@ export function cardModel(layout: Layout, feelings: FeelingsDict, s: State, jump
       const heading = parent === 'sensation' ? t('couldAlsoBe') : t('closeTo');
       if (rows.length > 0) sections.push({ kind: 'links', heading, inline: true, rows });
     }
-    const home = jump?.home.get(id);
     if (jump && home) sections.push({ kind: 'jump', label: t('seeOnWheel', { label: title }), wheel: jump.wheel, path: home.path });
   } else if (children.length > 0) {
     const heading = seg.node.kind === 'sensation' ? t('couldBe') : t('narrowDown');
@@ -254,7 +259,19 @@ export class FwCard extends HTMLElement {
     // Spec v2 §6.1: draw whatever sections the model holds, in order. No wheel or ring checks here.
     for (const s of m.sections) {
       if (s.kind === 'text') {
-        content.append(h('p', { className: 'fw-definition' }, s.text));
+        const p = h('p', { className: 'fw-definition' }, s.text);
+        if (s.core) {
+          // Spec v2.2 §4.4: "… A happy feeling.", the core word opening that feeling on the first wheel.
+          const { before, label, after, hue, wheel, path } = s.core;
+          const link = h('button', { type: 'button', className: 'fw-link' }, label);
+          const ink = this.#inks[hue];
+          if (ink) link.style.setProperty('--ink', ink);
+          link.addEventListener('click', () => {
+            this.dispatchEvent(new CustomEvent('fw-wheel', { detail: { wheel, path }, bubbles: true }));
+          });
+          p.append(' ', before, link, after);
+        }
+        content.append(p);
       } else if (s.kind === 'list') {
         content.append(h('h3', {}, s.heading), h('ul', { className: 'fw-sensations' }, ...s.items.map((i) => h('li', {}, i))));
       } else if (s.kind === 'links') {

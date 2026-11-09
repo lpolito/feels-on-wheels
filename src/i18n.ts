@@ -33,6 +33,14 @@ export function definition(id: FeelingId): string {
   return active?.feelings[id]?.definition ?? missing(`feelings.${id}.definition`);
 }
 
+/** Spec v2.2 §4.4: a core feeling's "A {link} feeling.", split around its link text. */
+export function coreKind(id: FeelingId): { before: string; label: string; after: string } {
+  const f = active?.feelings[id];
+  const kind = f?.kind ?? missing(`feelings.${id}.kind`);
+  const [before = '', after = ''] = kind.split('{link}');
+  return { before, label: f?.kindLink ?? missing(`feelings.${id}.kindLink`), after };
+}
+
 export function sensationLabel(id: SensationId): string {
   return active?.sensations[id] ?? missing(`sensations.${id}`);
 }

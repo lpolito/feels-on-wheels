@@ -341,6 +341,37 @@ test.describe('v2.1: context rings', () => {
   });
 });
 
+test.describe('v2.2: the core feeling in the definition', () => {
+  test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'desktop flows'));
+  const coreLink = (page: Page) => page.locator('fw-card .fw-definition .fw-link');
+
+  test('the core feeling link opens Happy on the feelings wheel; Enter works too', async ({ page }) => {
+    await open(page, '#/body/head/wide-eyes/interested');
+    await expect(page.locator('fw-card .fw-definition')).toContainText('A happy feeling.');
+    await coreLink(page).click();
+    await idle(page);
+    expect(await wheelId(page)).toBe('core');
+    await expect(title(page)).toHaveText('Happy');
+    expect(await page.evaluate(() => location.hash)).toBe('#/core/happy');
+    // Review Focus 5: from the keyboard, and focus lands on the new card's toggle.
+    await page.goBack();
+    await idle(page);
+    expect(await wheelId(page)).toBe('body');
+    await coreLink(page).focus();
+    await page.keyboard.press('Enter');
+    await idle(page);
+    expect(await wheelId(page)).toBe('core');
+    await expect(title(page)).toHaveText('Happy');
+    expect(await page.evaluate(() => document.activeElement?.className)).toBe('fw-card-toggle');
+  });
+
+  test('axe: a body wheel definition with its core feeling link', async ({ page }) => {
+    await open(page, '#/body/head/wide-eyes/interested');
+    await settled(page);
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  });
+});
+
 test.describe('v2.2: the card at 320 px', () => {
   test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'sets its own viewport'));
   test.use({ viewport: { width: 320, height: 568 } });

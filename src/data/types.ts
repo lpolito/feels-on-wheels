@@ -25,7 +25,11 @@ export interface WheelText { switch: string; name: string; hint: string; hintLin
 export interface Locale {
   meta: { lang: string; dir: 'ltr' | 'rtl' };
   ui: Record<string, string>;
-  feelings: Record<FeelingId, { label: string; definition: string }>;
+  /**
+   * Core feelings also have `kind`, the sentence naming a feeling as theirs with "{link}" where `kindLink` goes ("A
+   * {link} feeling.", "happy"): spec v2.2 §4.4.
+   */
+  feelings: Record<FeelingId, { label: string; definition: string; kind?: string; kindLink?: string }>;
   sensations: Record<SensationId, string>;
   areas: Record<AreaId, string>;
   wheels: Record<string, WheelText>;

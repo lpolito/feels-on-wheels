@@ -69,6 +69,13 @@ export function validateLocale(l: unknown, dict: FeelingsDict, wheels: Wheel[]):
       if (!loc.sensations[s]) fail(`locale ${lang}: missing sensation "${s}"`);
     }
   }
+  // Spec v2.2 §4.4: the first wheel's core feelings name the feelings beneath them on other wheels.
+  for (const n of wheels[0]?.children ?? []) {
+    if (n.feeling === undefined) continue;
+    const f = loc.feelings[n.feeling];
+    if (!f?.kind || f.kind.split('{link}').length !== 2) fail(`locale ${lang}: core feeling "${n.feeling}" needs "kind" with one {link}`);
+    if (!f?.kindLink) fail(`locale ${lang}: core feeling "${n.feeling}" is missing "kindLink"`);
+  }
   for (const w of wheels) {
     const text = loc.wheels[w.id];
     for (const key of ['switch', 'name', 'hint', 'hintLink'] as const) {

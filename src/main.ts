@@ -208,7 +208,7 @@ function hintContent(s: State): HintContent {
   const wheel = data.suggests[layout.wheelId]!;
   // Spec v2.1 §6.3: the other wheel's own URL (v2 §4.3), so a new tab opens that wheel.
   const href = wheel === firstId ? location.pathname + location.search : `#/${wheel}`;
-  return { text: text.hint, link: { label: text.hintLink, wheel, href } };
+  return { title: text.hintTitle, text: text.hint, link: { label: text.hintLink, wheel, href } };
 }
 
 /** Spec v1.2 §4.2: the phone card's height cap keeps it below the opened cell. */

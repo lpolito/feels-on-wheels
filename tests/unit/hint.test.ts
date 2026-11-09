@@ -7,16 +7,37 @@ const mount = (): FwHint => {
   document.body.innerHTML = '<fw-hint></fw-hint>';
   return document.querySelector<FwHint>('fw-hint')!;
 };
-const content = { text: 'How are you feeling? Tap or spin to explore, or {link}.', link: { label: 'start from body sensations instead', wheel: 'body', href: '#/body' } };
+const content = {
+  title: 'How are you feeling?',
+  text: 'Tap or spin to explore, or {link}.',
+  link: { label: 'start from body sensations instead', wheel: 'body', href: '#/body' },
+};
 
 describe('<fw-hint>', () => {
   test('null hides it', () => {
     const el = mount();
-    el.content = { text: 'Spin to explore.' };
+    el.content = { title: 'Hello?', text: 'Spin to explore.' };
     expect(el.hidden).toBe(false);
-    expect(el.textContent).toBe('Spin to explore.');
+    expect(el.querySelector('h2.fw-hint-title')!.textContent).toBe('Hello?');
+    expect(el.querySelector('p.fw-hint-text')!.textContent).toBe('Spin to explore.');
     el.content = null;
     expect(el.hidden).toBe(true);
+  });
+
+  test('renders a heading, then the text around the link (spec v2.2 §5)', () => {
+    const el = mount();
+    el.content = content;
+    expect(el.querySelector('h2.fw-hint-title')!.textContent).toBe('How are you feeling?');
+    const p = el.querySelector('p.fw-hint-text')!;
+    expect(p.textContent).toBe('Tap or spin to explore, or start from body sensations instead.');
+    expect(p.querySelector('a.fw-hint-link')).not.toBeNull();
+  });
+
+  test('a new title alone re-renders', () => {
+    const el = mount();
+    el.content = content;
+    el.content = { ...content, title: 'What do you notice in your body?' };
+    expect(el.querySelector('h2.fw-hint-title')!.textContent).toBe('What do you notice in your body?');
   });
 
   test('the message is plain text, not a live region', () => {
@@ -28,7 +49,7 @@ describe('<fw-hint>', () => {
   test('renders text around a link', () => {
     const el = mount();
     el.content = content;
-    expect(el.textContent).toBe('How are you feeling? Tap or spin to explore, or start from body sensations instead.');
+    expect(el.textContent).toBe('How are you feeling?Tap or spin to explore, or start from body sensations instead.');
     const b = el.querySelector<HTMLAnchorElement>('a.fw-hint-link')!;
     expect(b.textContent).toBe('start from body sensations instead');
     expect(b.getAttribute('href')).toBe('#/body');

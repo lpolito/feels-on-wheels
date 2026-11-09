@@ -338,7 +338,8 @@ test.describe('desktop', () => {
   test('the hint reads the same on desktop', async ({ page }) => {
     await open(page);
     expect((await state(page)).selected).toBeNull();
-    await expect(hint(page)).toHaveText('How are you feeling? Tap or spin to explore, or start from body sensations instead.');
+    await expect(hint(page).locator('.fw-hint-title')).toHaveText('How are you feeling?');
+    await expect(hint(page).locator('.fw-hint-text')).toHaveText('Tap or spin to explore, or start from body sensations instead.');
   });
 
   test("desktop: opened view's wheel edge meets the column", async ({ page }) => {
@@ -491,7 +492,8 @@ test.describe('phone', () => {
     expect(s.view.mode).toBe('wheel');
     expect(await page.evaluate(() => location.hash)).toBe('');
     await expect(hint(page)).toBeVisible();
-    await expect(hint(page)).toHaveText('How are you feeling? Tap or spin to explore, or start from body sensations instead.');
+    await expect(hint(page).locator('.fw-hint-title')).toHaveText('How are you feeling?');
+    await expect(hint(page).locator('.fw-hint-text')).toHaveText('Tap or spin to explore, or start from body sensations instead.');
   });
 
   test("phone: the wheel's centre is on the left edge", async ({ page }) => {

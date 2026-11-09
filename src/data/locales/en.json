@@ -599,13 +599,15 @@
     "core": {
       "switch": "Feelings",
       "name": "Feelings wheel",
-      "hint": "How are you feeling? Tap or spin to explore, or {link}.",
+      "hintTitle": "How are you feeling?",
+      "hint": "Tap or spin to explore, or {link}.",
       "hintLink": "start from body sensations instead"
     },
     "body": {
       "switch": "Body",
       "name": "Body sensations wheel",
-      "hint": "What do you notice in your body? Tap or spin to explore, or {link}.",
+      "hintTitle": "What do you notice in your body?",
+      "hint": "Tap or spin to explore, or {link}.",
       "hintLink": "start from feelings instead"
     }
   }

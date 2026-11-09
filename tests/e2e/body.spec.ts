@@ -19,7 +19,8 @@ test.describe('switching wheels (desktop)', () => {
     expect(await wheelId(page)).toBe('body');
     expect((await state(page)).selected).toBeNull();
     expect(new URL(page.url()).hash).toBe('#/body');
-    await expect(hint(page)).toHaveText('What do you notice in your body? Tap or spin to explore, or start from feelings instead.');
+    await expect(hint(page).locator('.fw-hint-title')).toHaveText('What do you notice in your body?');
+    await expect(hint(page).locator('.fw-hint-text')).toHaveText('Tap or spin to explore, or start from feelings instead.');
     await expect(switchButton(page, 'Body')).toBeFocused();
     await expect(switchButton(page, 'Body')).toHaveAttribute('aria-pressed', 'true');
     await expect(switchButton(page, 'Feelings')).toHaveAttribute('aria-pressed', 'false');
@@ -338,6 +339,35 @@ test.describe('v2.1: context rings', () => {
   test('portrait phone, Head and eyes opened: the outer ring has labels', async ({ page }) => {
     await open(page, '#/body/head');
     expect((await page.evaluate(() => window.__fw.labelsByRing()))[2]).toBeGreaterThan(0);
+  });
+});
+
+test.describe('v2.2: the message heading', () => {
+  test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'sets its own viewport'));
+
+  test('the message opens with its question as a heading', async ({ page }) => {
+    await open(page, '#/');
+    await expect(page.locator('fw-hint h2')).toHaveText('How are you feeling?');
+    await open(page, '#/body');
+    await expect(page.locator('fw-hint h2')).toHaveText('What do you notice in your body?');
+  });
+
+  test('320 px: the body heading wraps onto two lines inside the panel', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await open(page, '#/body');
+    const { h, lh } = await page.locator('fw-hint h2').evaluate((e) => ({
+      h: e.getBoundingClientRect().height, lh: Number.parseFloat(getComputedStyle(e).lineHeight),
+    }));
+    expect(h).toBeGreaterThan(1.5 * lh);
+    const panel = (await hint(page).boundingBox())!;
+    const head = (await page.locator('fw-hint h2').boundingBox())!;
+    expect(head.x >= panel.x && head.x + head.width <= panel.x + panel.width + 0.5).toBe(true);
+  });
+
+  test('axe: the body wheel at rest, with its heading', async ({ page }) => {
+    await open(page, '#/body');
+    await settled(page);
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });
 });
 

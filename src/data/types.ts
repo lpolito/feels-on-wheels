@@ -19,8 +19,8 @@ export interface RingSpec { inner: number; outer: number }
 export interface WheelNode { feeling?: FeelingId; sensation?: SensationId; area?: AreaId; hue?: string; children?: WheelNode[] }
 export interface Wheel { id: string; rings: RingSpec[]; children: WheelNode[] }
 
-/** Per-wheel text (spec v2 §4.1). `hint` contains "{link}", where `hintLink` goes. */
-export interface WheelText { switch: string; name: string; hint: string; hintLink: string; /** Spoken name when `switch` is short, e.g. one emoji (spec v2.1 §4.2). */ switchName?: string }
+/** Per-wheel text (spec v2 §4.1). `hintTitle` heads the message (spec v2.2 §5); `hint` contains "{link}", where `hintLink` goes. */
+export interface WheelText { switch: string; name: string; hintTitle: string; hint: string; hintLink: string; /** Spoken name when `switch` is short, e.g. one emoji (spec v2.1 §4.2). */ switchName?: string }
 
 export interface Locale {
   meta: { lang: string; dir: 'ltr' | 'rtl' };

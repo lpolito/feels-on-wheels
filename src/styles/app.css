@@ -195,15 +195,16 @@ fw-hint, fw-card {
 fw-hint[hidden], fw-card[hidden] { display: none; }
 /* Spec v1.3 §4.1: the message is a panel in the card's place, its text on the card's left edge. */
 fw-hint {
-  display: flex;
-  align-items: center;
+  display: block;
   min-height: 56px;
   padding: 0.75rem 1rem 0.75rem var(--edge);
   border-radius: 1rem;
   font-size: 1rem;
-  font-weight: 600;
   text-align: start;
 }
+/* Spec v2.2 §5: the wheel's question as a heading (the card name's size and weight), then the instruction. */
+.fw-hint-title { font-size: 1.35rem; line-height: 1.2; font-weight: 700; margin-bottom: 0.25rem; }
+.fw-hint-text { font-size: 1rem; }
 /* Spec v2 §4.1, v2.1 §6.3: the link to the other wheel is a real link, so it wraps as part of the sentence. */
 .fw-hint-link {
   border-radius: 2px;

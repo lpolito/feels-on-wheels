@@ -78,7 +78,7 @@ export function validateLocale(l: unknown, dict: FeelingsDict, wheels: Wheel[]):
   }
   for (const w of wheels) {
     const text = loc.wheels[w.id];
-    for (const key of ['switch', 'name', 'hint', 'hintLink'] as const) {
+    for (const key of ['switch', 'name', 'hintTitle', 'hint', 'hintLink'] as const) {
       if (!text?.[key]) fail(`locale ${lang}: wheel "${w.id}" is missing "${key}"`);
     }
     if (text && 'switchName' in text && !text.switchName) fail(`locale ${lang}: wheel "${w.id}" has an empty "switchName"`);

@@ -1,8 +1,12 @@
-/** Spec v2 §4.1: the start message, with an optional link to another wheel where `text` has "{link}". */
-export type HintContent = { text: string; link?: { label: string; wheel: string; href: string } } | null;
+/**
+ * Spec v2 §4.1: the start message, with an optional link to another wheel where `text` has "{link}". Spec v2.2 §5:
+ * `title`, the wheel's question, heads it.
+ */
+export type HintContent = { title: string; text: string; link?: { label: string; wheel: string; href: string } } | null;
 
 const same = (a: HintContent, b: HintContent): boolean =>
-  a === b || (a !== null && b !== null && a.text === b.text && a.link?.label === b.link?.label && a.link?.wheel === b.link?.wheel && a.link?.href === b.link?.href);
+  a === b || (a !== null && b !== null && a.title === b.title && a.text === b.text
+    && a.link?.label === b.link?.label && a.link?.wheel === b.link?.wheel && a.link?.href === b.link?.href);
 
 /**
  * The message in the card's place while nothing is selected (spec v1.3 §3.1, §4.1). `null` hides it. Not a live
@@ -40,9 +44,15 @@ export class FwHint extends HTMLElement {
       this.replaceChildren();
       return;
     }
+    const title = document.createElement('h2');
+    title.className = 'fw-hint-title';
+    title.textContent = c.title;
+    const line = document.createElement('p');
+    line.className = 'fw-hint-text';
     const [before, after = ''] = c.link ? c.text.split('{link}') : [c.text];
     if (!c.link) {
-      this.replaceChildren(before!);
+      line.append(before!);
+      this.replaceChildren(title, line);
       return;
     }
     const { label, wheel, href } = c.link;
@@ -56,10 +66,9 @@ export class FwHint extends HTMLElement {
       this.dispatchEvent(new CustomEvent('fw-wheel', { detail: { wheel }, bubbles: true }));
     });
     this.#link = link;
-    // One inline run, so the link wraps with the sentence inside the flex panel.
-    const line = document.createElement('span');
+    // One inline run, so the link wraps with the sentence.
     line.append(before!, link, after);
-    this.replaceChildren(line);
+    this.replaceChildren(title, line);
   }
 }
 

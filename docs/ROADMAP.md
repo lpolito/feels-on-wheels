@@ -32,6 +32,7 @@ Not in any order; none is chosen yet. Strength was briefly v2 before it was shel
 | [Strength](#strength) | Shelved (2026-11-08) |
 | [Emoji wheel](#emoji-wheel) | Planned |
 | [Languages](#languages) | Planned |
+| [Return to the word you jumped from](#return-to-the-word-you-jumped-from) | Idea |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
 
@@ -64,6 +65,13 @@ What Lucas first asked for:
 
 - Spanish first (the [reference site](reference/core-feelings-wheel.md#the-reference-site) had an Español toggle, and Braman publishes a Spanish wheel), plus a language switcher.
 - Adding a language means adding one locale file; no text is hard-coded.
+
+### Return to the word you jumped from
+
+- After jumping from the body wheel to the feelings wheel (the "See … on the feelings wheel" link, or v2.2's core-feeling link in the definition), a "Return to …" control takes you back to the body wheel with the card you came from open again.
+- Lucas's idea, 2026-11-09. Where it goes is open: on the opened card, as a toolbar button like Start over, or something else.
+- Today the only way back is the browser's Back (the jump pushes history, v2 §4.2), which is the awkward gesture in the [going back on phones](#known-issues) known issue. This idea may cover part of that.
+- To decide when designing: what the control says ("Back to Wide eyes"?), when it disappears (after moving on, switching wheels by hand, or Start over), and whether it also works the other way, or for the emoji wheel once there are three wheels.
 
 ## Known issues
 

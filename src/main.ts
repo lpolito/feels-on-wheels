@@ -96,7 +96,9 @@ function measure(): { vp: Viewport; opts: CameraOpts } {
   const width = portrait ? box.width : Math.max(float.getBoundingClientRect().left - box.left - CARD_GAP_REM * remPx, 1);
   const { height } = box;
   const vp = { width, height, radius: Math.max(Math.min(width, height) / 2 - 8, 1), drawWidth: box.width };
-  return { vp, opts: { remPx, portrait, rest: restView(layout, vp, whole), openedY: null } };
+  // v2.2.1: the app's left padding is env(safe-area-inset-left), a sideways phone's notch; the camera keeps clear of it.
+  const insetLeft = Number.parseFloat(getComputedStyle(app).paddingLeft) || 0;
+  return { vp, opts: { remPx, portrait, rest: restView(layout, vp, whole), openedY: null, insetLeft } };
 }
 
 let vp!: Viewport;
@@ -388,7 +390,8 @@ attachGestures(canvas, (intents) => controller.handle(intents));
 function remeasure(onlyIfChanged: boolean): void {
   const next = measure();
   if (onlyIfChanged && next.vp.width === vp.width && next.vp.height === vp.height && drawWidthOf(next.vp) === drawWidthOf(vp)
-    && next.opts.remPx === opts.remPx && next.opts.portrait === opts.portrait && next.opts.rest === opts.rest) return;
+    && next.opts.remPx === opts.remPx && next.opts.portrait === opts.portrait && next.opts.rest === opts.rest
+    && next.opts.insetLeft === opts.insetLeft) return;
   ({ vp, opts } = next);
   renderer.resize(drawWidthOf(vp), vp.height, devicePixelRatio || 1);
   // The card's cap depends on --opened-half, and the opened word's place on the card: set both before the camera.

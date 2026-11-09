@@ -264,7 +264,7 @@ export function createController(
     const unchanged = next.width === vp.width && next.height === vp.height && next.radius === vp.radius
       && drawWidthOf(next) === drawWidthOf(vp)
       && o.remPx === opts.remPx && o.portrait === opts.portrait && o.rest === opts.rest
-      && o.openedY === opts.openedY;
+      && o.openedY === opts.openedY && (o.insetLeft ?? 0) === (opts.insetLeft ?? 0);
     if (unchanged) return;
     vp = next;
     opts = o;

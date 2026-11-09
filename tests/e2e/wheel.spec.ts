@@ -865,6 +865,33 @@ test.describe('v2.2: the wheel under the column', () => {
     expect((await opened(other)).vp.width).toBeCloseTo(plain, 3);
   });
 
+  // v2.2.1: an iPhone sideways reports 59 px on both sides; the opened word clears the notch and the card.
+  test('852×393, insets on both sides: the opened word starts 1rem after the left inset and ends before the card', async ({ page }) => {
+    await withInset(page, 'left');
+    await withInset(page, 'right');
+    await page.setViewportSize({ width: 852, height: 393 });
+    for (const hash of ['#/core/happy', '#/core/happy/content', '#/core/happy/content/joyful', '#/body/arms/sweaty-palms', '#/body/head/wide-eyes']) {
+      await open(page, hash);
+      await settled(page);
+      const { cam, vp, ring } = await opened(page);
+      const R = vp.radius * cam.scale;
+      const inner = [0.12, 0.32, 0.62][ring]!;
+      expect(cam.cx + inner * R - 10, `${hash}: clear of the notch`).toBeGreaterThanOrEqual(59 + 16 - 0.5);
+      await expectClearOfCard(page, hash);
+    }
+  });
+
+  test('852×393, the notch turning to the left after load: re-aims clear of it', async ({ page }) => {
+    await page.setViewportSize({ width: 852, height: 393 });
+    await open(page, '#/core/happy/content');
+    await settled(page);
+    await page.addStyleTag({ content: '#app { padding-left: 59px !important }' });
+    await page.waitForTimeout(200);
+    await idle(page);
+    const { cam, vp } = await opened(page);
+    expect(cam.cx + 0.32 * vp.radius * cam.scale - 10).toBeGreaterThanOrEqual(59 + 16 - 0.5);
+  });
+
   test('resizing to sideways re-aims at the card', async ({ page }) => {
     await withInset(page, 'right');
     await page.setViewportSize({ width: 393, height: 852 });

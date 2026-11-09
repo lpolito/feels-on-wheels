@@ -15,6 +15,8 @@ export interface CameraOpts {
   rest: RestView;
   /** Portrait ring views: the stage y (CSS px) for the opened word's centre (spec v1.3 §4.2); null centres it. */
   openedY: number | null;
+  /** v2.2.1: the left safe-area inset (a sideways phone's notch); the ring view's 1rem left margin starts after it. */
+  insetLeft?: number;
 }
 
 /** Spec §4.2 constants. */
@@ -99,10 +101,10 @@ export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rota
   const R = vp.radius * scale;
   // Spec v1.2 §4.1–§4.2: phones centre the ring's middle; elsewhere the wheel meets the stage's right edge (the
   // card's column) — its outer edge plus the opened cell's lift and outline, so an opened outer word isn't clipped —
-  // unless that would start the opened cell (with its lift) within 1rem of the left.
+  // unless that would start the opened cell (with its lift) within 1rem of the left — of the notch, if any (v2.2.1).
   const cx = o.portrait
     ? 0.5 * vp.width - rMid * R
-    : Math.max(vp.width - (R + LIFT_RADIAL_PX + OUTLINE_OUTSIDE_PX), o.remPx - (r.inner * R - LIFT_RADIAL_PX));
+    : Math.max(vp.width - (R + LIFT_RADIAL_PX + OUTLINE_OUTSIDE_PX), (o.insetLeft ?? 0) + o.remPx - (r.inner * R - LIFT_RADIAL_PX));
   const cy = o.portrait && o.openedY !== null ? o.openedY : vp.height / 2;
   return { scale, rotation, cx, cy };
 }

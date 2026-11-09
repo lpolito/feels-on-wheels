@@ -19,6 +19,30 @@ function segHeight(ring: number, vp: Viewport, scale: number): number {
   return typical * ((r.inner + r.outer) / 2) * vp.radius * scale;
 }
 
+describe('v2.2.1: the left safe-area inset', () => {
+  // An iPhone 15 sideways with its 59 px insets: the aim width ends 1.5rem before the card (spec v2.2 §3.2).
+  const notched: Viewport = { width: 476, height: 393, radius: 188.5 };
+  const wheels = loadData().wheels.map((w, i) => (i === 0 ? layout : buildLayout(w)));
+
+  test('the opened cell starts 1rem after the inset and ends before the aim width, on every ring of both wheels', () => {
+    for (const l of wheels) {
+      for (const ring of [0, 1, 2]) {
+        const r = l.rings[ring]!;
+        const cam = ringFocusCamera(l, ring, notched, 0, { ...opts, insetLeft: 59 });
+        const R = notched.radius * cam.scale;
+        expect(cam.cx + r.inner * R - 10, `${l.wheelId} ring ${ring} left`).toBeGreaterThanOrEqual(59 + 16 - 1e-9);
+        expect(cam.cx + r.outer * R + 12, `${l.wheelId} ring ${ring} right`).toBeLessThanOrEqual(notched.width + 1e-9);
+      }
+    }
+  });
+
+  test('no inset leaves every camera as it was', () => {
+    for (const ring of [0, 1, 2]) {
+      expect(ringFocusCamera(layout, ring, notched, 0, { ...opts, insetLeft: 0 })).toEqual(ringFocusCamera(layout, ring, notched, 0, opts));
+    }
+  });
+});
+
 describe('resting cameras', () => {
   test('overviewCamera centers the wheel at scale 1', () => {
     expect(overviewCamera(desk, 0.5)).toEqual({ scale: 1, rotation: 0.5, cx: 720, cy: 450 });

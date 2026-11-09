@@ -835,8 +835,9 @@ test.describe('v2.2: the wheel under the column', () => {
     const edge = cam.cx + RING_OUTER[ring]! * vp.radius * cam.scale + 12;
     const card = await box(page, 'fw-card');
     const app = await box(page, '#app');
+    const rem = await page.evaluate(() => Number.parseFloat(getComputedStyle(document.documentElement).fontSize));
     expect(edge, `${label}: the opened word ends at the aim width`).toBeLessThanOrEqual(vp.width + 0.5);
-    expect(vp.width + 24, `${label}: 1.5rem before the card`).toBeLessThanOrEqual(card.x + 1);
+    expect(vp.width + 1.5 * rem, `${label}: 1.5rem before the card`).toBeLessThanOrEqual(card.x + 1);
     expect(Math.abs((await box(page, '#stage')).width - app.width), `${label}: the stage is the whole app`).toBeLessThanOrEqual(1);
     expect(Math.abs(vp.drawWidth - app.width), `${label}: the canvas is the whole app`).toBeLessThanOrEqual(1);
   }
@@ -874,6 +875,23 @@ test.describe('v2.2: the wheel under the column', () => {
     await settled(page);
     await expectClearOfCard(page, 'after resize');
   });
+
+  // Final review #1: an inset or text-size change moves the card without resizing the stage.
+  for (const [label, css] of [
+    ['a right inset appearing (a phone turned 180°)', '#app { padding-right: 59px !important } #float { right: max(1.5rem, 59px) !important }'],
+    ['a larger text size', 'html { font-size: 20px !important }'],
+  ] as const) {
+    test(`852×393, ${label} after load: re-aims at the card`, async ({ page }) => {
+      await page.setViewportSize({ width: 852, height: 393 });
+      await open(page, '#/core/happy/content/joyful');
+      await settled(page);
+      await page.addStyleTag({ content: css });
+      await page.waitForTimeout(200);
+      await idle(page);
+      await settled(page);
+      await expectClearOfCard(page, label);
+    });
+  }
 
   /** A point in the card's column on the outer ring, clear of the card and the toolbar. */
   async function columnPointOnWheel(page: Page): Promise<{ x: number; y: number }> {

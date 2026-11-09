@@ -384,15 +384,26 @@ addEventListener('popstate', () => {
 // ── Input & resize ───────────────────────────────────────────────────────
 attachGestures(canvas, (intents) => controller.handle(intents));
 
-new ResizeObserver(() => {
-  ({ vp, opts } = measure());
+/** `onlyIfChanged`: skip when the viewport and options measure the same (the card resizing as it unfolds). */
+function remeasure(onlyIfChanged: boolean): void {
+  const next = measure();
+  if (onlyIfChanged && next.vp.width === vp.width && next.vp.height === vp.height && drawWidthOf(next.vp) === drawWidthOf(vp)
+    && next.opts.remPx === opts.remPx && next.opts.portrait === opts.portrait && next.opts.rest === opts.rest) return;
+  ({ vp, opts } = next);
   renderer.resize(drawWidthOf(vp), vp.height, devicePixelRatio || 1);
   // The card's cap depends on --opened-half, and the opened word's place on the card: set both before the camera.
   setOpenedHalf(store.get());
   opts = { ...opts, openedY: openedYFor(store.get()) };
   controller.setViewport(vp, opts);
   drawNow();
-}).observe(stage);
+}
+
+new ResizeObserver(() => remeasure(false)).observe(stage);
+// Spec v2.2 §3.2 (final review #1): the aim width follows the card, which a safe-area inset (the app's padding) or a
+// text-size change (the card's width) can move without resizing the stage.
+const aimWatch = new ResizeObserver(() => remeasure(true));
+aimWatch.observe(app);
+aimWatch.observe(float);
 
 // ── First load ───────────────────────────────────────────────────────────
 {

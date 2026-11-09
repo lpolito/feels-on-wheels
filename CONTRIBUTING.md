@@ -25,7 +25,7 @@ The app doesn't have a language switcher yet: it's [planned](docs/ROADMAP.md#lan
 
 ## Code
 
-- Run `npm test` and `npm run test:e2e` before opening a pull request. See the [README](README.md#running-it).
+- Run `npm test` and `npm run test:e2e` before opening a pull request. See the [README](README.md#running-it). The same checks run on every pull request, and they must pass before it can merge.
 - Follow the existing style. Every change comes with a test.
 - Larger changes start with an issue, so we can agree on the approach first.
 

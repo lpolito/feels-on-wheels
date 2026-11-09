@@ -8,6 +8,10 @@
 - Update it in the same change when a spec is approved, a version ships, or Lucas mentions new or later work, so nothing lives only in a chat.
 - Specs (`docs/superpowers/specs/`) are frozen once approved. Link to them from the roadmap instead of copying the version list into each spec.
 
+## Shipping changes
+
+`main` is protected: changes reach it only through a pull request, and the `CI` workflow's checks (`checks` and `e2e` in five browsers) must pass to merge. Merging deploys the live site. Work on a branch, push it, and open a PR; never push to `main`.
+
 ## Sources and credits
 
 `docs/reference/` has a note for every outside source the project draws on (wheels, word lists, research), plus the text of the app's credits.

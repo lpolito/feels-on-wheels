@@ -1,0 +1,59 @@
+/*
+ * Feels on Wheels link icon for lucaspolito.dev (going-public spec §9).
+ * Add after the .icon-linkedin rule in css/styles.css. It reuses the site's .icon mask and ::after colour layer:
+ * grey at rest like the other icons; on hover, focus or tap it takes the wheel's seven core-feeling colours
+ * (the app's dark-theme hues) and spins once, settling.
+ *
+ * Contrast on --background #121214, all above the site's 3:1 rule:
+ *   Fearful #E0559E 5.31 · Angry #E0525C 4.93 · Disgusted #C77A4F 5.64 · Sad #7A70C2 4.39
+ *   Happy #E8933A 7.72 · Surprised #5FA383 6.28 · Bad #8E6BC0 4.47
+ */
+.icon-feels {
+  --icon: url("../icons/feels-on-wheels.svg");
+  transition: rotate 0s;
+
+  /* The colours sit exactly on the silhouette's wedges, so no gradient offset or tilt. */
+  &::after {
+    inset: 0;
+    rotate: 0deg;
+    background-size: auto;
+    animation: none;
+    background-image: conic-gradient(
+      #e0559e 0deg 52.7deg,
+      #e0525c 52.7deg 122.9deg,
+      #c77a4f 122.9deg 158deg,
+      #7a70c2 158deg 210.7deg,
+      #e8933a 210.7deg 289.8deg,
+      #5fa383 289.8deg 324.9deg,
+      #8e6bc0 324.9deg 360deg
+    );
+  }
+}
+
+/* One prize-wheel spin that settles. Leaving snaps back without animating, so it can spin again next time. */
+@media (hover: hover) {
+  a:hover .icon-feels {
+    rotate: 360deg;
+    transition: rotate 1.1s cubic-bezier(0.2, 0.8, 0.25, 1);
+  }
+}
+
+a:active .icon-feels,
+a:focus-visible .icon-feels {
+  rotate: 360deg;
+  transition: rotate 1.1s cubic-bezier(0.2, 0.8, 0.25, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a:is(:hover, :active, :focus-visible) .icon-feels {
+    rotate: 0deg;
+    transition: none;
+  }
+}
+
+/* Forced colours: the site's .icon rule shows the silhouette in LinkText; no colour layer. */
+@media (forced-colors: active) {
+  .icon-feels::after {
+    display: none;
+  }
+}

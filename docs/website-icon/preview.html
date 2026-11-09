@@ -1,0 +1,33 @@
+<!doctype html>
+<!--
+  Preview of the Feels on Wheels icon in lucaspolito.dev's links row.
+  Serve this folder (python3 -m http.server 8000) and open http://localhost:8000/preview.html.
+  It loads the live site's stylesheet and icons, then adds feels-on-wheels.css with its mask pointed at the local SVG.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+  <title>Feels on Wheels icon preview</title>
+  <link rel="stylesheet" href="https://lucaspolito.dev/css/styles.css">
+  <link rel="stylesheet" href="feels-on-wheels.css">
+  <!-- A url() in --icon resolves against the stylesheet that uses it (the live site's css/), so point the
+       new icon at this folder's SVG with an absolute URL. Serve this folder over HTTP: masks don't load from file://. -->
+  <script>
+    document.documentElement.style.setProperty('--feels-icon', `url("${new URL('feels-on-wheels.svg', location.href)}")`);
+  </script>
+  <style>.icon-feels { --icon: var(--feels-icon); }</style>
+</head>
+<body>
+  <main id="main" class="sunset">
+    <h1 class="gradient-mask">Lucas Polito</h1>
+    <p id="tagline">Full-stack by trade, front-end at heart</p>
+    <nav id="links" aria-label="Links">
+      <a href="#" aria-label="Lucas Polito GitHub"><span class="icon icon-github"></span></a>
+      <a href="#" aria-label="Lucas Polito LinkedIn"><span class="icon icon-linkedin"></span></a>
+      <a href="#" aria-label="Email Lucas Polito"><span class="icon icon-email"></span></a>
+      <a href="#" aria-label="Feels on Wheels, a feelings wheel by Lucas Polito"><span class="icon icon-feels"></span></a>
+    </nav>
+  </main>
+</body>
+</html>

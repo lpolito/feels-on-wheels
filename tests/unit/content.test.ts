@@ -52,7 +52,7 @@ describe('going public (spec 2026-11-09)', () => {
   test('page strings exist and are not empty', () => {
     const page = (en as unknown as { page: Record<string, string | undefined> }).page;
     expect(page.name).toBe('Feels on Wheels');
-    expect(page.shortName).toBe('Feels');
+    expect(page.shortName).toBe('Feels on Wheels');
     expect(page.title).toBe('Feels on Wheels: name what you feel');
     expect(page.description?.length).toBeGreaterThanOrEqual(100);
     expect(page.description?.length).toBeLessThanOrEqual(160);

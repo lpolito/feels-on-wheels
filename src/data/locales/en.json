@@ -614,7 +614,7 @@
   },
   "page": {
     "name": "Feels on Wheels",
-    "shortName": "Feels",
+    "shortName": "Feels on Wheels",
     "title": "Feels on Wheels: name what you feel",
     "description": "A free feelings wheel and body sensations wheel that helps you find the word for what you feel. Fast, accessible, and works offline.",
     "imageAlt": "The Feels on Wheels icon, a wheel of seven colored feelings, beside the words \"Feels on Wheels: Name what you feel\".",
@@ -667,7 +667,7 @@
           "id": "made-by",
           "heading": "Made by",
           "body": [
-            "[Lucas Polito]({author})."
+            "[Lucas Polito]({author}). The ideas and every design decision are his. The code was written with AI, as an experiment in how quickly and how completely an app can be built that way, with a person deciding what makes it good to use."
           ]
         },
         {

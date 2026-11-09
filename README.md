@@ -2,11 +2,28 @@
 
 A free feelings wheel and body sensations wheel, to help you find the word for what you feel. Start from a few core feelings and narrow down, or start from what you notice in your body. Open a word to read what it means.
 
-It's fast, works offline, installs as an app, works with a keyboard and screen readers, and supports light and dark mode. There are no accounts and no tracking.
-
 **Try it: <https://lpolito.github.io/feels-on-wheels/>**
 
 ![The feelings wheel with "Curious" opened: its definition, what you might notice in your body, and a close word.](docs/screenshot.png)
+
+## What went into it
+
+It's meant to have everything you'd want from a modern web app, with accessibility and performance treated as features, not afterthoughts.
+
+- **Accessible.** The wheel is drawn on a canvas, but every word is also in a real tree that works with a keyboard and screen readers. It follows your light or dark mode, and respects reduced motion and forced colors (high contrast). Automated accessibility checks (axe) run in the tests.
+- **Fast.** Spinning stays smooth: in performance tests, 95% of frames come less than 20 ms apart, in Chromium and Firefox.
+- **Small.** No frameworks and no runtime dependencies. Everything a first visit downloads, including every word and definition, is about 34 KB gzipped, against a 60 KB budget that every deploy checks.
+- **Offline and installable.** After one visit it works with no connection, and most browsers can install it as an app.
+- **Any screen.** Layouts are tested from 280 px phones to 2560 px monitors, in Chromium, Firefox and WebKit, and on Android and iPhone.
+- **Private.** No accounts, no tracking, no analytics.
+
+## Built with AI
+
+Feels on Wheels was built with AI, openly and on purpose. It's the first project Lucas made this way: an AI coding assistant ([Claude Code](https://claude.com/claude-code)) wrote the code and helped weigh up how to build each piece.
+
+The ideas are Lucas's: what the app does, how it looks and how it feels to use. He made every usability and design call, and used each version before the next one was planned. The point was to see how fast, and how complete, an app can get when AI does the building and a person stays in the loop on what makes it good to use.
+
+The whole process is in the repo. Every version's design is in [docs/superpowers/specs](docs/superpowers/specs), and every build plan is in [docs/superpowers/plans](docs/superpowers/plans).
 
 ## Running it
 

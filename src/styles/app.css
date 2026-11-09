@@ -41,7 +41,7 @@ canvas { touch-action: none; }
 #wheel.fw-over-disc { cursor: grab; }
 #wheel:active { cursor: grabbing; }
 
-button, select {
+button, select, fw-toolbar .fw-about {
   color: inherit;
   background: var(--surface);
   border: 1px solid color-mix(in srgb, var(--fg) 18%, transparent);
@@ -58,7 +58,14 @@ fw-toolbar {
   display: flex;
   gap: 0.5rem;
 }
-fw-toolbar button { min-width: 44px; min-height: 44px; padding: 0 0.9rem; font-size: 1rem; }
+fw-toolbar :is(button, .fw-about) { min-width: 44px; min-height: 44px; padding: 0 0.9rem; font-size: 1rem; }
+/* Going-public spec §8.4: the ⓘ link to the About page, sized and styled like the theme button. */
+fw-toolbar .fw-about { width: 44px; padding: 0; display: inline-grid; place-items: center; text-decoration: none; }
+fw-toolbar .fw-about .fw-icon { width: 1.3rem; height: 1.3rem; }
+/* On phones, three toolbar buttons don't fit beside the wheel switch: About gives way to Start over while a word is selected. */
+@media (max-width: 30rem) {
+  fw-toolbar .fw-start-over:not([hidden]) ~ .fw-about { display: none; }
+}
 
 /* Spec v2 §4.1: "Feelings | Body", top left, the current wheel filled. */
 fw-wheel-switch {

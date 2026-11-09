@@ -21,7 +21,8 @@
     "couldBe": "Could be feeling",
     "couldAlsoBe": "Could also be feeling",
     "seeOnWheel": "See {label} on the feelings wheel",
-    "wheelSwitch": "Wheel"
+    "wheelSwitch": "Wheel",
+    "about": "About Feels on Wheels"
   },
   "feelings": {
     "scared": {

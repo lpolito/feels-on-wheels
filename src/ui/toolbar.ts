@@ -40,8 +40,22 @@ function restartIcon(): SVGSVGElement {
   return svg;
 }
 
+/** A circled "i": the About page (going-public spec §8.4). */
+function infoIcon(): SVGSVGElement {
+  const svg = document.createElementNS(SVG, 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('class', 'fw-icon');
+  for (const d of ['M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18z', 'M12 11v6M12 7.5v.01']) {
+    const path = document.createElementNS(SVG, 'path');
+    path.setAttribute('d', d);
+    svg.append(path);
+  }
+  return svg;
+}
+
 /**
- * "Start over" (while a word is selected) and the theme control. "Start over" emits 'fw-action' ({type:'clear'})
+ * "Start over" (while a word is selected), the theme control and the link to About. "Start over" emits 'fw-action' ({type:'clear'})
  * then 'fw-focus-lost' (spec v1.3 §3.2); the theme control emits 'fw-theme' (ThemePref).
  */
 export class FwToolbar extends HTMLElement {
@@ -95,7 +109,13 @@ export class FwToolbar extends HTMLElement {
     this.#startOver = startOver;
     this.#themeButton = theme;
     this.#label = label;
-    this.append(startOver, themeWrap);
+    const about = document.createElement('a');
+    about.className = 'fw-about';
+    about.href = './about.html';
+    about.setAttribute('aria-label', t('about'));
+    about.title = t('about');
+    about.append(infoIcon());
+    this.append(startOver, themeWrap, about);
     this.#sync();
   }
 

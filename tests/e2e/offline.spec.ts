@@ -15,6 +15,19 @@ test('offline reload works after the first visit', async ({ page, context, brows
   await context.setOffline(false);
 });
 
+test('About loads offline after the first visit (Review Focus 4)', async ({ page, context, browserName }) => {
+  test.skip(browserName === 'webkit', 'Playwright WebKit does not support service worker offline emulation');
+  await page.goto('/');
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+  });
+  await page.reload();
+  await context.setOffline(true);
+  await page.goto('/about.html?ref=x');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Feels on Wheels');
+  await context.setOffline(false);
+});
+
 test('manifest is linked and valid', async ({ page, request }) => {
   await page.goto('/');
   const href = await page.locator('link[rel="manifest"]').getAttribute('href');

@@ -29,7 +29,7 @@ npm run size        # check the build against the size budget
 
 The first `npm run test:e2e` may need `npx playwright install` for the browsers.
 
-Every push to `main` runs the unit tests, builds, and deploys to GitHub Pages (`.github/workflows/deploy.yml`).
+Changes reach `main` only through pull requests. Every pull request runs the unit tests, type-check, build, size budget and the end-to-end tests in all five browsers (`.github/workflows/ci.yml`), and all of them must pass to merge. Every push to `main` then deploys to GitHub Pages (`.github/workflows/deploy.yml`).
 
 ## Adding a language
 

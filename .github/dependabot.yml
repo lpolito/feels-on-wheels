@@ -1,10 +1,14 @@
 # Weekly dependency updates, one grouped pull request per ecosystem. Each goes through the required CI checks.
+# A release must be 3 days old before it's proposed, so a bad or compromised one has time to be pulled first.
+# Security updates ignore the cooldown.
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
     groups:
       npm:
         patterns: ["*"]
@@ -12,6 +16,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
     groups:
       actions:
         patterns: ["*"]

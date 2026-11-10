@@ -2,9 +2,13 @@
 # End-to-end and perf tests stay local: five browsers, slow, and the perf leak check is known to be flaky.
 name: Deploy
 
+# Docs-only pushes (roadmap, specs, READMEs) don't deploy: nothing in them reaches the site.
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
   workflow_dispatch:
 
 permissions:

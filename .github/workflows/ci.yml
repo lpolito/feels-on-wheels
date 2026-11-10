@@ -1,24 +1,11 @@
 # Checks every pull request and every push to main. These jobs are required to merge into main (repo ruleset "main").
 # Perf tests stay local: their timing probes are flaky on shared runners.
-#
-# Docs-only changes skip the work. The DOCS paths below (and the push filter, which must match them) are the files
-# nothing builds or tests: docs/, top-level Markdown, licenses, and GitHub's issue, PR and Dependabot settings.
-# On a pull request the jobs still run so the required checks report, but every step is skipped and e2e runs on a
-# cheap Ubuntu runner instead of macOS. Skipped steps count as a pass.
 name: CI
 
 on:
   pull_request:
   push:
     branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      - 'LICENSE'
-      - 'LICENSES/**'
-      - '.github/ISSUE_TEMPLATE/**'
-      - '.github/pull_request_template.md'
-      - '.github/dependabot.yml'
 
 permissions:
   contents: read
@@ -28,55 +15,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  changes:
-    name: changes
-    runs-on: ubuntu-latest
-    outputs:
-      code: ${{ steps.diff.outputs.code }}
-    steps:
-      - uses: actions/checkout@v7
-        if: github.event_name == 'pull_request'
-        with:
-          fetch-depth: 2
-      # On a pull request HEAD is the test merge commit, so HEAD^1 is the base branch and the diff is the PR's changes.
-      - id: diff
-        env:
-          DOCS: '^(docs/.*|[^/]+\.md|LICENSE|LICENSES/.*|\.github/ISSUE_TEMPLATE/.*|\.github/pull_request_template\.md|\.github/dependabot\.yml)$'
-        run: |
-          if [ "$GITHUB_EVENT_NAME" != pull_request ] || git diff --name-only HEAD^1 HEAD | grep -qvE "$DOCS"; then
-            echo code=true >> "$GITHUB_OUTPUT"
-          else
-            echo "Docs-only change: skipping checks."
-            echo code=false >> "$GITHUB_OUTPUT"
-          fi
-
   checks:
     name: checks
-    needs: changes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-        if: &code needs.changes.outputs.code == 'true'
       - uses: actions/setup-node@v7
-        if: *code
         with:
           node-version: 26
           cache: npm
       - run: npm ci
-        if: *code
       - run: npm test
-        if: *code
       - run: npm run build
-        if: *code
       - run: npm run size
-        if: *code
 
   e2e:
     name: e2e (${{ matrix.project }})
     # macOS, not Ubuntu: the layout tests measure text, and Ubuntu's fallback font (DejaVu Sans) is much wider than
     # the system fonts on Apple, Android and Windows devices. See the roadmap's known issues.
-    needs: changes
-    runs-on: ${{ needs.changes.outputs.code == 'true' && 'macos-latest' || 'ubuntu-latest' }}
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
@@ -88,18 +45,13 @@ jobs:
           - { project: iphone, browser: webkit }
     steps:
       - uses: actions/checkout@v7
-        if: &code needs.changes.outputs.code == 'true'
       - uses: actions/setup-node@v7
-        if: *code
         with:
           node-version: 26
           cache: npm
       - run: npm ci
-        if: *code
       - run: npx playwright install --with-deps ${{ matrix.browser }}
-        if: *code
       - run: npx playwright test tests/e2e --project=${{ matrix.project }}
-        if: *code
       - if: failure()
         uses: actions/upload-artifact@v7
         with:

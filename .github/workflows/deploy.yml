@@ -2,9 +2,21 @@
 # End-to-end and perf tests stay local: five browsers, slow, and the perf leak check is known to be flaky.
 name: Deploy
 
+# Only pushes that can change the site deploy: not docs, licenses, tests, or GitHub settings other than this file.
+# Keep the docs paths in step with ci.yml.
 on:
   push:
     branches: [main]
+    paths:
+      - '**'
+      - '!docs/**'
+      - '!*.md'
+      - '!LICENSE'
+      - '!LICENSES/**'
+      - '!tests/**'
+      - '!playwright.config.ts'
+      - '!.github/**'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:

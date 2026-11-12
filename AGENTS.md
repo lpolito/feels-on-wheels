@@ -6,8 +6,12 @@
 
 - Read it before brainstorming or planning a new version.
 - Update it in the same change when a spec is approved, a version ships, or Lucas mentions new or later work, so nothing lives only in a chat.
-- When a version ships or a known issue is found or fixed, update the known limitations in `ACCESSIBILITY.md` in the same change.
 - Specs (`docs/superpowers/specs/`) are frozen once approved. Link to them from the roadmap instead of copying the version list into each spec.
+
+## Accessibility
+
+- Changes to what people see or do follow the contributor expectations in `ACCESSIBILITY.md`. In the PR's "What and why", say how the change was checked: the tests, the keyboard in a browser, and which hand checks (a screen reader, a real phone) weren't done.
+- When a version ships or a known issue is found or fixed, update the known limitations in `ACCESSIBILITY.md` in the same change.
 
 ## Shipping changes
 

@@ -197,7 +197,7 @@ Lucas's ideas: he doesn't like the `/core/` prefix and wants room for languages 
   - a preview deploy for every pull request;
   - any number of custom domains, so language subdomains become possible;
   - DNS and hosting in one place.
-- What moving costs: a new deploy workflow in place of the GitHub Pages one, and updating the shipping rules in `CLAUDE.md` and the [domain move](#before-launching) steps.
+- What moving costs: a new deploy workflow in place of the GitHub Pages one, and updating the shipping rules in `AGENTS.md` and the [domain move](#before-launching) steps.
 
 #### Languages
 

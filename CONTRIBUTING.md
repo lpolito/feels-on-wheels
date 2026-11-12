@@ -1,6 +1,6 @@
 # Contributing to Feels on Wheels
 
-Thanks for wanting to help. Ideas and new languages are especially welcome. Everyone taking part agrees to the [code of conduct](CODE_OF_CONDUCT.md). To report a security issue, see [SECURITY.md](SECURITY.md) rather than opening a public issue.
+Thanks for wanting to help. Ideas and new languages are especially welcome. Everyone taking part agrees to the [code of conduct](CODE_OF_CONDUCT.md). To report a security issue, see [SECURITY.md](SECURITY.md) rather than opening a public issue. For anything that gets in the way of using the app, see [ACCESSIBILITY.md](ACCESSIBILITY.md).
 
 ## Ideas
 
@@ -27,6 +27,7 @@ The app doesn't have a language switcher yet: it's [planned](docs/ROADMAP.md#lan
 
 - Run `npm test` and `npm run test:e2e` before opening a pull request. See the [README](README.md#running-it). The same checks run on every pull request, and they must pass before it can merge.
 - Follow the existing style. Every change comes with a test.
+- Changes to what people see or do follow the [accessibility expectations](ACCESSIBILITY.md#contributor-expectations).
 - Larger changes start with an issue, so we can agree on the approach first.
 
 ## Contribution terms

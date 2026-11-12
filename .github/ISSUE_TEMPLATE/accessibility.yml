@@ -1,0 +1,36 @@
+name: Accessibility
+description: Something gets in your way, with any device, setting or assistive technology.
+labels: [accessibility]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for telling us. You don't need to say anything about a disability, only what happened. See [ACCESSIBILITY.md](https://github.com/lpolito/feels-on-wheels/blob/main/ACCESSIBILITY.md) for what the app aims for and what's already known.
+  - type: textarea
+    id: what
+    attributes:
+      label: What were you trying to do, and what got in the way?
+      description: For example, "I couldn't reach the card's links with the keyboard" or "the screen reader didn't say which word was open".
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link
+      description: The address in your browser when it happened, if you have it. It includes the word you had open.
+  - type: input
+    id: device
+    attributes:
+      label: Device, system and browser
+      placeholder: iPhone 15, iOS 18, Safari; or Windows 11, Firefox
+    validations:
+      required: true
+  - type: textarea
+    id: assistive
+    attributes:
+      label: Assistive technology and settings
+      description: Anything you use that might matter, such as a screen reader, voice control, zoom, larger text, high contrast, reduced motion or a keyboard only. Leave it empty if none.
+  - type: textarea
+    id: media
+    attributes:
+      label: Screenshot or recording
+      description: Optional. Drag a file here if it helps.

@@ -44,7 +44,6 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Real paths, a small router and cleaner URLs](#real-paths-a-small-router-and-cleaner-urls) | [URLs, routing and hosting](#urls-routing-and-hosting) | Idea; decide before launch |
 | [Cloudflare instead of GitHub Pages](#cloudflare-instead-of-github-pages) | URLs, routing and hosting | Idea; decide before launch |
 | [Languages](#languages) | URLs, routing and hosting | Planned |
-| [ACCESSIBILITY.md](#accessibilitymd) | [Project docs](#project-docs) | Idea |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
 
@@ -158,6 +157,7 @@ Lucas's ideas, 2026-11-12:
 - **The credit links feel off.** Each source's author name links to the work, and Roberts's link goes to an imgur post whose image is gone ([known issue](#the-about-page-1)). To decide: what to link (the work, its title, or the [reference notes](reference/README.md)), and whether to use the archive.org copy already in [core-feelings-wheel.md](reference/core-feelings-wheel.md).
 - **A floating back button,** so you don't have to scroll to the bottom to get back to the wheel.
 - **A left chevron** on "Back to the wheel". Likely the same control as the floating one.
+- **Say no more than has been tested.** "How to use it" says "Everything works with a keyboard and with a screen reader", but no screen reader has been tried by hand yet ([ACCESSIBILITY.md](../ACCESSIBILITY.md#supported-environments), 2026-11-12). Soften it, or link ACCESSIBILITY.md, until one has.
 - With [About in the start message](#about-in-the-start-message), more people arrive at About from the start, so the way back matters more.
 - Worth doing before [launching](#before-launching), with the [slow open](#the-about-page-1) known issue.
 
@@ -205,24 +205,9 @@ Lucas's ideas: he doesn't like the `/core/` prefix and wants room for languages 
 - Adding a language means adding one locale file; no text is hard-coded.
 - Where the language lives in the URL is decided with [real paths](#real-paths-a-small-router-and-cleaner-urls).
 
-### Project docs
-
-#### ACCESSIBILITY.md
-
-- Lucas's idea, 2026-11-12: an `ACCESSIBILITY.md` that sets out what the app commits to. GitHub's community files settings suggest one ("Additional community file: Accessibility"), pointing to the [Open Source Accessibility toolkit's template](https://github.com/open-source-accessibility/accessibility-toolkit/blob/main/ACCESSIBILITY.md). Start from its outline:
-  - **Why accessibility matters here** and who it's for, in plain language, for someone reading it after hitting a barrier.
-  - **Priorities:** keyboard, screen readers, reduced motion, forced colors, text size, both themes. WCAG 2.2 AA is the target, worded as a goal, not a conformance claim: the template says to claim conformance only after an evaluation that names its scope, date, method and evaluator.
-  - **Contributor expectations:** what the checks already enforce (axe in the end-to-end tests, the five browsers in CI) and what a user-facing change should show in its PR. The PR template and CONTRIBUTING.md would point to it.
-  - **Reporting a barrier:** an issue form of its own beside the bug, idea and language forms, asking for the task, URL, browser, system and assistive technology, with screenshots optional and no disability disclosure asked for. Severity levels only if they'll be used.
-  - **How we respond and who owns it:** Lucas, with commitments he can keep as one person.
-  - **Supported environments:** only what's actually been tested, with versions; the rest marked untested.
-  - **Known limitations,** described as what a person runs into, linking the matching [known issues](#known-issues) (for example the [keyboard selection on the phone's half-wheel](#navigation)).
-  - **Feedback** on the statement itself.
-- The About page says "Everything works with a keyboard and with a screen reader"; the two should agree.
-
 ## Known issues
 
-Still open after v2.2.1. None blocks the next version.
+Still open after v2.2.1. None blocks the next version. The ones that get in someone's way are also listed, in plain words, under known limitations in [ACCESSIBILITY.md](../ACCESSIBILITY.md#known-limitations); keep the two in step.
 
 ### Phones: turning and zooming
 
@@ -230,7 +215,7 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 
 - **Turning the phone makes the card's text huge.** Found 2026-11-12: going from portrait to sideways and back leaves the description text very large, possibly only when a word is open as it turns. Likely cause: Safari on iOS enlarges text when the phone turns unless told not to. `about.css` sets `-webkit-text-size-adjust: 100%`, but `app.css` doesn't. Likely fix: the same in `app.css`. No fix chosen yet.
 - **After turning the phone several times, taps land in the wrong place.** Found 2026-11-12: words stopped opening and closing, and a tap on a word acted on another. Swiping back fixed it. Not yet known whether it's the app or the browser. Worth checking first: a leftover page zoom from turning, and whether the app's mapping from a tap to a word uses a stale position of the wheel.
-- **Double-tapping the theme label zooms the page.** Found 2026-11-09 using v2.2.1, mostly on phones while tapping through the theme choices: a quick second tap lands on the label that shows the choice (`.fw-theme-label`, v1.3 §6.2) and the browser zooms into it. Once the label goes, it's hard to double-tap back out. The label takes taps while shown, so a tap on it never reaches the wheel beneath, and as plain text it gets the browser's double-tap-to-zoom; the button beside it doesn't. Likely fix: `touch-action: manipulation` on the label (or the toolbar), which turns off double-tap zoom there while leaving pinch zoom alone. No fix chosen yet.
+- **Double-tapping the theme label zooms the page.** Found 2026-11-09 using v2.2.1, mostly on phones while tapping through the theme choices: a quick second tap lands on the label that shows the choice (`.fw-theme-label`, v1.3 §6.2) and the browser zooms into it. Pinching out doesn't undo it on iOS (Lucas, 2026-11-12), likely because the wheel's canvas takes every pinch for itself (`touch-action: none`); the only way back is double-tapping the label again while it's showing, and once the label goes, that's gone too. The label takes taps while shown, so a tap on it never reaches the wheel beneath, and as plain text it gets the browser's double-tap-to-zoom; the button beside it doesn't. Likely fix: `touch-action: manipulation` on the label (or the toolbar), which turns off double-tap zoom there while leaving pinch zoom alone. No fix chosen yet.
 
 ### Layout and labels
 

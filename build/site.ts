@@ -4,17 +4,20 @@
  * `page` strings. build/site-plugin.ts wires these into Vite.
  */
 import type { SiteConfig } from '../site.config';
+import type { Titles } from '../src/data/types.ts';
 
 export type PageId = 'index' | 'about';
 
 export interface AboutSection { id: string; heading: string; body: string[]; items?: string[] }
 export interface AboutStrings {
-  title: string; description: string; heading: string; summary: string; back: string; sections: AboutSection[];
+  heading: string; summary: string; back: string; sections: AboutSection[];
 }
 
 export interface PageStrings {
-  name: string; shortName: string; title: string; description: string; imageAlt: string; noscript: string;
+  name: string; shortName: string; imageAlt: string; noscript: string;
   about: AboutStrings;
+  /** From en.json's `titles` group; site-plugin.ts adds it to `page`. */
+  titles: Pick<Titles, 'home' | 'homeDescription' | 'about' | 'aboutDescription'>;
 }
 
 const OG_IMAGE = { path: 'og-image.png', width: 1200, height: 630 };
@@ -36,7 +39,7 @@ function jsonLd(site: SiteConfig, strings: PageStrings): string {
     '@type': 'WebApplication',
     name: strings.name,
     url: site.url,
-    description: strings.description,
+    description: strings.titles.homeDescription,
     inLanguage: 'en',
     applicationCategory: 'LifestyleApplication',
     operatingSystem: 'Any',
@@ -50,8 +53,9 @@ function jsonLd(site: SiteConfig, strings: PageStrings): string {
 }
 
 export function headTags(page: PageId, site: SiteConfig, strings: PageStrings): string {
-  const title = page === 'about' ? strings.about?.title ?? strings.name : strings.title;
-  const description = page === 'about' ? strings.about?.description ?? strings.description : strings.description;
+  const { titles } = strings;
+  const title = page === 'about' ? titles.about : titles.home;
+  const description = page === 'about' ? titles.aboutDescription : titles.homeDescription;
   const url = pageUrl(page, site);
   const tags = [
     `<title>${escapeHtml(title)}</title>`,
@@ -80,7 +84,7 @@ export function webManifest(strings: PageStrings): Record<string, unknown> {
   return {
     name: strings.name,
     short_name: strings.shortName,
-    description: strings.description,
+    description: strings.titles.homeDescription,
     id: './',
     start_url: './',
     scope: './',

@@ -1,13 +1,13 @@
 import feelingsJson from './feelings.json';
 // Named imports only, so en.json's `page` strings (for the HTML pages, built at build time) stay out of the app's JS.
-import { meta, ui, feelings as feelingStrings, sensations, areas, wheels as wheelStrings } from './locales/en.json';
+import { meta, ui, feelings as feelingStrings, sensations, areas, wheels as wheelStrings, titles } from './locales/en.json';
 import { wheelSources } from './wheels/index';
 import { KINDS, nodeRef } from './node';
 import type { FeelingsDict, Locale, NodeRef, Wheel, WheelNode } from './types';
 
 export { nodeRef };
 
-const en = { meta, ui, feelings: feelingStrings, sensations, areas, wheels: wheelStrings };
+const en = { meta, ui, feelings: feelingStrings, sensations, areas, wheels: wheelStrings, titles };
 
 export class DataError extends Error {
   override name = 'DataError';
@@ -61,8 +61,8 @@ function refsOf(nodes: WheelNode[], out: NodeRef[] = []): NodeRef[] {
 }
 
 export function validateLocale(l: unknown, dict: FeelingsDict, wheels: Wheel[]): Locale {
-  if (!isObj(l) || !isObj(l.meta) || !isObj(l.ui) || !isObj(l.feelings) || !isObj(l.sensations) || !isObj(l.areas) || !isObj(l.wheels)) {
-    fail('locale: expected { meta, ui, feelings, sensations, areas, wheels }');
+  if (!isObj(l) || !isObj(l.meta) || !isObj(l.ui) || !isObj(l.feelings) || !isObj(l.sensations) || !isObj(l.areas) || !isObj(l.wheels) || !isObj(l.titles)) {
+    fail('locale: expected { meta, ui, feelings, sensations, areas, wheels, titles }');
   }
   const loc = l as unknown as Locale;
   const lang = loc.meta.lang;
@@ -78,6 +78,14 @@ export function validateLocale(l: unknown, dict: FeelingsDict, wheels: Wheel[]):
     const f = loc.feelings[n.feeling];
     if (!f?.kind || f.kind.split('{link}').length !== 2) fail(`locale ${lang}: core feeling "${n.feeling}" needs "kind" with one {link}`);
     if (!f?.kindLink) fail(`locale ${lang}: core feeling "${n.feeling}" is missing "kindLink"`);
+  }
+  const titles = loc.titles;
+  for (const key of ['home', 'homeDescription', 'about', 'aboutDescription', 'route', 'notFound', 'sensationDescription', 'areaDescription'] as const) {
+    if (typeof titles[key] !== 'string' || !titles[key]) fail(`locale ${lang}: titles is missing "${key}"`);
+  }
+  if (!isObj(titles.wheelDescriptions)) fail(`locale ${lang}: titles is missing "wheelDescriptions"`);
+  for (const w of wheels.slice(1)) {
+    if (!titles.wheelDescriptions[w.id]) fail(`locale ${lang}: titles.wheelDescriptions is missing wheel "${w.id}"`);
   }
   for (const w of wheels) {
     const text = loc.wheels[w.id];

@@ -11,8 +11,10 @@ import { aboutLinks, headTags, linkify, renderAbout, robotsTxt, sitemapXml, webM
  */
 export function sitePlugin(): Plugin {
   let root = process.cwd();
-  const strings = (): PageStrings =>
-    (JSON.parse(readFileSync(join(root, 'src/data/locales/en.json'), 'utf8')) as { page: PageStrings }).page;
+  const strings = (): PageStrings => {
+    const en = JSON.parse(readFileSync(join(root, 'src/data/locales/en.json'), 'utf8')) as { page: Omit<PageStrings, 'titles'>; titles: PageStrings['titles'] };
+    return { ...en.page, titles: en.titles };
+  };
   const pageOf = (path: string): PageId => (path.split('?')[0]!.endsWith('/about.html') ? 'about' : 'index');
   const manifest = (): string => `${JSON.stringify(webManifest(strings()), null, 2)}\n`;
 

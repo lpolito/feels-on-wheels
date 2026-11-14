@@ -13,11 +13,10 @@ const site: SiteConfig = {
 const strings: PageStrings = {
   name: 'Feels on Wheels',
   shortName: 'Feels',
-  title: 'Feels on Wheels: name what you feel',
-  description: 'A free feelings wheel.',
   imageAlt: 'The wheel.',
   noscript: 'Needs JavaScript.',
-  about: { title: 'About Feels on Wheels', description: 'About it.', heading: 'Feels on Wheels', summary: 's', back: 'Back', sections: [] },
+  titles: { home: 'Feels on Wheels: name what you feel', homeDescription: 'A free feelings wheel.', about: 'About Feels on Wheels', aboutDescription: 'About it.' },
+  about: { heading: 'Feels on Wheels', summary: 's', back: 'Back', sections: [] },
 };
 
 const jsonLd = (html: string): Record<string, unknown> => {
@@ -63,7 +62,7 @@ describe('head tags', () => {
   });
 
   test('special characters are escaped (Review Focus 3)', () => {
-    const h = headTags('index', site, { ...strings, title: 'A & B "C" <D>', description: 'it\'s </script>' });
+    const h = headTags('index', site, { ...strings, titles: { ...strings.titles, home: 'A & B "C" <D>', homeDescription: 'it\'s </script>' } });
     expect(h).toContain('A &amp; B &quot;C&quot; &lt;D&gt;');
     expect(h).not.toContain('"C"');
     expect(h.match(/<\/script>/g)?.length).toBe(1);
@@ -145,6 +144,6 @@ describe('About page', () => {
   });
 
   test('the About head uses the About title', () => {
-    expect(headTags('about', site, (en as unknown as { page: PageStrings }).page)).toContain('<title>About Feels on Wheels</title>');
+    expect(headTags('about', site, { ...(en as unknown as { page: PageStrings }).page, titles: en.titles })).toContain('<title>About Feels on Wheels</title>');
   });
 });

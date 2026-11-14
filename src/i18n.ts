@@ -19,10 +19,15 @@ function missing(key: string): string {
   return key;
 }
 
+/** Replaces each `{name}` in a template with `vars[name]`, leaving unknown names as written. */
+export function fill(template: string, vars?: Record<string, string>): string {
+  return vars ? template.replace(/\{(\w+)\}/g, (m, name: string) => vars[name] ?? m) : template;
+}
+
 export function t(key: string, vars?: Record<string, string>): string {
   const s = active?.ui[key];
   if (s === undefined) return missing(key);
-  return vars ? s.replace(/\{(\w+)\}/g, (m, name: string) => vars[name] ?? m) : s;
+  return fill(s, vars);
 }
 
 export function label(id: FeelingId): string {

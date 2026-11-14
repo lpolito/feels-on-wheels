@@ -22,7 +22,9 @@
     "couldAlsoBe": "Could also be feeling",
     "seeOnWheel": "See {label} on the feelings wheel",
     "wheelSwitch": "Wheel",
-    "about": "About Feels on Wheels"
+    "about": "About Feels on Wheels",
+    "notFoundTitle": "Feeling not found!",
+    "notFoundText": "There's no “{word}” on the wheel."
   },
   "feelings": {
     "scared": {
@@ -612,16 +614,25 @@
       "hintLink": "start from feelings instead"
     }
   },
+  "titles": {
+    "home": "Feels on Wheels: name what you feel",
+    "homeDescription": "A free feelings wheel and body sensations wheel that helps you find the word for what you feel. Fast, accessible, and works offline.",
+    "about": "About Feels on Wheels",
+    "aboutDescription": "What Feels on Wheels is for, how to use it, the feelings wheels it draws on, and how to help translate it into your language.",
+    "route": "{name} · Feels on Wheels",
+    "notFound": "Not found",
+    "sensationDescription": "{sensation}: the feelings it can come with, on the body sensations wheel.",
+    "areaDescription": "{area}: what you might notice there, and the feelings it can come with.",
+    "wheelDescriptions": {
+      "body": "Start from what you notice in your body to find the word for what you feel."
+    }
+  },
   "page": {
     "name": "Feels on Wheels",
     "shortName": "Feels on Wheels",
-    "title": "Feels on Wheels: name what you feel",
-    "description": "A free feelings wheel and body sensations wheel that helps you find the word for what you feel. Fast, accessible, and works offline.",
     "imageAlt": "The Feels on Wheels icon, a wheel of seven colored feelings, beside the words \"Feels on Wheels: Name what you feel\".",
     "noscript": "Feels on Wheels needs JavaScript to draw the wheel. [About Feels on Wheels]({about})",
     "about": {
-      "title": "About Feels on Wheels",
-      "description": "What Feels on Wheels is for, how to use it, the feelings wheels it draws on, and how to help translate it into your language.",
       "heading": "Feels on Wheels",
       "summary": "A free feelings wheel and body sensations wheel, to help you find the word for what you feel.",
       "back": "Back to the wheel",

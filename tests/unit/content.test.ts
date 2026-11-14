@@ -53,9 +53,16 @@ describe('going public (spec 2026-11-09)', () => {
     const page = (en as unknown as { page: Record<string, string | undefined> }).page;
     expect(page.name).toBe('Feels on Wheels');
     expect(page.shortName).toBe('Feels on Wheels');
-    expect(page.title).toBe('Feels on Wheels: name what you feel');
-    expect(page.description?.length).toBeGreaterThanOrEqual(100);
-    expect(page.description?.length).toBeLessThanOrEqual(160);
+    const { titles } = en;
+    expect(titles.home).toBe('Feels on Wheels: name what you feel');
+    expect(titles.homeDescription.length).toBeGreaterThanOrEqual(100);
+    expect(titles.homeDescription.length).toBeLessThanOrEqual(160);
+    for (const w of loadData().wheels.slice(1)) {
+      const d = (titles.wheelDescriptions as Record<string, string>)[w.id];
+      expect(d, `wheelDescriptions.${w.id}`).toBeTruthy();
+      expect(d!.length).toBeGreaterThanOrEqual(50);
+      expect(d!.length).toBeLessThanOrEqual(160);
+    }
     expect(page.imageAlt?.trim()).toBeTruthy();
     expect(page.noscript?.trim()).toBeTruthy();
   });

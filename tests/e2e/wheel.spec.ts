@@ -61,7 +61,17 @@ test.describe('desktop', () => {
 
   test('narrow-it-down row opens Aggressive with an Angry crumb; crumb reopens Angry', async ({ page }) => {
     await open(page, '/angry');
+    const entries = await page.evaluate(() => history.length);
     await page.locator('fw-card ul.fw-rows button', { hasText: 'Aggressive' }).click();
+    await expectTitle(page, 'Aggressive');
+    // History rule spec: a card link adds an entry, so Back returns to the word before.
+    expect(await page.evaluate(() => history.length)).toBe(entries + 1);
+    await page.goBack();
+    await idle(page);
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
+    await expectTitle(page, 'Angry');
+    await page.goForward();
+    await idle(page);
     await expectTitle(page, 'Aggressive');
     const crumb = page.locator('fw-card .fw-crumbs button', { hasText: 'Angry' });
     await expect(crumb).toBeVisible();

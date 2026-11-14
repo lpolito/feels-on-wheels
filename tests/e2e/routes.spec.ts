@@ -311,6 +311,25 @@ test.describe('history: picking adds an entry, moving by direction replaces it',
     expect(await selectedPath(page)).toBe('angry');
   });
 
+  test('Back, then tapping a new word, clears Forward', async ({ page }) => {
+    await open(page);
+    await tapPath(page, 'angry');
+    await tapPath(page, 'angry');
+    await page.goBack();
+    await idle(page);
+    expect(new URL(page.url()).pathname).toBe('/');
+    const len = await entries(page);
+    // Disgusted sits next to Angry, so it's on screen on a phone's half-wheel too.
+    await tapPath(page, 'disgusted');
+    await tapPath(page, 'disgusted');
+    expect(new URL(page.url()).pathname).toBe('/disgusted');
+    // The push dropped Forward's /angry and added /disgusted in its place.
+    expect(await entries(page)).toBe(len);
+    await page.goForward();
+    await idle(page);
+    expect(new URL(page.url()).pathname).toBe('/disgusted');
+  });
+
   test('a swipe to the parent word replaces the entry', async ({ page }) => {
     await open(page, '/angry/aggressive');
     const before = await entries(page);

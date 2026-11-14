@@ -155,7 +155,7 @@ describe('About page', () => {
   });
 
   test('it ends with the way back to the wheel', () => {
-    expect(html.trimEnd()).toMatch(/<a href="\.\/">Back to the wheel<\/a><\/p>\s*<\/main>$/);
+    expect(html.trimEnd()).toMatch(/<a href="\/">Back to the wheel<\/a><\/p>\s*<\/main>$/);
   });
 
   test('the About head uses the About title', () => {

@@ -180,7 +180,7 @@ describe('methods and headers', () => {
     expect(res.headers.get('cache-control')).toBe('public, max-age=0, must-revalidate');
     expect(res.headers.get('content-type')).toBe('text/html; charset=utf-8');
     expect(res.headers.get('etag')).toBeNull();
-    expect(res.headers.get('content-length')).not.toBe(SHELL_HEADERS['content-length']);
+    expect(res.headers.get('content-length')).toBeNull();
   });
 });
 

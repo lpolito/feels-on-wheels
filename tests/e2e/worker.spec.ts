@@ -39,5 +39,15 @@ test.describe('with JavaScript off', () => {
     await expect(page.locator('#about h1')).toBeVisible();
     await expect(page.locator('#about h1')).toHaveText('Feels on Wheels');
     await expect(page.locator('#app')).toBeHidden();
+    // The noscript line is for the wheel; About works without JavaScript, so it doesn't show there. (Playwright's
+    // text locators skip <noscript>, so these find its paragraph by tag.)
+    await expect(page.locator('noscript p')).toHaveText(/needs JavaScript to draw the wheel/);
+    await expect(page.locator('noscript p')).toBeHidden();
+  });
+
+  test('/ shows the noscript line', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('noscript p')).toBeVisible();
+    await expect(page.locator('noscript p')).toHaveText(/needs JavaScript to draw the wheel/);
   });
 });

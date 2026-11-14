@@ -32,6 +32,8 @@ canvas { touch-action: none; }
 
 /* ── Views (URL redesign spec §3): the shell holds the wheel and About; <html data-route> picks one. ── */
 html[data-route="about"] #app, html:not([data-route="about"]) #about { display: none; }
+/* The noscript line says the wheel needs JavaScript; About works without it, so the line stays out of About. */
+html[data-route="about"] body > noscript { display: none; }
 
 /* The About view (going-public spec §8.1): one readable column in the app's tokens and font. */
 html[data-route="about"] body { -webkit-text-size-adjust: 100%; }

@@ -1,5 +1,8 @@
 /// <reference lib="webworker" />
 // Offline support (spec §6.5). __PRECACHE__ and __VERSION__ are injected by build/sw-plugin.ts.
+// A new worker takes over as soon as it's installed: it skips waiting once its precache is complete and claims open
+// pages once the old caches are gone, so the next page load is served by the new deploy. Taking over at once matters
+// because an older worker's shell can't load nested paths like /happy/playful (its relative asset links 404 there).
 import { canonicalPage, navigationResponse, navigationUrls, precacheResponse } from './strategy';
 
 declare const self: ServiceWorkerGlobalScope;
@@ -16,13 +19,18 @@ self.addEventListener('install', (event) => {
       const responses = await Promise.all(PRECACHE.map((url) => precacheResponse(url, fetch)));
       const cache = await caches.open(CACHE);
       await Promise.all(PRECACHE.map((url, i) => cache.put(url, responses[i]!)));
+      await self.skipWaiting();
     })(),
   );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((k) => k.startsWith('fw-') && k !== CACHE).map((k) => caches.delete(k)))),
+    (async () => {
+      const keys = await caches.keys();
+      await Promise.all(keys.filter((k) => k.startsWith('fw-') && k !== CACHE).map((k) => caches.delete(k)));
+      await self.clients.claim();
+    })(),
   );
 });
 

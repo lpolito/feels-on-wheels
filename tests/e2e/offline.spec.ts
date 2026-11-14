@@ -49,6 +49,37 @@ test('a word\'s path and a made-up path load offline after the first visit (URL 
   await context.setOffline(false);
 });
 
+test('the worker\'s shell at /about is About before the app runs, so the wheel never paints first', async ({ page, context, browserName }) => {
+  test.skip(browserName === 'webkit', 'Playwright WebKit does not support service worker offline emulation');
+  await installed(page);
+  // Offline, so the page is the worker's cached shell (data-route="wheel"), not the Worker's About page. The document
+  // is "interactive" once parsed, before module scripts run.
+  await context.setOffline(true);
+  await page.addInitScript(() => {
+    document.addEventListener('readystatechange', () => {
+      if (document.readyState === 'interactive') (window as unknown as { routeAtParse?: string }).routeAtParse = document.documentElement.dataset.route;
+    });
+  });
+  await page.goto('/about');
+  expect(await page.evaluate(() => (window as unknown as { routeAtParse?: string }).routeAtParse)).toBe('about');
+  await context.setOffline(false);
+});
+
+test('after the first visit, opening a file that is not a page shows that file, not the app', async ({ page, context, browserName }) => {
+  test.skip(browserName === 'webkit', 'Playwright WebKit does not support service worker offline emulation');
+  await installed(page);
+  await context.setOffline(true);
+  await page.goto('/robots.txt');
+  await expect(page.locator('body')).toContainText('User-agent');
+  await expect(page.locator('#app')).toHaveCount(0);
+  await context.setOffline(false);
+});
+
+test('a newly installed worker takes over the open page without waiting for a reload', async ({ page }) => {
+  await page.goto('/');
+  await page.waitForFunction(() => navigator.serviceWorker.controller !== null);
+});
+
 test('after the first visit, /about.html and /about/ redirect to /about (Cloudflare redirects them too)', async ({ page }) => {
   await page.goto('/');
   await page.evaluate(async () => {

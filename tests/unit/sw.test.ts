@@ -23,12 +23,24 @@ describe('service worker navigation strategy', () => {
 
   const site = { match: vi.fn(async (url: string) => (url === 'https://x/' ? new Response('shell') : undefined)) };
 
-  test('every navigation, About and unknown paths included, gets the shell (URL redesign spec §7, §8)', async () => {
+  test('every page navigation, About and unknown paths included, gets the shell (URL redesign spec §7, §8)', async () => {
     const network = vi.fn(async () => new Response('net'));
-    for (const page of ['https://x/', 'https://x/about?ref=a#b', 'https://x/happy/playful', 'https://x/body/chest', 'https://x/nope']) {
+    for (const page of ['https://x/', 'https://x/?ref=a', 'https://x/about?ref=a#b', 'https://x/happy/playful', 'https://x/body/chest', 'https://x/nope']) {
       const urls = navigationUrls(page, 'https://x/');
-      expect(urls).toEqual(['https://x/']);
+      expect(urls[urls.length - 1]).toBe('https://x/');
       expect(await (await navigationResponse(site, urls, network)).text()).toBe('shell');
+    }
+    expect(network).not.toHaveBeenCalled();
+  });
+
+  test('a navigation to a precached file that is not a page gets that file, not the shell', async () => {
+    const files = { match: vi.fn(async (url: string) => (url === 'https://x/' ? new Response('shell') : url === 'https://x/robots.txt' ? new Response('robots') : undefined)) };
+    const network = vi.fn(async () => new Response('net'));
+    expect(navigationUrls('https://x/robots.txt?a=1#b', 'https://x/')).toEqual(['https://x/robots.txt', 'https://x/']);
+    expect(navigationUrls('https://x/?a=1', 'https://x/')).toEqual(['https://x/']);
+    expect(await (await navigationResponse(files, navigationUrls('https://x/robots.txt', 'https://x/'), network)).text()).toBe('robots');
+    for (const page of ['https://x/about', 'https://x/nope']) {
+      expect(await (await navigationResponse(files, navigationUrls(page, 'https://x/'), network)).text()).toBe('shell');
     }
     expect(network).not.toHaveBeenCalled();
   });

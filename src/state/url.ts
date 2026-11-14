@@ -61,20 +61,20 @@ export function parsePath(table: RouteTable, pathname: string): { lang: string |
       return clip(last);
     }
   };
+  // Every check reads decoded segments, so `/%62ody` is `/body` just as `/%61bout` is `/about`; null marks one that's
+  // empty or doesn't decode to a single segment.
+  const decoded = raw.map((r) => (r === '' ? null : decode(r)));
   let lang: string | null = null;
-  let rest = raw;
-  if (raw.length > 0 && table.langs.includes(raw[0]!)) {
-    lang = raw[0]!;
-    rest = raw.slice(1);
+  let rest = decoded;
+  if (decoded[0] != null && table.langs.includes(decoded[0])) {
+    lang = decoded[0];
+    rest = decoded.slice(1);
   }
-  const named = rest[0] !== undefined && rest[0] !== table.first && table.wheels.has(rest[0]) ? rest[0] : null;
+  const head = rest[0];
+  const named = head != null && head !== table.first && table.wheels.has(head) ? head : null;
   const notFound = (): { lang: string | null; route: Route } => ({ lang, route: { kind: 'notFound', wheel: named ?? table.first, word: word() } });
-  const segs: string[] = [];
-  for (const r of rest) {
-    const d = r === '' ? null : decode(r);
-    if (d === null) return notFound();
-    segs.push(d);
-  }
+  if (rest.includes(null)) return notFound();
+  const segs = rest as string[];
   if (segs.length === 0) return { lang, route: { kind: 'wheel', wheel: table.first, path: null } };
   if (segs.length === 1 && segs[0] === 'about') return { lang, route: { kind: 'about' } };
   if (named !== null) {

@@ -36,6 +36,15 @@ describe('paths', () => {
     const long = parsePath(table, `/${'x'.repeat(500)}`).route as { word: string };
     expect(long.word).toBe(`${'x'.repeat(WORD_MAX)}…`);
   });
+  test('segments are decoded before the wheel-name and About checks, so an escaped name means the same', () => {
+    expect(parsePath(table, '/%62ody').route).toEqual(parsePath(table, '/body').route);
+    expect(parsePath(table, '/%62ody').route).toEqual({ kind: 'wheel', wheel: 'body', path: null });
+    expect(parsePath(table, '/%62ody/chest/tight-chest').route).toEqual({ kind: 'wheel', wheel: 'body', path: 'chest/tight-chest' });
+    expect(parsePath(table, '/%62ody/chest/tight-chst').route).toEqual({ kind: 'notFound', wheel: 'body', word: 'tight-chst' });
+    expect(parsePath(table, '/%61bout').route).toEqual({ kind: 'about' });
+    expect(parsePath(table, '/%63ore/happy').route.kind).toBe('notFound');
+    expect(parsePath(routeTable(wheels, ['es']), '/%65s/about')).toEqual({ lang: 'es', route: { kind: 'about' } });
+  });
   test('a known language prefix is stripped; English is never prefixed (§9)', () => {
     const t2 = routeTable(wheels, ['es']);
     expect(parsePath(t2, '/es/happy')).toEqual({ lang: 'es', route: { kind: 'wheel', wheel: 'core', path: 'happy' } });

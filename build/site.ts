@@ -110,8 +110,6 @@ export function aboutLinks(site: SiteConfig): Record<string, string> {
   return {
     github: site.repo,
     accessibility: `${site.repo}/blob/main/ACCESSIBILITY.md`,
-    repo: site.repo,
-    license: `${site.repo}/blob/main/LICENSE`,
     contributing: `${site.repo}/blob/main/CONTRIBUTING.md`,
     author: site.author.url,
     home: '/',

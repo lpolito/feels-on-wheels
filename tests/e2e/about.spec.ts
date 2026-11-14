@@ -77,6 +77,17 @@ test('Made by links the repo with the GitHub icon, named for screen readers, wit
   await expect(backToWheel(page)).toHaveAccessibleName('Back to the wheel');
 });
 
+test('the chevron sits on the same line as "Back to the wheel"', async ({ page }) => {
+  await page.goto('/about');
+  await expect(aboutHeading(page)).toBeVisible();
+  const chevron = (await backToWheel(page).locator('svg').boundingBox())!;
+  const text = (await page.locator('#about .about-back').boundingBox())!;
+  // One line of text is under 2rem tall; a chevron on its own line makes the paragraph two.
+  expect(text.height).toBeLessThan(32);
+  expect(chevron.y).toBeGreaterThanOrEqual(text.y);
+  expect(chevron.y + chevron.height).toBeLessThanOrEqual(text.y + text.height);
+});
+
 test('a fresh load of /about: "Back to the wheel" goes to /', async ({ page }) => {
   await page.goto('/about');
   await page.waitForFunction(() => window.__fw !== undefined);

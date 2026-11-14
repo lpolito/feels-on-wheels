@@ -64,7 +64,7 @@ html[data-route="about"] body { -webkit-text-size-adjust: 100%; }
   text-decoration: none;
 }
 #about .about-icon svg { width: 1.25em; height: 1.25em; }
-#about .about-chevron { width: 0.45em; height: 0.7em; margin-right: 0.4em; vertical-align: 0; }
+#about .about-chevron { display: inline; width: 0.45em; height: 0.7em; margin-right: 0.4em; vertical-align: 0; }
 
 /* ── Layout (spec §6.1) ─────────────────────────────────────────────── */
 #app {

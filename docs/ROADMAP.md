@@ -22,6 +22,7 @@ Each change is used before the next one is designed. When Lucas picks an idea to
 | Going public, step 1: shareable | Shipped 2026-11-09 | [spec](superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md), [plan](superpowers/plans/2026-11-09-feels-on-wheels-going-public.md) |
 | Going public: Cloudflare, feelsonwheels.app and About at `/about` | Shipped 2026-11-13 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-cloudflare-domain.md), [changes](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-changes.md) |
 | URLs: real paths, a small router, and a Worker for first visits | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-urls-routing.md), [changes](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-changes.md) |
+| About page rework: why it exists, install steps, the GitHub icon and fixed credit links | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-design.md), [plan](superpowers/plans/2026-11-14-feels-on-wheels-about-rework.md) |
 
 ## Ideas
 
@@ -42,7 +43,6 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Share button](#share-button) | The toolbar, sharing and installing | Idea |
 | [Help adding it to the home screen](#help-adding-it-to-the-home-screen) | The toolbar, sharing and installing | Idea |
 | [A dark home-screen icon](#a-dark-home-screen-icon) | The toolbar, sharing and installing | Idea |
-| [About page rework](#about-page-rework) | [The About page](#the-about-page) | Designed ([spec](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-design.md)) |
 | [A new social preview image](#a-new-social-preview-image) | [The social preview](#the-social-preview) | Idea |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
@@ -148,6 +148,7 @@ These all compete for the same few places (the toolbar, the start message, the A
 
 - Lucas's idea, 2026-11-12: move the About link from the toolbar into the start message ("the message", v2.2), to free up room and so the phone's toolbar buttons never change place or order. Today on phones About gives way to Start over while a word is selected (going-public spec).
 - The freed toolbar slot could hold the [share button](#share-button).
+- More people would arrive at About from the start, so the way back to the wheel matters more. About has "‹ Back to the wheel" at its end; a floating back button was considered and dropped for now (2026-11-14).
 - To decide when designing: how to reach About once the start message is gone (after the first word is opened), since the toolbar link is the only other way; and whether the noscript message's About link changes.
 
 #### Share button
@@ -161,7 +162,7 @@ These all compete for the same few places (the toolbar, the start message, the A
 #### Help adding it to the home screen
 
 - Lucas's idea, 2026-11-12: Add to Home Screen is buried on iOS, so make it easier, with instructions or a link to how.
-- Today the About page has one sentence on it ("Private and offline").
+- Today the About page has one sentence on it, in its "Install it" section (`/about#install`).
 - What's possible: Safari on iOS has no install prompt a page can trigger, so there it can only be instructions (Share, then Add to Home Screen). Chrome and Edge on Android and desktop fire `beforeinstallprompt`, so there it can be a real Install button.
 - To decide when designing: where it shows (About, the start message, a one-time hint), how to tell it's already installed (`display-mode: standalone`) so it doesn't nag. Installs at the old github.io address didn't carry over to feelsonwheels.app.
 
@@ -170,30 +171,6 @@ These all compete for the same few places (the toolbar, the start message, the A
 - Lucas's idea, 2026-11-12: an icon that's dark when the phone is in dark mode.
 - To research when designing; nothing is checked yet. As far as known, there's no standard way for a web app to give its home-screen icon a dark version: the manifest's icons and `apple-touch-icon` take one image each. What might come close: newer iOS can darken or tint home-screen icons itself, and Android can draw a themed icon from a `monochrome` icon in the manifest. The browser-tab icon (`icon.svg`) can already follow dark mode with a media query inside the SVG.
 - Today the manifest's `theme_color` and `background_color` are both white (`build/site.ts`).
-
-### The About page
-
-#### About page rework
-
-**Designed 2026-11-14:** [spec](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-design.md). The notes below led to it.
-
-**What's on the page** (Lucas, 2026-11-13): make it friendlier by keeping only what a visitor cares about.
-
-- **Keep:** what it's for, how to use it, the credits, Made by, and Help translate.
-- **Keep the install steps** from "Private and offline" (install from the browser's menu, or Add to Home Screen on an iPhone or iPad): installing isn't discoverable, and it's a nice thing to find.
-- **Drop:** the "Source and license" section, and the rest of "Private and offline" ("who cares"). What they say stays in the README, where it belongs (its License section, and the Private and Offline bullets). Nothing about AI on the page: the "Made with AI, with love" headline from 2026-11-12 went in the README instead (2026-11-13), as the heading of its section on how the app was built (2026-11-14).
-- **Link the GitHub repo with a small GitHub icon,** likely in Made by, in place of the source section's link.
-- To decide when designing: where the install steps go once their section is gone ("How to use it", or their own short section), and how they meet [help adding it to the home screen](#help-adding-it-to-the-home-screen); and the icon's accessible name, since it's a link with no visible text.
-
-Lucas's ideas, 2026-11-12:
-
-- **Why it exists,** in Lucas's words (a draft to edit before it goes on the page): the original feelings wheel helped immensely in his own therapy. He had a hard time identifying his emotions and thought he was incapable of it. After a lot of work and mindfulness, and having actual words for the emotions, he was able to. He used to look at [feelingswheel.com](reference/core-feelings-wheel.md#the-reference-site) almost daily, and wanted to make an accessible, beautiful, fast and versatile version for others to enjoy.
-- **A dedication** to A, E and M. Where it goes is open.
-- **The credit links feel off.** Each source's author name links to the work, and Roberts's link goes to an imgur post whose image is gone ([known issue](#the-about-page-1)). To decide: what to link (the work, its title, or the [reference notes](reference/README.md)), and whether to use the archive.org copy already in [core-feelings-wheel.md](reference/core-feelings-wheel.md).
-- **A left chevron** on "Back to the wheel". (A floating back button was considered and dropped for now, 2026-11-14.)
-- **Say no more than has been tested.** "How to use it" says "Everything works with a keyboard and with a screen reader", but no screen reader has been tried by hand yet ([ACCESSIBILITY.md](../ACCESSIBILITY.md#supported-environments), 2026-11-12). Soften it, or link ACCESSIBILITY.md, until one has.
-- With [About in the start message](#about-in-the-start-message), more people arrive at About from the start, so the way back matters more.
-- Worth doing before [launching](#before-launching).
 
 ### The social preview
 
@@ -260,10 +237,6 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 - **Going back on phones.** Swiping back doesn't work at all on the wheel: it takes every touch, so the browser's Back button is the only way back. An app installed to the iPhone home screen has no Back at all. Lucas (2026-11-14): better history rules for phones wait on an in-app back button. History follows the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md): picking a word or a place adds an entry, moving by direction replaces it. Related: [return to the word you jumped from](#return-to-the-word-you-jumped-from).
 - **Keyboard selection on the phone's half-wheel.** Choosing a word by keyboard or the accessible tree can select one on the hidden left half without turning the wheel to show it. Lucas wants to try it before deciding whether the wheel should turn to show it.
 
-### The About page
-
-- **Roberts's credit link shows nothing.** Found 2026-11-12: the imgur post's image now redirects to imgur's "removed" picture (checked 2026-11-12), so the credit links to an empty post. [core-feelings-wheel.md](reference/core-feelings-wheel.md) still says it was online on 2026-11-09 and has an archive.org copy; update the note when the link is fixed. Part of the [About page rework](#about-page-rework).
-
 ### Code and tests
 
 - **The perf leak check is flaky.** `tests/perf/switch.spec.ts` sometimes counts 3 live wheels instead of 2 after 20 switches: about 1 run in 10, on main before v2.1 too, so it's garbage-collection timing rather than a leak. Worth a sturdier check (more GC turns, or a retry) before trusting a failure.
@@ -281,7 +254,7 @@ The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens
   - Decide first whether the `workers.dev` address and the preview links should say `noindex` once the domain is indexable, since they serve the same pages.
 - **Optional, after letting search engines in:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
 - **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, gray like the site's other icons; on hover it takes the wheel's seven colors and spins once, settling.
-- **Known issues and ideas:** decide which to finish before announcing it. The [About page rework](#about-page-rework), [share button](#share-button) and [help adding it to the home screen](#help-adding-it-to-the-home-screen) are the ones a first visitor would notice. Lucas wants [a new social preview image](#a-new-social-preview-image) and tagline before launching (2026-11-14).
+- **Known issues and ideas:** decide which to finish before announcing it. The [share button](#share-button) and [help adding it to the home screen](#help-adding-it-to-the-home-screen) are the ones a first visitor would notice. Lucas wants [a new social preview image](#a-new-social-preview-image) and tagline before launching (2026-11-14).
 
 ## Content rules
 

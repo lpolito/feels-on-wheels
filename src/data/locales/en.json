@@ -650,15 +650,30 @@
           "heading": "How to use it",
           "body": [
             "Tap or click a feeling to narrow it down, and spin the wheel to see more. Open a word to read what it means and what you might notice in your body.",
-            "Switch between the two wheels at the top. Everything works with a keyboard and with a screen reader."
+            "Switch between the two wheels at the top. Everything works with a keyboard, and it's built for screen readers. [Read about its accessibility]({accessibility})."
           ]
         },
         {
-          "id": "private",
-          "heading": "Private and offline",
+          "id": "install",
+          "heading": "Install it",
           "body": [
-            "There are no accounts and no tracking. Nothing you choose leaves your device.",
-            "Once you've visited, it works offline. To keep it handy, install it from your browser's menu, or use Add to Home Screen on an iPhone or iPad."
+            "To keep it handy, install it from your browser's menu, or use Add to Home Screen on an iPhone or iPad."
+          ]
+        },
+        {
+          "id": "why",
+          "heading": "Why it exists",
+          "body": [
+            "I always had trouble identifying my emotions. For much of my life they only came out as anger, or I couldn't feel very much at all. Through therapy, journaling, and checking in with myself daily, I came to lean on a feelings wheel to sort out the words for my deeper feelings.",
+            "I wanted to make a version that's accessible, beautiful, fast, and versatile, for anyone else who needs help finding the words for how they feel. I hope it helps.",
+            "For A, E, and M."
+          ]
+        },
+        {
+          "id": "made-by",
+          "heading": "Made by",
+          "body": [
+            "[Lucas Polito]({author}) [Feels on Wheels on GitHub]({github})"
           ]
         },
         {
@@ -668,24 +683,10 @@
             "Feelings wheels have a long history. This one draws on the work below. Its definitions and sensations are written in its own words."
           ],
           "items": [
-            "[Gloria Willcox](https://doi.org/10.1177/036215378201200411), “The Feeling Wheel”, Transactional Analysis Journal, 1982: the original feelings wheel.",
-            "[Geoffrey Roberts](https://imgur.com/tCWChf6), “The Feel Wheel”, 2015: the seven core feelings and the words this feelings wheel is based on.",
-            "[Lindsay Braman](https://lindsaybraman.com/emotion-sensation-feeling-wheel/), “Emotion-Sensation Wheel”, 2020: the idea of a feelings wheel that includes body sensations. This one turns hers inside out, starting from the body.",
+            "Gloria Willcox, “[The Feeling Wheel](https://doi.org/10.1177/036215378201200411)”, Transactional Analysis Journal, 1982: the original feelings wheel.",
+            "Geoffrey Roberts, “[The Feel Wheel](https://web.archive.org/web/20180505024944/https://imgur.com/tCWChf6)”, 2015: the seven core feelings and the words this feelings wheel is based on.",
+            "Lindsay Braman, “[Emotion-Sensation Wheel](https://lindsaybraman.com/emotion-sensation-feeling-wheel/)”, 2020: the idea of a feelings wheel that includes body sensations. This one turns hers inside out, starting from the body.",
             "[feelingswheel.com](https://feelingswheel.com/): the interactive feelings wheel whose tap-to-trace idea inspired this one."
-          ]
-        },
-        {
-          "id": "made-by",
-          "heading": "Made by",
-          "body": [
-            "[Lucas Polito]({author}). The ideas and every design decision are his. The code was written with AI ([Claude Code](https://claude.com/claude-code) and the [Superpowers](https://github.com/obra/superpowers) plugin), as an experiment in how quickly and how completely an app can be built that way, with a person deciding what makes it good to use."
-          ]
-        },
-        {
-          "id": "source",
-          "heading": "Source and license",
-          "body": [
-            "The [source code is on GitHub]({repo}). It's source-available, not open source: you're welcome to read, copy, change and translate it for anything non-commercial, as long as you give credit. Selling it, running ads on a copy or making a paid app from it isn't allowed. [Read the license]({license})."
           ]
         },
         {

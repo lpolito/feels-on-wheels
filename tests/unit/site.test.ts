@@ -135,8 +135,6 @@ describe('About page', () => {
     expect(links).toEqual({
       github: 'https://github.com/lpolito/feels-on-wheels',
       accessibility: 'https://github.com/lpolito/feels-on-wheels/blob/main/ACCESSIBILITY.md',
-      repo: 'https://github.com/lpolito/feels-on-wheels',
-      license: 'https://github.com/lpolito/feels-on-wheels/blob/main/LICENSE',
       contributing: 'https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md',
       author: 'https://lucaspolito.dev/',
       home: '/',
@@ -175,7 +173,42 @@ describe('About page', () => {
   test('one h1, then the sections in order', () => {
     expect(html.match(/<h1[ >]/g)?.length).toBe(1);
     const ids = [...html.matchAll(/<section id="([^"]+)">\s*<h2>/g)].map((m) => m[1]);
-    expect(ids).toEqual(['what', 'how', 'private', 'credits', 'made-by', 'source', 'translate']);
+    expect(ids).toEqual(['what', 'how', 'install', 'why', 'made-by', 'credits', 'translate']);
+  });
+
+  const section = (id: string): string => new RegExp(`<section id="${id}">([\\s\\S]*?)</section>`).exec(html)![1]!;
+
+  test('nothing about AI', () => {
+    expect(html).not.toMatch(/Claude|Superpowers|\bAI\b/);
+  });
+
+  test('credits link each work by its title, and Roberts by the archive.org copy', () => {
+    const items = section('credits').match(/<li>[\s\S]*?<\/li>/g) ?? [];
+    for (const li of items) {
+      if (li.startsWith('<li><a ')) expect(li).toContain('feelingswheel.com');
+      else expect(li).toContain('“<a href="https://');
+    }
+    expect(html).not.toContain('href="https://imgur.com');
+    expect(html).toContain('href="https://web.archive.org/web/20180505024944/https://imgur.com/tCWChf6"');
+  });
+
+  test('why it exists ends with the dedication, in its own paragraph', () => {
+    const why = section('why');
+    expect(why.match(/<p>[\s\S]*?<\/p>/g)!.at(-1)).toBe('<p>For A, E, and M.</p>');
+    expect(why).toContain('accessible, beautiful, fast, and versatile');
+  });
+
+  test('Made by is the name and the GitHub icon', () => {
+    const madeBy = section('made-by');
+    expect(madeBy).toContain('<a href="https://lucaspolito.dev/">Lucas Polito</a>');
+    expect(madeBy).toContain('aria-label="Feels on Wheels on GitHub"');
+  });
+
+  test('how to use it claims no more than was tested', () => {
+    const how = section('how');
+    expect(how).toContain('built for screen readers');
+    expect(how).toContain('href="https://github.com/lpolito/feels-on-wheels/blob/main/ACCESSIBILITY.md"');
+    expect(how).not.toContain('with a screen reader.');
   });
 
   test('every credit links to its source', () => {

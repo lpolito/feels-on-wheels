@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 test('offline reload works after the first visit', async ({ page, context, browserName }) => {
   test.skip(browserName === 'webkit', 'Playwright WebKit does not support service worker offline emulation');
@@ -15,16 +15,37 @@ test('offline reload works after the first visit', async ({ page, context, brows
   await context.setOffline(false);
 });
 
-test('About loads offline after the first visit (Review Focus 4)', async ({ page, context, browserName }) => {
-  test.skip(browserName === 'webkit', 'Playwright WebKit does not support service worker offline emulation');
+/** Visits once and reloads, so the service worker has cached the shell and controls the page. */
+async function installed(page: Page): Promise<void> {
   await page.goto('/');
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
   });
   await page.reload();
+}
+
+test('About loads offline after the first visit (Review Focus 4)', async ({ page, context, browserName }) => {
+  test.skip(browserName === 'webkit', 'Playwright WebKit does not support service worker offline emulation');
+  await installed(page);
   await context.setOffline(true);
   await page.goto('/about?ref=x');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Feels on Wheels');
+  await expect(page.locator('#about h1')).toBeVisible();
+  await expect(page.locator('#about h1')).toHaveText('Feels on Wheels');
+  await expect(page.locator('#app')).toBeHidden();
+  await context.setOffline(false);
+});
+
+test('a word\'s path and a made-up path load offline after the first visit (URL redesign spec §7)', async ({ page, context, browserName }) => {
+  test.skip(browserName === 'webkit', 'Playwright WebKit does not support service worker offline emulation');
+  await installed(page);
+  await context.setOffline(true);
+  await page.goto('/happy/playful');
+  await page.waitForFunction(() => window.__fw !== undefined);
+  await expect(page.locator('fw-card .fw-card-title')).toHaveText('Playful');
+  await page.goto('/nope');
+  await page.waitForFunction(() => window.__fw !== undefined);
+  await expect(page.locator('fw-hint[data-variant="not-found"]')).toBeVisible();
+  await expect(page.locator('fw-hint .fw-hint-title')).toHaveText('Feeling not found!');
   await context.setOffline(false);
 });
 

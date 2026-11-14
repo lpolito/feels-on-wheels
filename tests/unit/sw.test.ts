@@ -21,26 +21,16 @@ describe('service worker navigation strategy', () => {
     expect(offline.type).toBe('error');
   });
 
-  const pages: Record<string, string> = { 'https://x/': 'wheel', 'https://x/about': 'about' };
-  const site = { match: vi.fn(async (url: string) => (pages[url] ? new Response(pages[url]) : undefined)) };
+  const site = { match: vi.fn(async (url: string) => (url === 'https://x/' ? new Response('shell') : undefined)) };
 
-  test('a precached page is served for its own navigation', async () => {
+  test('every navigation, About and unknown paths included, gets the shell (URL redesign spec §7, §8)', async () => {
     const network = vi.fn(async () => new Response('net'));
-    const res = await navigationResponse(site, ['https://x/about', 'https://x/'], network);
-    expect(await res.text()).toBe('about');
+    for (const page of ['https://x/', 'https://x/about?ref=a#b', 'https://x/happy/playful', 'https://x/body/chest', 'https://x/nope']) {
+      const urls = navigationUrls(page, 'https://x/');
+      expect(urls).toEqual(['https://x/']);
+      expect(await (await navigationResponse(site, urls, network)).text()).toBe('shell');
+    }
     expect(network).not.toHaveBeenCalled();
-  });
-
-  test('an unknown page falls back to the index', async () => {
-    const network = vi.fn(async () => new Response('net'));
-    const res = await navigationResponse(site, ['https://x/nope', 'https://x/'], network);
-    expect(await res.text()).toBe('wheel');
-    expect(network).not.toHaveBeenCalled();
-  });
-
-  test('navigationUrls strips search and hash, then falls back to the index', () => {
-    expect(navigationUrls('https://x/about?ref=a#b', 'https://x/')).toEqual(['https://x/about', 'https://x/']);
-    expect(navigationUrls('https://x/', 'https://x/')).toEqual(['https://x/', 'https://x/']);
   });
 });
 
@@ -57,9 +47,11 @@ describe('precache manifest', () => {
     expect(m.files).toEqual(['./', './assets/index-abc.js', './icons/icon.svg']);
   });
 
-  test('lists pages by their address: the shell as ./ and About as ./about, never their .html names', () => {
-    const m = precacheManifest([...files, { path: 'about.html', content: '<html>about</html>' }]);
-    expect(m.files).toEqual(['./', './about', './assets/index-abc.js', './icons/icon.svg']);
+  test('the shell is ./ and no page address is precached: About is part of the shell now', () => {
+    const m = precacheManifest(files);
+    expect(m.files[0]).toBe('./');
+    expect(m.files).not.toContain('./about');
+    expect(m.files).not.toContain('./index.html');
   });
 
   test('the version changes when any file content changes, even with identical names', () => {

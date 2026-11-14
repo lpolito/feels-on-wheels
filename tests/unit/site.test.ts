@@ -154,6 +154,11 @@ describe('About page', () => {
     expect(html).not.toMatch(/<(p|li)>\s*<\/\1>/);
   });
 
+  test('it is the About view: its id, and a heading that takes focus from script (URL redesign spec §3)', () => {
+    expect(html.startsWith('<main class="about" id="about">')).toBe(true);
+    expect(html).toMatch(/<h1 tabindex="-1">Feels on Wheels<\/h1>/);
+  });
+
   test('it ends with the way back to the wheel', () => {
     expect(html.trimEnd()).toMatch(/<a href="\/">Back to the wheel<\/a><\/p>\s*<\/main>$/);
   });

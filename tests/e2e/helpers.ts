@@ -32,3 +32,21 @@ export async function expectTitle(page: Page, text: string): Promise<void> {
 export async function settled(page: Page): Promise<void> {
   await page.waitForFunction(() => !document.getAnimations().some((a) => a instanceof CSSTransition));
 }
+
+/**
+ * On phones, About gives way to Start over while a word is selected (about.spec.ts). Turning a portrait phone
+ * sideways keeps both, so a test can open About from a selected word on every project.
+ */
+export async function sideways(page: Page): Promise<void> {
+  const vp = page.viewportSize();
+  if (vp && vp.width < 480) await page.setViewportSize({ width: vp.height, height: vp.width });
+}
+
+export const aboutLink = (page: Page) => page.locator('fw-toolbar .fw-about');
+export const backToWheel = (page: Page) => page.locator('#about .about-back a');
+export const aboutHeading = (page: Page) => page.locator('#about h1');
+/** The element with focus, as a short description ("BODY", "H1", "A.fw-about"). */
+export const focused = (page: Page) => page.evaluate(() => {
+  const el = document.activeElement;
+  return el ? `${el.tagName}${el.classList.length ? `.${[...el.classList].join('.')}` : ''}` : 'none';
+});

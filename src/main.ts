@@ -9,6 +9,7 @@ import { keyTarget, routeKey } from './input/route';
 import { TAU, drawWidthOf, normAngle, overDisc, type Viewport } from './model/geometry';
 import { buildLayout, homes, litMask, type Layout, type Path } from './model/layout';
 import { routeMeta } from './meta';
+import { inAppLink } from './router';
 import { buildFillTable, inkFor, readPalette } from './render/colors';
 import { createSpriteCache } from './render/sprites';
 import { createWheelRenderer, labelFont, type WheelRenderer } from './render/wheel';
@@ -45,6 +46,7 @@ const layoutFor = (id: string): Layout =>
 /** Every real path (URL redesign spec §1); the same table the build and the Worker use. */
 const table = routeTable(data.wheels);
 
+const root = document.documentElement;
 const app = $<HTMLElement>('#app');
 const stage = $<HTMLElement>('#stage');
 const float = $<HTMLElement>('#float');
@@ -84,6 +86,10 @@ let lit!: Uint8Array;
 let prevLit!: Uint8Array;
 let fadeStart = -Infinity;
 let pulseStart = -Infinity;
+/** URL redesign spec §3: About is showing. The wheel is hidden as it was, keeps its state and doesn't draw. */
+let onAbout = false;
+/** The wheel was mounted while About hid it (a first load at /about), so it measured nothing. */
+let mountedHidden = false;
 
 /** Spec v2.2 §3.2: in the sideways layout the camera's aim width ends this far left of the card. */
 const CARD_GAP_REM = 1.5;
@@ -121,6 +127,7 @@ const drawTimes: number[] = [];
 
 function frame(): void {
   pendingDraw = 0;
+  if (onAbout) return;
   const s = store.get();
   const now = performance.now();
   const fadeT = reducedMotion.matches ? 1 : Math.min(1, (now - fadeStart) / FADE_MS);
@@ -185,7 +192,8 @@ app.addEventListener('fw-focus-lost', () => tree.focusSelected());
 // Spec v1.2 §3.6: keys work from the page, the wheel and the card's and toolbar's buttons. Buttons keep Enter and
 // Space; inputs, selects and textareas keep everything but Escape.
 document.addEventListener('keydown', (e) => {
-  if (e.defaultPrevented) return;
+  // On About the keys are the page's (scrolling, links), not the hidden wheel's.
+  if (e.defaultPrevented || onAbout) return;
   const action = routeKey(e.key, keyTarget(e.target as Element | null), e.metaKey || e.ctrlKey || e.altKey);
   if (!action) return;
   e.preventDefault();
@@ -275,15 +283,15 @@ function renderUi(s: State): void {
 // ── URL & history (URL redesign spec §1, §4, §6) ──────────────────────────
 const writer = createHistoryWriter(history, () => performance.now());
 const routeOf = (s: State): Extract<Route, { kind: 'wheel' }> => ({ kind: 'wheel', wheel: layout.wheelId, path: pathOf(layout, s) });
+const urlFor = (s: State): string => formatRoute(table, routeOf(s));
 const showTitle = (route: Route): void => {
   document.title = routeMeta(route, table, data.locale).title;
 };
 
 /** Writes the mounted wheel's URL for `s` (dropping any query) and its title. */
 function writeUrl(how: 'push' | 'replace', s: State): void {
-  const route = routeOf(s);
-  writer[how](formatRoute(table, route));
-  showTitle(route);
+  writer[how](urlFor(s));
+  showTitle(routeOf(s));
 }
 
 function onState(s: State, prev: State, a: Action): void {
@@ -301,7 +309,8 @@ function onState(s: State, prev: State, a: Action): void {
   renderUi(s);
   placeOpened(s);
   requestDraw();
-  if (historyOp(prev, s, a) === 'replace' || leftNotFound) writeUrl('replace', s);
+  // Hidden behind About, the wheel never rewrites About's entry.
+  if (!onAbout && (historyOp(prev, s, a) === 'replace' || leftNotFound)) writeUrl('replace', s);
 }
 
 // ── Mounting a wheel (spec v2 §4.2) ──────────────────────────────────────
@@ -323,6 +332,7 @@ function mount(next: Layout, initial: State, intro: boolean): void {
   camera?.stop();
   unsubscribe();
   layout = next;
+  mountedHidden = onAbout;
   jump = layout.wheelId === firstId ? undefined : { wheel: firstId, home };
   ({ vp, opts } = measure());
   store = createStore(layout, initial);
@@ -357,15 +367,62 @@ function mount(next: Layout, initial: State, intro: boolean): void {
   drawNow();
   if (TEST) live.push(new WeakRef(layout), new WeakRef(store));}
 
-// ── Routes (URL redesign spec §2) ────────────────────────────────────────
+// ── Routes (URL redesign spec §2, §3) ────────────────────────────────────
+const aboutHeading = $<HTMLElement>('#about h1');
+const backLink = $<HTMLAnchorElement>('#about .about-back a');
+/** About's history entry says it was opened from inside the app, so "Back to the wheel" can be a Back (spec §3). */
+const IN_APP = { fwInApp: true };
+/** The control that opened About; it gets focus back when About closes (WCAG 2.4.3). */
+let opener: HTMLElement | null = null;
+
+/**
+ * About (spec §3): the wheel hides as it is, with any spin landed first so its URL is final, and the back link
+ * points at it. Focus goes to the heading unless this is the first load.
+ */
+function showAbout(how: 'push' | 'replace' | 'none', from?: Element): void {
+  const firstLoad = layout === undefined;
+  const entering = !onAbout;
+  if (entering && !firstLoad) {
+    controller.setViewport(vp, opts);
+    camera.stop();
+    const active = from ?? document.activeElement;
+    opener = active instanceof HTMLElement && app.contains(active) ? active : null;
+  }
+  onAbout = true;
+  root.dataset['route'] = 'about';
+  if (firstLoad) mount(layoutFor(firstId), initialState, false);
+  backLink.href = urlFor(store.get());
+  if (entering) {
+    scrollTo(0, 0);
+    if (!firstLoad) aboutHeading.focus();
+  }
+  const url = formatRoute(table, { kind: 'about' });
+  if (how === 'push') writer.push(url, IN_APP);
+  else if (how === 'replace') writer.replace(url);
+  showTitle({ kind: 'about' });
+}
+
 /**
  * The one place a route is shown: mounts its wheel when another is showing (playing the intro on a first load or a
  * switch to a wheel at rest), else restores the state on this wheel; then writes the URL (`how`) and the title.
- * Not found is its wheel at rest with the not-found message; About shows the first wheel at rest until Task 6.
+ * Not found is its wheel at rest with the not-found message, at the path as typed (`link.path` for a link).
  */
-function applyRoute(route: Route, how: 'push' | 'replace' | 'none'): void {
-  if (route.kind === 'about') route = { kind: 'wheel', wheel: firstId, path: null };
+function applyRoute(route: Route, how: 'push' | 'replace' | 'none', link?: { path: string; from: Element }): void {
+  if (route.kind === 'about') {
+    showAbout(how, link?.from);
+    return;
+  }
   const firstLoad = layout === undefined;
+  const leaving = onAbout;
+  if (leaving) {
+    onAbout = false;
+    root.dataset['route'] = 'wheel';
+    // Shown again at its size; mounted while hidden, it measured nothing, so it mounts again as it is.
+    if (route.wheel === layout.wheelId) {
+      if (mountedHidden) mount(layout, store.get(), false);
+      else remeasure(false);
+    }
+  }
   const wheelPath = route.kind === 'wheel' ? route.path : null;
   notFound = route.kind === 'notFound' ? { word: route.word } : null;
   if (firstLoad || route.wheel !== layout.wheelId) {
@@ -388,8 +445,32 @@ function applyRoute(route: Route, how: 'push' | 'replace' | 'none'): void {
     announce(`${t('notFoundTitle')} ${t('notFoundText', { word: notFound.word })} ${text.hint.replace('{link}', text.hintLink)}`);
   }
   if (how === 'none') showTitle(route);
-  else writeUrl(how, store.get());
+  else if (route.kind === 'wheel') writeUrl(how, store.get());
+  else {
+    writer[how](link?.path ?? location.pathname);
+    showTitle(route);
+  }
+  if (leaving) {
+    const back = opener;
+    opener = null;
+    back?.focus();
+    if (!back || document.activeElement !== back) tree.focusSelected();
+  }
 }
+
+/**
+ * Spec §2: a plain click on a same-origin link is shown in the app (the hint's link already handles its own). A link
+ * to the address already showing changes nothing, and "Back to the wheel" on an About opened in the app is a Back.
+ */
+document.addEventListener('click', (e) => {
+  const a = e.target instanceof Element ? e.target.closest('a[href]') : null;
+  if (!(a instanceof HTMLAnchorElement)) return;
+  const url = inAppLink(e, { href: a.href, target: a.target, download: a.hasAttribute('download') }, location.origin);
+  if (!url) return;
+  e.preventDefault();
+  if (a === backLink && (history.state as { fwInApp?: unknown } | null)?.fwInApp) history.back();
+  else if (url.pathname !== location.pathname) applyRoute(parsePath(table, url.pathname).route, 'push', { path: url.pathname, from: a });
+});
 
 /** Spec v2 §4.2: switching always starts fresh (or, from a jump link, opens that word) and pushes history (§4). */
 app.addEventListener('fw-wheel', (e) => {
@@ -415,6 +496,9 @@ attachGestures(canvas, (intents) => controller.handle(intents));
 
 /** `onlyIfChanged`: skip when the viewport and options measure the same (the card resizing as it unfolds). */
 function remeasure(onlyIfChanged: boolean): void {
+  // Hidden behind About, the stage measures 0: keep the last real size (spec §3).
+  const box = stage.getBoundingClientRect();
+  if (box.width === 0 || box.height === 0) return;
   const next = measure();
   if (onlyIfChanged && next.vp.width === vp.width && next.vp.height === vp.height && drawWidthOf(next.vp) === drawWidthOf(vp)
     && next.opts.remPx === opts.remPx && next.opts.portrait === opts.portrait && next.opts.rest === opts.rest

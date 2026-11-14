@@ -1,9 +1,8 @@
 /**
- * Navigation strategy (spec §6.5; going-public spec §8.5), kept pure for testing.
- * Serve the first page this worker cached at install among `candidates`: the navigated page itself if it was
- * precached (About), else the shell. Never write a newer page into this worker's cache: a newer page references
- * newer hashed assets that only the next worker's install caches, atomically. The browser checks sw.js for updates
- * on navigation, so new deploys still arrive (on next launch).
+ * Navigation strategy (spec §6.5; going-public spec §8.5; URL redesign spec §8), kept pure for testing.
+ * Serve the first page this worker cached at install among `candidates` (today only the shell). Never write a newer
+ * page into this worker's cache: a newer page references newer hashed assets that only the next worker's install
+ * caches, atomically. The browser checks sw.js for updates on navigation, so new deploys still arrive (on next launch).
  */
 export async function navigationResponse(
   cache: { match(req: string, options?: CacheQueryOptions): Promise<Response | undefined> },
@@ -40,12 +39,12 @@ export function canonicalPage(requestUrl: string, scope: string): string | null 
   return url.href;
 }
 
-/** The cache keys to try for a navigation: the page itself (without search or hash), then the shell. */
-export function navigationUrls(requestUrl: string, indexUrl: string): string[] {
-  const page = new URL(requestUrl);
-  page.search = '';
-  page.hash = '';
-  return [page.href, indexUrl];
+/**
+ * The cache keys to try for a navigation: the shell, for every page load in scope, real or not (URL redesign spec §7,
+ * §8). The app reads the path and shows the route or "not found", so the worker needs no copy of the route table.
+ */
+export function navigationUrls(_requestUrl: string, indexUrl: string): string[] {
+  return [indexUrl];
 }
 
 /**

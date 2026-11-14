@@ -4,12 +4,12 @@ import type { Plugin } from 'vite';
 import { site } from '../site.config.ts';
 import { loadData } from '../src/data/load.ts';
 import { allPaths, reservedClash, routeTable } from '../src/state/url.ts';
-import { aboutLinks, headTags, linkify, renderAbout, robotsTxt, sitemapXml, webManifest, type PageId, type PageStrings } from './site.ts';
+import { aboutLinks, headTags, linkify, renderAbout, robotsTxt, sitemapXml, webManifest, type PageStrings } from './site.ts';
 
 /**
- * Going-public spec §7–§8: fills each page's head (<!--site:head-->) and noscript text (<!--site:noscript-->) from
- * site.config.ts and en.json's `page` strings, and emits manifest.webmanifest, robots.txt and sitemap.xml.
- * en.json is re-read on every use so dev picks up edits.
+ * Going-public spec §7–§8: fills the shell's head (<!--site:head-->), noscript text (<!--site:noscript-->) and About
+ * view (<!--site:about-->, URL redesign spec §3) from site.config.ts and en.json's `page` strings, and emits
+ * manifest.webmanifest, robots.txt and sitemap.xml. en.json is re-read on every use so dev picks up edits.
  */
 export function sitePlugin(): Plugin {
   let root = process.cwd();
@@ -19,7 +19,6 @@ export function sitePlugin(): Plugin {
     const en = JSON.parse(readFileSync(join(root, 'src/data/locales/en.json'), 'utf8')) as { page: Omit<PageStrings, 'titles'>; titles: PageStrings['titles'] };
     return { ...en.page, titles: en.titles };
   };
-  const pageOf = (path: string): PageId => (path.split('?')[0]!.endsWith('/about.html') ? 'about' : 'index');
   const manifest = (): string => `${JSON.stringify(webManifest(strings()), null, 2)}\n`;
 
   return {
@@ -28,10 +27,10 @@ export function sitePlugin(): Plugin {
       root = config.root;
       outDir = join(config.root, config.build.outDir);
     },
-    transformIndexHtml(html, ctx) {
+    transformIndexHtml(html) {
       const s = strings();
       return html
-        .replace('<!--site:head-->', headTags(pageOf(ctx.path), site, s))
+        .replace('<!--site:head-->', headTags('index', site, s))
         .replace('<!--site:noscript-->', linkify(s.noscript, aboutLinks(site)))
         .replace('<!--site:about-->', renderAbout(s.about, site));
     },

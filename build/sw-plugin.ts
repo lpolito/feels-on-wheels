@@ -10,10 +10,10 @@ const SKIP = /(^|\/)(\.DS_Store|sw\.js)$|\.map$/;
 export interface BuiltFile { path: string; content: string | Uint8Array }
 
 /**
- * Pages are cached under the address they're served at, not their file name: Cloudflare redirects `about.html` to
- * `/about` and `index.html` to `/`, and a cached redirect can't answer a page load.
+ * Pages are cached under the address they're served at, not their file name: Cloudflare redirects `index.html` to
+ * `/`, and a cached redirect can't answer a page load. The shell is the one page (URL redesign spec §8); it's `./`.
  */
-const PAGE_ADDRESSES: Record<string, string | null> = { 'index.html': null, 'about.html': 'about' };
+const PAGE_ADDRESSES: Record<string, string | null> = { 'index.html': null };
 
 /** Precache list (relative to the worker's scope, root first) and a version derived from every file's content. */
 export function precacheManifest(files: BuiltFile[]): { files: string[]; version: string } {

@@ -51,6 +51,22 @@ describe('history writer', () => {
     expect(h.calls).toEqual(['push /angry', 'replace /sad', 'push /happy']);
   });
 
+  test('a push can carry entry state (About\'s { fwInApp: true }), and is then always its own entry', () => {
+    let now = 0;
+    const calls: unknown[] = [];
+    const h = {
+      pushState: (d: unknown, _t: string, url?: string | URL | null) => { calls.push(['push', url, d]); },
+      replaceState: (d: unknown, _t: string, url?: string | URL | null) => { calls.push(['replace', url, d]); },
+    };
+    const w = createHistoryWriter(h, () => now);
+    w.push('/body');
+    now += 10;
+    w.push('/about', { fwInApp: true });
+    now += 10;
+    w.push('/');
+    expect(calls).toEqual([['push', '/body', null], ['push', '/about', { fwInApp: true }], ['replace', '/', null]]);
+  });
+
   test('a throwing History API (Safari SecurityError) never throws out', () => {
     const throwing = {
       pushState: () => { throw new Error('SecurityError'); },

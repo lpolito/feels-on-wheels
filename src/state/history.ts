@@ -16,7 +16,11 @@ export function historyOp(prev: State, next: State, a: Action): 'replace' | 'non
 const COALESCE_MS = 250;
 
 export interface HistoryWriter {
-  push(url: string): void;
+  /**
+   * `state` is the entry's `history.state` (About's `{ fwInApp: true }`, URL redesign spec §3). A push with state is
+   * always its own entry, never coalesced: replacing the entry before it would lose the page its state points back to.
+   */
+  push(url: string, state?: unknown): void;
   replace(url: string): void;
 }
 
@@ -29,11 +33,11 @@ export function createHistoryWriter(
 ): HistoryWriter {
   let last = -Infinity;
   return {
-    push(url) {
+    push(url, state = null) {
       const t = now();
       try {
-        if (t - last < coalesceMs) h.replaceState(null, '', url);
-        else h.pushState(null, '', url);
+        if (state === null && t - last < coalesceMs) h.replaceState(null, '', url);
+        else h.pushState(state, '', url);
       } catch {
         // The URL is a convenience; the app state is already correct.
       }

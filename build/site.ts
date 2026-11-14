@@ -124,7 +124,10 @@ export function linkify(text: string, links: Record<string, string>): string {
   });
 }
 
-/** The About page's <main>, rendered at build time from en.json's `page.about` (going-public spec §8.2). */
+/**
+ * The About view's <main>, rendered at build time from en.json's `page.about` (going-public spec §8.2) into the one
+ * shell (URL redesign spec §3). Its heading takes focus when the app opens About.
+ */
 export function renderAbout(about: AboutStrings, site: SiteConfig): string {
   const links = aboutLinks(site);
   const text = (s: string): string => linkify(s, links);
@@ -136,8 +139,8 @@ export function renderAbout(about: AboutStrings, site: SiteConfig): string {
     '  </section>',
   ].join('\n'));
   return [
-    '<main class="about">',
-    `  <h1>${escapeHtml(about.heading)}</h1>`,
+    '<main class="about" id="about">',
+    `  <h1 tabindex="-1">${escapeHtml(about.heading)}</h1>`,
     `  <p class="about-summary">${text(about.summary)}</p>`,
     ...sections,
     `  <p class="about-back"><a href="/">${escapeHtml(about.back)}</a></p>`,

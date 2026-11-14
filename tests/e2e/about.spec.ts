@@ -66,7 +66,7 @@ test('the keyboard path: Enter on the About link, then Enter on "Back to the whe
   expect((await state(page)).selected).toBeNull();
 });
 
-test('Made by links the repo with the GitHub icon, named for screen readers, with a big enough target', async ({ page }) => {
+test('the sign-off links the repo with the GitHub icon, named for screen readers, with a big enough target', async ({ page }) => {
   await page.goto('/about');
   await expect(aboutHeading(page)).toBeVisible();
   const github = page.getByRole('link', { name: 'Feels on Wheels on GitHub' });

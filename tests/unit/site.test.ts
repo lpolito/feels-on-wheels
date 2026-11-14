@@ -173,7 +173,7 @@ describe('About page', () => {
   test('one h1, then the sections in order', () => {
     expect(html.match(/<h1[ >]/g)?.length).toBe(1);
     const ids = [...html.matchAll(/<section id="([^"]+)">\s*<h2>/g)].map((m) => m[1]);
-    expect(ids).toEqual(['what', 'how', 'install', 'why', 'made-by', 'credits', 'translate']);
+    expect(ids).toEqual(['what', 'how', 'install', 'why', 'credits', 'translate']);
   });
 
   const section = (id: string): string => new RegExp(`<section id="${id}">([\\s\\S]*?)</section>`).exec(html)![1]!;
@@ -198,10 +198,10 @@ describe('About page', () => {
     expect(why).toContain('accessible, beautiful, fast, and versatile');
   });
 
-  test('Made by is the name and the GitHub icon', () => {
-    const madeBy = section('made-by');
-    expect(madeBy).toContain('<a href="https://lucaspolito.dev/">Lucas Polito</a>');
-    expect(madeBy).toContain('aria-label="Feels on Wheels on GitHub"');
+  test('why it exists signs off with the name and the GitHub icon, just before the dedication', () => {
+    const signOff = section('why').match(/<p>[\s\S]*?<\/p>/g)!.at(-2)!;
+    expect(signOff.startsWith('<p>— <a href="https://lucaspolito.dev/">Lucas Polito</a> <a class="about-icon"')).toBe(true);
+    expect(signOff).toContain('aria-label="Feels on Wheels on GitHub"');
   });
 
   test('how to use it claims no more than was tested', () => {

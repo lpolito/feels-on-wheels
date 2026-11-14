@@ -1,0 +1,16 @@
+{
+  // Cloudflare serves the built app as static files, with no Worker script. Cloudflare's GitHub integration builds
+  // `main` with `npm run build` and deploys it with `npx wrangler deploy`; other branches get preview links.
+  "name": "feels-on-wheels",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./dist/",
+    // Cloudflare's default: /about serves about.html, and /about.html and /index.html redirect to /about and /.
+    // That's why the service worker precaches ./ and ./about, never the .html names (build/sw-plugin.ts).
+    "html_handling": "auto-trailing-slash",
+    // Unknown paths are a plain 404 until the URL redesign decides what they should do.
+    "not_found_handling": "none"
+  },
+  "workers_dev": true,
+  "preview_urls": true
+}

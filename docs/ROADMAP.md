@@ -23,7 +23,7 @@ Ideas don't have version numbers. When Lucas picks one to build, it moves into t
 | v2.2.1: Sideways phones with the notch on the left: the opened word keeps 1rem clear of the notch, not the screen's edge | Shipped | No spec; the fix for the known issue found using v2.2 (the camera's left margin now starts after `safe-area-inset-left`). Commits on main after 9fc8944. |
 | Going public, step 1: shareable | Shipped 2026-11-09 | [spec](superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md), [plan](superpowers/plans/2026-11-09-feels-on-wheels-going-public.md). Was live at `lpolito.github.io/feels-on-wheels/` until the move below. |
 | Going public: Cloudflare, feelsonwheels.app and About at `/about` | Shipped 2026-11-13 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-cloudflare-domain.md). Live at <https://feelsonwheels.app/>, served by Cloudflare Workers, not announced or indexed. The github.io address stops working; nothing forwards from it (Lucas, 2026-11-13). What's left is in [before launching](#before-launching). |
-| URLs: real paths, a small router, and a Worker for first visits | Spec approved 2026-11-13 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md). Plan to come. |
+| URLs: real paths, a small router, and a Worker for first visits | Spec approved 2026-11-13 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md). [plan](superpowers/plans/2026-11-13-feels-on-wheels-urls-routing.md) |
 
 ## Ideas
 

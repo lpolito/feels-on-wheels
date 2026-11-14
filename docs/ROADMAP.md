@@ -43,8 +43,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Help adding it to the home screen](#help-adding-it-to-the-home-screen) | The toolbar, sharing and installing | Idea |
 | [A dark home-screen icon](#a-dark-home-screen-icon) | The toolbar, sharing and installing | Idea |
 | [About page rework](#about-page-rework) | [The About page](#the-about-page) | Idea |
-| [Real paths, a small router and cleaner URLs](#real-paths-a-small-router-and-cleaner-urls) | [URLs, routing and hosting](#urls-routing-and-hosting) | Built; in review ([versions](#versions)) |
-| [Languages](#languages) | URLs, routing and hosting | Planned |
+| [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
@@ -102,7 +101,7 @@ Polish to what's there; these could ship together as a point release.
 
 - After jumping from the body wheel to the feelings wheel (the "See … on the feelings wheel" link, or v2.2's core-feeling link in the definition), a "Return to …" control takes you back to the body wheel with the card you came from open again.
 - Lucas's idea, 2026-11-09. Where it goes is open: on the opened card, as a toolbar button like Start over, or something else.
-- Today the only way back is the browser's Back (the jump pushes history, v2 §4.2), which is the awkward gesture in the [going back on phones](#navigation) known issue. This idea may cover part of that, and so may how [real paths](#real-paths-a-small-router-and-cleaner-urls) treat history.
+- Today the only way back is the browser's Back (the jump pushes history, v2 §4.2), which is the awkward gesture in the [going back on phones](#navigation) known issue. The [URL redesign](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) §4 keeps that push for the jump, so Back still returns from it; this idea would add a way back that doesn't need the gesture.
 - To decide when designing: what the control says ("Back to Wide eyes"?), when it disappears (after moving on, switching wheels by hand, or Start over), and whether it also works the other way, or for the emoji wheel once there are three wheels.
 
 #### Feeling links underlined in their feeling's color
@@ -132,7 +131,7 @@ These all compete for the same few places (the toolbar, the start message, the A
 - Likely the Web Share API (`navigator.share`) where there is one, phones especially, and copying the link where there isn't.
 - To decide when designing:
   - where it goes (toolbar, opened card, About page);
-  - whether it shares the app or the opened word. Sharing a word shares its URL, so it's worth having the [URL structure](#real-paths-a-small-router-and-cleaner-urls) settled first; with real paths, a shared word could get its own link preview.
+  - whether it shares the app or the opened word. Sharing a word shares its URL, which the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) settles; with its real paths, a shared word gets its own link preview.
 
 #### Help adding it to the home screen
 
@@ -172,35 +171,7 @@ Lucas's ideas, 2026-11-12:
 
 ### URLs, routing and hosting
 
-Decide these together, and before launch: once links are shared and indexed, every change needs redirects that last for good. Moving to a domain is the natural moment. [Languages](#languages) depend on the URL structure, and the [share button](#share-button) and [going back on phones](#navigation) are shaped by it.
-
-#### Real paths, a small router and cleaner URLs
-
-**Built** (in review) from the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) (approved 2026-11-13): real paths with no `core`, a small router of our own with no full reloads (About becomes a view), a Cloudflare Worker that gives first visits the right title and preview tags or a real 404, and Back that never steps through words. The notes below are what the brainstorm started from.
-
-- **Draft text for Lucas to edit:** the body wheel's preview description ("Start from what you notice in your body to find the word for what you feel.") is a draft, and it's shorter than the 100 to 160 characters the home description uses.
-
-Lucas's ideas: he doesn't like the `/core/` prefix and wants room for languages (2026-11-09). On 2026-11-12: he doesn't like the URLs at all, they're too permissive; he doesn't want to see `about.html` in the address bar, only `/about` (done 2026-11-13); and modern apps don't need hash routing, so why does this one lean on it? Could a small router of our own replace it, without a backend and while keeping dependencies near zero?
-
-- **Before the URL redesign (v2.2.1):** everything is in the hash. The feelings wheel at rest has none. An opened word is `#/core/happy/playful/…`, and the body wheel is `#/body` or `#/body/…`. `core` is the feelings wheel's internal id (`src/state/url.ts`, v2 spec §4.3). About is a separate page at `/about` (the file `about.html`; Cloudflare redirects `/about.html` there).
-- **Why the hash:** the app started on GitHub Pages, which only serves files. `/happy/playful` had no file, so it 404'd unless a `404.html` handed the path to the app (which answers with a 404 status, bad for search) or the build wrote a page for every word. The hash needs no server help. Cloudflare, the host since 2026-11-13, can serve the app for paths without a file (`not_found_handling` in `wrangler.jsonc`, a plain 404 for now).
-- **Why it's permissive** (seen in the code, to confirm in the browser):
-  - the service worker answers any page request in its scope with the app's shell when it hasn't cached that exact page (`navigationUrls` in `src/sw/strategy.ts`), so once it's installed, any path under the app loads the wheel;
-  - an unknown hash gives the start view rather than a not-found, and any query is ignored (`fromHash`).
-- **What replaced both:** About is a view in the one shell, `about.html` is gone, and the Worker (`src/worker/`) redirects `/about.html`, `/about/` and `/index.html`.
-- **Before the URL redesign, About moved to `/about` on 2026-11-13,** with the move to Cloudflare: Cloudflare serves `about.html` at `/about` and redirects the `.html` address there, so the service worker precaches pages by their address (`./`, `./about`), refuses to cache a redirect, and itself redirects `/about.html`, `/about/` and `/index.html` to the clean address, since an installed worker answers before Cloudflare can.
-- **No backend is needed for real paths either.** The History API (`pushState`, `popstate`) gives clean paths in the browser; what's needed is a host that serves the app for paths without a file, or a static page per word written at build time. The second also gives every feeling its own indexable page, with its definition as the description, a big win for search. A router for this app is a small table of paths and two listeners, small enough to write ourselves.
-- To decide when designing:
-  - **Dropping `core`:** the feelings wheel's words at `/happy/…` and other wheels under their own name (`/body/…`). That needs a rule so a wheel's name can never be a core feeling's id. Or each wheel gets a public name (`feelings`, `body`) separate from its internal id.
-  - **Hash or real paths.** On Cloudflare, real paths need no `404.html` workaround, and `_headers` and `_redirects` files allow security and cache headers and permanent redirects.
-  - **What unknown URLs do:** a real not-found page with a link to the wheel, or the start view.
-  - **Where the language goes:**
-    - A **path prefix** (`/es/…`) works on one domain and on any static host, and is what search engines handle best (with `hreflang` links between languages).
-    - A **subdomain** (`es.feelsonwheels.app`) needs DNS per language. Cloudflare allows any number of custom domains, so it's possible now.
-    - A **query** (`?lang=es`) or a choice saved only on the device is invisible to search.
-  - **Slugs:** stable English ids in every language (`/es/happy/…`) or translated ones (`/es/feliz/…`).
-  - **History:** whether opening a word still pushes history the way it does today (v2 §4.2), and how that meets the [going back on phones](#navigation) known issue.
-  - Old `#/core/…` links don't need to keep working (Lucas, 2026-11-13).
+What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md), which settled the URL structure: [languages](#languages) fill the room it leaves for them, and ["Did you mean"](#did-you-mean-on-not-found) builds on its not-found message.
 
 #### "Did you mean" on not found
 
@@ -212,7 +183,7 @@ Lucas's ideas: he doesn't like the `/core/` prefix and wants room for languages 
 
 - Spanish first (the [reference site](reference/core-feelings-wheel.md#the-reference-site) had an Español toggle, and Braman publishes a Spanish wheel), plus a language switcher.
 - Adding a language means adding one locale file; no text is hard-coded.
-- Where the language lives in the URL is decided with [real paths](#real-paths-a-small-router-and-cleaner-urls).
+- To decide when designing: stable English slugs in every language (`/es/happy/…`) or translated ones (`/es/feliz/…`). The URL shape (a `/es/` prefix, English unprefixed) is set by the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) §9.
 
 ## Known issues
 
@@ -241,7 +212,7 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 
 ### Navigation
 
-- **Going back on phones.** Swiping back steps through earlier words, which doesn't fit a wheel that's itself swiped to navigate. Lucas raised it while using v2.1. The URL redesign changes it: Back no longer steps through words (a word replaces the history entry; switching wheels, the jump and About push). Open until Lucas confirms on a phone. Related: [return to the word you jumped from](#return-to-the-word-you-jumped-from) and the history question in [real paths](#real-paths-a-small-router-and-cleaner-urls).
+- **Going back on phones.** Swiping back steps through earlier words, which doesn't fit a wheel that's itself swiped to navigate. Lucas raised it while using v2.1. The URL redesign changes it: Back no longer steps through words (a word replaces the history entry; switching wheels, the jump and About push). Open until Lucas confirms on a phone. Related: [return to the word you jumped from](#return-to-the-word-you-jumped-from) and the history rules in the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) §4.
 - **Keyboard selection on the phone's half-wheel.** Choosing a word by keyboard or the accessible tree can select one on the hidden left half without turning the wheel to show it. Lucas wants to try it before deciding whether the wheel should turn to show it.
 
 ### The About page
@@ -261,6 +232,7 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens in two steps: first shareable, then launched. Step 1 [shipped](#versions) on 2026-11-09. Step 2 is what's left before announcing it and letting search engines index it. The host and the domain are done (2026-11-13); the rest isn't started.
 
 - **Lucas reviews the definitions and sensations** in [content-review.md](content-review.md). This was moved out of v1.1.
+- **Draft text for Lucas to edit:** the body wheel's preview description ("Start from what you notice in your body to find the word for what you feel.") is a draft, and it's shorter than the 100 to 160 characters the home description uses.
 - **Ship the URL structure:** decided in the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) (approved 2026-11-13); build and ship it while no links are out in the world.
 - **Moved to feelsonwheels.app** on 2026-11-13 ([spec](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-design.md)), still `noindex`. No trademark check (Lucas decided against it, 2026-11-13). Installs and saved themes at the github.io address didn't carry over.
 - **Let search engines in:** set `indexable: true` in `site.config.ts` (removes `noindex`), deploy, and re-check the link previews.
@@ -268,7 +240,6 @@ The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens
   - `/about.html` redirecting with a 301: done by the URL redesign's Worker.
 - **Optional, after letting search engines in:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
 - **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, gray like the site's other icons; on hover it takes the wheel's seven colors and spins once, settling.
-- **The old private repo:** archive or delete `lpolito/feelings-wheel` once the public one is settled.
 - **Known issues and ideas:** decide which to finish before announcing it. The [About page rework](#about-page-rework), [share button](#share-button) and [help adding it to the home screen](#help-adding-it-to-the-home-screen) are the ones a first visitor would notice.
 
 ## Content rules

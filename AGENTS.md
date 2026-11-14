@@ -6,6 +6,7 @@
 
 - Read it before brainstorming or planning a new version.
 - Update it in the same change when a spec is approved, a version ships, or Lucas mentions new or later work, so nothing lives only in a chat.
+- When an idea ships, delete its entry from Ideas (its subsection and its table row): the versions table, with its spec and plan links, is the record. Move anything still open into the idea it belongs to, and repoint links to the removed heading. Delete finished items in Before launching too, rather than marking them done.
 - Specs (`docs/superpowers/specs/`) are frozen once approved. Link to them from the roadmap instead of copying the version list into each spec.
 
 ## Accessibility

@@ -83,6 +83,19 @@ test('the heading links home, like a site title: a new entry, the wheel, focus b
   expect(await page.evaluate(() => history.length)).toBe(entries + 1);
 });
 
+test('from an opened word, the heading starts fresh: the whole wheel, nothing selected', async ({ page }) => {
+  await sideways(page);
+  await open(page, '/happy/playful');
+  await aboutLink(page).click();
+  await expect(aboutHeading(page)).toBeFocused();
+  await page.waitForTimeout(320);
+  await page.getByRole('heading', { level: 1 }).getByRole('link', { name: 'Feels on Wheels', exact: true }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await idle(page);
+  expect((await state(page)).selected).toBeNull();
+  expect((await state(page)).opened).toBe(false);
+});
+
 test('the sign-off links the repo with the GitHub icon, named for screen readers, with a big enough target', async ({ page }) => {
   await page.goto('/about');
   await expect(aboutHeading(page)).toBeVisible();

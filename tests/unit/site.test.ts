@@ -159,7 +159,8 @@ describe('About page', () => {
     expect(out).toContain('focusable="false"');
     expect(out).toContain('currentColor');
     expect(out.endsWith('</svg></a>')).toBe(true);
-    expect(out.replace(/<[^>]+>/g, '')).toBe('');
+    // Nothing but tags: no visible text beside the icon.
+    expect(out).toMatch(/^(?:<[^>]+>)+$/);
   });
 
   test('an icon link label is escaped in its attributes', () => {

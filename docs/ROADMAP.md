@@ -32,6 +32,8 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Wizard](#wizard) | [New ways to identify an emotion](#new-ways-to-identify-an-emotion) | Idea |
 | [Emoji wheel](#emoji-wheel) | New ways to identify an emotion | Planned |
 | [Strength](#strength) | New ways to identify an emotion | Shelved (2026-11-08) |
+| [Wheels for kids](#wheels-for-kids) | New ways to identify an emotion | Idea |
+| [Rework the body wheel's areas and sensations](#rework-the-body-wheels-areas-and-sensations) | [The body wheel's content](#the-body-wheels-content) | Idea |
 | [Tap the opened word to close it](#tap-the-opened-word-to-close-it) | [The wheel and the card](#the-wheel-and-the-card) | Idea |
 | [A different word to start on](#a-different-word-to-start-on) | The wheel and the card | Idea |
 | [Return to the word you jumped from](#return-to-the-word-you-jumped-from) | The wheel and the card | Idea |
@@ -43,6 +45,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [About page rework](#about-page-rework) | [The About page](#the-about-page) | Idea |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
+| [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
 
@@ -76,6 +79,29 @@ What Lucas first asked for:
 - The panel lists a feeling's words at each strength.
 - **Open question:** Drummond's chart has 10 categories (Happiness, Caring, Depression, Inadequateness, Fear, Confusion, Hurt, Anger, Loneliness, Remorse) that don't match the wheel's 7 core feelings. Its design has to decide whether to map them onto the wheel, give them their own wheel, or only tag the wheel's existing words.
 - **Data model:** the optional `Feeling.strength` field (one value per word) isn't enough. In Drummond's chart, 22 words have different strengths in different categories (*Resentful* is Anger medium and Anger light), so strength has to live on a word within a category or a wheel position.
+
+#### Wheels for kids
+
+- Simplified wheels for kids, Lucas's idea, 2026-11-14: fewer nested rings, and more approachable words and definitions, ones kids might use themselves.
+- Three sizes, all with kids in mind: a super simple wheel of one tier, plus two- and three-tier ones.
+- To decide when designing:
+  - whether they're kid versions of both the feelings and body wheels, or of the feelings wheel only;
+  - where the kids' wheels go in the wheel switch, which already struggles to fit a third option (the [wide fallback fonts](#layout-and-labels) known issue), and how you pick one of the three sizes;
+  - whether a one-tier wheel still opens a card, and what's on it;
+  - their URLs, and whether a kids' word links to the same word on the grown-up wheel;
+  - where the words come from, since any new source gets a [reference note](reference/README.md) and a credit.
+- Overlaps with the [emoji wheel](#emoji-wheel), which is also a simplified wheel; worth designing them together.
+
+### The body wheel's content
+
+#### Rework the body wheel's areas and sensations
+
+Lucas, 2026-11-14: the body wheel needs reworking to be more consistent.
+
+- **The areas mix two kinds of thing.** Some are specific body parts (head, face, chest, stomach, arms) and some are general areas or ways of holding yourself (breath, whole body, posture). Should they be one or the other?
+- **Some sensations aren't sensations, but actions,** such as smiling, a gasp, clenched fists, turning away and shrinking, next to felt ones like a racing heart or a knot in your stomach. Some also sit oddly under their area (tense shoulders under arms, a lump in your throat under breath).
+- To decide when designing: one rule for what an area is and one for what a sensation is, what happens to the words that don't fit (dropped, reworded as a feeling, or a place of their own), and how URLs to moved or renamed sensations keep working.
+- Meets the [definitions and sensations review](#before-launching) in [content-review.md](content-review.md), so it's worth doing before or with it.
 
 ### The wheel and the card
 
@@ -169,13 +195,19 @@ Lucas's ideas, 2026-11-12:
 
 ### URLs, routing and hosting
 
-What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md), which settled the URL structure: [languages](#languages) fill the room it leaves for them, and ["Did you mean"](#did-you-mean-on-not-found) builds on its not-found message.
+What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md), which settled the URL structure: [languages](#languages) fill the room it leaves for them, and ["Did you mean"](#did-you-mean-on-not-found) and [Start over](#start-over-on-not-found) build on its not-found message.
 
 #### "Did you mean" on not found
 
 - On the not-found message, a "Did you mean Playful?" link when the address's last part is a real word in the wrong place (`/playful`, `/sad/playful`) or one letter off from one (`plaful`). Lucas, 2026-11-13, left out of the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) to keep it small.
 - Without it, not found names the word ("There's no "plaful" on the wheel.") and points to the other wheel.
 - To decide when designing: how close counts as a typo, and which place to suggest when the word sits in more than one.
+
+#### Start over on not found
+
+- Lucas, 2026-11-14: the not-found message shows the Start over button. Tapping it replaces the mistyped address (a history replace, not a new entry) with the nearest base wheel: `/body` for an address under the body wheel, `/` otherwise.
+- Today Start over shows only while a word is selected, and not found shows the whole wheel with nothing selected, so the button is hidden; the only way on is the message's link to the other wheel, or picking a word.
+- To decide when designing: what "nearest" means for an address that names no wheel, where focus goes after it, and whether it meets ["Did you mean"](#did-you-mean-on-not-found) on the same message.
 
 #### Languages
 

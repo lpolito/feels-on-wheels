@@ -131,8 +131,10 @@ describe('About page', () => {
   const about = (en as unknown as { page: PageStrings }).page.about;
   const html = renderAbout(about, site);
 
-  test('the link map points at the repo, license, contributing guide, author and the wheel', () => {
+  test('the link map points at the repo, accessibility notes, contributing guide, author and the wheel', () => {
     expect(links).toEqual({
+      github: 'https://github.com/lpolito/feels-on-wheels',
+      accessibility: 'https://github.com/lpolito/feels-on-wheels/blob/main/ACCESSIBILITY.md',
       repo: 'https://github.com/lpolito/feels-on-wheels',
       license: 'https://github.com/lpolito/feels-on-wheels/blob/main/LICENSE',
       contributing: 'https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md',
@@ -148,8 +150,22 @@ describe('About page', () => {
   });
 
   test('linkify escapes text and turns [label](target) into links', () => {
-    expect(linkify('[Repo]({repo}) & co', links)).toBe('<a href="https://github.com/lpolito/feels-on-wheels">Repo</a> &amp; co');
+    expect(linkify('[Guide]({contributing}) & co', links)).toBe('<a href="https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md">Guide</a> &amp; co');
     expect(linkify('see [this](https://example.com/a?b=1&c=2)', links)).toBe('see <a href="https://example.com/a?b=1&amp;c=2">this</a>');
+  });
+
+  test('linkify draws {github} as the GitHub icon, named by its label', () => {
+    const out = linkify('[Feels on Wheels on GitHub]({github})', links);
+    expect(out.startsWith('<a class="about-icon" href="https://github.com/lpolito/feels-on-wheels" aria-label="Feels on Wheels on GitHub" title="Feels on Wheels on GitHub"><svg')).toBe(true);
+    expect(out).toContain('aria-hidden="true"');
+    expect(out).toContain('focusable="false"');
+    expect(out).toContain('currentColor');
+    expect(out.endsWith('</svg></a>')).toBe(true);
+    expect(out.replace(/<[^>]+>/g, '')).toBe('');
+  });
+
+  test('an icon link label is escaped in its attributes', () => {
+    expect(linkify('[A "q" & b]({github})', links)).toContain('aria-label="A &quot;q&quot; &amp; b"');
   });
 
   test('linkify refuses unknown link keys', () => {
@@ -180,7 +196,7 @@ describe('About page', () => {
   });
 
   test('it ends with the way back to the wheel', () => {
-    expect(html.trimEnd()).toMatch(/<a href="\/">Back to the wheel<\/a><\/p>\s*<\/main>$/);
+    expect(html.trimEnd()).toMatch(/<a href="\/"><svg class="about-chevron"[^>]*aria-hidden="true"[\s\S]*?<\/svg>Back to the wheel<\/a><\/p>\s*<\/main>$/);
   });
 
 });

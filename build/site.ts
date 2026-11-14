@@ -108,6 +108,8 @@ export function webManifest(strings: PageStrings): Record<string, unknown> {
 /** The `{key}` link targets the About strings may use. */
 export function aboutLinks(site: SiteConfig): Record<string, string> {
   return {
+    github: site.repo,
+    accessibility: `${site.repo}/blob/main/ACCESSIBILITY.md`,
     repo: site.repo,
     license: `${site.repo}/blob/main/LICENSE`,
     contributing: `${site.repo}/blob/main/CONTRIBUTING.md`,
@@ -117,7 +119,20 @@ export function aboutLinks(site: SiteConfig): Record<string, string> {
   };
 }
 
-/** Escapes `text`, then turns `[label](https://…)` and `[label]({key})` into links. Unknown keys throw. */
+const ICON = 'aria-hidden="true" focusable="false"';
+
+/** Link keys drawn as an icon instead of their label; the label becomes the link's accessible name and tooltip. */
+const LINK_ICONS: Record<string, string> = {
+  // GitHub's mark (Octicons mark-github, MIT).
+  github: `<svg ${ICON} viewBox="0 0 16 16" fill="currentColor"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>`,
+};
+
+const CHEVRON = `<svg class="about-chevron" ${ICON} viewBox="0 0 10 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2 2 8l6 6"/></svg>`;
+
+/**
+ * Escapes `text`, then turns `[label](https://…)` and `[label]({key})` into links. Unknown keys throw. A key in
+ * LINK_ICONS is drawn as its icon, named by the label (about rework spec).
+ */
 export function linkify(text: string, links: Record<string, string>): string {
   return escapeHtml(text).replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label: string, target: string) => {
     const key = /^\{(\w[\w-]*)\}$/.exec(target)?.[1];
@@ -125,6 +140,9 @@ export function linkify(text: string, links: Record<string, string>): string {
     // `target` is already escaped; a known key's URL is escaped here.
     const href = key !== undefined ? escapeHtml(links[key]!) : target;
     if (key === undefined && !href.startsWith('https://')) throw new Error(`about: link target must be https:// or {key}: ${target}`);
+    // `label` is already escaped, so it's safe in an attribute.
+    const icon = key !== undefined ? LINK_ICONS[key] : undefined;
+    if (icon !== undefined) return `<a class="about-icon" href="${href}" aria-label="${label}" title="${label}">${icon}</a>`;
     return `<a href="${href}">${label}</a>`;
   });
 }
@@ -148,7 +166,7 @@ export function renderAbout(about: AboutStrings, site: SiteConfig): string {
     `  <h1 tabindex="-1">${escapeHtml(about.heading)}</h1>`,
     `  <p class="about-summary">${text(about.summary)}</p>`,
     ...sections,
-    `  <p class="about-back"><a href="/">${escapeHtml(about.back)}</a></p>`,
+    `  <p class="about-back"><a href="/">${CHEVRON}${escapeHtml(about.back)}</a></p>`,
     '</main>',
   ].join('\n');
 }

@@ -66,6 +66,17 @@ test('the keyboard path: Enter on the About link, then Enter on "Back to the whe
   expect((await state(page)).selected).toBeNull();
 });
 
+test('Made by links the repo with the GitHub icon, named for screen readers, with a big enough target', async ({ page }) => {
+  await page.goto('/about');
+  await expect(aboutHeading(page)).toBeVisible();
+  const github = page.getByRole('link', { name: 'Feels on Wheels on GitHub' });
+  await expect(github).toHaveAttribute('href', 'https://github.com/lpolito/feels-on-wheels');
+  const box = (await github.boundingBox())!;
+  expect(box.width).toBeGreaterThanOrEqual(24);
+  expect(box.height).toBeGreaterThanOrEqual(24);
+  await expect(backToWheel(page)).toHaveAccessibleName('Back to the wheel');
+});
+
 test('a fresh load of /about: "Back to the wheel" goes to /', async ({ page }) => {
   await page.goto('/about');
   await page.waitForFunction(() => window.__fw !== undefined);

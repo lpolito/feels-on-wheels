@@ -42,7 +42,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Share button](#share-button) | The toolbar, sharing and installing | Idea |
 | [Help adding it to the home screen](#help-adding-it-to-the-home-screen) | The toolbar, sharing and installing | Idea |
 | [A dark home-screen icon](#a-dark-home-screen-icon) | The toolbar, sharing and installing | Idea |
-| [About page rework](#about-page-rework) | [The About page](#the-about-page) | Idea |
+| [About page rework](#about-page-rework) | [The About page](#the-about-page) | Designed ([spec](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-design.md)) |
 | [A new social preview image](#a-new-social-preview-image) | [The social preview](#the-social-preview) | Idea |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
@@ -174,6 +174,8 @@ These all compete for the same few places (the toolbar, the start message, the A
 ### The About page
 
 #### About page rework
+
+**Designed 2026-11-14:** [spec](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-design.md). The notes below led to it.
 
 **What's on the page** (Lucas, 2026-11-13): make it friendlier by keeping only what a visitor cares about.
 

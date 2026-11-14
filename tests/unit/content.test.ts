@@ -80,10 +80,10 @@ describe('going public (spec 2026-11-09)', () => {
     expect(site.indexable).toBe(false);
   });
 
-  test("wrangler serves dist/ as static files with Cloudflare's default HTML handling", () => {
+  test("wrangler serves dist/ with Cloudflare's default HTML handling, and the Worker only for paths with no file (URL redesign spec §5)", () => {
     const config = JSON.parse(readFileSync('wrangler.jsonc', 'utf8').replace(/^\s*\/\/.*$/gm, '')) as Record<string, unknown>;
     expect(config['name']).toBe('feels-on-wheels');
-    expect(config['main']).toBeUndefined();
-    expect(config['assets']).toEqual({ directory: './dist/', html_handling: 'auto-trailing-slash', not_found_handling: 'none' });
+    expect(config['main']).toBe('./src/worker/worker.ts');
+    expect(config['assets']).toEqual({ directory: './dist/', binding: 'ASSETS', html_handling: 'auto-trailing-slash', not_found_handling: 'none' });
   });
 });

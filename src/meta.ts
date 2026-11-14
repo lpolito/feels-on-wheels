@@ -1,5 +1,5 @@
 import type { Locale } from './data/types';
-import { fill } from './i18n';
+import { fill } from './fill';
 import type { Route, RouteTable } from './state/url';
 
 /** The document title and meta description for a route (spec 2026-11-13 §6). Pure: takes the locale, not the active one. */

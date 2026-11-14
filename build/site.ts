@@ -1,12 +1,11 @@
 /**
- * Pure builders for everything the site needs beyond the app (going-public spec §7, §8): each page's head tags,
+ * Pure builders for everything the site needs beyond the app (going-public spec §7, §8): each route's head tags,
  * the web manifest, robots.txt and the sitemap. All absolute URLs come from site.config.ts; all text from en.json's
- * `page` strings. build/site-plugin.ts wires these into Vite.
+ * `page` and `titles` strings. build/site-plugin.ts wires these into Vite, and the Worker (src/worker) uses headTags
+ * for every path with no file (URL redesign spec §5).
  */
 import type { SiteConfig } from '../site.config';
 import type { Titles } from '../src/data/types.ts';
-
-export type PageId = 'index' | 'about';
 
 export interface AboutSection { id: string; heading: string; body: string[]; items?: string[] }
 export interface AboutStrings {
@@ -26,11 +25,19 @@ export function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 }
 
-export function pageUrl(page: PageId, site: SiteConfig): string {
-  return page === 'index' ? site.url : `${site.url}about`;
+/** One route's head (URL redesign spec §5, §6). */
+export interface HeadMeta {
+  title: string;
+  description: string;
+  /** The route's path without its leading "/": '' for the wheel at rest, 'happy/playful', 'about'. */
+  path: string;
+  /** The WebApplication JSON-LD: on `/` only. */
+  jsonLd: boolean;
+  /** noindex whatever site.indexable says (not found). */
+  noindex: boolean;
 }
 
-const meta = (attr: 'name' | 'property', key: string, value: string | number): string =>
+const tag = (attr: 'name' | 'property', key: string, value: string | number): string =>
   `<meta ${attr}="${key}" content="${escapeHtml(String(value))}">`;
 
 function jsonLd(site: SiteConfig, strings: PageStrings): string {
@@ -52,30 +59,28 @@ function jsonLd(site: SiteConfig, strings: PageStrings): string {
   return `<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}</script>`;
 }
 
-export function headTags(page: PageId, site: SiteConfig, strings: PageStrings): string {
-  const { titles } = strings;
-  const title = page === 'about' ? titles.about : titles.home;
-  const description = page === 'about' ? titles.aboutDescription : titles.homeDescription;
-  const url = pageUrl(page, site);
+export function headTags(meta: HeadMeta, site: SiteConfig, strings: PageStrings): string {
+  const { title, description } = meta;
+  const url = site.url + meta.path;
   const tags = [
     `<title>${escapeHtml(title)}</title>`,
-    meta('name', 'description', description),
+    tag('name', 'description', description),
     `<link rel="canonical" href="${escapeHtml(url)}">`,
-    ...(site.indexable ? [] : [meta('name', 'robots', 'noindex')]),
-    meta('property', 'og:type', 'website'),
-    meta('property', 'og:site_name', strings.name),
-    meta('property', 'og:title', title),
-    meta('property', 'og:description', description),
-    meta('property', 'og:url', url),
-    meta('property', 'og:locale', 'en_US'),
-    meta('property', 'og:image', `${site.url}${OG_IMAGE.path}`),
-    meta('property', 'og:image:width', OG_IMAGE.width),
-    meta('property', 'og:image:height', OG_IMAGE.height),
-    meta('property', 'og:image:alt', strings.imageAlt),
-    meta('name', 'twitter:card', 'summary_large_image'),
-    meta('name', 'twitter:image:alt', strings.imageAlt),
+    ...(site.indexable && !meta.noindex ? [] : [tag('name', 'robots', 'noindex')]),
+    tag('property', 'og:type', 'website'),
+    tag('property', 'og:site_name', strings.name),
+    tag('property', 'og:title', title),
+    tag('property', 'og:description', description),
+    tag('property', 'og:url', url),
+    tag('property', 'og:locale', 'en_US'),
+    tag('property', 'og:image', `${site.url}${OG_IMAGE.path}`),
+    tag('property', 'og:image:width', OG_IMAGE.width),
+    tag('property', 'og:image:height', OG_IMAGE.height),
+    tag('property', 'og:image:alt', strings.imageAlt),
+    tag('name', 'twitter:card', 'summary_large_image'),
+    tag('name', 'twitter:image:alt', strings.imageAlt),
     '<link rel="manifest" href="/manifest.webmanifest">',
-    ...(page === 'index' ? [jsonLd(site, strings)] : []),
+    ...(meta.jsonLd ? [jsonLd(site, strings)] : []),
   ];
   return ['<!--head-->', ...tags, '<!--/head-->'].join('\n  ');
 }

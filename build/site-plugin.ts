@@ -4,7 +4,12 @@ import type { Plugin } from 'vite';
 import { site } from '../site.config.ts';
 import { loadData } from '../src/data/load.ts';
 import { allPaths, reservedClash, routeTable } from '../src/state/url.ts';
-import { aboutLinks, headTags, linkify, renderAbout, robotsTxt, sitemapXml, webManifest, type PageStrings } from './site.ts';
+import { aboutLinks, headTags, linkify, renderAbout, robotsTxt, sitemapXml, webManifest, type HeadMeta, type PageStrings } from './site.ts';
+
+/** The shell's own head is `/`'s (URL redesign spec §5): the Worker swaps it for every other route's. */
+const shellHead = (s: PageStrings): HeadMeta => ({
+  title: s.titles.home, description: s.titles.homeDescription, path: '', jsonLd: true, noindex: false,
+});
 
 /**
  * Going-public spec §7–§8: fills the shell's head (<!--site:head-->), noscript text (<!--site:noscript-->) and About
@@ -30,7 +35,7 @@ export function sitePlugin(): Plugin {
     transformIndexHtml(html) {
       const s = strings();
       return html
-        .replace('<!--site:head-->', headTags('index', site, s))
+        .replace('<!--site:head-->', headTags(shellHead(s), site, s))
         .replace('<!--site:noscript-->', linkify(s.noscript, aboutLinks(site)))
         .replace('<!--site:about-->', renderAbout(s.about, site));
     },

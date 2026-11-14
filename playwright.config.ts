@@ -14,8 +14,10 @@ export default defineConfig({
     { name: 'pixel', use: { ...devices['Pixel 7'] } },
     { name: 'iphone', use: { ...devices['iPhone 15'] } },
   ],
+  // Cloudflare as it runs in production (URL redesign spec §10): the test build's files, and the Worker for paths with
+  // no file. Wrangler is pinned here rather than as a dev dependency.
   webServer: {
-    command: 'npm run build:test && npx vite preview --outDir dist-test --port 4173 --strictPort',
+    command: 'npm run build:test && npx -y wrangler@4.156.2 dev --assets dist-test --port 4173',
     url: 'http://localhost:4173',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

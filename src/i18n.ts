@@ -1,3 +1,4 @@
+import { fill } from './fill';
 import type { FeelingId, Locale, NodeRef, SensationId, WheelText } from './data/types';
 
 let active: Locale | null = null;
@@ -17,11 +18,6 @@ function missing(key: string): string {
     console.warn(`i18n: missing string "${key}"`);
   }
   return key;
-}
-
-/** Replaces each `{name}` in a template with `vars[name]`, leaving unknown names as written. */
-export function fill(template: string, vars?: Record<string, string>): string {
-  return vars ? template.replace(/\{(\w+)\}/g, (m, name: string) => vars[name] ?? m) : template;
 }
 
 export function t(key: string, vars?: Record<string, string>): string {

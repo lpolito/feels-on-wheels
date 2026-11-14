@@ -1,6 +1,6 @@
 # Feels on Wheels icon for lucaspolito.dev
 
-**Do this only once Feels on Wheels has its own domain. Never link the github.io address.** Lucas wants his site to link the app's permanent home; the move is in step 2 of [Before going public](../ROADMAP.md#step-2-before-launching-it).
+**Do this only once Feels on Wheels has its own domain. Never link the github.io address.** Lucas wants his site to link the app's permanent home; the move is in [Before launching](../ROADMAP.md#before-launching).
 
 A link icon for the row of icons on Lucas's site, in that site's style: gray at rest like the GitHub, LinkedIn and email icons. On hover, keyboard focus or a tap it takes the wheel's seven core-feeling colors and spins once, like a prize wheel, then settles. Chosen on 2026-11-09 ([going-public spec §9](../superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md)).
 
@@ -32,4 +32,4 @@ The site's repo is `~/dev/lucaspolito.dev` (`lpolito/lucaspolito.dev`). It's one
    - **Contrast:** every color clears the site's 3:1 rule on `#121214` (the ratios are in the CSS's header comment), so it follows the site README's "Adding a gradient" rule too.
 5. **Update the site's README.** Under "What's where", the `icons/` line becomes: "link icons (GitHub, LinkedIn, email, Feels on Wheels), used as CSS masks so they can fill with color on hover".
 6. **Commit and push** `main` in that repo, with a message like "Add Feels on Wheels link". Cloudflare caches CSS for up to 4 hours, so the icon can take that long to look right for returning visitors.
-7. **Here:** remove "Add the icon to lucaspolito.dev" from step 2 of [Before going public](../ROADMAP.md#step-2-before-launching-it) in this repo's roadmap.
+7. **Here:** remove "Add the icon to lucaspolito.dev" from [Before launching](../ROADMAP.md#before-launching) in this repo's roadmap.

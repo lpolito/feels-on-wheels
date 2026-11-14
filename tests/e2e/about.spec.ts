@@ -66,6 +66,65 @@ test('the keyboard path: Enter on the About link, then Enter on "Back to the whe
   expect((await state(page)).selected).toBeNull();
 });
 
+test('the heading links home, like a site title: a new entry, the wheel, focus back on the About link', async ({ page }) => {
+  await open(page);
+  await aboutLink(page).click();
+  await expect(aboutHeading(page)).toBeFocused();
+  const home = page.getByRole('heading', { level: 1 }).getByRole('link', { name: 'Feels on Wheels', exact: true });
+  await expect(home).toHaveAttribute('href', '/');
+  const entries = await page.evaluate(() => history.length);
+  // Past the history writer's 250 ms merge window (a held arrow key), as a person's next click would be.
+  await page.waitForTimeout(320);
+  await home.click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveTitle('Feels on Wheels: name what you feel');
+  await expect(page.locator('#wheel')).toBeVisible();
+  await expect(aboutLink(page)).toBeFocused();
+  expect(await page.evaluate(() => history.length)).toBe(entries + 1);
+});
+
+test('from an opened word, the heading starts fresh: the whole wheel, nothing selected', async ({ page }) => {
+  await sideways(page);
+  await open(page, '/happy/playful');
+  await aboutLink(page).click();
+  await expect(aboutHeading(page)).toBeFocused();
+  await page.waitForTimeout(320);
+  await page.getByRole('heading', { level: 1 }).getByRole('link', { name: 'Feels on Wheels', exact: true }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await idle(page);
+  expect((await state(page)).selected).toBeNull();
+  expect((await state(page)).opened).toBe(false);
+});
+
+test('the sign-off links the repo with the GitHub icon, named for screen readers, with a big enough target', async ({ page }) => {
+  await page.goto('/about');
+  await expect(aboutHeading(page)).toBeVisible();
+  const github = page.getByRole('link', { name: 'Feels on Wheels on GitHub' });
+  await expect(github).toHaveAttribute('href', 'https://github.com/lpolito/feels-on-wheels');
+  // Both sign-off links open a new tab and say so (WCAG G201).
+  await expect(github).toHaveAccessibleName('Feels on Wheels on GitHub (opens in a new tab)');
+  await expect(github).toHaveAttribute('target', '_blank');
+  const name = page.getByRole('link', { name: 'Lucas Polito', exact: false });
+  await expect(name).toHaveAccessibleName('Lucas Polito (opens in a new tab)');
+  await expect(name).toHaveAttribute('target', '_blank');
+  await expect(name).toHaveAttribute('rel', 'noopener');
+  const box = (await github.boundingBox())!;
+  expect(box.width).toBeGreaterThanOrEqual(24);
+  expect(box.height).toBeGreaterThanOrEqual(24);
+  await expect(backToWheel(page)).toHaveAccessibleName('Back to the wheel');
+});
+
+test('the chevron sits on the same line as "Back to the wheel"', async ({ page }) => {
+  await page.goto('/about');
+  await expect(aboutHeading(page)).toBeVisible();
+  const chevron = (await backToWheel(page).locator('svg').boundingBox())!;
+  const text = (await page.locator('#about .about-back').boundingBox())!;
+  // One line of text is under 2rem tall; a chevron on its own line makes the paragraph two.
+  expect(text.height).toBeLessThan(32);
+  expect(chevron.y).toBeGreaterThanOrEqual(text.y);
+  expect(chevron.y + chevron.height).toBeLessThanOrEqual(text.y + text.height);
+});
+
 test('a fresh load of /about: "Back to the wheel" goes to /', async ({ page }) => {
   await page.goto('/about');
   await page.waitForFunction(() => window.__fw !== undefined);

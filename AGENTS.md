@@ -8,6 +8,7 @@
 - Update it in the same change when a spec is approved, a change ships, or Lucas mentions new or later work, so nothing lives only in a chat.
 - When an idea ships, delete its entry from Ideas (its subsection and its table row): the Shipped table, with its spec and plan links, is the record. Move anything still open into the idea it belongs to, and repoint links to the removed heading. Delete finished items in Before launching too, rather than marking them done.
 - Specs (`docs/superpowers/specs/`) are frozen once approved. Link to them from the roadmap instead of copying the list of shipped changes into each spec.
+- When what shipped differs from its spec, write the differences in `<spec name>-changes.md` next to the spec (the spec's file name with `-changes` in place of `-design`), and link it from the roadmap's Shipped row as *changes*, after the spec and plan.
 
 ## Accessibility
 

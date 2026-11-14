@@ -6,22 +6,23 @@ The living list of what's built, what's next, and what's still an idea. Specs ar
 
 ## Shipped
 
-Each change is used before the next one is designed. When Lucas picks an idea to build, it moves into this table, named by what it does. Older rows keep the version numbers they shipped with. The feedback behind each shipped change is in its spec, and in the git history for v1.3.1.
+Each change is used before the next one is designed. When Lucas picks an idea to build, it moves into this table, named by what it does. Older rows keep the version numbers they shipped with. Where what shipped differs from its spec, the differences are in a changes file next to the spec, linked as *changes*. The feedback behind each shipped change is in its spec, and in the git history for v1.3.1.
 
-| Change | Status | Spec and plan | Changes from the spec |
-|---|---|---|---|
-| v1: Core wheel | Shipped | [spec](superpowers/specs/2026-11-06-feelings-wheel-v1-design.md), [plan](superpowers/plans/2026-11-06-feelings-wheel-v1.md) | |
-| v1.1: Selected and opened states, card redesign | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.1-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.1.md) | |
-| v1.2: Fixes and polish from using v1.1 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.2-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.2.md) | |
-| v1.3: Layout, card and controls polish from using v1.2 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.3-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.3.md) | |
-| v1.3.1: Small fixes from using v1.3 | Shipped | No spec or plan | Commits 3fb060e, def355a, b340a1a. |
-| v2: Body sensations wheel | Shipped | [spec](superpowers/specs/2026-11-08-feelings-wheel-v2-body-wheel-design.md), [plan](superpowers/plans/2026-11-08-feelings-wheel-v2-body-wheel.md) | |
-| v2.1: Polish from using v2 (card headings, heartbeat, sliding switch, context-ring labels, sideways phones, body colors) | Shipped | [spec](superpowers/specs/2026-11-08-feelings-wheel-v2.1-design.md), [plan](superpowers/plans/2026-11-08-feelings-wheel-v2.1.md) | §6.1: the sideways layout also needs 560 px of width, so small split-screen windows keep the portrait layout instead of a column too thin for the card. |
-| v2.2: Polish from using v2.1 (wheel under the card's column, one-line breadcrumbs, halo dot, core feeling on the body wheel, message heading, no wheel chevron) | Shipped | [spec](superpowers/specs/2026-11-08-feelings-wheel-v2.2-design.md), [plan](superpowers/plans/2026-11-08-feelings-wheel-v2.2.md) | |
-| v2.2.1: Sideways phones with the notch on the left: the opened word keeps 1rem clear of the notch, not the screen's edge | Shipped | No spec or plan | The fix for the known issue found using v2.2: the camera's left margin now starts after `safe-area-inset-left`. Commits on main after 9fc8944. |
-| Going public, step 1: shareable | Shipped 2026-11-09 | [spec](superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md), [plan](superpowers/plans/2026-11-09-feels-on-wheels-going-public.md) | |
-| Going public: Cloudflare, feelsonwheels.app and About at `/about` | Shipped 2026-11-13 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-cloudflare-domain.md) | About moved to `/about` after approval, so the offline cache works on Cloudflare (the spec's last section). |
-| URLs: real paths, a small router, and a Worker for first visits | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-urls-routing.md) | §8: the service worker takes over as soon as it installs, so devices with the old one don't get a blank page on a word's link. §7: it serves a real file (robots.txt, the sitemap) at its own address, and the app only for everything else. §1: a percent-encoded address means the same as the plain one (`/%62ody` is `/body`). §4: replaced by the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md) ([plan](superpowers/plans/2026-11-14-feels-on-wheels-history-rule.md)), back to `main`'s: picking a word or a place adds an entry, and moving by direction replaces it. |
+| Change | Status | Spec and plan |
+|---|---|---|
+| v1: Core wheel | Shipped | [spec](superpowers/specs/2026-11-06-feelings-wheel-v1-design.md), [plan](superpowers/plans/2026-11-06-feelings-wheel-v1.md) |
+| v1.1: Selected and opened states, card redesign | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.1-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.1.md) |
+| v1.2: Fixes and polish from using v1.1 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.2-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.2.md) |
+| v1.3: Layout, card and controls polish from using v1.2 | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.3-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.3.md) |
+| v1.3.1: Small fixes from using v1.3 | Shipped | No spec or plan. Commits 3fb060e, def355a, b340a1a. |
+| v2: Body sensations wheel | Shipped | [spec](superpowers/specs/2026-11-08-feelings-wheel-v2-body-wheel-design.md), [plan](superpowers/plans/2026-11-08-feelings-wheel-v2-body-wheel.md) |
+| v2.1: Polish from using v2 (card headings, heartbeat, sliding switch, context-ring labels, sideways phones, body colors) | Shipped | [spec](superpowers/specs/2026-11-08-feelings-wheel-v2.1-design.md), [plan](superpowers/plans/2026-11-08-feelings-wheel-v2.1.md), [changes](superpowers/specs/2026-11-08-feelings-wheel-v2.1-changes.md) |
+| v2.2: Polish from using v2.1 (wheel under the card's column, one-line breadcrumbs, halo dot, core feeling on the body wheel, message heading, no wheel chevron) | Shipped | [spec](superpowers/specs/2026-11-08-feelings-wheel-v2.2-design.md), [plan](superpowers/plans/2026-11-08-feelings-wheel-v2.2.md) |
+| v2.2.1: Sideways phones with the notch on the left: the opened word keeps 1rem clear of the notch, not the screen's edge | Shipped | No spec or plan. Fixes the known issue found using v2.2: the camera's left margin now starts after `safe-area-inset-left`. Commits on main after 9fc8944. |
+| Going public, step 1: shareable | Shipped 2026-11-09 | [spec](superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md), [plan](superpowers/plans/2026-11-09-feels-on-wheels-going-public.md) |
+| Going public: Cloudflare, feelsonwheels.app and About at `/about` | Shipped 2026-11-13 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-cloudflare-domain.md), [changes](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-changes.md) |
+| <a id="real-paths-a-small-router-and-cleaner-urls"></a>URLs: real paths, a small router, and a Worker for first visits | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-urls-routing.md), [changes](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-changes.md) |
+| <a id="about-page-rework"></a><a id="the-about-page-1"></a>About page rework: why it exists with a sign-off, install steps, the GitHub icon and fixed credit links | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-design.md), [plan](superpowers/plans/2026-11-14-feels-on-wheels-about-rework.md), [changes](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-changes.md) |
 
 ## Ideas
 
@@ -42,7 +43,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Share button](#share-button) | The toolbar, sharing and installing | Idea |
 | [Help adding it to the home screen](#help-adding-it-to-the-home-screen) | The toolbar, sharing and installing | Idea |
 | [A dark home-screen icon](#a-dark-home-screen-icon) | The toolbar, sharing and installing | Idea |
-| [About page rework](#about-page-rework) | [The About page](#the-about-page) | Idea |
+| [A new social preview image](#a-new-social-preview-image) | [The social preview](#the-social-preview) | Idea |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
@@ -147,6 +148,7 @@ These all compete for the same few places (the toolbar, the start message, the A
 
 - Lucas's idea, 2026-11-12: move the About link from the toolbar into the start message ("the message", v2.2), to free up room and so the phone's toolbar buttons never change place or order. Today on phones About gives way to Start over while a word is selected (going-public spec).
 - The freed toolbar slot could hold the [share button](#share-button).
+- More people would arrive at About from the start, so the way back to the wheel matters more. About has "‹ Back to the wheel" at its end; a floating back button was considered and dropped for now (2026-11-14).
 - To decide when designing: how to reach About once the start message is gone (after the first word is opened), since the toolbar link is the only other way; and whether the noscript message's About link changes.
 
 #### Share button
@@ -160,7 +162,7 @@ These all compete for the same few places (the toolbar, the start message, the A
 #### Help adding it to the home screen
 
 - Lucas's idea, 2026-11-12: Add to Home Screen is buried on iOS, so make it easier, with instructions or a link to how.
-- Today the About page has one sentence on it ("Private and offline").
+- Today the About page has one sentence on it, in its "Install it" section (`/about#install`).
 - What's possible: Safari on iOS has no install prompt a page can trigger, so there it can only be instructions (Share, then Add to Home Screen). Chrome and Edge on Android and desktop fire `beforeinstallprompt`, so there it can be a real Install button.
 - To decide when designing: where it shows (About, the start message, a one-time hint), how to tell it's already installed (`display-mode: standalone`) so it doesn't nag. Installs at the old github.io address didn't carry over to feelsonwheels.app.
 
@@ -170,28 +172,18 @@ These all compete for the same few places (the toolbar, the start message, the A
 - To research when designing; nothing is checked yet. As far as known, there's no standard way for a web app to give its home-screen icon a dark version: the manifest's icons and `apple-touch-icon` take one image each. What might come close: newer iOS can darken or tint home-screen icons itself, and Android can draw a themed icon from a `monochrome` icon in the manifest. The browser-tab icon (`icon.svg`) can already follow dark mode with a media query inside the SVG.
 - Today the manifest's `theme_color` and `background_color` are both white (`build/site.ts`).
 
-### The About page
+### The social preview
 
-#### About page rework
+#### A new social preview image
 
-**What's on the page** (Lucas, 2026-11-13): make it friendlier by keeping only what a visitor cares about.
+Lucas's idea, 2026-11-14: rework the picture link previews show (`public/og-image.png`). Today it's the app icon beside "Feels on Wheels" and "Name what you feel", on dark.
 
-- **Keep:** what it's for, how to use it, the credits, Made by, and Help translate.
-- **Keep the install steps** from "Private and offline" (install from the browser's menu, or Add to Home Screen on an iPhone or iPad): installing isn't discoverable, and it's a nice thing to find.
-- **Drop:** the "Source and license" section, and the rest of "Private and offline" ("who cares"). What they say stays in the README, where it belongs (its License section, and the Private and Offline bullets). Nothing about AI on the page: the "Made with AI, with love" headline from 2026-11-12 went in the README's "Built with AI" section instead (2026-11-13).
-- **Link the GitHub repo with a small GitHub icon,** likely in Made by, in place of the source section's link.
-- To decide when designing: where the install steps go once their section is gone ("How to use it", or their own short section), and how they meet [help adding it to the home screen](#help-adding-it-to-the-home-screen); and the icon's accessible name, since it's a link with no visible text.
-
-Lucas's ideas, 2026-11-12:
-
-- **Why it exists,** in Lucas's words (a draft to edit before it goes on the page): the original feelings wheel helped immensely in his own therapy. He had a hard time identifying his emotions and thought he was incapable of it. After a lot of work and mindfulness, and having actual words for the emotions, he was able to. He used to look at [feelingswheel.com](reference/core-feelings-wheel.md#the-reference-site) almost daily, and wanted to make an accessible, beautiful, fast and versatile version for others to enjoy.
-- **A dedication** to A, E and M. Where it goes is open.
-- **The credit links feel off.** Each source's author name links to the work, and Roberts's link goes to an imgur post whose image is gone ([known issue](#the-about-page-1)). To decide: what to link (the work, its title, or the [reference notes](reference/README.md)), and whether to use the archive.org copy already in [core-feelings-wheel.md](reference/core-feelings-wheel.md).
-- **A floating back button,** so you don't have to scroll to the bottom to get back to the wheel.
-- **A left chevron** on "Back to the wheel". Likely the same control as the floating one.
-- **Say no more than has been tested.** "How to use it" says "Everything works with a keyboard and with a screen reader", but no screen reader has been tried by hand yet ([ACCESSIBILITY.md](../ACCESSIBILITY.md#supported-environments), 2026-11-12). Soften it, or link ACCESSIBILITY.md, until one has.
-- With [About in the start message](#about-in-the-start-message), more people arrive at About from the start, so the way back matters more.
-- Worth doing before [launching](#before-launching).
+- **Make it look like the app** in a small, wide window: part of the wheel coming in from the left edge, the way it rests there, and the app's name where the start message's card would be.
+- **A mock of the wheel, not the real one:** something that reads as the wheel (its colored rings and cells) without its words, simple like the favicon, so it still reads as a small thumbnail.
+- **Rethink the tagline** "Name what you feel". Lucas is open to alternatives; not decided. Besides the picture, it's in the home page's title (`titles.home` in `src/data/locales/en.json`) and the picture's alt text (`imageAlt`), and tests check the title.
+- To decide when designing: the tagline; light or dark; whether the toolbar's controls (the wheel switch, the buttons) show, and how much of the app's look it copies before it stops reading as a preview.
+- `scripts/make-og-image.mjs` renders the picture; rerun it by hand after a change.
+- To do before [launching](#before-launching).
 
 ### URLs, routing and hosting
 
@@ -245,10 +237,6 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 - **Going back on phones.** Swiping back doesn't work at all on the wheel: it takes every touch, so the browser's Back button is the only way back. An app installed to the iPhone home screen has no Back at all. Lucas (2026-11-14): better history rules for phones wait on an in-app back button. History follows the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md): picking a word or a place adds an entry, moving by direction replaces it. Related: [return to the word you jumped from](#return-to-the-word-you-jumped-from).
 - **Keyboard selection on the phone's half-wheel.** Choosing a word by keyboard or the accessible tree can select one on the hidden left half without turning the wheel to show it. Lucas wants to try it before deciding whether the wheel should turn to show it.
 
-### The About page
-
-- **Roberts's credit link shows nothing.** Found 2026-11-12: the imgur post's image now redirects to imgur's "removed" picture (checked 2026-11-12), so the credit links to an empty post. [core-feelings-wheel.md](reference/core-feelings-wheel.md) still says it was online on 2026-11-09 and has an archive.org copy; update the note when the link is fixed. Part of the [About page rework](#about-page-rework).
-
 ### Code and tests
 
 - **The perf leak check is flaky.** `tests/perf/switch.spec.ts` sometimes counts 3 live wheels instead of 2 after 20 switches: about 1 run in 10, on main before v2.1 too, so it's garbage-collection timing rather than a leak. Worth a sturdier check (more GC turns, or a retry) before trusting a failure.
@@ -258,6 +246,8 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 
 ## Before launching
 
+<a id="before-going-public"></a>
+
 The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens in two steps: first shareable, then launched. Step 1 [shipped](#shipped) on 2026-11-09. Step 2 is what's left before announcing it and letting search engines index it. The host and the domain (2026-11-13) and the URL structure (2026-11-14) are done; the rest isn't started.
 
 - **Lucas reviews the definitions and sensations** in [content-review.md](content-review.md). This was moved out of v1.1.
@@ -266,7 +256,7 @@ The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens
   - Decide first whether the `workers.dev` address and the preview links should say `noindex` once the domain is indexable, since they serve the same pages.
 - **Optional, after letting search engines in:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
 - **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, gray like the site's other icons; on hover it takes the wheel's seven colors and spins once, settling.
-- **Known issues and ideas:** decide which to finish before announcing it. The [About page rework](#about-page-rework), [share button](#share-button) and [help adding it to the home screen](#help-adding-it-to-the-home-screen) are the ones a first visitor would notice.
+- **Known issues and ideas:** decide which to finish before announcing it. The [share button](#share-button) and [help adding it to the home screen](#help-adding-it-to-the-home-screen) are the ones a first visitor would notice. Lucas wants [a new social preview image](#a-new-social-preview-image) and tagline before launching (2026-11-14).
 
 ## Content rules
 

@@ -373,6 +373,8 @@ function mount(next: Layout, initial: State, intro: boolean): void {
 // ── Routes (URL redesign spec §2, §3) ────────────────────────────────────
 const aboutHeading = $<HTMLElement>('#about h1');
 const backLink = $<HTMLAnchorElement>('#about .about-back a');
+/** About rework: the heading links home like a site title, so it starts fresh (Start over's clear), not a Back. */
+const homeLink = $<HTMLAnchorElement>('#about .about-home');
 /** About's history entry says it was opened from inside the app, so "Back to the wheel" can be a Back (spec §3). */
 const IN_APP = { fwInApp: true };
 /** The control that opened About; it gets focus back when About closes (WCAG 2.4.3). */
@@ -464,6 +466,7 @@ function applyRoute(route: Route, how: 'push' | 'replace' | 'none', link?: { pat
 /**
  * Spec §2: a plain click on a same-origin link is shown in the app (the hint's link already handles its own). A link
  * to the address already showing changes nothing, and "Back to the wheel" on an About opened in the app is a Back.
+ * About's heading link starts fresh: home, then Start over's clear, which adds no entry since the address stays /.
  */
 document.addEventListener('click', (e) => {
   const a = e.target instanceof Element ? e.target.closest('a[href]') : null;
@@ -473,6 +476,7 @@ document.addEventListener('click', (e) => {
   e.preventDefault();
   if (a === backLink && (history.state as { fwInApp?: unknown } | null)?.fwInApp) history.back();
   else if (url.pathname !== location.pathname) applyRoute(parsePath(table, url.pathname).route, 'push', { path: url.pathname, from: a });
+  if (a === homeLink) dispatch({ type: 'clear' });
 });
 
 /** Spec v2 §4.2: switching always starts fresh (or, from a jump link, opens that word) and pushes history (history rule spec), except from not found. */

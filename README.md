@@ -17,9 +17,7 @@ It's meant to have everything you'd want from a modern web app, with accessibili
 - **Any screen.** Layouts are tested from 280 px phones to 2560 px monitors, in Chromium, Firefox and WebKit, and on Android and iPhone.
 - **Private.** No accounts, no tracking, no analytics. Nothing you choose leaves your device.
 
-## Built with AI
-
-**Made with AI, with love.**
+## Made with AI, with love
 
 Feels on Wheels was built with AI, openly and on purpose. It's the first project Lucas made this way.
 

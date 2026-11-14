@@ -1,0 +1,7 @@
+# Changes from the spec
+
+Where *About page rework* as shipped differs from its approved [spec](2026-11-14-feels-on-wheels-about-rework-design.md). The spec stays as it was approved.
+
+- **Made by became the sign-off of Why it exists** (Lucas, 2026-11-14, after building it). There's no Made by section or heading. "Why it exists" ends with "— Lucas Polito" and the GitHub icon, as a closing signature, then the dedication. Credits follow straight after. Section order: What it's for, How to use it, Install it, Why it exists, Credits, Help translate.
+- **The heading links home, with the app icon** (Lucas, 2026-11-14, after building it, to give the page some color). The icon and "Feels on Wheels" are one link to `/`, inside the `<h1>`, like a site title on any other site. It starts fresh: the wheel at rest with nothing selected (Start over's clear), not a Back. "Back to the wheel" at the end still returns to the word you were on. The icon is an `<img>` of `/icons/icon.svg` (the favicon file, already downloaded and cached offline), with `alt=""` because the name beside it labels the link. The heading still takes focus when About opens.
+- **The sign-off's two links open a new tab** (Lucas, 2026-11-14): Lucas's name and the GitHub icon, with `target="_blank" rel="noopener"`. Screen readers hear "(opens in a new tab)" (`page.about.newTab`): hidden text on the name, and part of the icon's `aria-label`. The other links on the page open in the same tab.

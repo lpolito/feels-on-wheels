@@ -18,7 +18,7 @@ const strings: PageStrings = {
   imageAlt: 'The wheel.',
   noscript: 'Needs JavaScript.',
   titles: { home: 'Feels on Wheels: name what you feel', homeDescription: 'A free feelings wheel.', about: 'About Feels on Wheels', aboutDescription: 'About it.' },
-  about: { heading: 'Feels on Wheels', summary: 's', back: 'Back', sections: [] },
+  about: { heading: 'Feels on Wheels', summary: 's', back: 'Back', newTab: '(opens in a new tab)', sections: [] },
 };
 
 const home: HeadMeta = { title: strings.titles.home, description: strings.titles.homeDescription, path: '', jsonLd: true, noindex: false };
@@ -131,10 +131,10 @@ describe('About page', () => {
   const about = (en as unknown as { page: PageStrings }).page.about;
   const html = renderAbout(about, site);
 
-  test('the link map points at the repo, license, contributing guide, author and the wheel', () => {
+  test('the link map points at the repo, accessibility notes, contributing guide, author and the wheel', () => {
     expect(links).toEqual({
-      repo: 'https://github.com/lpolito/feels-on-wheels',
-      license: 'https://github.com/lpolito/feels-on-wheels/blob/main/LICENSE',
+      github: 'https://github.com/lpolito/feels-on-wheels',
+      accessibility: 'https://github.com/lpolito/feels-on-wheels/blob/main/ACCESSIBILITY.md',
       contributing: 'https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md',
       author: 'https://lucaspolito.dev/',
       home: '/',
@@ -148,8 +148,33 @@ describe('About page', () => {
   });
 
   test('linkify escapes text and turns [label](target) into links', () => {
-    expect(linkify('[Repo]({repo}) & co', links)).toBe('<a href="https://github.com/lpolito/feels-on-wheels">Repo</a> &amp; co');
+    expect(linkify('[Guide]({contributing}) & co', links)).toBe('<a href="https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md">Guide</a> &amp; co');
     expect(linkify('see [this](https://example.com/a?b=1&c=2)', links)).toBe('see <a href="https://example.com/a?b=1&amp;c=2">this</a>');
+  });
+
+  test('linkify draws {github} as the GitHub icon, named by its label', () => {
+    const out = linkify('[Feels on Wheels on GitHub]({github})', links, '(opens in a new tab)');
+    expect(out.startsWith('<a class="about-icon" href="https://github.com/lpolito/feels-on-wheels" target="_blank" rel="noopener" aria-label="Feels on Wheels on GitHub (opens in a new tab)" title="Feels on Wheels on GitHub"><svg')).toBe(true);
+    expect(out).toContain('aria-hidden="true"');
+    expect(out).toContain('focusable="false"');
+    expect(out).toContain('currentColor');
+    expect(out.endsWith('</svg></a>')).toBe(true);
+    // Nothing but tags: no visible text beside the icon.
+    expect(out).toMatch(/^(?:<[^>]+>)+$/);
+  });
+
+  test('an icon link label is escaped in its attributes', () => {
+    expect(linkify('[A "q" & b]({github})', links, '(new)')).toContain('aria-label="A &quot;q&quot; &amp; b (new)"');
+  });
+
+  test('only the name and GitHub links open a new tab, and they say so to screen readers', () => {
+    expect(html.match(/target="_blank"/g)?.length).toBe(2);
+    expect(section('why')).toContain('aria-label="Feels on Wheels on GitHub (opens in a new tab)"');
+    expect(html.match(/<a [^>]*target="_blank" rel="noopener"/g)?.length).toBe(2);
+  });
+
+  test('a new-tab link needs the new-tab text', () => {
+    expect(() => linkify('[Me]({author})', links)).toThrow(/new tab/);
   });
 
   test('linkify refuses unknown link keys', () => {
@@ -159,7 +184,42 @@ describe('About page', () => {
   test('one h1, then the sections in order', () => {
     expect(html.match(/<h1[ >]/g)?.length).toBe(1);
     const ids = [...html.matchAll(/<section id="([^"]+)">\s*<h2>/g)].map((m) => m[1]);
-    expect(ids).toEqual(['what', 'how', 'private', 'credits', 'made-by', 'source', 'translate']);
+    expect(ids).toEqual(['what', 'how', 'install', 'why', 'credits', 'translate']);
+  });
+
+  const section = (id: string): string => new RegExp(`<section id="${id}">([\\s\\S]*?)</section>`).exec(html)![1]!;
+
+  test('nothing about AI', () => {
+    expect(html).not.toMatch(/Claude|Superpowers|\bAI\b/);
+  });
+
+  test('credits link each work by its title, and Roberts by the archive.org copy', () => {
+    const items = section('credits').match(/<li>[\s\S]*?<\/li>/g) ?? [];
+    for (const li of items) {
+      if (li.startsWith('<li><a ')) expect(li).toContain('feelingswheel.com');
+      else expect(li).toContain('“<a href="https://');
+    }
+    expect(html).not.toContain('href="https://imgur.com');
+    expect(html).toContain('href="https://web.archive.org/web/20180505024944/https://imgur.com/tCWChf6"');
+  });
+
+  test('why it exists ends with the dedication, in its own paragraph', () => {
+    const why = section('why');
+    expect(why.match(/<p>[\s\S]*?<\/p>/g)!.at(-1)).toBe('<p>For A, E, and M.</p>');
+    expect(why).toContain('accessible, beautiful, fast, and versatile');
+  });
+
+  test('why it exists signs off with the name and the GitHub icon, just before the dedication', () => {
+    const signOff = section('why').match(/<p>[\s\S]*?<\/p>/g)!.at(-2)!;
+    expect(signOff.startsWith('<p>— <a href="https://lucaspolito.dev/" target="_blank" rel="noopener">Lucas Polito<span class="visually-hidden"> (opens in a new tab)</span></a> <a class="about-icon"')).toBe(true);
+    expect(signOff).toContain('aria-label="Feels on Wheels on GitHub (opens in a new tab)"');
+  });
+
+  test('how to use it claims no more than was tested', () => {
+    const how = section('how');
+    expect(how).toContain('built for screen readers');
+    expect(how).toContain('href="https://github.com/lpolito/feels-on-wheels/blob/main/ACCESSIBILITY.md"');
+    expect(how).not.toContain('with a screen reader.');
   });
 
   test('every credit links to its source', () => {
@@ -176,11 +236,18 @@ describe('About page', () => {
 
   test('it is the About view: its id, and a heading that takes focus from script (URL redesign spec §3)', () => {
     expect(html.startsWith('<main class="about" id="about">')).toBe(true);
-    expect(html).toMatch(/<h1 tabindex="-1">Feels on Wheels<\/h1>/);
+    expect(html).toMatch(/<h1 tabindex="-1"><a class="about-home" href="\/">[\s\S]*?Feels on Wheels<\/a><\/h1>/);
+  });
+
+  test('the heading links home with the app icon, which is decorative and sized to hold its space', () => {
+    const img = /<h1[^>]*><a class="about-home" href="\/">(<img [^>]*>)Feels on Wheels<\/a><\/h1>/.exec(html)![1]!;
+    expect(img).toContain('src="/icons/icon.svg"');
+    expect(img).toContain('alt=""');
+    expect(img).toMatch(/width="\d+" height="\d+"/);
   });
 
   test('it ends with the way back to the wheel', () => {
-    expect(html.trimEnd()).toMatch(/<a href="\/">Back to the wheel<\/a><\/p>\s*<\/main>$/);
+    expect(html.trimEnd()).toMatch(/<a href="\/"><svg class="about-chevron"[^>]*aria-hidden="true"[\s\S]*?<\/svg>Back to the wheel<\/a><\/p>\s*<\/main>$/);
   });
 
 });

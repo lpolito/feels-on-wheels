@@ -2,17 +2,17 @@
 
 ## Roadmap
 
-`docs/ROADMAP.md` is the living list of versions, their status, and ideas for later.
+`docs/ROADMAP.md` is the living list of what's shipped, its status, and ideas for later.
 
-- Read it before brainstorming or planning a new version.
-- Update it in the same change when a spec is approved, a version ships, or Lucas mentions new or later work, so nothing lives only in a chat.
-- When an idea ships, delete its entry from Ideas (its subsection and its table row): the versions table, with its spec and plan links, is the record. Move anything still open into the idea it belongs to, and repoint links to the removed heading. Delete finished items in Before launching too, rather than marking them done.
-- Specs (`docs/superpowers/specs/`) are frozen once approved. Link to them from the roadmap instead of copying the version list into each spec.
+- Read it before brainstorming or planning new work.
+- Update it in the same change when a spec is approved, a change ships, or Lucas mentions new or later work, so nothing lives only in a chat.
+- When an idea ships, delete its entry from Ideas (its subsection and its table row): the Shipped table, with its spec and plan links, is the record. Move anything still open into the idea it belongs to, and repoint links to the removed heading. Delete finished items in Before launching too, rather than marking them done.
+- Specs (`docs/superpowers/specs/`) are frozen once approved. Link to them from the roadmap instead of copying the list of shipped changes into each spec.
 
 ## Accessibility
 
 - Changes to what people see or do follow the contributor expectations in `ACCESSIBILITY.md`. In the PR's "What and why", say how the change was checked: the tests, the keyboard in a browser, and which hand checks (a screen reader, a real phone) weren't done.
-- When a version ships or a known issue is found or fixed, update the known limitations in `ACCESSIBILITY.md` in the same change.
+- When a change ships or a known issue is found or fixed, update the known limitations in `ACCESSIBILITY.md` in the same change.
 
 ## Shipping changes
 

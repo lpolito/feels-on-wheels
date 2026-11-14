@@ -48,7 +48,7 @@ Lucas will reply as soon as he can, and accessibility barriers come before other
 
 ## Ownership and maintenance
 
-Lucas maintains Feels on Wheels on his own and owns its accessibility. This file is reviewed when each version ships, along with the [roadmap](docs/ROADMAP.md), so its known limitations stay current.
+Lucas maintains Feels on Wheels on his own and owns its accessibility. This file is reviewed when each change ships, along with the [roadmap](docs/ROADMAP.md), so its known limitations stay current.
 
 ## Supported environments
 

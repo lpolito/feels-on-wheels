@@ -1,16 +1,14 @@
 # Roadmap: Feels on Wheels
 
-The living list of what's built, what's next, and what's still an idea. Specs are frozen once approved; this file is not. Update it when a spec is approved, when a version ships, and whenever new or later work comes up, so nothing lives only in a chat.
+The living list of what's built, what's next, and what's still an idea. Specs are frozen once approved; this file is not. Update it when a spec is approved, when a change ships, and whenever new or later work comes up, so nothing lives only in a chat.
 
 **Aim:** every way to identify an emotion, in a fast, accessible, lightweight feelings wheel that works offline, installs as an app, and supports light and dark mode. Built for Lucas first and meant to go public later.
 
-## Versions
+## Shipped
 
-Each version is used before the next one is designed. Point releases (v1.1) rework what's there after using it. Whole versions add a new way to identify an emotion. The feedback behind each shipped version is in its spec, and in the git history for v1.3.1.
+Each change is used before the next one is designed. When Lucas picks an idea to build, it moves into this table, named by what it does. Older rows keep the version numbers they shipped with. The feedback behind each shipped change is in its spec, and in the git history for v1.3.1.
 
-Ideas don't have version numbers. When Lucas picks one to build, it moves into this table: a new way to identify an emotion takes the next whole version (v3), and polish to what's there takes the next point release (v2.3).
-
-| Version | Status | Spec and plan |
+| Change | Status | Spec and plan |
 |---|---|---|
 | v1: Core wheel | Shipped | [spec](superpowers/specs/2026-11-06-feelings-wheel-v1-design.md), [plan](superpowers/plans/2026-11-06-feelings-wheel-v1.md) |
 | v1.1: Selected and opened states, card redesign | Shipped | [spec](superpowers/specs/2026-11-07-feelings-wheel-v1.1-design.md), [plan](superpowers/plans/2026-11-07-feelings-wheel-v1.1.md) |
@@ -50,7 +48,7 @@ These are what Lucas asked for. Each idea's brainstorm starts here. The sources 
 
 ### New ways to identify an emotion
 
-Each of these is a whole version.
+Each of these is a big change of its own, not polish to what's there.
 
 #### Wizard
 
@@ -81,7 +79,7 @@ What Lucas first asked for:
 
 ### The wheel and the card
 
-Polish to what's there; these could ship together as a point release.
+Polish to what's there; these could ship together as one change.
 
 #### Tap the opened word to close it
 
@@ -187,7 +185,7 @@ What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheel
 
 ## Known issues
 
-Still open after v2.2.1. None blocks the next version. The ones that get in someone's way are also listed, in plain words, under known limitations in [ACCESSIBILITY.md](../ACCESSIBILITY.md#known-limitations); keep the two in step.
+Still open. None blocks the next change. The ones that get in someone's way are also listed, in plain words, under known limitations in [ACCESSIBILITY.md](../ACCESSIBILITY.md#known-limitations); keep the two in step.
 
 ### Phones: turning and zooming
 
@@ -229,7 +227,7 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 
 ## Before launching
 
-The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens in two steps: first shareable, then launched. Step 1 [shipped](#versions) on 2026-11-09. Step 2 is what's left before announcing it and letting search engines index it. The host and the domain are done (2026-11-13); the rest isn't started.
+The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens in two steps: first shareable, then launched. Step 1 [shipped](#shipped) on 2026-11-09. Step 2 is what's left before announcing it and letting search engines index it. The host and the domain are done (2026-11-13), and the URL redesign is built and in review; the rest isn't started.
 
 - **Lucas reviews the definitions and sensations** in [content-review.md](content-review.md). This was moved out of v1.1.
 - **Draft text for Lucas to edit:** the body wheel's preview description ("Start from what you notice in your body to find the word for what you feel.") is a draft, and it's shorter than the 100 to 160 characters the home description uses.

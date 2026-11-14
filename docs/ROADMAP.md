@@ -149,9 +149,16 @@ These all compete for the same few places (the toolbar, the start message, the A
 
 #### About page rework
 
+**What's on the page** (Lucas, 2026-11-13): make it friendlier by keeping only what a visitor cares about.
+
+- **Keep:** what it's for, how to use it, the credits, Made by, and Help translate.
+- **Keep the install steps** from "Private and offline" (install from the browser's menu, or Add to Home Screen on an iPhone or iPad): installing isn't discoverable, and it's a nice thing to find.
+- **Drop:** the "Source and license" section, and the rest of "Private and offline" ("who cares"). What they say stays in the README, where it belongs (its License section, and the Private and Offline bullets). Nothing about AI on the page: the "Made with AI, with love" headline from 2026-11-12 went in the README's "Built with AI" section instead (2026-11-13).
+- **Link the GitHub repo with a small GitHub icon,** likely in Made by, in place of the source section's link.
+- To decide when designing: where the install steps go once their section is gone ("How to use it", or their own short section), and how they meet [help adding it to the home screen](#help-adding-it-to-the-home-screen); and the icon's accessible name, since it's a link with no visible text.
+
 Lucas's ideas, 2026-11-12:
 
-- **A headline:** "Made with AI, with love." Probably for the "Made by" section; confirm where.
 - **Why it exists,** in Lucas's words (a draft to edit before it goes on the page): the original feelings wheel helped immensely in his own therapy. He had a hard time identifying his emotions and thought he was incapable of it. After a lot of work and mindfulness, and having actual words for the emotions, he was able to. He used to look at [feelingswheel.com](reference/core-feelings-wheel.md#the-reference-site) almost daily, and wanted to make an accessible, beautiful, fast and versatile version for others to enjoy.
 - **A dedication** to A, E and M. Where it goes is open.
 - **The credit links feel off.** Each source's author name links to the work, and Roberts's link goes to an imgur post whose image is gone ([known issue](#the-about-page-1)). To decide: what to link (the work, its title, or the [reference notes](reference/README.md)), and whether to use the archive.org copy already in [core-feelings-wheel.md](reference/core-feelings-wheel.md).

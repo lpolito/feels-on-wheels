@@ -13,11 +13,13 @@ It's meant to have everything you'd want from a modern web app, with accessibili
 - **Accessible.** The wheel is drawn on a canvas, but every word is also in a real tree that works with a keyboard and screen readers. It follows your light or dark mode, and respects reduced motion and forced colors (high contrast). Automated accessibility checks (axe) run in the tests.
 - **Fast.** Spinning stays smooth: in performance tests, 95% of frames come less than 20 ms apart, in Chromium and Firefox.
 - **Small.** No frameworks and no runtime dependencies. Everything a first visit downloads, including every word and definition, is about 34 KB gzipped, against a 60 KB budget that every pull request checks.
-- **Offline and installable.** After one visit it works with no connection, and most browsers can install it as an app.
+- **Offline and installable.** After one visit it works with no connection. To keep it handy, install it from your browser's menu, or use Add to Home Screen on an iPhone or iPad.
 - **Any screen.** Layouts are tested from 280 px phones to 2560 px monitors, in Chromium, Firefox and WebKit, and on Android and iPhone.
-- **Private.** No accounts, no tracking, no analytics.
+- **Private.** No accounts, no tracking, no analytics. Nothing you choose leaves your device.
 
 ## Built with AI
+
+**Made with AI, with love.**
 
 Feels on Wheels was built with AI, openly and on purpose. It's the first project Lucas made this way.
 

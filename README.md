@@ -36,7 +36,7 @@ The ideas are Lucas's: what the app does, how it looks and how it feels to use. 
 
 The whole process is in the repo. Every version's design is in [docs/superpowers/specs](docs/superpowers/specs), and every build plan is in [docs/superpowers/plans](docs/superpowers/plans).
 
-The app itself is plain TypeScript, built with [Vite](https://vite.dev/). It's tested with [Vitest](https://vitest.dev/) and [Playwright](https://playwright.dev/) (with [axe-core](https://github.com/dequelabs/axe-core) for accessibility), and hosted on [Cloudflare Workers](https://developers.cloudflare.com/workers/static-assets/) as static files (`wrangler.jsonc`).
+The app itself is plain TypeScript, built with [Vite](https://vite.dev/). It's tested with [Vitest](https://vitest.dev/) and [Playwright](https://playwright.dev/) (with [axe-core](https://github.com/dequelabs/axe-core) for accessibility), and hosted on [Cloudflare Workers](https://developers.cloudflare.com/workers/static-assets/) as static files plus a small Worker for paths with no file (`wrangler.jsonc`, `src/worker/`).
 
 ## Running it
 

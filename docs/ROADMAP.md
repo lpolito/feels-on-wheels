@@ -23,7 +23,7 @@ Ideas don't have version numbers. When Lucas picks one to build, it moves into t
 | v2.2.1: Sideways phones with the notch on the left: the opened word keeps 1rem clear of the notch, not the screen's edge | Shipped | No spec; the fix for the known issue found using v2.2 (the camera's left margin now starts after `safe-area-inset-left`). Commits on main after 9fc8944. |
 | Going public, step 1: shareable | Shipped 2026-11-09 | [spec](superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md), [plan](superpowers/plans/2026-11-09-feels-on-wheels-going-public.md). Was live at `lpolito.github.io/feels-on-wheels/` until the move below. |
 | Going public: Cloudflare, feelsonwheels.app and About at `/about` | Shipped 2026-11-13 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-cloudflare-domain.md). Live at <https://feelsonwheels.app/>, served by Cloudflare Workers, not announced or indexed. The github.io address stops working; nothing forwards from it (Lucas, 2026-11-13). What's left is in [before launching](#before-launching). |
-| URLs: real paths, a small router, and a Worker for first visits | Spec approved 2026-11-13 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md). [plan](superpowers/plans/2026-11-13-feels-on-wheels-urls-routing.md) |
+| URLs: real paths, a small router, and a Worker for first visits | Built; in review | [spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-urls-routing.md) |
 
 ## Ideas
 
@@ -43,7 +43,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Help adding it to the home screen](#help-adding-it-to-the-home-screen) | The toolbar, sharing and installing | Idea |
 | [A dark home-screen icon](#a-dark-home-screen-icon) | The toolbar, sharing and installing | Idea |
 | [About page rework](#about-page-rework) | [The About page](#the-about-page) | Idea |
-| [Real paths, a small router and cleaner URLs](#real-paths-a-small-router-and-cleaner-urls) | [URLs, routing and hosting](#urls-routing-and-hosting) | Spec approved 2026-11-13 ([versions](#versions)) |
+| [Real paths, a small router and cleaner URLs](#real-paths-a-small-router-and-cleaner-urls) | [URLs, routing and hosting](#urls-routing-and-hosting) | Built; in review ([versions](#versions)) |
 | [Languages](#languages) | URLs, routing and hosting | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 
@@ -176,7 +176,9 @@ Decide these together, and before launch: once links are shared and indexed, eve
 
 #### Real paths, a small router and cleaner URLs
 
-**Designed** in the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) (approved 2026-11-13): real paths with no `core`, a small router of our own with no full reloads (About becomes a view), a Cloudflare Worker that gives first visits the right title and preview tags or a real 404, and Back that never steps through words. The notes below are what the brainstorm started from.
+**Built** (in review) from the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) (approved 2026-11-13): real paths with no `core`, a small router of our own with no full reloads (About becomes a view), a Cloudflare Worker that gives first visits the right title and preview tags or a real 404, and Back that never steps through words. The notes below are what the brainstorm started from.
+
+- **Draft text for Lucas to edit:** the body wheel's preview description ("Start from what you notice in your body to find the word for what you feel.") is a draft, and it's shorter than the 100 to 160 characters the home description uses.
 
 Lucas's ideas: he doesn't like the `/core/` prefix and wants room for languages (2026-11-09). On 2026-11-12: he doesn't like the URLs at all, they're too permissive; he doesn't want to see `about.html` in the address bar, only `/about` (done 2026-11-13); and modern apps don't need hash routing, so why does this one lean on it? Could a small router of our own replace it, without a backend and while keeping dependencies near zero?
 
@@ -238,12 +240,12 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 
 ### Navigation
 
-- **Going back on phones.** Swiping back steps through earlier words, which doesn't fit a wheel that's itself swiped to navigate. Lucas raised it while using v2.1; no fix chosen yet, and v2.2 leaves it alone. Related: [return to the word you jumped from](#return-to-the-word-you-jumped-from) and the history question in [real paths](#real-paths-a-small-router-and-cleaner-urls).
+- **Going back on phones.** Swiping back steps through earlier words, which doesn't fit a wheel that's itself swiped to navigate. Lucas raised it while using v2.1. The URL redesign changes it: Back no longer steps through words (a word replaces the history entry; switching wheels, the jump and About push). Open until Lucas confirms on a phone. Related: [return to the word you jumped from](#return-to-the-word-you-jumped-from) and the history question in [real paths](#real-paths-a-small-router-and-cleaner-urls).
 - **Keyboard selection on the phone's half-wheel.** Choosing a word by keyboard or the accessible tree can select one on the hidden left half without turning the wheel to show it. Lucas wants to try it before deciding whether the wheel should turn to show it.
 
 ### The About page
 
-- **The About page sometimes takes several moments to open.** Found 2026-11-12, tapping the About icon. About is a separate page (`/about`), so opening it is a full page load rather than a view inside the app. Not yet measured whether the wait is the service worker, the network or the page itself.
+- **The About page sometimes takes several moments to open.** Found 2026-11-12, tapping the About icon. The URL redesign likely fixes it: About is now a view inside the app, with no full page load. To confirm by hand on the preview link.
 - **Roberts's credit link shows nothing.** Found 2026-11-12: the imgur post's image now redirects to imgur's "removed" picture (checked 2026-11-12), so the credit links to an empty post. [core-feelings-wheel.md](reference/core-feelings-wheel.md) still says it was online on 2026-11-09 and has an archive.org copy; update the note when the link is fixed. Part of the [About page rework](#about-page-rework).
 
 ### Code and tests
@@ -262,7 +264,7 @@ The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens
 - **Moved to feelsonwheels.app** on 2026-11-13 ([spec](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-design.md)), still `noindex`. No trademark check (Lucas decided against it, 2026-11-13). Installs and saved themes at the github.io address didn't carry over.
 - **Let search engines in:** set `indexable: true` in `site.config.ts` (removes `noindex`), deploy, and re-check the link previews.
   - Decide first whether the `workers.dev` address and the preview links should say `noindex` once the domain is indexable, since they serve the same pages.
-  - `/about.html` redirecting with a 301: decided in the URL redesign (its Worker answers it once `about.html` is gone).
+  - `/about.html` redirecting with a 301: done by the URL redesign's Worker.
 - **Optional, after letting search engines in:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
 - **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, gray like the site's other icons; on hover it takes the wheel's seven colors and spins once, settling.
 - **The old private repo:** archive or delete `lpolito/feelings-wheel` once the public one is settled.

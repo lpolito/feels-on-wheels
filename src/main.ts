@@ -3,17 +3,19 @@ import { createAnnouncer } from './a11y/announce';
 import { announceFor, createA11yTree, type A11yTree } from './a11y/tree';
 import { createCameraController, isPortrait, openedHalfHeight, restView, type CameraController, type CameraOpts } from './camera';
 import { createController, type Controller } from './controller';
-import { wheelText } from './i18n';
+import { t, wheelText } from './i18n';
 import { attachGestures } from './input/gestures';
 import { keyTarget, routeKey } from './input/route';
 import { TAU, drawWidthOf, normAngle, overDisc, type Viewport } from './model/geometry';
 import { buildLayout, homes, litMask, type Layout, type Path } from './model/layout';
+import { routeMeta } from './meta';
+import { inAppLink } from './router';
 import { buildFillTable, inkFor, readPalette } from './render/colors';
 import { createSpriteCache } from './render/sprites';
 import { createWheelRenderer, labelFont, type WheelRenderer } from './render/wheel';
 import { createStore, initialState, type Action, type State, type Store } from './state/store';
 import { createHistoryWriter, historyOp } from './state/history';
-import { fromHash, hashWheel, toHash } from './state/url';
+import { formatRoute, parsePath, pathOf, routeTable, stateFor, type Route } from './state/url';
 import { cardModel, type FwCard, type JumpContext } from './ui/card';
 import type { FwHint, HintContent } from './ui/hint';
 import { applyPref, readPref, resolvedTheme, safeStorage, themeName, writePref, type ThemePref } from './ui/theme';
@@ -41,7 +43,10 @@ const hueNames = data.wheels.flatMap((w) => w.children.map((n) => n.hue!));
 /** The first wheel keeps inheriting hues from its center; later wheels color feelings from their home (Task 2 ruling). */
 const layoutFor = (id: string): Layout =>
   buildLayout(data.wheels.find((w) => w.id === id)!, id === firstId ? undefined : home);
+/** Every real path (URL redesign spec §1); the same table the build and the Worker use. */
+const table = routeTable(data.wheels);
 
+const root = document.documentElement;
 const app = $<HTMLElement>('#app');
 const stage = $<HTMLElement>('#stage');
 const float = $<HTMLElement>('#float');
@@ -81,6 +86,10 @@ let lit!: Uint8Array;
 let prevLit!: Uint8Array;
 let fadeStart = -Infinity;
 let pulseStart = -Infinity;
+/** URL redesign spec §3: About is showing. The wheel is hidden as it was, keeps its state and doesn't draw. */
+let onAbout = false;
+/** The wheel was mounted while About hid it (a first load at /about), so it measured nothing. */
+let mountedHidden = false;
 
 /** Spec v2.2 §3.2: in the sideways layout the camera's aim width ends this far left of the card. */
 const CARD_GAP_REM = 1.5;
@@ -118,6 +127,7 @@ const drawTimes: number[] = [];
 
 function frame(): void {
   pendingDraw = 0;
+  if (onAbout) return;
   const s = store.get();
   const now = performance.now();
   const fadeT = reducedMotion.matches ? 1 : Math.min(1, (now - fadeStart) / FADE_MS);
@@ -182,7 +192,8 @@ app.addEventListener('fw-focus-lost', () => tree.focusSelected());
 // Spec v1.2 §3.6: keys work from the page, the wheel and the card's and toolbar's buttons. Buttons keep Enter and
 // Space; inputs, selects and textareas keep everything but Escape.
 document.addEventListener('keydown', (e) => {
-  if (e.defaultPrevented) return;
+  // On About the keys are the page's (scrolling, links), not the hidden wheel's.
+  if (e.defaultPrevented || onAbout) return;
   const action = routeKey(e.key, keyTarget(e.target as Element | null), e.metaKey || e.ctrlKey || e.altKey);
   if (!action) return;
   e.preventDefault();
@@ -203,14 +214,22 @@ canvas.addEventListener('pointerleave', () => canvas.classList.remove('fw-over-d
 // Spec v2.2 §3.1: the card's column is the wheel's canvas now, so a click on its empty space is the wheel's own tap
 // off the wheel (close, then clear), which replaces v1.3 §3.4's click handler on #app.
 
+/**
+ * URL redesign spec §7: the word a not-found path named, shown in place of the start message until the state first
+ * changes. Null otherwise.
+ */
+let notFound: { word: string } | null = null;
+
 /** Spec v1.3 §3.1 and v2 §4.1: the message shows exactly when nothing is selected, with a link to another wheel. */
 function hintContent(s: State): HintContent {
   if (s.selected !== null) return null;
   const text = wheelText(layout.wheelId);
   const wheel = data.suggests[layout.wheelId]!;
-  // Spec v2.1 §6.3: the other wheel's own URL (v2 §4.3), so a new tab opens that wheel.
-  const href = wheel === firstId ? location.pathname + location.search : `#/${wheel}`;
-  return { title: text.hintTitle, text: text.hint, link: { label: text.hintLink, wheel, href } };
+  // Spec v2.1 §6.3: the other wheel's own URL, so a new tab opens that wheel.
+  const href = formatRoute(table, { kind: 'wheel', wheel, path: null });
+  const usual = { title: text.hintTitle, text: text.hint, link: { label: text.hintLink, wheel, href } };
+  if (notFound === null) return usual;
+  return { ...usual, title: t('notFoundTitle'), lead: `${t('notFoundText', { word: notFound.word })} `, variant: 'notFound' };
 }
 
 /** Spec v1.2 §4.2: the phone card's height cap keeps it below the opened cell. */
@@ -261,11 +280,24 @@ function renderUi(s: State): void {
   tree.update(s);
 }
 
-// ── URL & history (spec §3.6, v2 §4.3) ───────────────────────────────────
+// ── URL & history (URL redesign spec §1, §6; history rule spec 2026-11-14) ──────────────────────────
 const writer = createHistoryWriter(history, () => performance.now());
-const urlFor = (s: State): string => toHash(layout, s, layout.wheelId === firstId) || location.pathname + location.search;
+const routeOf = (s: State): Extract<Route, { kind: 'wheel' }> => ({ kind: 'wheel', wheel: layout.wheelId, path: pathOf(layout, s) });
+const urlFor = (s: State): string => formatRoute(table, routeOf(s));
+const showTitle = (route: Route): void => {
+  document.title = routeMeta(route, table, data.locale).title;
+};
+
+/** Writes the mounted wheel's URL for `s` (dropping any query) and its title. */
+function writeUrl(how: 'push' | 'replace', s: State): void {
+  writer[how](urlFor(s));
+  showTitle(routeOf(s));
+}
 
 function onState(s: State, prev: State, a: Action): void {
+  // Spec §7: the first change after not found ends it and replaces its address, even one that names no word.
+  const leftNotFound = notFound !== null && a.type !== 'restore';
+  if (leftNotFound) notFound = null;
   if (openedKey(s) !== openedKey(prev)) {
     prevLit = lit;
     lit = litFor(s);
@@ -277,26 +309,11 @@ function onState(s: State, prev: State, a: Action): void {
   renderUi(s);
   placeOpened(s);
   requestDraw();
-  const op = historyOp(prev, s, a);
-  if (op !== 'none') {
-    if (op === 'push') writer.push(urlFor(s));
-    else writer.replace(urlFor(s));
-  }
-}
-
-/**
- * The wheel and state a URL names (spec v2 §4.3). A wheel other than the first needs its base hash or a word on it;
- * anything else, including an unknown wheel or path, is the first wheel (a bad path there gives its start view).
- */
-function fromLocation(hash: string): { layout: Layout; state: State | null } {
-  const id = hashWheel(hash, wheelIds);
-  if (id !== null && id !== firstId) {
-    const l = layoutFor(id);
-    const s = fromHash(l, hash);
-    if (s !== null || hash === `#/${id}`) return { layout: l, state: s };
-  }
-  const l = layoutFor(firstId);
-  return { layout: l, state: fromHash(l, hash) };
+  // Hidden behind About, the wheel never rewrites About's entry.
+  if (onAbout) return;
+  // History rule spec: the first change on not found replaces the mistyped address, whatever the rule says.
+  const op = leftNotFound ? 'replace' : historyOp(prev, s, a);
+  if (op !== 'none') writeUrl(op, s);
 }
 
 // ── Mounting a wheel (spec v2 §4.2) ──────────────────────────────────────
@@ -318,6 +335,7 @@ function mount(next: Layout, initial: State, intro: boolean): void {
   camera?.stop();
   unsubscribe();
   layout = next;
+  mountedHidden = onAbout;
   jump = layout.wheelId === firstId ? undefined : { wheel: firstId, home };
   ({ vp, opts } = measure());
   store = createStore(layout, initial);
@@ -352,35 +370,129 @@ function mount(next: Layout, initial: State, intro: boolean): void {
   drawNow();
   if (TEST) live.push(new WeakRef(layout), new WeakRef(store));}
 
-/** Spec v2 §4.2: switching always starts fresh (or, from a jump link, opens that word) and pushes history. */
+// ── Routes (URL redesign spec §2, §3) ────────────────────────────────────
+const aboutHeading = $<HTMLElement>('#about h1');
+const backLink = $<HTMLAnchorElement>('#about .about-back a');
+/** About's history entry says it was opened from inside the app, so "Back to the wheel" can be a Back (spec §3). */
+const IN_APP = { fwInApp: true };
+/** The control that opened About; it gets focus back when About closes (WCAG 2.4.3). */
+let opener: HTMLElement | null = null;
+
+/**
+ * About (spec §3): the wheel hides as it is, with any spin landed first so its URL is final, and the back link
+ * points at it. Focus goes to the heading unless this is the first load.
+ */
+function showAbout(how: 'push' | 'replace' | 'none', from?: Element): void {
+  const firstLoad = layout === undefined;
+  const entering = !onAbout;
+  if (entering && !firstLoad) {
+    controller.setViewport(vp, opts);
+    camera.stop();
+    const active = from ?? document.activeElement;
+    opener = active instanceof HTMLElement && app.contains(active) ? active : null;
+  }
+  onAbout = true;
+  root.dataset['route'] = 'about';
+  if (firstLoad) mount(layoutFor(firstId), initialState, false);
+  backLink.href = urlFor(store.get());
+  if (entering) {
+    scrollTo(0, 0);
+    if (!firstLoad) aboutHeading.focus();
+  }
+  const url = formatRoute(table, { kind: 'about' });
+  if (how === 'push') writer.push(url, IN_APP);
+  else if (how === 'replace') writer.replace(url);
+  showTitle({ kind: 'about' });
+}
+
+/**
+ * The one place a route is shown: mounts its wheel when another is showing (playing the intro on a first load or a
+ * switch to a wheel at rest), else restores the state on this wheel; then writes the URL (`how`) and the title.
+ * Not found is its wheel at rest with the not-found message, at the path as typed (`link.path` for a link).
+ */
+function applyRoute(route: Route, how: 'push' | 'replace' | 'none', link?: { path: string; from: Element }): void {
+  if (route.kind === 'about') {
+    showAbout(how, link?.from);
+    return;
+  }
+  const firstLoad = layout === undefined;
+  const leaving = onAbout;
+  if (leaving) {
+    onAbout = false;
+    root.dataset['route'] = 'wheel';
+    // Shown again at its size; mounted while hidden, it measured nothing, so it mounts again as it is.
+    if (route.wheel === layout.wheelId) {
+      if (mountedHidden) mount(layout, store.get(), false);
+      else remeasure(false);
+    }
+  }
+  const wheelPath = route.kind === 'wheel' ? route.path : null;
+  notFound = route.kind === 'notFound' ? { word: route.word } : null;
+  if (firstLoad || route.wheel !== layout.wheelId) {
+    const next = layoutFor(route.wheel);
+    const opened = wheelPath === null ? null : stateFor(next, wheelPath);
+    mount(next, opened ?? initialState, opened === null && notFound === null && (firstLoad || how !== 'none'));
+    if (!firstLoad && notFound === null) {
+      announce(opened === null ? wheelText(route.wheel).name : announceFor(layout, initialState, opened) ?? wheelText(route.wheel).name);
+    }
+  } else {
+    const cur = store.get();
+    // Back to a wheel's base URL: the whole wheel, keeping the last selection (spec v1.2 §3.1).
+    const restored = notFound !== null ? initialState
+      : (wheelPath === null ? null : stateFor(layout, wheelPath)) ?? { ...cur, opened: false, view: { mode: 'wheel' } as const };
+    store.dispatch({ type: 'restore', state: restored });
+    renderUi(store.get());
+  }
+  if (notFound !== null) {
+    const text = wheelText(layout.wheelId);
+    announce(`${t('notFoundTitle')} ${t('notFoundText', { word: notFound.word })} ${text.hint.replace('{link}', text.hintLink)}`);
+  }
+  if (how === 'none') showTitle(route);
+  else if (route.kind === 'wheel') writeUrl(how, store.get());
+  else {
+    writer[how](link?.path ?? location.pathname);
+    showTitle(route);
+  }
+  if (leaving) {
+    const back = opener;
+    opener = null;
+    back?.focus();
+    if (!back || document.activeElement !== back) tree.focusSelected();
+  }
+}
+
+/**
+ * Spec §2: a plain click on a same-origin link is shown in the app (the hint's link already handles its own). A link
+ * to the address already showing changes nothing, and "Back to the wheel" on an About opened in the app is a Back.
+ */
+document.addEventListener('click', (e) => {
+  const a = e.target instanceof Element ? e.target.closest('a[href]') : null;
+  if (!(a instanceof HTMLAnchorElement)) return;
+  const url = inAppLink(e, { href: a.href, target: a.target, download: a.hasAttribute('download') }, location.origin);
+  if (!url) return;
+  e.preventDefault();
+  if (a === backLink && (history.state as { fwInApp?: unknown } | null)?.fwInApp) history.back();
+  else if (url.pathname !== location.pathname) applyRoute(parsePath(table, url.pathname).route, 'push', { path: url.pathname, from: a });
+});
+
+/** Spec v2 §4.2: switching always starts fresh (or, from a jump link, opens that word) and pushes history (history rule spec), except from not found. */
 app.addEventListener('fw-wheel', (e) => {
   const { wheel: id, path } = (e as CustomEvent<{ wheel: string; path?: Path }>).detail;
   if (!wheelIds.includes(id) || (id === layout.wheelId && path === undefined)) return;
   const from = e.target;
-  const next = layoutFor(id);
-  const opened = path === undefined ? null : fromHash(next, `#/${id}/${path}`);
-  mount(next, opened ?? initialState, opened === null);
-  writer.push(urlFor(store.get()));
-  announce(opened === null ? wheelText(id).name : announceFor(layout, initialState, store.get()) ?? wheelText(id).name);
+  const opened = path !== undefined && table.wheels.get(id)!.has(path);
+  // History rule spec: on not found, the message's own link replaces the mistyped address, so Back never returns to it.
+  applyRoute({ kind: 'wheel', wheel: id, path: opened ? path! : null }, notFound !== null ? 'replace' : 'push');
   // Focus: the switch keeps its own button; the message's link and the card's jump are rebuilt, so focus follows.
   if (from === hint) hint.focusLink();
-  else if (from === card && opened === null) tree.focusSelected();
+  else if (from === card && !opened) tree.focusSelected();
 });
 
 addEventListener('popstate', () => {
-  const found = fromLocation(location.hash);
-  if (found.layout.wheelId !== layout.wheelId) {
-    // The tree is rebuilt, so focus inside it would fall to <body> (WCAG 2.4.3); put it back on the new tree.
-    const treeHadFocus = $<HTMLElement>('#a11y-tree').contains(document.activeElement);
-    mount(found.layout, found.state ?? initialState, false);
-    announce(wheelText(layout.wheelId).name);
-    if (treeHadFocus) tree.focusSelected();
-    return;
-  }
-  const cur = store.get();
-  // Back to the base URL: the whole wheel, keeping the last selection (spec v1.2 §3.1).
-  const restored = fromHash(layout, location.hash) ?? { ...cur, opened: false, view: { mode: 'wheel' } as const };
-  store.dispatch({ type: 'restore', state: restored });
+  // A rebuilt tree drops focus to <body> (WCAG 2.4.3); put it back on the new tree.
+  const treeHadFocus = $<HTMLElement>('#a11y-tree').contains(document.activeElement);
+  applyRoute(parsePath(table, location.pathname).route, 'none');
+  if (treeHadFocus && !$<HTMLElement>('#a11y-tree').contains(document.activeElement)) tree.focusSelected();
 });
 
 // ── Input & resize ───────────────────────────────────────────────────────
@@ -388,6 +500,9 @@ attachGestures(canvas, (intents) => controller.handle(intents));
 
 /** `onlyIfChanged`: skip when the viewport and options measure the same (the card resizing as it unfolds). */
 function remeasure(onlyIfChanged: boolean): void {
+  // Hidden behind About, the stage measures 0: keep the last real size (spec §3).
+  const box = stage.getBoundingClientRect();
+  if (box.width === 0 || box.height === 0) return;
   const next = measure();
   if (onlyIfChanged && next.vp.width === vp.width && next.vp.height === vp.height && drawWidthOf(next.vp) === drawWidthOf(vp)
     && next.opts.remPx === opts.remPx && next.opts.portrait === opts.portrait && next.opts.rest === opts.rest
@@ -409,15 +524,12 @@ aimWatch.observe(app);
 aimWatch.observe(float);
 
 // ── First load ───────────────────────────────────────────────────────────
-{
-  const start = fromLocation(location.hash);
-  mount(start.layout, start.state ?? initialState, start.state === null);
-}
+applyRoute(parsePath(table, location.pathname).route, 'none');
 
 // ── Offline support (spec §6.5) ─────────────────────────────────────────
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   const register = (): void => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {
       // Offline support is an enhancement; the app works without it.
     });
   };

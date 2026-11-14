@@ -4,14 +4,14 @@ import { sitePlugin } from './build/site-plugin.ts';
 import { swPlugin } from './build/sw-plugin.ts';
 
 export default defineConfig({
-  // Relative URLs so the app works from any sub-path (e.g. GitHub Pages).
-  base: './',
+  // Root-relative URLs: real paths like /happy/playful would break relative ones.
+  base: '/',
   plugins: [sitePlugin(), swPlugin()],
   build: {
     target: 'es2022',
     rollupOptions: {
-      // The About page is a second, static page (going-public spec §8.1).
-      input: { index: 'index.html', about: 'about.html' },
+      // One page: About is a view in index.html (URL redesign spec §3).
+      input: { index: 'index.html' },
       output: {
         manualChunks(id) {
           if (id.includes('/src/data/')) return 'data';

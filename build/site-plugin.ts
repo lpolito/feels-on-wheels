@@ -1,30 +1,41 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Plugin } from 'vite';
 import { site } from '../site.config.ts';
-import { aboutLinks, headTags, linkify, renderAbout, robotsTxt, sitemapXml, webManifest, type PageId, type PageStrings } from './site.ts';
+import { loadData } from '../src/data/load.ts';
+import { allPaths, reservedClash, routeTable } from '../src/state/url.ts';
+import { aboutLinks, headTags, linkify, renderAbout, robotsTxt, sitemapXml, webManifest, type HeadMeta, type PageStrings } from './site.ts';
+
+/** The shell's own head is `/`'s (URL redesign spec §5): the Worker swaps it for every other route's. */
+const shellHead = (s: PageStrings): HeadMeta => ({
+  title: s.titles.home, description: s.titles.homeDescription, path: '', jsonLd: true, noindex: false,
+});
 
 /**
- * Going-public spec §7–§8: fills each page's head (<!--site:head-->) and noscript text (<!--site:noscript-->) from
- * site.config.ts and en.json's `page` strings, and emits manifest.webmanifest, robots.txt and sitemap.xml.
- * en.json is re-read on every use so dev picks up edits.
+ * Going-public spec §7–§8: fills the shell's head (<!--site:head-->), noscript text (<!--site:noscript-->) and About
+ * view (<!--site:about-->, URL redesign spec §3) from site.config.ts and en.json's `page` strings, and emits
+ * manifest.webmanifest, robots.txt and sitemap.xml. en.json is re-read on every use so dev picks up edits.
  */
 export function sitePlugin(): Plugin {
   let root = process.cwd();
-  const strings = (): PageStrings =>
-    (JSON.parse(readFileSync(join(root, 'src/data/locales/en.json'), 'utf8')) as { page: PageStrings }).page;
-  const pageOf = (path: string): PageId => (path.split('?')[0]!.endsWith('/about.html') ? 'about' : 'index');
+  let outDir = 'dist';
+  const table = () => routeTable(loadData().wheels);
+  const strings = (): PageStrings => {
+    const en = JSON.parse(readFileSync(join(root, 'src/data/locales/en.json'), 'utf8')) as { page: Omit<PageStrings, 'titles'>; titles: PageStrings['titles'] };
+    return { ...en.page, titles: en.titles };
+  };
   const manifest = (): string => `${JSON.stringify(webManifest(strings()), null, 2)}\n`;
 
   return {
     name: 'fw-site',
     configResolved(config) {
       root = config.root;
+      outDir = join(config.root, config.build.outDir);
     },
-    transformIndexHtml(html, ctx) {
+    transformIndexHtml(html) {
       const s = strings();
       return html
-        .replace('<!--site:head-->', headTags(pageOf(ctx.path), site, s))
+        .replace('<!--site:head-->', headTags(shellHead(s), site, s))
         .replace('<!--site:noscript-->', linkify(s.noscript, aboutLinks(site)))
         .replace('<!--site:about-->', renderAbout(s.about, site));
     },
@@ -38,7 +49,12 @@ export function sitePlugin(): Plugin {
     generateBundle() {
       this.emitFile({ type: 'asset', fileName: 'manifest.webmanifest', source: manifest() });
       this.emitFile({ type: 'asset', fileName: 'robots.txt', source: robotsTxt(site) });
-      this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemapXml(site) });
+      this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemapXml(site, allPaths(table())) });
+    },
+    writeBundle() {
+      const locales = readdirSync(join(root, 'src/data/locales')).filter((f) => f.endsWith('.json')).map((f) => f.slice(0, -5));
+      const clash = reservedClash(table(), readdirSync(outDir), locales);
+      if (clash.length) this.error(`Top-level word(s) clash with a reserved path or output file: ${clash.join(', ')}`);
     },
   };
 }

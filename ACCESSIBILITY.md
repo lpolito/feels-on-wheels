@@ -48,7 +48,7 @@ Lucas will reply as soon as he can, and accessibility barriers come before other
 
 ## Ownership and maintenance
 
-Lucas maintains Feels on Wheels on his own and owns its accessibility. This file is reviewed when each version ships, along with the [roadmap](docs/ROADMAP.md), so its known limitations stay current.
+Lucas maintains Feels on Wheels on his own and owns its accessibility. This file is reviewed when each change ships, along with the [roadmap](docs/ROADMAP.md), so its known limitations stay current.
 
 ## Supported environments
 
@@ -62,9 +62,10 @@ Lucas maintains Feels on Wheels on his own and owns its accessibility. This file
 These are known and tracked in the [roadmap's known issues](docs/ROADMAP.md#known-issues).
 
 - **Choosing a word with the keyboard or a screen reader on a phone-size screen** can choose one on the half of the wheel that's off screen, without turning the wheel to show it. The card still opens with the word.
+- **On a phone, swiping back from the edge of the screen doesn't work on the wheel**, because the wheel takes every touch. Use the browser's Back button instead. In the app installed to an iPhone's home screen there's no Back at all: use Start over, or "Back to the wheel" on the About page.
 - **On the wheel, pinching zooms the wheel itself, not the page.** To make text larger, use the browser's or the system's text size or zoom settings.
 - **Small windows**, which can include a computer's browser zoomed in a long way, may show the body sensations wheel without labels until you open something. The card's words are still there.
-- **On some phones, turning the phone sideways and back** can leave the card's text much larger than it should be, and after several turns, taps can land on the wrong word. Going back a step, or reloading the page, may set it right.
+- **On some phones, turning the phone sideways and back** can leave the card's text much larger than it should be, and after several turns, taps can land on the wrong word. Closing the word, or reloading the page, may set it right.
 - **Double-tapping the label that shows the theme choice** zooms the page on phones, and pinching out doesn't undo it. Double-tap the label again while it's still showing to zoom back out.
 - **Long body sensation words**, such as "Hollow feeling in your chest", can run past the edges of their cell when opened. The card shows them in full.
 - **On very short phones**, the opened word can sit under the toolbar.

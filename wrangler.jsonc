@@ -1,16 +1,23 @@
 {
-  // Cloudflare serves the built app as static files, with no Worker script. Cloudflare's GitHub integration builds
-  // `main` with `npm run build` and deploys it with `npx wrangler deploy`; other branches get preview links.
+  // Cloudflare serves the built app's files itself, and runs the Worker (`main`) only for paths with no file: real
+  // routes get the shell with their own head tags, other forms of them a 301, and anything else a 404 (URL redesign
+  // spec §5). Cloudflare's GitHub integration builds `main` with `npm run build` and deploys it with
+  // `npx wrangler deploy`; other branches get preview links.
   "name": "feels-on-wheels",
+  "main": "./src/worker/worker.ts",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./dist/",
-    // Cloudflare's default: /about serves about.html, and /about.html and /index.html redirect to /about and /.
-    // That's why the service worker precaches ./ and ./about, never the .html names (build/sw-plugin.ts).
+    // The Worker fetches the shell (`/`) through this binding.
+    "binding": "ASSETS",
+    // Cloudflare's default: /index.html redirects to /. The Worker redirects /about.html and trailing slashes.
     "html_handling": "auto-trailing-slash",
-    // Unknown paths are a plain 404 until the URL redesign decides what they should do.
+    // A path with no file goes to the Worker, which answers it; there's no file to fall back to.
     "not_found_handling": "none"
   },
   "workers_dev": true,
-  "preview_urls": true
+  "preview_urls": true,
+  // Pull request previews: Workers Builds runs `npx wrangler preview` for other branches, which requires this block.
+  // Empty: previews use the top-level settings (the Worker has no bindings beyond its assets).
+  "previews": {}
 }

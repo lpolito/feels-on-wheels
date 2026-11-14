@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 test('offline reload works after the first visit', async ({ page, context, browserName }) => {
   test.skip(browserName === 'webkit', 'Playwright WebKit does not support service worker offline emulation');
@@ -15,17 +15,69 @@ test('offline reload works after the first visit', async ({ page, context, brows
   await context.setOffline(false);
 });
 
-test('About loads offline after the first visit (Review Focus 4)', async ({ page, context, browserName }) => {
-  test.skip(browserName === 'webkit', 'Playwright WebKit does not support service worker offline emulation');
+/** Visits once and reloads, so the service worker has cached the shell and controls the page. */
+async function installed(page: Page): Promise<void> {
   await page.goto('/');
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
   });
   await page.reload();
+}
+
+test('About loads offline after the first visit (Review Focus 4)', async ({ page, context, browserName }) => {
+  test.skip(browserName === 'webkit', 'Playwright WebKit does not support service worker offline emulation');
+  await installed(page);
   await context.setOffline(true);
   await page.goto('/about?ref=x');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Feels on Wheels');
+  await expect(page.locator('#about h1')).toBeVisible();
+  await expect(page.locator('#about h1')).toHaveText('Feels on Wheels');
+  await expect(page.locator('#app')).toBeHidden();
   await context.setOffline(false);
+});
+
+test('a word\'s path and a made-up path load offline after the first visit (URL redesign spec §7)', async ({ page, context, browserName }) => {
+  test.skip(browserName === 'webkit', 'Playwright WebKit does not support service worker offline emulation');
+  await installed(page);
+  await context.setOffline(true);
+  await page.goto('/happy/playful');
+  await page.waitForFunction(() => window.__fw !== undefined);
+  await expect(page.locator('fw-card .fw-card-title')).toHaveText('Playful');
+  await page.goto('/nope');
+  await page.waitForFunction(() => window.__fw !== undefined);
+  await expect(page.locator('fw-hint[data-variant="not-found"]')).toBeVisible();
+  await expect(page.locator('fw-hint .fw-hint-title')).toHaveText('Feeling not found!');
+  await context.setOffline(false);
+});
+
+test('the worker\'s shell at /about is About before the app runs, so the wheel never paints first', async ({ page, context, browserName }) => {
+  test.skip(browserName === 'webkit', 'Playwright WebKit does not support service worker offline emulation');
+  await installed(page);
+  // Offline, so the page is the worker's cached shell (data-route="wheel"), not the Worker's About page. The document
+  // is "interactive" once parsed, before module scripts run.
+  await context.setOffline(true);
+  await page.addInitScript(() => {
+    document.addEventListener('readystatechange', () => {
+      if (document.readyState === 'interactive') (window as unknown as { routeAtParse?: string }).routeAtParse = document.documentElement.dataset.route;
+    });
+  });
+  await page.goto('/about');
+  expect(await page.evaluate(() => (window as unknown as { routeAtParse?: string }).routeAtParse)).toBe('about');
+  await context.setOffline(false);
+});
+
+test('after the first visit, opening a file that is not a page shows that file, not the app', async ({ page, context, browserName }) => {
+  test.skip(browserName === 'webkit', 'Playwright WebKit does not support service worker offline emulation');
+  await installed(page);
+  await context.setOffline(true);
+  await page.goto('/robots.txt');
+  await expect(page.locator('body')).toContainText('User-agent');
+  await expect(page.locator('#app')).toHaveCount(0);
+  await context.setOffline(false);
+});
+
+test('a newly installed worker takes over the open page without waiting for a reload', async ({ page }) => {
+  await page.goto('/');
+  await page.waitForFunction(() => navigator.serviceWorker.controller !== null);
 });
 
 test('after the first visit, /about.html and /about/ redirect to /about (Cloudflare redirects them too)', async ({ page }) => {

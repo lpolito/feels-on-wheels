@@ -1,3 +1,4 @@
+import { fill } from './fill';
 import type { FeelingId, Locale, NodeRef, SensationId, WheelText } from './data/types';
 
 let active: Locale | null = null;
@@ -22,7 +23,7 @@ function missing(key: string): string {
 export function t(key: string, vars?: Record<string, string>): string {
   const s = active?.ui[key];
   if (s === undefined) return missing(key);
-  return vars ? s.replace(/\{(\w+)\}/g, (m, name: string) => vars[name] ?? m) : s;
+  return fill(s, vars);
 }
 
 export function label(id: FeelingId): string {

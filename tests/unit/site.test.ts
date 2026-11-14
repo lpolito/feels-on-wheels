@@ -1,5 +1,7 @@
 import { describe, expect, test } from 'vitest';
-import { aboutLinks, headTags, linkify, renderAbout, robotsTxt, sitemapXml, webManifest, type PageStrings } from '../../build/site';
+import { aboutLinks, headTags, linkify, renderAbout, robotsTxt, sitemapXml, webManifest, type HeadMeta, type PageStrings } from '../../build/site';
+import { routeTable, allPaths } from '../../src/state/url';
+import { loadData } from '../../src/data/load';
 import en from '../../src/data/locales/en.json';
 import type { SiteConfig } from '../../site.config';
 
@@ -13,12 +15,14 @@ const site: SiteConfig = {
 const strings: PageStrings = {
   name: 'Feels on Wheels',
   shortName: 'Feels',
-  title: 'Feels on Wheels: name what you feel',
-  description: 'A free feelings wheel.',
   imageAlt: 'The wheel.',
   noscript: 'Needs JavaScript.',
-  about: { title: 'About Feels on Wheels', description: 'About it.', heading: 'Feels on Wheels', summary: 's', back: 'Back', sections: [] },
+  titles: { home: 'Feels on Wheels: name what you feel', homeDescription: 'A free feelings wheel.', about: 'About Feels on Wheels', aboutDescription: 'About it.' },
+  about: { heading: 'Feels on Wheels', summary: 's', back: 'Back', sections: [] },
 };
+
+const home: HeadMeta = { title: strings.titles.home, description: strings.titles.homeDescription, path: '', jsonLd: true, noindex: false };
+const about: HeadMeta = { title: strings.titles.about, description: strings.titles.aboutDescription, path: 'about', jsonLd: false, noindex: false };
 
 const jsonLd = (html: string): Record<string, unknown> => {
   const m = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html);
@@ -28,7 +32,7 @@ const jsonLd = (html: string): Record<string, unknown> => {
 
 describe('head tags', () => {
   test('the wheel page has its title, canonical, preview tags and manifest link', () => {
-    const h = headTags('index', site, strings);
+    const h = headTags(home, site, strings);
     expect(h).toContain('<title>Feels on Wheels: name what you feel</title>');
     expect(h).toContain('<link rel="canonical" href="https://lpolito.github.io/feels-on-wheels/">');
     expect(h).toContain('<meta property="og:url" content="https://lpolito.github.io/feels-on-wheels/">');
@@ -36,11 +40,21 @@ describe('head tags', () => {
     expect(h).toContain('<meta property="og:image:width" content="1200">');
     expect(h).toContain('<meta property="og:image:height" content="630">');
     expect(h).toContain('<meta name="twitter:card" content="summary_large_image">');
-    expect(h).toContain('<link rel="manifest" href="./manifest.webmanifest">');
+    expect(h).toContain('<link rel="manifest" href="/manifest.webmanifest">');
+  });
+
+  test('the head is wrapped in markers, each once', () => {
+    for (const meta of [home, about]) {
+      const h = headTags(meta, site, strings);
+      expect(h.match(/<!--head-->/g)).toHaveLength(1);
+      expect(h.match(/<!--\/head-->/g)).toHaveLength(1);
+      expect(h.indexOf('<!--head-->')).toBeLessThan(h.indexOf('<title>'));
+      expect(h.indexOf('<!--/head-->')).toBeGreaterThan(h.indexOf('rel="manifest"'));
+    }
   });
 
   test('the About page has its own canonical and title, and no JSON-LD', () => {
-    const h = headTags('about', site, strings);
+    const h = headTags(about, site, strings);
     expect(h).toContain('<link rel="canonical" href="https://lpolito.github.io/feels-on-wheels/about">');
     expect(h).toContain('<title>About Feels on Wheels</title>');
     expect(h).not.toContain('application/ld+json');
@@ -48,13 +62,29 @@ describe('head tags', () => {
 
   test('noindex appears exactly when the site is not indexable', () => {
     const noindex = '<meta name="robots" content="noindex">';
-    expect(headTags('index', site, strings)).toContain(noindex);
-    expect(headTags('about', site, strings)).toContain(noindex);
-    expect(headTags('index', { ...site, indexable: true }, strings)).not.toContain(noindex);
+    expect(headTags(home, site, strings)).toContain(noindex);
+    expect(headTags(about, site, strings)).toContain(noindex);
+    expect(headTags(home, { ...site, indexable: true }, strings)).not.toContain(noindex);
+  });
+
+  test('a route can ask for noindex even when the site is indexable, and leave out JSON-LD (URL redesign spec §5)', () => {
+    const h = headTags({ ...home, title: 'Not found · Feels on Wheels', jsonLd: false, noindex: true }, { ...site, indexable: true }, strings);
+    expect(h).toContain('<meta name="robots" content="noindex">');
+    expect(h).not.toContain('application/ld+json');
+  });
+
+  test('a route\'s path makes its canonical and og:url, and its title and description are used as given', () => {
+    const h = headTags({ title: 'Playful · Feels on Wheels', description: 'Fun & light.', path: 'happy/playful', jsonLd: false, noindex: false }, site, strings);
+    expect(h).toContain('<link rel="canonical" href="https://lpolito.github.io/feels-on-wheels/happy/playful">');
+    expect(h).toContain('<meta property="og:url" content="https://lpolito.github.io/feels-on-wheels/happy/playful">');
+    expect(h).toContain('<title>Playful · Feels on Wheels</title>');
+    expect(h).toContain('<meta property="og:title" content="Playful · Feels on Wheels">');
+    expect(h).toContain('<meta name="description" content="Fun &amp; light.">');
+    expect(h).not.toContain('application/ld+json');
   });
 
   test('the wheel page describes itself as a free web app by Lucas Polito', () => {
-    const ld = jsonLd(headTags('index', site, strings));
+    const ld = jsonLd(headTags(home, site, strings));
     expect(ld['@type']).toBe('WebApplication');
     expect(ld['isAccessibleForFree']).toBe(true);
     expect((ld['offers'] as Record<string, unknown>)['price']).toBe('0');
@@ -63,7 +93,8 @@ describe('head tags', () => {
   });
 
   test('special characters are escaped (Review Focus 3)', () => {
-    const h = headTags('index', site, { ...strings, title: 'A & B "C" <D>', description: 'it\'s </script>' });
+    const s = { ...strings, titles: { ...strings.titles, homeDescription: 'it\'s </script>' } };
+    const h = headTags({ ...home, title: 'A & B "C" <D>', description: s.titles.homeDescription }, site, s);
     expect(h).toContain('A &amp; B &quot;C&quot; &lt;D&gt;');
     expect(h).not.toContain('"C"');
     expect(h.match(/<\/script>/g)?.length).toBe(1);
@@ -86,9 +117,12 @@ describe('generated files', () => {
     expect(robotsTxt(site)).toBe('User-agent: *\nAllow: /\nSitemap: https://lpolito.github.io/feels-on-wheels/sitemap.xml\n');
   });
 
-  test('the sitemap lists the wheel and About', () => {
-    const locs = [...sitemapXml(site).matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
-    expect(locs).toEqual(['https://lpolito.github.io/feels-on-wheels/', 'https://lpolito.github.io/feels-on-wheels/about']);
+  test('the sitemap has one entry per path', () => {
+    const paths = allPaths(routeTable(loadData().wheels));
+    const locs = [...sitemapXml(site, paths).matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
+    expect(locs).toHaveLength(paths.length);
+    expect(new Set(locs).size).toBe(locs.length);
+    for (const tail of ['', 'about', 'body', 'happy/playful']) expect(locs).toContain(`${site.url}${tail}`);
   });
 });
 
@@ -103,14 +137,14 @@ describe('About page', () => {
       license: 'https://github.com/lpolito/feels-on-wheels/blob/main/LICENSE',
       contributing: 'https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md',
       author: 'https://lucaspolito.dev/',
-      home: './',
-      about: './about',
+      home: '/',
+      about: '/about',
     });
   });
 
   test('the noscript message links to About (spec §7.2)', () => {
     const noscript = (en as unknown as { page: PageStrings }).page.noscript;
-    expect(linkify(noscript, links)).toContain('<a href="./about">');
+    expect(linkify(noscript, links)).toContain('<a href="/about">');
   });
 
   test('linkify escapes text and turns [label](target) into links', () => {
@@ -140,11 +174,13 @@ describe('About page', () => {
     expect(html).not.toMatch(/<(p|li)>\s*<\/\1>/);
   });
 
-  test('it ends with the way back to the wheel', () => {
-    expect(html.trimEnd()).toMatch(/<a href="\.\/">Back to the wheel<\/a><\/p>\s*<\/main>$/);
+  test('it is the About view: its id, and a heading that takes focus from script (URL redesign spec §3)', () => {
+    expect(html.startsWith('<main class="about" id="about">')).toBe(true);
+    expect(html).toMatch(/<h1 tabindex="-1">Feels on Wheels<\/h1>/);
   });
 
-  test('the About head uses the About title', () => {
-    expect(headTags('about', site, (en as unknown as { page: PageStrings }).page)).toContain('<title>About Feels on Wheels</title>');
+  test('it ends with the way back to the wheel', () => {
+    expect(html.trimEnd()).toMatch(/<a href="\/">Back to the wheel<\/a><\/p>\s*<\/main>$/);
   });
+
 });

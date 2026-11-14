@@ -1,11 +1,19 @@
 /**
  * Spec v2 §4.1: the start message, with an optional link to another wheel where `text` has "{link}". Spec v2.2 §5:
- * `title`, the wheel's question, heads it.
+ * `title`, the wheel's question, heads it. URL redesign §7: the not-found variant puts `lead`, plain text that is
+ * never searched for "{link}", before the text.
  */
-export type HintContent = { title: string; text: string; link?: { label: string; wheel: string; href: string } } | null;
+export type HintContent = {
+  title: string;
+  text: string;
+  link?: { label: string; wheel: string; href: string };
+  variant?: 'notFound';
+  lead?: string;
+} | null;
 
 const same = (a: HintContent, b: HintContent): boolean =>
   a === b || (a !== null && b !== null && a.title === b.title && a.text === b.text
+    && a.variant === b.variant && a.lead === b.lead
     && a.link?.label === b.link?.label && a.link?.wheel === b.link?.wheel && a.link?.href === b.link?.href);
 
 /**
@@ -41,14 +49,18 @@ export class FwHint extends HTMLElement {
     this.hidden = c === null;
     this.#link = null;
     if (c === null) {
+      delete this.dataset['variant'];
       this.replaceChildren();
       return;
     }
+    if (c.variant === 'notFound') this.dataset['variant'] = 'not-found';
+    else delete this.dataset['variant'];
     const title = document.createElement('h2');
     title.className = 'fw-hint-title';
     title.textContent = c.title;
     const line = document.createElement('p');
     line.className = 'fw-hint-text';
+    if (c.lead) line.append(c.lead);
     const [before, after = ''] = c.link ? c.text.split('{link}') : [c.text];
     if (!c.link) {
       line.append(before!);

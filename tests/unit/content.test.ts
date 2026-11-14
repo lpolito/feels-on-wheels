@@ -53,9 +53,16 @@ describe('going public (spec 2026-11-09)', () => {
     const page = (en as unknown as { page: Record<string, string | undefined> }).page;
     expect(page.name).toBe('Feels on Wheels');
     expect(page.shortName).toBe('Feels on Wheels');
-    expect(page.title).toBe('Feels on Wheels: name what you feel');
-    expect(page.description?.length).toBeGreaterThanOrEqual(100);
-    expect(page.description?.length).toBeLessThanOrEqual(160);
+    const { titles } = en;
+    expect(titles.home).toBe('Feels on Wheels: name what you feel');
+    expect(titles.homeDescription.length).toBeGreaterThanOrEqual(100);
+    expect(titles.homeDescription.length).toBeLessThanOrEqual(160);
+    for (const w of loadData().wheels.slice(1)) {
+      const d = (titles.wheelDescriptions as Record<string, string>)[w.id];
+      expect(d, `wheelDescriptions.${w.id}`).toBeTruthy();
+      expect(d!.length).toBeGreaterThanOrEqual(50);
+      expect(d!.length).toBeLessThanOrEqual(160);
+    }
     expect(page.imageAlt?.trim()).toBeTruthy();
     expect(page.noscript?.trim()).toBeTruthy();
   });
@@ -73,10 +80,15 @@ describe('going public (spec 2026-11-09)', () => {
     expect(site.indexable).toBe(false);
   });
 
-  test("wrangler serves dist/ as static files with Cloudflare's default HTML handling", () => {
+  test("wrangler serves dist/ with Cloudflare's default HTML handling, and the Worker only for paths with no file (URL redesign spec §5)", () => {
     const config = JSON.parse(readFileSync('wrangler.jsonc', 'utf8').replace(/^\s*\/\/.*$/gm, '')) as Record<string, unknown>;
     expect(config['name']).toBe('feels-on-wheels');
-    expect(config['main']).toBeUndefined();
-    expect(config['assets']).toEqual({ directory: './dist/', html_handling: 'auto-trailing-slash', not_found_handling: 'none' });
+    expect(config['main']).toBe('./src/worker/worker.ts');
+    expect(config['assets']).toEqual({ directory: './dist/', binding: 'ASSETS', html_handling: 'auto-trailing-slash', not_found_handling: 'none' });
+  });
+
+  test('wrangler has a previews block, which Workers Builds needs for pull request previews (`wrangler preview`)', () => {
+    const config = JSON.parse(readFileSync('wrangler.jsonc', 'utf8').replace(/^\s*\/\/.*$/gm, '')) as Record<string, unknown>;
+    expect(config['previews']).toEqual({});
   });
 });

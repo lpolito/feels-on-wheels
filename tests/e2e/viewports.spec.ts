@@ -49,14 +49,14 @@ test.describe('viewport sweep', () => {
   test.beforeEach(({ browserName, isMobile }) => test.skip(browserName !== 'chromium' || Boolean(isMobile), 'one engine, own viewports'));
 
   for (const [w, h] of SIZES) {
-    for (const hash of ['', '#/body']) {
-      test(`${w}×${h} ${hash || '#/'} at rest`, async ({ page }) => {
+    for (const url of ['/', '/body']) {
+      test(`${w}×${h} ${url} at rest`, async ({ page }) => {
         await page.setViewportSize({ width: w, height: h });
-        await open(page, hash);
+        await open(page, url);
         await controls(page, w, h);
         expect(inside(await box(hint(page)), w, h), 'message inside viewport').toBe(true);
         const core = (await page.evaluate(() => window.__fw.labelsByRing()))[0]!;
-        if (hash === '#/body' && BODY_UNLABELLED.has(`${w}×${h}`)) {
+        if (url === '/body' && BODY_UNLABELLED.has(`${w}×${h}`)) {
           test.info().annotations.push({ type: 'known issue', description: 'body wheel too small for area labels at rest' });
           expect(core, 'still unlabelled; if this now draws labels, drop the size from BODY_UNLABELLED').toBe(0);
         } else {
@@ -77,10 +77,10 @@ test.describe('viewport sweep', () => {
       });
     }
 
-    for (const [hash, path] of [['#/core/happy/content/joyful', 'happy/content/joyful'], ['#/body/head/headache', 'head/headache']] as const) {
-      test(`${w}×${h} ${hash} opened`, async ({ page }) => {
+    for (const [url, path] of [['/happy/content/joyful', 'happy/content/joyful'], ['/body/head/headache', 'head/headache']] as const) {
+      test(`${w}×${h} ${url} opened`, async ({ page }) => {
         await page.setViewportSize({ width: w, height: h });
-        await open(page, hash);
+        await open(page, url);
         await controls(page, w, h);
         const card = await box(page.locator('fw-card'));
         expect(inside(card, w, h), 'card inside viewport').toBe(true);

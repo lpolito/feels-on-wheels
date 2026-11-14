@@ -1,9 +1,9 @@
 /**
- * Navigation strategy (spec §6.5; going-public spec §8.5), kept pure for testing.
- * Serve the first page this worker cached at install among `candidates`: the navigated page itself if it was
- * precached (About), else the shell. Never write a newer page into this worker's cache: a newer page references
- * newer hashed assets that only the next worker's install caches, atomically. The browser checks sw.js for updates
- * on navigation, so new deploys still arrive (on next launch).
+ * Navigation strategy (spec §6.5; going-public spec §8.5; URL redesign spec §8), kept pure for testing.
+ * Serve the first response this worker cached at install among `candidates` (the file itself, then the shell). Never
+ * write a newer page into this worker's cache: a newer page references newer hashed assets that only the next worker's
+ * install caches, atomically. The browser checks sw.js for updates on navigation, and a new worker takes over as soon
+ * as it's installed (`skipWaiting`, `clients.claim`), so the next page load gets the new deploy.
  */
 export async function navigationResponse(
   cache: { match(req: string, options?: CacheQueryOptions): Promise<Response | undefined> },
@@ -40,12 +40,17 @@ export function canonicalPage(requestUrl: string, scope: string): string | null 
   return url.href;
 }
 
-/** The cache keys to try for a navigation: the page itself (without search or hash), then the shell. */
+/**
+ * The cache keys to try for a navigation: the requested address without its query or hash, so opening a precached
+ * file that isn't a page (`/robots.txt`, `/manifest.webmanifest`) gets that file; then the shell, for every page load
+ * in scope, real or not (URL redesign spec §7, §8). No page address is precached, so pages always get the shell: the
+ * app reads the path and shows the route or "not found", and the worker needs no copy of the route table.
+ */
 export function navigationUrls(requestUrl: string, indexUrl: string): string[] {
-  const page = new URL(requestUrl);
-  page.search = '';
-  page.hash = '';
-  return [page.href, indexUrl];
+  const url = new URL(requestUrl);
+  url.search = '';
+  url.hash = '';
+  return url.href === indexUrl ? [indexUrl] : [url.href, indexUrl];
 }
 
 /**

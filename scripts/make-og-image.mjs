@@ -5,8 +5,8 @@ import { chromium } from '@playwright/test';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 const svg = read('public/icons/icon.svg');
-const { page } = JSON.parse(read('src/data/locales/en.json'));
-const after = page.title.split(': ')[1] ?? '';
+const { page, titles } = JSON.parse(read('src/data/locales/en.json'));
+const after = titles.home.split(': ')[1] ?? '';
 const tagline = after.charAt(0).toUpperCase() + after.slice(1);
 const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 

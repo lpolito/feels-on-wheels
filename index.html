@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" dir="ltr">
+<html lang="en" dir="ltr" data-route="wheel">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -8,6 +8,9 @@
   <meta name="theme-color" id="theme-color" content="#ffffff">
   <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <!-- Before first paint: the theme chosen in the app (fw.theme), so About doesn't flash the other theme; and About's
+       view at /about, since the service worker's cached shell starts on the wheel (the Worker sets it when online). -->
+  <script>if(location.pathname==='/about')document.documentElement.dataset.route='about';try{var t=localStorage.getItem('fw.theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
   <link rel="stylesheet" href="/src/styles/tokens.css">
   <link rel="stylesheet" href="/src/styles/app.css">
 </head>
@@ -23,6 +26,7 @@
     <fw-toolbar></fw-toolbar>
     <div id="announcer" aria-live="polite" class="visually-hidden"></div>
   </main>
+  <!--site:about-->
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

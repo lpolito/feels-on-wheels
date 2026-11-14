@@ -6,7 +6,7 @@ test.skip(({ browserName }) => browserName !== 'chromium', 'forced GC needs Chro
 const idle = (page: import('@playwright/test').Page) => page.waitForFunction(() => !window.__fw.moving());
 
 test('Review Focus 6: 20 switches leave only the current wheel alive', async ({ page }) => {
-  await page.goto('/#/body/chest/racing-heart');
+  await page.goto('/body/chest/racing-heart');
   await page.waitForFunction(() => window.__fw !== undefined);
   await idle(page);
   for (let i = 0; i < 20; i++) {

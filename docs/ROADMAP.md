@@ -43,6 +43,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Help adding it to the home screen](#help-adding-it-to-the-home-screen) | The toolbar, sharing and installing | Idea |
 | [A dark home-screen icon](#a-dark-home-screen-icon) | The toolbar, sharing and installing | Idea |
 | [About page rework](#about-page-rework) | [The About page](#the-about-page) | Idea |
+| [A new social preview image](#a-new-social-preview-image) | [The social preview](#the-social-preview) | Idea |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
@@ -178,7 +179,7 @@ These all compete for the same few places (the toolbar, the start message, the A
 
 - **Keep:** what it's for, how to use it, the credits, Made by, and Help translate.
 - **Keep the install steps** from "Private and offline" (install from the browser's menu, or Add to Home Screen on an iPhone or iPad): installing isn't discoverable, and it's a nice thing to find.
-- **Drop:** the "Source and license" section, and the rest of "Private and offline" ("who cares"). What they say stays in the README, where it belongs (its License section, and the Private and Offline bullets). Nothing about AI on the page: the "Made with AI, with love" headline from 2026-11-12 went in the README's "Built with AI" section instead (2026-11-13).
+- **Drop:** the "Source and license" section, and the rest of "Private and offline" ("who cares"). What they say stays in the README, where it belongs (its License section, and the Private and Offline bullets). Nothing about AI on the page: the "Made with AI, with love" headline from 2026-11-12 went in the README instead (2026-11-13), as the heading of its section on how the app was built (2026-11-14).
 - **Link the GitHub repo with a small GitHub icon,** likely in Made by, in place of the source section's link.
 - To decide when designing: where the install steps go once their section is gone ("How to use it", or their own short section), and how they meet [help adding it to the home screen](#help-adding-it-to-the-home-screen); and the icon's accessible name, since it's a link with no visible text.
 
@@ -187,11 +188,23 @@ Lucas's ideas, 2026-11-12:
 - **Why it exists,** in Lucas's words (a draft to edit before it goes on the page): the original feelings wheel helped immensely in his own therapy. He had a hard time identifying his emotions and thought he was incapable of it. After a lot of work and mindfulness, and having actual words for the emotions, he was able to. He used to look at [feelingswheel.com](reference/core-feelings-wheel.md#the-reference-site) almost daily, and wanted to make an accessible, beautiful, fast and versatile version for others to enjoy.
 - **A dedication** to A, E and M. Where it goes is open.
 - **The credit links feel off.** Each source's author name links to the work, and Roberts's link goes to an imgur post whose image is gone ([known issue](#the-about-page-1)). To decide: what to link (the work, its title, or the [reference notes](reference/README.md)), and whether to use the archive.org copy already in [core-feelings-wheel.md](reference/core-feelings-wheel.md).
-- **A floating back button,** so you don't have to scroll to the bottom to get back to the wheel.
-- **A left chevron** on "Back to the wheel". Likely the same control as the floating one.
+- **A left chevron** on "Back to the wheel". (A floating back button was considered and dropped for now, 2026-11-14.)
 - **Say no more than has been tested.** "How to use it" says "Everything works with a keyboard and with a screen reader", but no screen reader has been tried by hand yet ([ACCESSIBILITY.md](../ACCESSIBILITY.md#supported-environments), 2026-11-12). Soften it, or link ACCESSIBILITY.md, until one has.
 - With [About in the start message](#about-in-the-start-message), more people arrive at About from the start, so the way back matters more.
 - Worth doing before [launching](#before-launching).
+
+### The social preview
+
+#### A new social preview image
+
+Lucas's idea, 2026-11-14: rework the picture link previews show (`public/og-image.png`). Today it's the app icon beside "Feels on Wheels" and "Name what you feel", on dark.
+
+- **Make it look like the app** in a small, wide window: part of the wheel coming in from the left edge, the way it rests there, and the app's name where the start message's card would be.
+- **A mock of the wheel, not the real one:** something that reads as the wheel (its colored rings and cells) without its words, simple like the favicon, so it still reads as a small thumbnail.
+- **Rethink the tagline** "Name what you feel". Lucas is open to alternatives; not decided. Besides the picture, it's in the home page's title (`titles.home` in `src/data/locales/en.json`) and the picture's alt text (`imageAlt`), and tests check the title.
+- To decide when designing: the tagline; light or dark; whether the toolbar's controls (the wheel switch, the buttons) show, and how much of the app's look it copies before it stops reading as a preview.
+- `scripts/make-og-image.mjs` renders the picture; rerun it by hand after a change.
+- To do before [launching](#before-launching).
 
 ### URLs, routing and hosting
 
@@ -266,7 +279,7 @@ The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens
   - Decide first whether the `workers.dev` address and the preview links should say `noindex` once the domain is indexable, since they serve the same pages.
 - **Optional, after letting search engines in:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
 - **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, gray like the site's other icons; on hover it takes the wheel's seven colors and spins once, settling.
-- **Known issues and ideas:** decide which to finish before announcing it. The [About page rework](#about-page-rework), [share button](#share-button) and [help adding it to the home screen](#help-adding-it-to-the-home-screen) are the ones a first visitor would notice.
+- **Known issues and ideas:** decide which to finish before announcing it. The [About page rework](#about-page-rework), [share button](#share-button) and [help adding it to the home screen](#help-adding-it-to-the-home-screen) are the ones a first visitor would notice. Lucas wants [a new social preview image](#a-new-social-preview-image) and tagline before launching (2026-11-14).
 
 ## Content rules
 

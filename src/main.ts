@@ -280,7 +280,7 @@ function renderUi(s: State): void {
   tree.update(s);
 }
 
-// ── URL & history (URL redesign spec §1, §4, §6) ──────────────────────────
+// ── URL & history (URL redesign spec §1, §6; history rule spec 2026-11-14) ──────────────────────────
 const writer = createHistoryWriter(history, () => performance.now());
 const routeOf = (s: State): Extract<Route, { kind: 'wheel' }> => ({ kind: 'wheel', wheel: layout.wheelId, path: pathOf(layout, s) });
 const urlFor = (s: State): string => formatRoute(table, routeOf(s));
@@ -431,7 +431,7 @@ function applyRoute(route: Route, how: 'push' | 'replace' | 'none', link?: { pat
   if (firstLoad || route.wheel !== layout.wheelId) {
     const next = layoutFor(route.wheel);
     const opened = wheelPath === null ? null : stateFor(next, wheelPath);
-    mount(next, opened ?? initialState, opened === null && notFound === null && (firstLoad || how === 'push'));
+    mount(next, opened ?? initialState, opened === null && notFound === null && (firstLoad || how !== 'none'));
     if (!firstLoad && notFound === null) {
       announce(opened === null ? wheelText(route.wheel).name : announceFor(layout, initialState, opened) ?? wheelText(route.wheel).name);
     }
@@ -475,13 +475,14 @@ document.addEventListener('click', (e) => {
   else if (url.pathname !== location.pathname) applyRoute(parsePath(table, url.pathname).route, 'push', { path: url.pathname, from: a });
 });
 
-/** Spec v2 §4.2: switching always starts fresh (or, from a jump link, opens that word) and pushes history (§4). */
+/** Spec v2 §4.2: switching always starts fresh (or, from a jump link, opens that word) and pushes history (history rule spec), except from not found. */
 app.addEventListener('fw-wheel', (e) => {
   const { wheel: id, path } = (e as CustomEvent<{ wheel: string; path?: Path }>).detail;
   if (!wheelIds.includes(id) || (id === layout.wheelId && path === undefined)) return;
   const from = e.target;
   const opened = path !== undefined && table.wheels.get(id)!.has(path);
-  applyRoute({ kind: 'wheel', wheel: id, path: opened ? path! : null }, 'push');
+  // History rule spec: on not found, the message's own link replaces the mistyped address, so Back never returns to it.
+  applyRoute({ kind: 'wheel', wheel: id, path: opened ? path! : null }, notFound !== null ? 'replace' : 'push');
   // Focus: the switch keeps its own button; the message's link and the card's jump are rebuilt, so focus follows.
   if (from === hint) hint.focusLink();
   else if (from === card && !opened) tree.focusSelected();

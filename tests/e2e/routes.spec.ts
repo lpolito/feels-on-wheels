@@ -131,7 +131,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
   });
 }
 
-// ── About and the router's links (URL redesign spec §2–§4) ───────────────
+// ── About and the router's links (URL redesign spec §2–§3; history rule spec) ──
 const marker = (page: Page) => page.evaluate(() => (window as unknown as { __noReload?: number }).__noReload);
 const path = (page: Page) => new URL(page.url()).pathname;
 
@@ -309,6 +309,33 @@ test.describe('history: picking adds an entry, moving by direction replaces it',
     await idle(page);
     expect((await state(page)).opened).toBe(false);
     expect(await selectedPath(page)).toBe('angry');
+  });
+
+  test("following the not-found message's own link replaces the mistyped address, so Back never shows it again", async ({ page }) => {
+    await open(page, '/happy/plaful');
+    const before = await entries(page);
+    await hint(page).locator('a.fw-hint-link').click();
+    await idle(page);
+    expect(new URL(page.url()).pathname).toBe('/body');
+    expect(await page.evaluate(() => window.__fw.wheel())).toBe('body');
+    expect(await entries(page)).toBe(before);
+    await expect(notFound(page)).toHaveCount(0);
+  });
+
+  test('a spin between open words replaces the entry', async ({ page }) => {
+    await open(page, '/fearful/scared');
+    const before = await entries(page);
+    const box = (await page.locator('#wheel').boundingBox())!;
+    const x = box.x + box.width * 0.4;
+    await page.mouse.move(x, box.y + box.height * 0.2);
+    await page.mouse.down();
+    await page.mouse.move(x, box.y + box.height * 0.8, { steps: 4 });
+    await page.mouse.up();
+    await page.waitForTimeout(1500);
+    await idle(page);
+    expect((await state(page)).opened).toBe(true);
+    expect(new URL(page.url()).pathname).not.toBe('/fearful/scared');
+    expect(await entries(page)).toBe(before);
   });
 
   test('Back, then tapping a new word, clears Forward', async ({ page }) => {

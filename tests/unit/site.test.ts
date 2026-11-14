@@ -225,7 +225,14 @@ describe('About page', () => {
 
   test('it is the About view: its id, and a heading that takes focus from script (URL redesign spec §3)', () => {
     expect(html.startsWith('<main class="about" id="about">')).toBe(true);
-    expect(html).toMatch(/<h1 tabindex="-1">Feels on Wheels<\/h1>/);
+    expect(html).toMatch(/<h1 tabindex="-1"><a class="about-home" href="\/">[\s\S]*?Feels on Wheels<\/a><\/h1>/);
+  });
+
+  test('the heading links home with the app icon, which is decorative and sized to hold its space', () => {
+    const img = /<h1[^>]*><a class="about-home" href="\/">(<img [^>]*>)Feels on Wheels<\/a><\/h1>/.exec(html)![1]!;
+    expect(img).toContain('src="/icons/icon.svg"');
+    expect(img).toContain('alt=""');
+    expect(img).toMatch(/width="\d+" height="\d+"/);
   });
 
   test('it ends with the way back to the wheel', () => {

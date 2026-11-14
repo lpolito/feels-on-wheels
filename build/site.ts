@@ -161,7 +161,8 @@ export function renderAbout(about: AboutStrings, site: SiteConfig): string {
   ].join('\n'));
   return [
     '<main class="about" id="about">',
-    `  <h1 tabindex="-1">${escapeHtml(about.heading)}</h1>`,
+    // About rework: like a site title, the heading links home. The app icon is decorative; the name labels the link.
+    `  <h1 tabindex="-1"><a class="about-home" href="/"><img src="/icons/icon.svg" alt="" width="40" height="40">${escapeHtml(about.heading)}</a></h1>`,
     `  <p class="about-summary">${text(about.summary)}</p>`,
     ...sections,
     `  <p class="about-back"><a href="/">${CHEVRON}${escapeHtml(about.back)}</a></p>`,

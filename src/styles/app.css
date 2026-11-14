@@ -44,6 +44,10 @@ html[data-route="about"] body { -webkit-text-size-adjust: 100%; }
   line-height: 1.55;
 }
 #about h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 0.5rem; }
+/* About rework: the heading links home, like a site title, with the app icon beside the name. */
+#about .about-home { display: inline-flex; align-items: center; gap: 0.4em; color: inherit; text-decoration: none; }
+#about .about-home:hover { text-decoration: underline; }
+#about .about-home img { width: 1.15em; height: 1.15em; flex-shrink: 0; }
 #about h2 { font-size: 1.25rem; line-height: 1.3; margin: 2rem 0 0.5rem; }
 #about :is(p, ul) { margin: 0 0 0.75rem; }
 #about ul { padding-left: 1.25rem; }

@@ -66,6 +66,23 @@ test('the keyboard path: Enter on the About link, then Enter on "Back to the whe
   expect((await state(page)).selected).toBeNull();
 });
 
+test('the heading links home, like a site title: a new entry, the wheel, focus back on the About link', async ({ page }) => {
+  await open(page);
+  await aboutLink(page).click();
+  await expect(aboutHeading(page)).toBeFocused();
+  const home = page.getByRole('heading', { level: 1 }).getByRole('link', { name: 'Feels on Wheels', exact: true });
+  await expect(home).toHaveAttribute('href', '/');
+  const entries = await page.evaluate(() => history.length);
+  // Past the history writer's 250 ms merge window (a held arrow key), as a person's next click would be.
+  await page.waitForTimeout(320);
+  await home.click();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveTitle('Feels on Wheels: name what you feel');
+  await expect(page.locator('#wheel')).toBeVisible();
+  await expect(aboutLink(page)).toBeFocused();
+  expect(await page.evaluate(() => history.length)).toBe(entries + 1);
+});
+
 test('the sign-off links the repo with the GitHub icon, named for screen readers, with a big enough target', async ({ page }) => {
   await page.goto('/about');
   await expect(aboutHeading(page)).toBeVisible();

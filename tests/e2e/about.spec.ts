@@ -101,6 +101,13 @@ test('the sign-off links the repo with the GitHub icon, named for screen readers
   await expect(aboutHeading(page)).toBeVisible();
   const github = page.getByRole('link', { name: 'Feels on Wheels on GitHub' });
   await expect(github).toHaveAttribute('href', 'https://github.com/lpolito/feels-on-wheels');
+  // Both sign-off links open a new tab and say so (WCAG G201).
+  await expect(github).toHaveAccessibleName('Feels on Wheels on GitHub (opens in a new tab)');
+  await expect(github).toHaveAttribute('target', '_blank');
+  const name = page.getByRole('link', { name: 'Lucas Polito', exact: false });
+  await expect(name).toHaveAccessibleName('Lucas Polito (opens in a new tab)');
+  await expect(name).toHaveAttribute('target', '_blank');
+  await expect(name).toHaveAttribute('rel', 'noopener');
   const box = (await github.boundingBox())!;
   expect(box.width).toBeGreaterThanOrEqual(24);
   expect(box.height).toBeGreaterThanOrEqual(24);

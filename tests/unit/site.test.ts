@@ -18,7 +18,7 @@ const strings: PageStrings = {
   imageAlt: 'The wheel.',
   noscript: 'Needs JavaScript.',
   titles: { home: 'Feels on Wheels: name what you feel', homeDescription: 'A free feelings wheel.', about: 'About Feels on Wheels', aboutDescription: 'About it.' },
-  about: { heading: 'Feels on Wheels', summary: 's', back: 'Back', sections: [] },
+  about: { heading: 'Feels on Wheels', summary: 's', back: 'Back', newTab: '(opens in a new tab)', sections: [] },
 };
 
 const home: HeadMeta = { title: strings.titles.home, description: strings.titles.homeDescription, path: '', jsonLd: true, noindex: false };
@@ -153,8 +153,8 @@ describe('About page', () => {
   });
 
   test('linkify draws {github} as the GitHub icon, named by its label', () => {
-    const out = linkify('[Feels on Wheels on GitHub]({github})', links);
-    expect(out.startsWith('<a class="about-icon" href="https://github.com/lpolito/feels-on-wheels" aria-label="Feels on Wheels on GitHub" title="Feels on Wheels on GitHub"><svg')).toBe(true);
+    const out = linkify('[Feels on Wheels on GitHub]({github})', links, '(opens in a new tab)');
+    expect(out.startsWith('<a class="about-icon" href="https://github.com/lpolito/feels-on-wheels" target="_blank" rel="noopener" aria-label="Feels on Wheels on GitHub (opens in a new tab)" title="Feels on Wheels on GitHub"><svg')).toBe(true);
     expect(out).toContain('aria-hidden="true"');
     expect(out).toContain('focusable="false"');
     expect(out).toContain('currentColor');
@@ -164,7 +164,17 @@ describe('About page', () => {
   });
 
   test('an icon link label is escaped in its attributes', () => {
-    expect(linkify('[A "q" & b]({github})', links)).toContain('aria-label="A &quot;q&quot; &amp; b"');
+    expect(linkify('[A "q" & b]({github})', links, '(new)')).toContain('aria-label="A &quot;q&quot; &amp; b (new)"');
+  });
+
+  test('only the name and GitHub links open a new tab, and they say so to screen readers', () => {
+    expect(html.match(/target="_blank"/g)?.length).toBe(2);
+    expect(section('why')).toContain('aria-label="Feels on Wheels on GitHub (opens in a new tab)"');
+    expect(html.match(/<a [^>]*target="_blank" rel="noopener"/g)?.length).toBe(2);
+  });
+
+  test('a new-tab link needs the new-tab text', () => {
+    expect(() => linkify('[Me]({author})', links)).toThrow(/new tab/);
   });
 
   test('linkify refuses unknown link keys', () => {
@@ -201,8 +211,8 @@ describe('About page', () => {
 
   test('why it exists signs off with the name and the GitHub icon, just before the dedication', () => {
     const signOff = section('why').match(/<p>[\s\S]*?<\/p>/g)!.at(-2)!;
-    expect(signOff.startsWith('<p>— <a href="https://lucaspolito.dev/">Lucas Polito</a> <a class="about-icon"')).toBe(true);
-    expect(signOff).toContain('aria-label="Feels on Wheels on GitHub"');
+    expect(signOff.startsWith('<p>— <a href="https://lucaspolito.dev/" target="_blank" rel="noopener">Lucas Polito<span class="visually-hidden"> (opens in a new tab)</span></a> <a class="about-icon"')).toBe(true);
+    expect(signOff).toContain('aria-label="Feels on Wheels on GitHub (opens in a new tab)"');
   });
 
   test('how to use it claims no more than was tested', () => {

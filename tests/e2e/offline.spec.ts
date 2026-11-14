@@ -28,6 +28,19 @@ test('About loads offline after the first visit (Review Focus 4)', async ({ page
   await context.setOffline(false);
 });
 
+test('after the first visit, /about.html and /about/ redirect to /about (Cloudflare redirects them too)', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+  });
+  await page.reload();
+  for (const path of ['/about.html', '/about/']) {
+    await page.goto(path);
+    await expect(page).toHaveURL(/\/about$/);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Feels on Wheels');
+  }
+});
+
 test('manifest is linked and valid', async ({ page, request }) => {
   await page.goto('/');
   const href = await page.locator('link[rel="manifest"]').getAttribute('href');
@@ -51,4 +64,21 @@ test('the service worker registers even when the app waited for a late styleshee
   await page.goto('/');
   await page.waitForFunction(() => window.__fw !== undefined);
   await page.waitForFunction(async () => (await navigator.serviceWorker.getRegistration()) !== undefined, null, { timeout: 5000 });
+});
+
+test('the service worker registers even when the app had to wait for the load event', async ({ page }) => {
+  // Without the tokens stylesheet the app waits for load before starting (main.ts), the branch WebKit takes when it
+  // runs the module before the stylesheets apply. Registration must still happen after that.
+  await page.addInitScript(() => {
+    const w = window as unknown as { __swRegistered: boolean };
+    w.__swRegistered = false;
+    const register = navigator.serviceWorker.register.bind(navigator.serviceWorker);
+    navigator.serviceWorker.register = (...args: Parameters<typeof register>) => {
+      w.__swRegistered = true;
+      return register(...args);
+    };
+  });
+  await page.route(/\/assets\/tokens-[^/]*\.css$/, (route) => route.abort());
+  await page.goto('/');
+  await page.waitForFunction(() => (window as unknown as { __swRegistered: boolean }).__swRegistered, null, { timeout: 5000 });
 });

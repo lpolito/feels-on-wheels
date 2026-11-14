@@ -21,6 +21,25 @@ export async function navigationResponse(
   }
 }
 
+/**
+ * The clean address for a page requested as `about.html`, `about/` or `index.html`, or null when it's already clean.
+ * Cloudflare redirects these too, but an installed worker answers page loads first, and serving a page at the wrong
+ * address breaks its relative links (`/about/` would load `/about/assets/…`). The query is kept; the hash never
+ * reaches the worker.
+ */
+export function canonicalPage(requestUrl: string, scope: string): string | null {
+  const url = new URL(requestUrl);
+  url.hash = '';
+  const base = new URL(scope).pathname;
+  let path = url.pathname;
+  if (path.endsWith('/index.html')) path = path.slice(0, -'index.html'.length);
+  else if (path.endsWith('.html')) path = path.slice(0, -'.html'.length);
+  if (path.endsWith('/') && path !== base) path = path.slice(0, -1);
+  if (path === url.pathname) return null;
+  url.pathname = path;
+  return url.href;
+}
+
 /** The cache keys to try for a navigation: the page itself (without search or hash), then the shell. */
 export function navigationUrls(requestUrl: string, indexUrl: string): string[] {
   const page = new URL(requestUrl);

@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from 'vitest';
 import { precacheManifest } from '../../build/sw-plugin';
-import { navigationResponse, navigationUrls, precacheResponse } from '../../src/sw/strategy';
+import { canonicalPage, navigationResponse, navigationUrls, precacheResponse } from '../../src/sw/strategy';
 
 describe('service worker navigation strategy', () => {
   test('serves the cached shell and never fetches or writes a newer index from the old worker', async () => {
@@ -88,5 +88,28 @@ describe('precache responses', () => {
 
   test('an error status is refused', async () => {
     await expect(precacheResponse('https://x/gone', async () => new Response('', { status: 404 }))).rejects.toThrow('404');
+  });
+});
+
+describe('canonical page addresses', () => {
+  const scope = 'https://x/';
+
+  test('a .html or trailing-slash address redirects to the clean one, keeping the query', () => {
+    expect(canonicalPage('https://x/about.html', scope)).toBe('https://x/about');
+    expect(canonicalPage('https://x/about/', scope)).toBe('https://x/about');
+    expect(canonicalPage('https://x/about.html?ref=a#b', scope)).toBe('https://x/about?ref=a');
+    expect(canonicalPage('https://x/index.html', scope)).toBe('https://x/');
+  });
+
+  test('clean addresses and the scope itself need no redirect', () => {
+    expect(canonicalPage('https://x/', scope)).toBeNull();
+    expect(canonicalPage('https://x/about', scope)).toBeNull();
+    expect(canonicalPage('https://x/?ref=a#/core/happy', scope)).toBeNull();
+  });
+
+  test('a sub-path scope keeps its own trailing slash', () => {
+    expect(canonicalPage('https://x/app/', 'https://x/app/')).toBeNull();
+    expect(canonicalPage('https://x/app/index.html', 'https://x/app/')).toBe('https://x/app/');
+    expect(canonicalPage('https://x/app/about.html', 'https://x/app/')).toBe('https://x/app/about');
   });
 });

@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 // Offline support (spec §6.5). __PRECACHE__ and __VERSION__ are injected by build/sw-plugin.ts.
-import { navigationResponse, navigationUrls, precacheResponse } from './strategy';
+import { canonicalPage, navigationResponse, navigationUrls, precacheResponse } from './strategy';
 
 declare const self: ServiceWorkerGlobalScope;
 declare const __PRECACHE__: string[];
@@ -31,6 +31,11 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
 
   if (req.mode === 'navigate') {
+    const clean = canonicalPage(req.url, INDEX);
+    if (clean) {
+      event.respondWith(Response.redirect(clean, 301));
+      return;
+    }
     event.respondWith(caches.open(CACHE).then((cache) => navigationResponse(cache, navigationUrls(req.url, INDEX), () => fetch(req))));
     return;
   }

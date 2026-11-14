@@ -98,19 +98,22 @@ describe('historyOp', () => {
     expect(op(sel, { type: 'restore', state: opn })).toBe('none');
   });
 
-  test('within a wheel every URL change replaces the entry (spec §4)', () => {
-    expect(op(sel, { type: 'select', segment: idx('angry') })).toBe('replace'); // selecting the selected word opens it
-    expect(op(sel, { type: 'open', segment: idx('sad') })).toBe('replace');
-    expect(op(opn, { type: 'open', segment: idx('sad') })).toBe('replace');
-    expect(op(sel, { type: 'activate' })).toBe('replace');
-    expect(op(opn, { type: 'settled', segment: idx('sad') })).toBe('replace');
-    expect(op(opn, { type: 'step', delta: 1 })).toBe('replace');
-    expect(op(opn, { type: 'toChild' })).toBe('replace');
-    expect(op(outer, { type: 'toParent' })).toBe('replace');
-    expect(op(outer, { type: 'stepOut' })).toBe('replace');
-    expect(op(opn, { type: 'toParent' })).toBe('replace');
-    expect(op(opn, { type: 'close' })).toBe('replace');
-    expect(op(opn, { type: 'clear' })).toBe('replace');
-    expect(op(opn, { type: 'escape' })).toBe('replace');
+  test('picking a word or a place adds an entry (history rule spec)', () => {
+    expect(op(sel, { type: 'select', segment: idx('angry') })).toBe('push'); // a tap on the selected word opens it
+    expect(op(sel, { type: 'open', segment: idx('sad') })).toBe('push');
+    expect(op(opn, { type: 'open', segment: idx('sad') })).toBe('push'); // a tap on another word, or a card link
+    expect(op(sel, { type: 'activate' })).toBe('push'); // Enter or +
+    expect(op(opn, { type: 'close' })).toBe('push');
+    expect(op(opn, { type: 'clear' })).toBe('push'); // Start over
+    expect(op(opn, { type: 'escape' })).toBe('push');
+    expect(op(opn, { type: 'toParent' })).toBe('push'); // ← on a core word closes it
+  });
+
+  test('moving by direction between open words replaces the entry (history rule spec)', () => {
+    expect(op(opn, { type: 'settled', segment: idx('sad') })).toBe('replace'); // a spin
+    expect(op(opn, { type: 'step', delta: 1 })).toBe('replace'); // ↑ ↓
+    expect(op(opn, { type: 'toChild' })).toBe('replace'); // →, a swipe
+    expect(op(outer, { type: 'toParent' })).toBe('replace'); // ←, a swipe, a small pinch out
+    expect(op(outer, { type: 'stepOut' })).toBe('replace'); // −
   });
 });

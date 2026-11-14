@@ -22,32 +22,30 @@ test.describe('desktop', () => {
     await expect(page.locator('fw-card .fw-card-body')).toHaveCount(0);
   });
 
-  test('tap again opens: its path replaces the entry, card expanded with 8 rows; Escape returns to selected-not-opened', async ({ page }) => {
+  test('tap again opens: its path is a new entry, card expanded with 8 rows; Back returns to selected-not-opened', async ({ page }) => {
     await open(page);
     const entries = await page.evaluate(() => history.length);
     await tapPath(page, 'angry');
     await tapPath(page, 'angry');
     await expect(head(page)).toHaveAttribute('aria-expanded', 'true');
     expect(await page.evaluate(() => location.pathname)).toBe('/angry');
-    expect(await page.evaluate(() => history.length)).toBe(entries);
+    expect(await page.evaluate(() => history.length)).toBe(entries + 1);
     await expect(page.locator('fw-card ul.fw-rows button')).toHaveCount(8);
-    // URL redesign §4: Back never steps through words; closing replaces the entry too.
-    await page.keyboard.press('Escape');
+    await page.goBack();
     await idle(page);
     expect(await page.evaluate(() => location.pathname)).toBe('/');
-    expect(await page.evaluate(() => history.length)).toBe(entries);
     expect(await state(page)).toMatchObject({ opened: false, view: { mode: 'wheel' } });
     expect(await selectedPath(page)).toBe('angry');
   });
 
-  test('opening and arrowing through words keeps one history entry; Escape returns to the whole wheel', async ({ page }) => {
+  test('arrowing through opened words keeps one history entry: one Back returns to the whole wheel', async ({ page }) => {
     await open(page);
+    await tapPath(page, 'angry');
+    await tapPath(page, 'angry');
     const entries = await page.evaluate(() => history.length);
-    await tapPath(page, 'angry');
-    await tapPath(page, 'angry');
     for (let i = 0; i < 4; i++) {
       await page.keyboard.press('ArrowDown');
-      // Past the 250ms burst window, so each press would have pushed before.
+      // Past the 250ms burst window, so each press would have pushed if it pushed.
       await page.waitForTimeout(300);
     }
     await idle(page);
@@ -55,10 +53,9 @@ test.describe('desktop', () => {
     expect(path).not.toBe('/angry');
     expect(path).not.toBe('/');
     expect(await page.evaluate(() => history.length)).toBe(entries);
-    await page.keyboard.press('Escape');
+    await page.goBack();
     await idle(page);
     expect(await page.evaluate(() => location.pathname)).toBe('/');
-    expect(await page.evaluate(() => history.length)).toBe(entries);
     expect(await state(page)).toMatchObject({ opened: false, view: { mode: 'wheel' } });
   });
 
@@ -178,18 +175,22 @@ test.describe('desktop', () => {
     await expect(page.locator('[role="treeitem"][tabindex="0"]')).toBeFocused();
   });
 
-  test('Start over from an opened word clears it and replaces the entry', async ({ page }) => {
+  test('Start over from an opened word clears it in a new entry, and Back returns to the word', async ({ page }) => {
     await open(page);
+    await tapPath(page, 'angry');
+    await tapPath(page, 'angry');
     const entries = await page.evaluate(() => history.length);
-    await tapPath(page, 'angry');
-    await tapPath(page, 'angry');
     expect(await page.evaluate(() => location.pathname)).toBe('/angry');
     await page.getByRole('button', { name: 'Start over' }).click();
     await idle(page);
     expect((await state(page)).selected).toBeNull();
     expect(await page.evaluate(() => location.pathname)).toBe('/');
-    expect(await page.evaluate(() => history.length)).toBe(entries);
+    expect(await page.evaluate(() => history.length)).toBe(entries + 1);
     await expect(page.getByRole('button', { name: 'Start over' })).toBeHidden();
+    await page.goBack();
+    await idle(page);
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
+    expect((await state(page)).opened).toBe(true);
   });
 
 
@@ -641,16 +642,14 @@ test.describe('phone', () => {
     expect(cardTop).toBeGreaterThanOrEqual(y + half + 12 - 1);
   });
 
-  test('phone: Escape from an opened word returns to the whole wheel with it selected, in the same entry', async ({ page }) => {
+  test('phone: Back from an opened word returns to the whole wheel with it selected', async ({ page }) => {
     await open(page);
-    const entries = await page.evaluate(() => history.length);
     await tapPath(page, 'angry');
     await tapPath(page, 'angry');
     expect(await page.evaluate(() => location.pathname)).toBe('/angry');
-    await page.keyboard.press('Escape');
+    await page.goBack();
     await idle(page);
     expect(await page.evaluate(() => location.pathname)).toBe('/');
-    expect(await page.evaluate(() => history.length)).toBe(entries);
     const s = await state(page);
     expect(await selectedPath(page)).toBe('angry');
     expect(s.view).toEqual({ mode: 'wheel' });

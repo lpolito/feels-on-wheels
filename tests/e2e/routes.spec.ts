@@ -101,8 +101,16 @@ test('on not found, tapping a word opens it at its own path, and the message nev
   await tapPath(page, 'angry');
   expect((await state(page)).opened).toBe(true);
   expect(new URL(page.url()).pathname).toBe('/angry');
-  expect(await page.evaluate(() => history.length)).toBe(entries);
+  // History rule spec: the first tap only selects, and replaces the mistyped address with the wheel's; opening then
+  // adds an entry. Back goes to the wheel, never to the mistyped address.
+  expect(await page.evaluate(() => history.length)).toBe(entries + 1);
   await expect(page).toHaveTitle('Angry · Feels on Wheels');
+  await page.goBack();
+  await idle(page);
+  expect(new URL(page.url()).pathname).toBe('/');
+  await expect(notFound(page)).toHaveCount(0);
+  await page.goForward();
+  await idle(page);
   await page.locator('fw-toolbar .fw-start-over').click();
   await idle(page);
   expect((await state(page)).selected).toBeNull();
@@ -255,4 +263,82 @@ test('a link to the address already showing adds no history entry', async ({ pag
   await expect(page).toHaveURL((u) => u.pathname === '/about');
   expect(await page.evaluate(() => history.length)).toBe(entries);
   await expect(aboutHeading(page)).toBeVisible();
+});
+
+// History rule spec (2026-11-14): picking a word or a place adds an entry; moving by direction replaces it.
+test.describe('history: picking adds an entry, moving by direction replaces it', () => {
+  const entries = (page: Page) => page.evaluate(() => history.length);
+
+  test('a double tap on a word on the whole wheel opens it with one new entry', async ({ page }) => {
+    await open(page);
+    const before = await entries(page);
+    await page.waitForTimeout(320);
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
+    await page.mouse.dblclick(p.x, p.y);
+    await idle(page);
+    expect((await state(page)).opened).toBe(true);
+    expect(new URL(page.url()).pathname).toBe('/angry');
+    expect(await entries(page)).toBe(before + 1);
+  });
+
+  test('a shared link, then closing, then Back reopens the word', async ({ page }) => {
+    await open(page, '/happy/playful');
+    await page.keyboard.press('Escape');
+    await idle(page);
+    expect(new URL(page.url()).pathname).toBe('/');
+    await page.goBack();
+    await idle(page);
+    expect(new URL(page.url()).pathname).toBe('/happy/playful');
+    expect(await selectedPath(page)).toBe('happy/playful');
+    expect((await state(page)).opened).toBe(true);
+  });
+
+  test('a word opened by a tap, then About, then "Back to the wheel" lands on it; Back again returns to the whole wheel', async ({ page }) => {
+    await sideways(page);
+    await open(page);
+    await tapPath(page, 'angry');
+    await tapPath(page, 'angry');
+    await aboutLink(page).click();
+    await expect(aboutHeading(page)).toBeFocused();
+    await backToWheel(page).click();
+    await expect(page).toHaveURL((u) => u.pathname === '/angry');
+    await idle(page);
+    expect((await state(page)).opened).toBe(true);
+    await page.goBack();
+    await expect(page).toHaveURL((u) => u.pathname === '/');
+    await idle(page);
+    expect((await state(page)).opened).toBe(false);
+    expect(await selectedPath(page)).toBe('angry');
+  });
+
+  test('a swipe to the parent word replaces the entry', async ({ page }) => {
+    await open(page, '/angry/aggressive');
+    const before = await entries(page);
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry/aggressive'));
+    // A quick sideways drag on a ring is a swipe: right steps out to the parent (spec v1.2's swipe).
+    await page.mouse.move(p.x - 60, p.y);
+    await page.mouse.down();
+    await page.mouse.move(p.x + 60, p.y, { steps: 3 });
+    await page.mouse.up();
+    await idle(page);
+    expect(new URL(page.url()).pathname).toBe('/angry');
+    expect(await entries(page)).toBe(before);
+  });
+
+  test('pinching in on a word on the whole wheel opens it with one new entry', async ({ page, browserName, isMobile }) => {
+    test.skip(browserName === 'firefox', 'Firefox ctrl+wheel needs synthetic events (see wheel.spec)');
+    test.skip(browserName === 'webkit' && Boolean(isMobile), 'Playwright has no mouse wheel in mobile WebKit');
+    await open(page);
+    const before = await entries(page);
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
+    await page.mouse.move(p.x, p.y);
+    await page.keyboard.down('Control');
+    for (let i = 0; i < 4; i++) await page.mouse.wheel(0, -200);
+    await page.keyboard.up('Control');
+    await page.waitForTimeout(400);
+    await idle(page);
+    expect((await state(page)).opened).toBe(true);
+    expect(new URL(page.url()).pathname).toBe('/angry');
+    expect(await entries(page)).toBe(before + 1);
+  });
 });

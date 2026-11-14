@@ -62,6 +62,7 @@ Lucas maintains Feels on Wheels on his own and owns its accessibility. This file
 These are known and tracked in the [roadmap's known issues](docs/ROADMAP.md#known-issues).
 
 - **Choosing a word with the keyboard or a screen reader on a phone-size screen** can choose one on the half of the wheel that's off screen, without turning the wheel to show it. The card still opens with the word.
+- **On a phone, swiping back from the edge of the screen doesn't work on the wheel**, because the wheel takes every touch. Use the browser's Back button instead. In the app installed to an iPhone's home screen there's no Back at all: use Start over, or "Back to the wheel" on the About page.
 - **On the wheel, pinching zooms the wheel itself, not the page.** To make text larger, use the browser's or the system's text size or zoom settings.
 - **Small windows**, which can include a computer's browser zoomed in a long way, may show the body sensations wheel without labels until you open something. The card's words are still there.
 - **On some phones, turning the phone sideways and back** can leave the card's text much larger than it should be, and after several turns, taps can land on the wrong word. Closing the word, or reloading the page, may set it right.

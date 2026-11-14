@@ -310,7 +310,10 @@ function onState(s: State, prev: State, a: Action): void {
   placeOpened(s);
   requestDraw();
   // Hidden behind About, the wheel never rewrites About's entry.
-  if (!onAbout && (historyOp(prev, s, a) === 'replace' || leftNotFound)) writeUrl('replace', s);
+  if (onAbout) return;
+  // History rule spec: the first change on not found replaces the mistyped address, whatever the rule says.
+  const op = leftNotFound ? 'replace' : historyOp(prev, s, a);
+  if (op !== 'none') writeUrl(op, s);
 }
 
 // ── Mounting a wheel (spec v2 §4.2) ──────────────────────────────────────

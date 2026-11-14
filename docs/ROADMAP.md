@@ -21,7 +21,7 @@ Each change is used before the next one is designed. When Lucas picks an idea to
 | v2.2.1: Sideways phones with the notch on the left: the opened word keeps 1rem clear of the notch, not the screen's edge | Shipped | No spec or plan | The fix for the known issue found using v2.2: the camera's left margin now starts after `safe-area-inset-left`. Commits on main after 9fc8944. |
 | Going public, step 1: shareable | Shipped 2026-11-09 | [spec](superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md), [plan](superpowers/plans/2026-11-09-feels-on-wheels-going-public.md) | |
 | Going public: Cloudflare, feelsonwheels.app and About at `/about` | Shipped 2026-11-13 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-cloudflare-domain.md) | About moved to `/about` after approval, so the offline cache works on Cloudflare (the spec's last section). |
-| URLs: real paths, a small router, and a Worker for first visits | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-urls-routing.md) | §8: the service worker takes over as soon as it installs, so devices with the old one don't get a blank page on a word's link. §7: it serves a real file (robots.txt, the sitemap) at its own address, and the app only for everything else. §1: a percent-encoded address means the same as the plain one (`/%62ody` is `/body`). |
+| URLs: real paths, a small router, and a Worker for first visits | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-urls-routing.md) | §8: the service worker takes over as soon as it installs, so devices with the old one don't get a blank page on a word's link. §7: it serves a real file (robots.txt, the sitemap) at its own address, and the app only for everything else. §1: a percent-encoded address means the same as the plain one (`/%62ody` is `/body`). §4: replaced by the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md), back to `main`'s: picking a word or a place adds an entry, and moving by direction replaces it. |
 
 ## Ideas
 
@@ -99,7 +99,7 @@ Polish to what's there; these could ship together as one change.
 
 - After jumping from the body wheel to the feelings wheel (the "See … on the feelings wheel" link, or v2.2's core-feeling link in the definition), a "Return to …" control takes you back to the body wheel with the card you came from open again.
 - Lucas's idea, 2026-11-09. Where it goes is open: on the opened card, as a toolbar button like Start over, or something else.
-- Today the only way back is the browser's Back (the jump pushes history, v2 §4.2), which is the awkward gesture in the [going back on phones](#navigation) known issue. The [URL redesign](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) §4 keeps that push for the jump, so Back still returns from it; this idea would add a way back that doesn't need the gesture.
+- Today the only way back is the browser's Back (the jump pushes history, v2 §4.2), which is the awkward gesture in the [going back on phones](#navigation) known issue. The jump still pushes history under the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md), so Back returns from it; this idea would add a way back that doesn't need the browser's Back.
 - To decide when designing: what the control says ("Back to Wide eyes"?), when it disappears (after moving on, switching wheels by hand, or Start over), and whether it also works the other way, or for the emoji wheel once there are three wheels.
 
 #### Feeling links underlined in their feeling's color
@@ -165,7 +165,7 @@ Lucas's ideas, 2026-11-12:
 - **A left chevron** on "Back to the wheel". Likely the same control as the floating one.
 - **Say no more than has been tested.** "How to use it" says "Everything works with a keyboard and with a screen reader", but no screen reader has been tried by hand yet ([ACCESSIBILITY.md](../ACCESSIBILITY.md#supported-environments), 2026-11-12). Soften it, or link ACCESSIBILITY.md, until one has.
 - With [About in the start message](#about-in-the-start-message), more people arrive at About from the start, so the way back matters more.
-- Worth doing before [launching](#before-launching), with the [slow open](#the-about-page-1) known issue.
+- Worth doing before [launching](#before-launching).
 
 ### URLs, routing and hosting
 
@@ -210,12 +210,11 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 
 ### Navigation
 
-- **Going back on phones.** Swiping back steps through earlier words, which doesn't fit a wheel that's itself swiped to navigate. Lucas raised it while using v2.1. The URL redesign changes it: Back no longer steps through words (a word replaces the history entry; switching wheels, the jump and About push). Open until Lucas confirms on a phone. Related: [return to the word you jumped from](#return-to-the-word-you-jumped-from) and the history rules in the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) §4.
+- **Going back on phones.** Swiping back doesn't work at all on the wheel: it takes every touch, so the browser's Back button is the only way back. An app installed to the iPhone home screen has no Back at all. Lucas (2026-11-14): better history rules for phones wait on an in-app back button. History follows the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md): picking a word or a place adds an entry, moving by direction replaces it. Related: [return to the word you jumped from](#return-to-the-word-you-jumped-from).
 - **Keyboard selection on the phone's half-wheel.** Choosing a word by keyboard or the accessible tree can select one on the hidden left half without turning the wheel to show it. Lucas wants to try it before deciding whether the wheel should turn to show it.
 
 ### The About page
 
-- **The About page sometimes takes several moments to open.** Found 2026-11-12, tapping the About icon. The URL redesign likely fixes it: About is now a view inside the app, with no full page load. To confirm by hand on the preview link.
 - **Roberts's credit link shows nothing.** Found 2026-11-12: the imgur post's image now redirects to imgur's "removed" picture (checked 2026-11-12), so the credit links to an empty post. [core-feelings-wheel.md](reference/core-feelings-wheel.md) still says it was online on 2026-11-09 and has an archive.org copy; update the note when the link is fixed. Part of the [About page rework](#about-page-rework).
 
 ### Code and tests

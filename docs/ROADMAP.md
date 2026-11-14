@@ -23,6 +23,7 @@ Ideas don't have version numbers. When Lucas picks one to build, it moves into t
 | v2.2.1: Sideways phones with the notch on the left: the opened word keeps 1rem clear of the notch, not the screen's edge | Shipped | No spec; the fix for the known issue found using v2.2 (the camera's left margin now starts after `safe-area-inset-left`). Commits on main after 9fc8944. |
 | Going public, step 1: shareable | Shipped 2026-11-09 | [spec](superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md), [plan](superpowers/plans/2026-11-09-feels-on-wheels-going-public.md). Was live at `lpolito.github.io/feels-on-wheels/` until the move below. |
 | Going public: Cloudflare, feelsonwheels.app and About at `/about` | Shipped 2026-11-13 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-cloudflare-domain.md). Live at <https://feelsonwheels.app/>, served by Cloudflare Workers, not announced or indexed. The github.io address stops working; nothing forwards from it (Lucas, 2026-11-13). What's left is in [before launching](#before-launching). |
+| URLs: real paths, a small router, and a Worker for first visits | Spec approved 2026-11-13 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md). Plan to come. |
 
 ## Ideas
 
@@ -42,8 +43,9 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Help adding it to the home screen](#help-adding-it-to-the-home-screen) | The toolbar, sharing and installing | Idea |
 | [A dark home-screen icon](#a-dark-home-screen-icon) | The toolbar, sharing and installing | Idea |
 | [About page rework](#about-page-rework) | [The About page](#the-about-page) | Idea |
-| [Real paths, a small router and cleaner URLs](#real-paths-a-small-router-and-cleaner-urls) | [URLs, routing and hosting](#urls-routing-and-hosting) | Idea; decide before launch |
+| [Real paths, a small router and cleaner URLs](#real-paths-a-small-router-and-cleaner-urls) | [URLs, routing and hosting](#urls-routing-and-hosting) | Spec approved 2026-11-13 ([versions](#versions)) |
 | [Languages](#languages) | URLs, routing and hosting | Planned |
+| ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
 
@@ -174,6 +176,8 @@ Decide these together, and before launch: once links are shared and indexed, eve
 
 #### Real paths, a small router and cleaner URLs
 
+**Designed** in the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) (approved 2026-11-13): real paths with no `core`, a small router of our own with no full reloads (About becomes a view), a Cloudflare Worker that gives first visits the right title and preview tags or a real 404, and Back that never steps through words. The notes below are what the brainstorm started from.
+
 Lucas's ideas: he doesn't like the `/core/` prefix and wants room for languages (2026-11-09). On 2026-11-12: he doesn't like the URLs at all, they're too permissive; he doesn't want to see `about.html` in the address bar, only `/about` (done 2026-11-13); and modern apps don't need hash routing, so why does this one lean on it? Could a small router of our own replace it, without a backend and while keeping dependencies near zero?
 
 - **Today (v2.2.1):** everything is in the hash. The feelings wheel at rest has none. An opened word is `#/core/happy/playful/…`, and the body wheel is `#/body` or `#/body/…`. `core` is the feelings wheel's internal id (`src/state/url.ts`, v2 spec §4.3). About is a separate page at `/about` (the file `about.html`; Cloudflare redirects `/about.html` there).
@@ -194,6 +198,12 @@ Lucas's ideas: he doesn't like the `/core/` prefix and wants room for languages 
   - **Slugs:** stable English ids in every language (`/es/happy/…`) or translated ones (`/es/feliz/…`).
   - **History:** whether opening a word still pushes history the way it does today (v2 §4.2), and how that meets the [going back on phones](#navigation) known issue.
   - Old `#/core/…` links don't need to keep working (Lucas, 2026-11-13).
+
+#### "Did you mean" on not found
+
+- On the not-found message, a "Did you mean Playful?" link when the address's last part is a real word in the wrong place (`/playful`, `/sad/playful`) or one letter off from one (`plaful`). Lucas, 2026-11-13, left out of the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) to keep it small.
+- Without it, not found names the word ("There's no "plaful" on the wheel.") and points to the other wheel.
+- To decide when designing: how close counts as a typo, and which place to suggest when the word sits in more than one.
 
 #### Languages
 
@@ -248,11 +258,11 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens in two steps: first shareable, then launched. Step 1 [shipped](#versions) on 2026-11-09. Step 2 is what's left before announcing it and letting search engines index it. The host and the domain are done (2026-11-13); the rest isn't started.
 
 - **Lucas reviews the definitions and sensations** in [content-review.md](content-review.md). This was moved out of v1.1.
-- **Decide the URL structure:** [real paths, a small router and cleaner URLs](#real-paths-a-small-router-and-cleaner-urls), while no links are out in the world. The host is decided: Cloudflare (2026-11-13).
+- **Ship the URL structure:** decided in the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) (approved 2026-11-13); build and ship it while no links are out in the world.
 - **Moved to feelsonwheels.app** on 2026-11-13 ([spec](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-design.md)), still `noindex`. No trademark check (Lucas decided against it, 2026-11-13). Installs and saved themes at the github.io address didn't carry over.
 - **Let search engines in:** set `indexable: true` in `site.config.ts` (removes `noindex`), deploy, and re-check the link previews.
   - Decide first whether the `workers.dev` address and the preview links should say `noindex` once the domain is indexable, since they serve the same pages.
-  - Decide whether `/about.html` should redirect with a 301 (a `_redirects` file) instead of Cloudflare's 307.
+  - `/about.html` redirecting with a 301: decided in the URL redesign (its Worker answers it once `about.html` is gone).
 - **Optional, after letting search engines in:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
 - **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, gray like the site's other icons; on hover it takes the wheel's seven colors and spins once, settling.
 - **The old private repo:** archive or delete `lpolito/feelings-wheel` once the public one is settled.

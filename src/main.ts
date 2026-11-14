@@ -278,10 +278,7 @@ function onState(s: State, prev: State, a: Action): void {
   placeOpened(s);
   requestDraw();
   const op = historyOp(prev, s, a);
-  if (op !== 'none') {
-    if (op === 'push') writer.push(urlFor(s));
-    else writer.replace(urlFor(s));
-  }
+  if (op === 'replace') writer.replace(urlFor(s));
 }
 
 /**

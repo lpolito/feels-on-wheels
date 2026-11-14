@@ -1,20 +1,16 @@
 import type { Action, State } from './store';
 
-const sameHash = (a: State, b: State): boolean =>
+const sameUrl = (a: State, b: State): boolean =>
   a.opened === b.opened && (!a.opened || a.selected === b.selected);
 
-/** Stepping through words rather than choosing one: arrow keys, swipes, a spin settling. */
-const MOVES = new Set<Action['type']>(['settled', 'step', 'toChild', 'toParent', 'stepOut']);
-
 /**
- * How a transition writes history (spec §3.6, changed in v1.3.1). Moving from one opened word to the next replaces
- * the entry, so browsing by keys or spins doesn't fill the history; opening a word by tap, link or Enter, and
- * closing, push. Back steps through the words chosen, then to the whole wheel.
+ * How a transition writes history (URL redesign spec §4). Within one wheel every URL change replaces the entry:
+ * opening, moving between words, closing and Start over. Only switching wheels and opening About push, and the
+ * router does that, not this function.
  */
-export function historyOp(prev: State, next: State, a: Action): 'push' | 'replace' | 'none' {
-  if (a.type === 'restore' || sameHash(prev, next)) return 'none';
-  if (prev.opened && next.opened && MOVES.has(a.type)) return 'replace';
-  return 'push';
+export function historyOp(prev: State, next: State, a: Action): 'replace' | 'none' {
+  if (a.type === 'restore' || sameUrl(prev, next)) return 'none';
+  return 'replace';
 }
 
 const COALESCE_MS = 250;

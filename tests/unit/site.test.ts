@@ -1,5 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { aboutLinks, headTags, linkify, renderAbout, robotsTxt, sitemapXml, webManifest, type PageStrings } from '../../build/site';
+import { routeTable, allPaths } from '../../src/state/url';
+import { loadData } from '../../src/data/load';
 import en from '../../src/data/locales/en.json';
 import type { SiteConfig } from '../../site.config';
 
@@ -35,7 +37,17 @@ describe('head tags', () => {
     expect(h).toContain('<meta property="og:image:width" content="1200">');
     expect(h).toContain('<meta property="og:image:height" content="630">');
     expect(h).toContain('<meta name="twitter:card" content="summary_large_image">');
-    expect(h).toContain('<link rel="manifest" href="./manifest.webmanifest">');
+    expect(h).toContain('<link rel="manifest" href="/manifest.webmanifest">');
+  });
+
+  test('the head is wrapped in markers, each once', () => {
+    for (const page of ['index', 'about'] as const) {
+      const h = headTags(page, site, strings);
+      expect(h.match(/<!--head-->/g)).toHaveLength(1);
+      expect(h.match(/<!--\/head-->/g)).toHaveLength(1);
+      expect(h.indexOf('<!--head-->')).toBeLessThan(h.indexOf('<title>'));
+      expect(h.indexOf('<!--/head-->')).toBeGreaterThan(h.indexOf('rel="manifest"'));
+    }
   });
 
   test('the About page has its own canonical and title, and no JSON-LD', () => {
@@ -85,9 +97,12 @@ describe('generated files', () => {
     expect(robotsTxt(site)).toBe('User-agent: *\nAllow: /\nSitemap: https://lpolito.github.io/feels-on-wheels/sitemap.xml\n');
   });
 
-  test('the sitemap lists the wheel and About', () => {
-    const locs = [...sitemapXml(site).matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
-    expect(locs).toEqual(['https://lpolito.github.io/feels-on-wheels/', 'https://lpolito.github.io/feels-on-wheels/about']);
+  test('the sitemap has one entry per path', () => {
+    const paths = allPaths(routeTable(loadData().wheels));
+    const locs = [...sitemapXml(site, paths).matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
+    expect(locs).toHaveLength(paths.length);
+    expect(new Set(locs).size).toBe(locs.length);
+    for (const tail of ['', 'about', 'body', 'happy/playful']) expect(locs).toContain(`${site.url}${tail}`);
   });
 });
 
@@ -102,14 +117,14 @@ describe('About page', () => {
       license: 'https://github.com/lpolito/feels-on-wheels/blob/main/LICENSE',
       contributing: 'https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md',
       author: 'https://lucaspolito.dev/',
-      home: './',
-      about: './about',
+      home: '/',
+      about: '/about',
     });
   });
 
   test('the noscript message links to About (spec §7.2)', () => {
     const noscript = (en as unknown as { page: PageStrings }).page.noscript;
-    expect(linkify(noscript, links)).toContain('<a href="./about">');
+    expect(linkify(noscript, links)).toContain('<a href="/about">');
   });
 
   test('linkify escapes text and turns [label](target) into links', () => {

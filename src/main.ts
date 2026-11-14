@@ -414,7 +414,7 @@ aimWatch.observe(float);
 // ── Offline support (spec §6.5) ─────────────────────────────────────────
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
   const register = (): void => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {
       // Offline support is an enhancement; the app works without it.
     });
   };

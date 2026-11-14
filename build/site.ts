@@ -74,10 +74,10 @@ export function headTags(page: PageId, site: SiteConfig, strings: PageStrings): 
     meta('property', 'og:image:alt', strings.imageAlt),
     meta('name', 'twitter:card', 'summary_large_image'),
     meta('name', 'twitter:image:alt', strings.imageAlt),
-    '<link rel="manifest" href="./manifest.webmanifest">',
+    '<link rel="manifest" href="/manifest.webmanifest">',
     ...(page === 'index' ? [jsonLd(site, strings)] : []),
   ];
-  return tags.join('\n  ');
+  return ['<!--head-->', ...tags, '<!--/head-->'].join('\n  ');
 }
 
 export function webManifest(strings: PageStrings): Record<string, unknown> {
@@ -107,8 +107,8 @@ export function aboutLinks(site: SiteConfig): Record<string, string> {
     license: `${site.repo}/blob/main/LICENSE`,
     contributing: `${site.repo}/blob/main/CONTRIBUTING.md`,
     author: site.author.url,
-    home: './',
-    about: './about',
+    home: '/',
+    about: '/about',
   };
 }
 
@@ -140,7 +140,7 @@ export function renderAbout(about: AboutStrings, site: SiteConfig): string {
     `  <h1>${escapeHtml(about.heading)}</h1>`,
     `  <p class="about-summary">${text(about.summary)}</p>`,
     ...sections,
-    `  <p class="about-back"><a href="./">${escapeHtml(about.back)}</a></p>`,
+    `  <p class="about-back"><a href="/">${escapeHtml(about.back)}</a></p>`,
     '</main>',
   ].join('\n');
 }
@@ -149,7 +149,8 @@ export function robotsTxt(site: SiteConfig): string {
   return `User-agent: *\nAllow: /\nSitemap: ${site.url}sitemap.xml\n`;
 }
 
-export function sitemapXml(site: SiteConfig): string {
-  const urls = (['index', 'about'] as const).map((p) => `  <url><loc>${escapeHtml(pageUrl(p, site))}</loc></url>`);
+/** One `<loc>` per path: the site URL plus the path without its leading "/". */
+export function sitemapXml(site: SiteConfig, paths: readonly string[]): string {
+  const urls = paths.map((p) => `  <url><loc>${escapeHtml(site.url + p.slice(1))}</loc></url>`);
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`;
 }

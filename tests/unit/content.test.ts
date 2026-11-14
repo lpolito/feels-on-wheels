@@ -68,8 +68,8 @@ describe('going public (spec 2026-11-09)', () => {
     expect(lock.packages['']?.name).toBe(pkg.name);
   });
 
-  test('site config has a URL ending in /', () => {
-    expect(site.url).toMatch(/^https:\/\/.+\/$/);
+  test('the site lives at feelsonwheels.app and is not indexed yet', () => {
+    expect(site.url).toBe('https://feelsonwheels.app/');
     expect(site.indexable).toBe(false);
   });
 });

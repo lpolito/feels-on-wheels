@@ -86,4 +86,9 @@ describe('going public (spec 2026-11-09)', () => {
     expect(config['main']).toBe('./src/worker/worker.ts');
     expect(config['assets']).toEqual({ directory: './dist/', binding: 'ASSETS', html_handling: 'auto-trailing-slash', not_found_handling: 'none' });
   });
+
+  test('wrangler has a previews block, which Workers Builds needs for pull request previews (`wrangler preview`)', () => {
+    const config = JSON.parse(readFileSync('wrangler.jsonc', 'utf8').replace(/^\s*\/\/.*$/gm, '')) as Record<string, unknown>;
+    expect(config['previews']).toEqual({});
+  });
 });

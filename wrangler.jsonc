@@ -16,5 +16,8 @@
     "not_found_handling": "none"
   },
   "workers_dev": true,
-  "preview_urls": true
+  "preview_urls": true,
+  // Pull request previews: Workers Builds runs `npx wrangler preview` for other branches, which requires this block.
+  // Empty: previews use the top-level settings (the Worker has no bindings beyond its assets).
+  "previews": {}
 }

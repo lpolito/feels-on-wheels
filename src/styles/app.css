@@ -210,6 +210,12 @@ fw-hint {
   text-align: start;
 }
 /* Spec v2.2 §5: the wheel's question as a heading (the card name's size and weight), then the instruction. */
+/* URL redesign §7: not found looks different at a glance. A border, so forced colors keep it; --focus is ≥ 3:1 on the
+   panel in both themes. The padding gives back its width, so the text stays on the card's edge. */
+fw-hint[data-variant="not-found"] {
+  border-inline-start: 3px solid var(--focus);
+  padding-inline-start: calc(var(--edge) - 3px);
+}
 .fw-hint-title { font-size: 1.35rem; line-height: 1.2; font-weight: 700; margin-bottom: 0.25rem; }
 .fw-hint-text { font-size: 1rem; }
 /* Spec v2 §4.1, v2.1 §6.3: the link to the other wheel is a real link, so it wraps as part of the sentence. */

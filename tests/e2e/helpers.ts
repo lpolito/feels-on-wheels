@@ -1,7 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 
-export async function open(page: Page, hash = ''): Promise<void> {
-  await page.goto(`/${hash}`);
+export async function open(page: Page, path = '/'): Promise<void> {
+  await page.goto(path);
   await page.waitForFunction(() => window.__fw !== undefined);
   await idle(page);
 }

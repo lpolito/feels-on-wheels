@@ -10,7 +10,7 @@ const mount = (): FwHint => {
 const content = {
   title: 'How are you feeling?',
   text: 'Tap or spin to explore, or {link}.',
-  link: { label: 'start from body sensations instead', wheel: 'body', href: '#/body' },
+  link: { label: 'start from body sensations instead', wheel: 'body', href: '/body' },
 };
 
 describe('<fw-hint>', () => {
@@ -52,7 +52,7 @@ describe('<fw-hint>', () => {
     expect(el.textContent).toBe('How are you feeling?Tap or spin to explore, or start from body sensations instead.');
     const b = el.querySelector<HTMLAnchorElement>('a.fw-hint-link')!;
     expect(b.textContent).toBe('start from body sensations instead');
-    expect(b.getAttribute('href')).toBe('#/body');
+    expect(b.getAttribute('href')).toBe('/body');
   });
 
   test('clicking the link dispatches fw-wheel with the target', () => {
@@ -110,5 +110,28 @@ describe('<fw-hint>', () => {
     el.content = content;
     el.content = { ...content, link: { ...content.link, href: '/' } };
     expect(el.querySelector('a.fw-hint-link')!.getAttribute('href')).toBe('/');
+  });
+
+  test('the not-found variant is reflected as data-variant, and the usual message has none', () => {
+    const el = mount();
+    el.content = { ...content, variant: 'notFound' };
+    expect(el.dataset['variant']).toBe('not-found');
+    el.content = content;
+    expect(el.hasAttribute('data-variant')).toBe(false);
+  });
+
+  test('a lead is plain text before the text, never searched for {link}', () => {
+    const el = mount();
+    el.content = { ...content, variant: 'notFound', lead: "There's no “{link}” on the wheel. " };
+    const p = el.querySelector('p.fw-hint-text')!;
+    expect(p.textContent).toBe("There's no “{link}” on the wheel. Tap or spin to explore, or start from body sensations instead.");
+    expect(p.querySelectorAll('a.fw-hint-link')).toHaveLength(1);
+  });
+
+  test('a new lead alone re-renders', () => {
+    const el = mount();
+    el.content = { ...content, lead: 'One. ' };
+    el.content = { ...content, lead: 'Two. ' };
+    expect(el.querySelector('p.fw-hint-text')!.textContent).toMatch(/^Two\. /);
   });
 });

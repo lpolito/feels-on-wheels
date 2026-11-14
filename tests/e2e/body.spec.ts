@@ -10,7 +10,7 @@ const hintLink = (page: Page) => page.locator('fw-hint .fw-hint-link');
 test.describe('switching wheels (desktop)', () => {
   test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'desktop flows'));
 
-  test('switch to Body: nothing selected, body message, URL #/body, focus stays on the Body button', async ({ page }) => {
+  test('switch to Body: nothing selected, body message, URL /body, focus stays on the Body button', async ({ page }) => {
     await open(page);
     // From the keyboard: Safari doesn't focus a button on click, so focus is only there to keep when it was put there.
     await switchButton(page, 'Body').focus();
@@ -18,7 +18,7 @@ test.describe('switching wheels (desktop)', () => {
     await idle(page);
     expect(await wheelId(page)).toBe('body');
     expect((await state(page)).selected).toBeNull();
-    expect(new URL(page.url()).hash).toBe('#/body');
+    expect(new URL(page.url()).pathname).toBe('/body');
     await expect(hint(page).locator('.fw-hint-title')).toHaveText('What do you notice in your body?');
     await expect(hint(page).locator('.fw-hint-text')).toHaveText('Tap or spin to explore, or start from feelings instead.');
     await expect(switchButton(page, 'Body')).toBeFocused();
@@ -36,11 +36,11 @@ test.describe('switching wheels (desktop)', () => {
     await hintLink(page).click();
     await idle(page);
     expect(await wheelId(page)).toBe('core');
-    expect(new URL(page.url()).hash).toBe('');
+    expect(new URL(page.url()).pathname).toBe('/');
   });
 
   test('Review Focus 1: Back and Forward across wheels', async ({ page }) => {
-    await open(page, '#/body/chest/racing-heart');
+    await open(page, '/body/chest/racing-heart');
     await switchButton(page, 'Feelings').click();
     await idle(page);
     expect(await wheelId(page)).toBe('core');
@@ -57,7 +57,7 @@ test.describe('switching wheels (desktop)', () => {
 
   test('Review Focus 2: fling then switch: the body wheel stays unselected', async ({ page }) => {
     // Opened, so the fling is a ring spin whose settle would dispatch `settled` (final review #4).
-    await open(page, '#/core/fearful/scared');
+    await open(page, '/fearful/scared');
     const box = (await page.locator('#wheel').boundingBox())!;
     const x = box.x + box.width * 0.4;
     await page.mouse.move(x, box.y + box.height * 0.2);
@@ -69,11 +69,11 @@ test.describe('switching wheels (desktop)', () => {
     await idle(page);
     expect(await wheelId(page)).toBe('body');
     expect((await state(page)).selected).toBeNull();
-    expect(new URL(page.url()).hash).toBe('#/body');
+    expect(new URL(page.url()).pathname).toBe('/body');
   });
 
   test('final review #2: Back across wheels keeps keyboard focus in the tree', async ({ page }) => {
-    await open(page, '#/body/chest/racing-heart');
+    await open(page, '/body/chest/racing-heart');
     await switchButton(page, 'Feelings').click();
     await idle(page);
     await page.locator('#a11y-tree [role="treeitem"][tabindex="0"]').focus();
@@ -85,7 +85,7 @@ test.describe('switching wheels (desktop)', () => {
 
   test('final review #3: a pinch just before a switch never reaches the new wheel', async ({ page, browserName }) => {
     test.skip(browserName === 'firefox', 'Firefox ctrl+wheel needs synthetic events (see wheel.spec)');
-    await open(page, '#/body/chest/racing-heart');
+    await open(page, '/body/chest/racing-heart');
     const box = (await page.locator('#wheel').boundingBox())!;
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     // A strong pinch out on the opened word, which ends (150 ms later) by stepping out to its parent.
@@ -99,7 +99,7 @@ test.describe('switching wheels (desktop)', () => {
     expect(await wheelId(page)).toBe('core');
     expect((await state(page)).selected).toBeNull();
     await expect(page.locator('fw-card')).toBeHidden();
-    expect(new URL(page.url()).hash).toBe('');
+    expect(new URL(page.url()).pathname).toBe('/');
   });
 
   test('Review Focus 3: Tab from the switch reaches the tree; arrows move through areas', async ({ page }) => {
@@ -117,7 +117,7 @@ test.describe('switching wheels (desktop)', () => {
     const errors: string[] = [];
     page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errors.push(m.text()); });
     page.on('pageerror', (e) => errors.push(e.message));
-    await open(page, '#/body');
+    await open(page, '/body');
     expect(await wheelId(page)).toBe('body');
     const before = (await page.evaluate(() => window.__fw.drawTimes())).length;
     for (let i = 0; i < 3; i++) await page.locator('.fw-theme-toggle').click();
@@ -126,12 +126,13 @@ test.describe('switching wheels (desktop)', () => {
     expect(errors).toEqual([]);
   });
 
-  for (const bad of ['#/body/nowhere', '#/nowhere']) {
-    test(`Review Focus 5: ${bad} loads the feelings wheel's start view`, async ({ page }) => {
+  for (const [bad, wheel] of [['/body/nowhere', 'body'], ['/nowhere', 'core']] as const) {
+    test(`Review Focus 5: ${bad} shows not found on the ${wheel} wheel, at rest`, async ({ page }) => {
       await open(page, bad);
-      expect(await wheelId(page)).toBe('core');
+      expect(await wheelId(page)).toBe(wheel);
       expect((await state(page)).selected).toBeNull();
-      await expect(hint(page)).toContainText('How are you feeling?');
+      await expect(hint(page).locator('.fw-hint-title')).toHaveText('Feeling not found!');
+      await expect(hint(page).locator('.fw-hint-text')).toContainText('There\'s no “nowhere” on the wheel.');
     });
   }
 });
@@ -142,7 +143,7 @@ test.describe('body wheel cards (desktop)', () => {
   const rowsText = (page: Page) => page.locator('fw-card ul.fw-rows button').allTextContents();
 
   test('Chest → Racing heart → Scared by taps shows the cards in spec §6.2', async ({ page }) => {
-    await open(page, '#/body');
+    await open(page, '/body');
     await tapPath(page, 'chest');
     await tapPath(page, 'chest');
     await expect(title(page)).toHaveText('Chest');
@@ -164,7 +165,7 @@ test.describe('body wheel cards (desktop)', () => {
   });
 
   test('the jump link opens Fearful › Scared on the feelings wheel; Back returns to the body wheel', async ({ page }) => {
-    await open(page, '#/body/chest/racing-heart/scared');
+    await open(page, '/body/chest/racing-heart/scared');
     // From the keyboard, so focus is on the link in every browser (Safari doesn't focus buttons on click).
     await page.locator('fw-card .fw-jump').focus();
     await page.keyboard.press('Enter');
@@ -172,7 +173,7 @@ test.describe('body wheel cards (desktop)', () => {
     expect(await wheelId(page)).toBe('core');
     expect(await selectedPath(page)).toBe('fearful/scared');
     expect((await state(page)).opened).toBe(true);
-    expect(new URL(page.url()).hash).toBe('#/core/fearful/scared');
+    expect(new URL(page.url()).pathname).toBe('/fearful/scared');
     await expect(page.locator('fw-card .fw-card-toggle')).toBeFocused();
     await page.goBack();
     await idle(page);
@@ -187,7 +188,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
 
     test(`axe: body wheel with nothing selected, an area selected, Scared opened (${colorScheme})`, async ({ page }) => {
       await page.emulateMedia({ colorScheme });
-      await open(page, '#/body/chest/racing-heart/scared');
+      await open(page, '/body/chest/racing-heart/scared');
       await settled(page);
       expect((await new AxeBuilder({ page }).analyze()).violations, 'opened').toEqual([]);
       await page.keyboard.press('Escape');
@@ -208,7 +209,7 @@ test.describe('narrow phones (360 px)', () => {
   test.use({ viewport: { width: 360, height: 740 } });
 
   test('the switch never overlaps Start over or the theme toggle', async ({ page }) => {
-    await open(page, '#/body/chest');
+    await open(page, '/body/chest');
     const sw = (await page.locator('fw-wheel-switch').boundingBox())!;
     const startOver = page.locator('fw-toolbar .fw-start-over');
     await expect(startOver).toBeVisible();
@@ -313,7 +314,7 @@ test.describe('v2.1: the message link', () => {
     await page.keyboard.press('Enter');
     await idle(page);
     expect(await wheelId(page)).toBe('body');
-    expect(new URL(page.url()).hash).toBe('#/body');
+    expect(new URL(page.url()).pathname).toBe('/body');
     expect(await page.evaluate(() => history.length)).toBe(before + 1);
   });
 
@@ -337,7 +338,7 @@ test.describe('v2.1: context rings', () => {
   test.use({ viewport: { width: 393, height: 851 } });
 
   test('portrait phone, Head and eyes opened: the outer ring has labels', async ({ page }) => {
-    await open(page, '#/body/head');
+    await open(page, '/body/head');
     expect((await page.evaluate(() => window.__fw.labelsByRing()))[2]).toBeGreaterThan(0);
   });
 });
@@ -346,15 +347,15 @@ test.describe('v2.2: the message heading', () => {
   test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'sets its own viewport'));
 
   test('the message opens with its question as a heading', async ({ page }) => {
-    await open(page, '#/');
+    await open(page, '/');
     await expect(page.locator('fw-hint h2')).toHaveText('How are you feeling?');
-    await open(page, '#/body');
+    await open(page, '/body');
     await expect(page.locator('fw-hint h2')).toHaveText('What do you notice in your body?');
   });
 
   test('320 px: the body heading wraps onto two lines inside the panel', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 });
-    await open(page, '#/body');
+    await open(page, '/body');
     const { h, lh } = await page.locator('fw-hint h2').evaluate((e) => ({
       h: e.getBoundingClientRect().height, lh: Number.parseFloat(getComputedStyle(e).lineHeight),
     }));
@@ -365,7 +366,7 @@ test.describe('v2.2: the message heading', () => {
   });
 
   test('axe: the body wheel at rest, with its heading', async ({ page }) => {
-    await open(page, '#/body');
+    await open(page, '/body');
     await settled(page);
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });
@@ -376,13 +377,13 @@ test.describe('v2.2: the core feeling in the definition', () => {
   const coreLink = (page: Page) => page.locator('fw-card .fw-definition .fw-link');
 
   test('the core feeling link opens Happy on the feelings wheel; Enter works too', async ({ page }) => {
-    await open(page, '#/body/head/wide-eyes/interested');
+    await open(page, '/body/head/wide-eyes/interested');
     await expect(page.locator('fw-card .fw-definition')).toContainText('A happy feeling.');
     await coreLink(page).click();
     await idle(page);
     expect(await wheelId(page)).toBe('core');
     await expect(title(page)).toHaveText('Happy');
-    expect(await page.evaluate(() => location.hash)).toBe('#/core/happy');
+    expect(await page.evaluate(() => location.pathname)).toBe('/happy');
     // Review Focus 5: from the keyboard, and focus lands on the new card's toggle.
     await page.goBack();
     await idle(page);
@@ -396,7 +397,7 @@ test.describe('v2.2: the core feeling in the definition', () => {
   });
 
   test('axe: a body wheel definition with its core feeling link', async ({ page }) => {
-    await open(page, '#/body/head/wide-eyes/interested');
+    await open(page, '/body/head/wide-eyes/interested');
     await settled(page);
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });
@@ -405,7 +406,7 @@ test.describe('v2.2: the core feeling in the definition', () => {
 test.describe('v2.2: the card at 320 px', () => {
   test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'sets its own viewport'));
   test.use({ viewport: { width: 320, height: 568 } });
-  const LONGEST = '#/body/posture/shrinking/insecure';
+  const LONGEST = '/body/posture/shrinking/insecure';
 
   test('crumbs stay on one line; only the parent shortens, and stays a focusable link', async ({ page }) => {
     await open(page, LONGEST);
@@ -443,8 +444,8 @@ test.describe('v2.2: the card at 320 px', () => {
 test.describe('body wheel deep link (phone)', () => {
   test.beforeEach(({ isMobile }) => test.skip(!isMobile, 'phone layout'));
 
-  test('deep link #/body/chest/racing-heart/scared opens it on load, above the card', async ({ page }) => {
-    await open(page, '#/body/chest/racing-heart/scared');
+  test('deep link /body/chest/racing-heart/scared opens it on load, above the card', async ({ page }) => {
+    await open(page, '/body/chest/racing-heart/scared');
     expect(await wheelId(page)).toBe('body');
     expect(await selectedPath(page)).toBe('chest/racing-heart/scared');
     await expect(title(page)).toHaveText('Scared');

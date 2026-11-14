@@ -6,7 +6,7 @@ test.skip(({ browserName }) => browserName !== 'firefox', 'Firefox gate');
 
 const p95 = (xs: number[]): number => [...xs].sort((a, b) => a - b)[Math.floor(xs.length * 0.95)] ?? 0;
 
-async function setup(page: Page, hash: string): Promise<void> {
+async function setup(page: Page, url: string): Promise<void> {
   await page.addInitScript(() => {
     const raf = window.requestAnimationFrame.bind(window);
     window.__probe = [];
@@ -17,7 +17,7 @@ async function setup(page: Page, hash: string): Promise<void> {
     };
     raf(probe);
   });
-  await page.goto(`/${hash}`);
+  await page.goto(url);
   await page.waitForFunction(() => window.__fw !== undefined && !window.__fw.moving());
 }
 
@@ -64,7 +64,7 @@ async function pinch(page: Page, ms: number): Promise<void> {
 }
 
 test('Firefox: pinching the whole wheel keeps frame delta p95 ≤ 20 ms', async ({ page }) => {
-  await setup(page, '#/core');
+  await setup(page, '/');
   await page.evaluate(() => { window.__probe.length = 0; });
   await pinch(page, 6000);
   const deltas = await page.evaluate(() => window.__probe.slice(1).map((t, i) => t - window.__probe[i]!));
@@ -74,9 +74,9 @@ test('Firefox: pinching the whole wheel keeps frame delta p95 ≤ 20 ms', async 
   expect(p95(deltas)).toBeLessThanOrEqual(20);
 });
 
-for (const [name, hash] of [['whole wheel', '#/core'], ['opened', '#/core/angry/aggressive/hostile']] as const) {
+for (const [name, url] of [['whole wheel', '/'], ['opened', '/angry/aggressive/hostile']] as const) {
   test(`Firefox: spinning the ${name} keeps frame delta p95 ≤ 20 ms`, async ({ page }) => {
-    await setup(page, hash);
+    await setup(page, url);
     await page.evaluate(() => { window.__probe.length = 0; });
     await spin(page, 6000);
     const deltas = await page.evaluate(() => window.__probe.slice(1).map((t, i) => t - window.__probe[i]!));

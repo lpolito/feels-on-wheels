@@ -6,7 +6,7 @@ test.skip(({ browserName }) => browserName !== 'chromium', 'heap and frame probe
 
 const p95 = (xs: number[]): number => [...xs].sort((a, b) => a - b)[Math.floor(xs.length * 0.95)] ?? 0;
 
-async function setup(page: Page, hash = '#/core/angry/aggressive/hostile'): Promise<void> {
+async function setup(page: Page, url = '/angry/aggressive/hostile'): Promise<void> {
   await page.addInitScript(() => {
     const raf = window.requestAnimationFrame.bind(window);
     window.__rafCount = 0;
@@ -22,7 +22,7 @@ async function setup(page: Page, hash = '#/core/angry/aggressive/hostile'): Prom
     };
     raf(probe);
   });
-  await page.goto(`/${hash}`);
+  await page.goto(url);
   await page.waitForFunction(() => window.__fw !== undefined && !window.__fw.moving());
 }
 
@@ -62,7 +62,7 @@ test('spinning stays well inside the frame budget', async ({ page }) => {
 });
 
 test('v2: spinning the body wheel stays well inside the frame budget', async ({ page }) => {
-  await setup(page, '#/body/chest/racing-heart');
+  await setup(page, '/body/chest/racing-heart');
   await page.evaluate(() => { window.__probe.length = 0; });
   await spin(page, 6000);
   const draws = await page.evaluate(() => window.__fw.drawTimes());

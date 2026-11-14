@@ -34,7 +34,7 @@ for (const [theme, bg] of [['dark', 'rgb(18, 17, 20)'], ['light', 'rgb(255, 255,
 
 test('on phones, About gives way to Start over while a word is selected', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 568 });
-  await page.goto('/#/core/happy/content/joyful');
+  await page.goto('/happy/content/joyful');
   await expect(page.locator('fw-toolbar .fw-start-over')).toBeVisible();
   await expect(page.locator('fw-toolbar .fw-about')).toBeHidden();
   await page.locator('fw-toolbar .fw-start-over').click();
@@ -43,7 +43,7 @@ test('on phones, About gives way to Start over while a word is selected', async 
 
 test('on wide screens, About stays while a word is selected', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto('/#/core/happy/content/joyful');
+  await page.goto('/happy/content/joyful');
   await expect(page.locator('fw-toolbar .fw-start-over')).toBeVisible();
   await expect(page.locator('fw-toolbar .fw-about')).toBeVisible();
 });

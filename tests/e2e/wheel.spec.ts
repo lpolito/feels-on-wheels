@@ -17,58 +17,64 @@ test.describe('desktop', () => {
     await tapPath(page, 'angry');
     await expectTitle(page, 'Angry');
     await expect(head(page)).toHaveAttribute('aria-expanded', 'false');
-    expect(await page.evaluate(() => location.hash)).toBe('');
+    expect(await page.evaluate(() => location.pathname)).toBe('/');
     expect((await state(page)).opened).toBe(false);
     await expect(page.locator('fw-card .fw-card-body')).toHaveCount(0);
   });
 
-  test('tap again opens: URL hash, card expanded with 8 rows, Back returns to selected-not-opened', async ({ page }) => {
+  test('tap again opens: its path replaces the entry, card expanded with 8 rows; Escape returns to selected-not-opened', async ({ page }) => {
     await open(page);
+    const entries = await page.evaluate(() => history.length);
     await tapPath(page, 'angry');
     await tapPath(page, 'angry');
     await expect(head(page)).toHaveAttribute('aria-expanded', 'true');
-    expect(await page.evaluate(() => location.hash)).toBe('#/core/angry');
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
+    expect(await page.evaluate(() => history.length)).toBe(entries);
     await expect(page.locator('fw-card ul.fw-rows button')).toHaveCount(8);
-    await page.goBack();
+    // URL redesign §4: Back never steps through words; closing replaces the entry too.
+    await page.keyboard.press('Escape');
     await idle(page);
-    expect(await page.evaluate(() => location.hash)).toBe('');
+    expect(await page.evaluate(() => location.pathname)).toBe('/');
+    expect(await page.evaluate(() => history.length)).toBe(entries);
     expect(await state(page)).toMatchObject({ opened: false, view: { mode: 'wheel' } });
     expect(await selectedPath(page)).toBe('angry');
   });
 
-  test('arrowing through opened words keeps one history entry: one Back returns to the whole wheel', async ({ page }) => {
+  test('opening and arrowing through words keeps one history entry; Escape returns to the whole wheel', async ({ page }) => {
     await open(page);
-    await tapPath(page, 'angry');
-    await tapPath(page, 'angry');
     const entries = await page.evaluate(() => history.length);
+    await tapPath(page, 'angry');
+    await tapPath(page, 'angry');
     for (let i = 0; i < 4; i++) {
       await page.keyboard.press('ArrowDown');
       // Past the 250ms burst window, so each press would have pushed before.
       await page.waitForTimeout(300);
     }
     await idle(page);
-    const hash = await page.evaluate(() => location.hash);
-    expect(hash).not.toBe('#/core/angry');
+    const path = await page.evaluate(() => location.pathname);
+    expect(path).not.toBe('/angry');
+    expect(path).not.toBe('/');
     expect(await page.evaluate(() => history.length)).toBe(entries);
-    await page.goBack();
+    await page.keyboard.press('Escape');
     await idle(page);
-    expect(await page.evaluate(() => location.hash)).toBe('');
+    expect(await page.evaluate(() => location.pathname)).toBe('/');
+    expect(await page.evaluate(() => history.length)).toBe(entries);
     expect(await state(page)).toMatchObject({ opened: false, view: { mode: 'wheel' } });
   });
 
   test('narrow-it-down row opens Aggressive with an Angry crumb; crumb reopens Angry', async ({ page }) => {
-    await open(page, '#/core/angry');
+    await open(page, '/angry');
     await page.locator('fw-card ul.fw-rows button', { hasText: 'Aggressive' }).click();
     await expectTitle(page, 'Aggressive');
     const crumb = page.locator('fw-card .fw-crumbs button', { hasText: 'Angry' });
     await expect(crumb).toBeVisible();
     await crumb.click();
     await expectTitle(page, 'Angry');
-    expect(await page.evaluate(() => location.hash)).toBe('#/core/angry');
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
   });
 
   test('Escape closes then clears', async ({ page }) => {
-    await open(page, '#/core/sad');
+    await open(page, '/sad');
     await page.keyboard.press('Escape');
     await idle(page);
     expect(await state(page)).toMatchObject({ opened: false, view: { mode: 'wheel' } });
@@ -120,7 +126,7 @@ test.describe('desktop', () => {
   });
 
   test('arrows work after a Close-to link', async ({ page }) => {
-    await open(page, '#/core/angry/aggressive/hostile');
+    await open(page, '/angry/aggressive/hostile');
     await page.locator('fw-card .fw-close-to button', { hasText: 'Provoked' }).click();
     await idle(page);
     expect(await selectedPath(page)).toBe('angry/aggressive/provoked');
@@ -131,18 +137,18 @@ test.describe('desktop', () => {
   });
 
   test('Enter on a focused row activates it, not the wheel', async ({ page }) => {
-    await open(page, '#/core/angry');
+    await open(page, '/angry');
     await page.locator('fw-card ul.fw-rows button').first().focus();
     await page.keyboard.press('Enter');
     await idle(page);
-    expect(await page.evaluate(() => location.hash)).toBe('#/core/angry/let-down');
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry/let-down');
   });
 
   for (const key of ['Enter', ' '] as const) {
     const name = key === ' ' ? 'Space' : key;
 
     test(`${name} on a focused Start over clears the word and moves focus to the wheel`, async ({ page }) => {
-      await open(page, '#/core/angry');
+      await open(page, '/angry');
       await page.getByRole('button', { name: 'Start over' }).focus();
       await page.keyboard.press(key);
       await idle(page);
@@ -151,16 +157,16 @@ test.describe('desktop', () => {
     });
 
     test(`${name} on a focused card row opens that row, not the wheel`, async ({ page }) => {
-      await open(page, '#/core/angry');
+      await open(page, '/angry');
       await page.locator('fw-card ul.fw-rows button', { hasText: 'Bitter' }).focus();
       await page.keyboard.press(key);
       await idle(page);
-      expect(await page.evaluate(() => location.hash)).toBe('#/core/angry/bitter');
+      expect(await page.evaluate(() => location.pathname)).toBe('/angry/bitter');
     });
   }
 
   test('Escape on a focused Start over closes, then clears and moves focus to the wheel', async ({ page }) => {
-    await open(page, '#/core/angry');
+    await open(page, '/angry');
     const startOver = page.getByRole('button', { name: 'Start over' });
     await startOver.focus();
     await page.keyboard.press('Escape');
@@ -172,19 +178,18 @@ test.describe('desktop', () => {
     await expect(page.locator('[role="treeitem"][tabindex="0"]')).toBeFocused();
   });
 
-  test('Start over from an opened word clears it, and Back returns to the word', async ({ page }) => {
+  test('Start over from an opened word clears it and replaces the entry', async ({ page }) => {
     await open(page);
+    const entries = await page.evaluate(() => history.length);
     await tapPath(page, 'angry');
     await tapPath(page, 'angry');
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
     await page.getByRole('button', { name: 'Start over' }).click();
     await idle(page);
     expect((await state(page)).selected).toBeNull();
-    expect(await page.evaluate(() => location.hash)).toBe('');
+    expect(await page.evaluate(() => location.pathname)).toBe('/');
+    expect(await page.evaluate(() => history.length)).toBe(entries);
     await expect(page.getByRole('button', { name: 'Start over' })).toBeHidden();
-    await page.goBack();
-    await idle(page);
-    expect(await page.evaluate(() => location.hash)).toBe('#/core/angry');
-    expect((await state(page)).opened).toBe(true);
   });
 
 
@@ -253,7 +258,7 @@ test.describe('desktop', () => {
   });
 
   test('clicking empty space above the card closes, then clears', async ({ page }) => {
-    await open(page, '#/core/angry');
+    await open(page, '/angry');
     const card = (await page.locator('fw-card').boundingBox())!;
     const toolbar = (await page.locator('fw-toolbar').boundingBox())!;
     const x = card.x + card.width / 2;
@@ -271,7 +276,7 @@ test.describe('desktop', () => {
   });
 
   test('a drag from the card, or from the wheel, released in empty space never dismisses', async ({ page }) => {
-    await open(page, '#/core/angry');
+    await open(page, '/angry');
     const def = (await page.locator('fw-card .fw-definition').boundingBox())!;
     const card = (await page.locator('fw-card').boundingBox())!;
     const toolbar = (await page.locator('fw-toolbar').boundingBox())!;
@@ -285,7 +290,7 @@ test.describe('desktop', () => {
     expect((await state(page)).opened).toBe(true);
     // A drag on the wheel released over the column. It's a swipe right, which opens the parent (on a core word it
     // would close, by design), so start on a middle word: whatever the swipe does, nothing may be dismissed.
-    await open(page, '#/core/angry/aggressive');
+    await open(page, '/angry/aggressive');
     const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry/aggressive'));
     await page.mouse.move(p.x, p.y);
     await page.mouse.down();
@@ -296,7 +301,7 @@ test.describe('desktop', () => {
   });
 
   test('a click on the theme label never dismisses', async ({ page }) => {
-    await open(page, '#/core/angry');
+    await open(page, '/angry');
     await page.locator('fw-toolbar .fw-theme-toggle').click();
     const label = page.locator('fw-toolbar .fw-theme-label');
     await expect(label).toBeVisible();
@@ -307,7 +312,7 @@ test.describe('desktop', () => {
   });
 
   test('clicks on the card, the message or the toolbar never dismiss', async ({ page }) => {
-    await open(page, '#/core/angry');
+    await open(page, '/angry');
     await page.locator('fw-card .fw-definition').click();
     await idle(page);
     expect((await state(page)).opened).toBe(true);
@@ -344,7 +349,7 @@ test.describe('desktop', () => {
 
   test("desktop: opened view's wheel edge meets the column", async ({ page }) => {
     for (const path of ['angry', 'angry/aggressive', 'angry/aggressive/hostile']) {
-      await open(page, `#/core/${path}`);
+      await open(page, `/${path}`);
       const { cam, vp } = await page.evaluate(() => ({ cam: window.__fw.camera(), vp: window.__fw.viewport() }));
       // The opened cell's 10px lift and 2px of outline end exactly at the column.
       expect(Math.abs(cam.cx + vp.radius * cam.scale + 12 - vp.width), path).toBeLessThanOrEqual(1);
@@ -355,7 +360,7 @@ test.describe('desktop', () => {
     await page.setViewportSize({ width: 1024, height: 768 });
     // The middle ring is where the 1rem safeguard takes over at this size.
     for (const [path, ring] of [['angry', [0.12, 0.32]], ['angry/aggressive', [0.32, 0.62]]] as const) {
-      await open(page, `#/core/${path}`);
+      await open(page, `/${path}`);
       const { p, cam, vp } = await page.evaluate((x) => ({
         p: window.__fw.segmentScreenPoint(x), cam: window.__fw.camera(), vp: window.__fw.viewport(),
       }), path);
@@ -367,7 +372,7 @@ test.describe('desktop', () => {
 
   test('square 900×900 window uses the phone layout and camera', async ({ page }) => {
     await page.setViewportSize({ width: 900, height: 900 });
-    await open(page, '#/core/angry');
+    await open(page, '/angry');
     const card = (await page.locator('fw-card').boundingBox())!;
     expect(card.y + card.height).toBeGreaterThan(900 - 12 - 2);
     expect(card.x).toBeLessThan(20);
@@ -378,7 +383,7 @@ test.describe('desktop', () => {
   });
 
   test('Escape on a focused row closes and leaves focus on the card toggle', async ({ page }) => {
-    await open(page, '#/core/angry');
+    await open(page, '/angry');
     await page.locator('fw-card ul.fw-rows button').first().focus();
     await page.keyboard.press('Escape');
     await idle(page);
@@ -387,7 +392,7 @@ test.describe('desktop', () => {
   });
 
   test('the dot, the first crumb and the body share one left edge', async ({ page }) => {
-    await open(page, '#/core/angry/aggressive');
+    await open(page, '/angry/aggressive');
     await settled(page);
     const box = async (sel: string) => (await page.locator(sel).first().boundingBox())!;
     const dot = await box('fw-card .fw-card-toggle .fw-dot');
@@ -400,7 +405,7 @@ test.describe('desktop', () => {
   });
 
   test('folding an opened word leaves no space above its name', async ({ page }) => {
-    await open(page, '#/core/angry/aggressive');
+    await open(page, '/angry/aggressive');
     await page.keyboard.press('Escape');
     await idle(page);
     await settled(page);
@@ -422,7 +427,7 @@ test.describe('desktop', () => {
   test('the dot-and-name row sticks and the crumbs scroll away', async ({ page }) => {
     // Short enough that Aggressive's card (which has breadcrumbs) overflows.
     await page.setViewportSize({ width: 1280, height: 380 });
-    await open(page, '#/core/angry/aggressive');
+    await open(page, '/angry/aggressive');
     await settled(page);
     const card = page.locator('fw-card');
     expect(await card.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true);
@@ -436,7 +441,7 @@ test.describe('desktop', () => {
 
   test('a focused row is never under the sticky row', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 500 });
-    await open(page, '#/core/angry');
+    await open(page, '/angry');
     await settled(page);
     const card = page.locator('fw-card');
     await card.evaluate((el) => { el.scrollTop = el.scrollHeight; });
@@ -460,7 +465,7 @@ test.describe('desktop', () => {
   });
 
   test('resize while opened keeps the opened word flat', async ({ page }) => {
-    await open(page, '#/core/angry/aggressive/hostile');
+    await open(page, '/angry/aggressive/hostile');
     expect(await page.evaluate(() => window.__fw.offCenter('angry/aggressive/hostile'))).toBeLessThan(1e-6);
     const size = page.viewportSize()!;
     await page.setViewportSize({ width: Math.round(size.width * 0.8), height: size.height + 100 });
@@ -490,7 +495,7 @@ test.describe('phone', () => {
     expect(s.selected).toBeNull();
     expect(s.opened).toBe(false);
     expect(s.view.mode).toBe('wheel');
-    expect(await page.evaluate(() => location.hash)).toBe('');
+    expect(await page.evaluate(() => location.pathname)).toBe('/');
     await expect(hint(page)).toBeVisible();
     await expect(hint(page).locator('.fw-hint-title')).toHaveText('How are you feeling?');
     await expect(hint(page).locator('.fw-hint-text')).toHaveText('Tap or spin to explore, or start from body sensations instead.');
@@ -503,22 +508,17 @@ test.describe('phone', () => {
     expect(await page.evaluate(() => window.__fw.offCenter('fearful'))).toBeLessThan(1e-6);
   });
 
-  test('phone: deep link then Back lands on the half-wheel with the word selected and no intro', async ({ page }) => {
-    // A base entry behind a fresh load of the deep link: as if someone opened a link to Angry, having been here before.
-    await open(page);
-    await page.evaluate(() => { location.hash = '#/core/angry'; });
-    await page.reload();
-    await page.waitForFunction(() => window.__fw !== undefined);
-    await idle(page);
+  test('phone: deep link then closing lands on the half-wheel with the word selected and no intro', async ({ page }) => {
+    await open(page, '/angry');
     expect((await state(page)).opened).toBe(true);
-    await page.goBack();
+    await page.keyboard.press('Escape');
     await idle(page);
     // Once the close has landed, nothing else (no intro) starts moving.
     for (let k = 0; k < 3; k++) {
       expect(await page.evaluate(() => window.__fw.moving())).toBe(false);
       await page.waitForTimeout(50);
     }
-    expect(await page.evaluate(() => location.hash)).toBe('');
+    expect(await page.evaluate(() => location.pathname)).toBe('/');
     expect(await selectedPath(page)).toBe('angry');
     expect((await state(page)).view).toEqual({ mode: 'wheel' });
     expect(Math.abs((await page.evaluate(() => window.__fw.camera())).cx)).toBeLessThanOrEqual(2);
@@ -553,13 +553,13 @@ test.describe('phone', () => {
     await page.mouse.up();
     await idle(page);
     await expect(hint(page)).toBeVisible();
-    expect(await page.evaluate(() => location.hash)).toBe('');
+    expect(await page.evaluate(() => location.pathname)).toBe('/');
     expect((await state(page)).opened).toBe(false);
   });
 
   test('phone: the opened word is centered between the top and the unfolded card', async ({ page }) => {
     for (const path of ['fearful', 'fearful/scared', 'fearful/scared/helpless']) {
-      await open(page, `#/core/${path}`);
+      await open(page, `/${path}`);
       const { y, mid, cardTop, half } = await openedPlacement(page, path);
       expect(Math.abs(y - mid), path).toBeLessThanOrEqual(2);
       expect(half, path).toBeGreaterThan(20);
@@ -569,7 +569,7 @@ test.describe('phone', () => {
 
   test('phone: moving to a word with a different card height re-centers it', async ({ page }) => {
     // A middle word, then one of its outer words: their cards differ in height on every phone.
-    await open(page, '#/core/fearful/scared');
+    await open(page, '/fearful/scared');
     await settled(page);
     const before = (await page.locator('fw-card').boundingBox())!;
     await page.locator('fw-card ul.fw-rows button').first().click();
@@ -581,7 +581,7 @@ test.describe('phone', () => {
   });
 
   test('phone: resize while opened keeps the word centered above the card', async ({ page }) => {
-    await open(page, '#/core/fearful/scared');
+    await open(page, '/fearful/scared');
     const size = page.viewportSize()!;
     await page.setViewportSize({ width: size.width, height: size.height + 100 });
     await page.waitForTimeout(200);
@@ -598,7 +598,7 @@ test.describe('phone', () => {
   });
 
   test("phone: after a spin, the word doesn't slide once the spin stops", async ({ page }) => {
-    await open(page, '#/core/fearful/scared');
+    await open(page, '/fearful/scared');
     await settled(page);
     // Record the camera on every frame from here on.
     await page.evaluate(() => {
@@ -636,18 +636,21 @@ test.describe('phone', () => {
 
   test('phone: on a short screen the opened cell still fits above the card', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 600 });
-    await open(page, '#/core/fearful');
+    await open(page, '/fearful');
     const { y, cardTop, half } = await openedPlacement(page, 'fearful');
     expect(cardTop).toBeGreaterThanOrEqual(y + half + 12 - 1);
   });
 
-  test('phone: Back from an opened word returns to the whole wheel with it selected', async ({ page }) => {
+  test('phone: Escape from an opened word returns to the whole wheel with it selected, in the same entry', async ({ page }) => {
     await open(page);
+    const entries = await page.evaluate(() => history.length);
     await tapPath(page, 'angry');
     await tapPath(page, 'angry');
-    expect(await page.evaluate(() => location.hash)).toBe('#/core/angry');
-    await page.goBack();
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
+    await page.keyboard.press('Escape');
     await idle(page);
+    expect(await page.evaluate(() => location.pathname)).toBe('/');
+    expect(await page.evaluate(() => history.length)).toBe(entries);
     const s = await state(page);
     expect(await selectedPath(page)).toBe('angry');
     expect(s.view).toEqual({ mode: 'wheel' });
@@ -683,7 +686,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
 
     test(`axe: no violations with nothing selected, selected, opened (${colorScheme})`, async ({ page }) => {
       await page.emulateMedia({ colorScheme });
-      await open(page, '#/core/angry/aggressive/hostile');
+      await open(page, '/angry/aggressive/hostile');
       // Let the unfold finish, so axe reads the settled colors.
       await settled(page);
       expect((await new AxeBuilder({ page }).analyze()).violations, 'opened').toEqual([]);
@@ -702,7 +705,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
     test(`axe: no violations with the opened card scrolled (${colorScheme})`, async ({ page, isMobile }) => {
       await page.emulateMedia({ colorScheme });
       if (!isMobile) await page.setViewportSize({ width: 1280, height: 500 });
-      await open(page, '#/core/angry');
+      await open(page, '/angry');
       await settled(page);
       const card = page.locator('fw-card');
       expect(await card.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true);
@@ -749,10 +752,10 @@ test.describe('v2.1: phones turned sideways', () => {
   test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'sets its own viewport'));
 
   for (const [width, height] of [[851, 393], [667, 375]] as const) {
-    for (const hash of ['', '#/body']) {
-      test(`${width}×${height} ${hash || '#/'} at rest: the side view, labels on every ring, message beside the wheel`, async ({ page }) => {
+    for (const url of ['/', '/body']) {
+      test(`${width}×${height} ${url} at rest: the side view, labels on every ring, message beside the wheel`, async ({ page }) => {
         await page.setViewportSize({ width, height });
-        await open(page, hash);
+        await open(page, url);
         expect((await state(page)).view.mode).toBe('wheel');
         expect((await page.evaluate(() => window.__fw.camera())).scale).toBeGreaterThan(1.5);
         for (const n of await page.evaluate(() => window.__fw.labelsByRing())) expect(n).toBeGreaterThan(0);
@@ -770,14 +773,14 @@ test.describe('v2.1: phones turned sideways', () => {
     await open(page);
     await settled(page);
     expect((await new AxeBuilder({ page }).analyze()).violations, 'at rest').toEqual([]);
-    await open(page, '#/body/head/headache');
+    await open(page, '/body/head/headache');
     await settled(page);
     expect((await new AxeBuilder({ page }).analyze()).violations, 'opened').toEqual([]);
   });
 
   test('iPhone SE sideways, word opened: the card is in the column and the word is clear of the switch', async ({ page }) => {
     await page.setViewportSize({ width: 667, height: 375 });
-    await open(page, '#/core/happy/content/joyful');
+    await open(page, '/happy/content/joyful');
     const aim = (await page.evaluate(() => window.__fw.viewport())).width;
     const card = (await page.locator('fw-card').boundingBox())!;
     expect(card.x).toBeGreaterThanOrEqual(aim - 1);
@@ -795,7 +798,7 @@ test.describe('v2.1: the card', () => {
       el.getAnimations().map((a) => ({ name: (a as CSSAnimation).animationName, duration: a.effect?.getTiming().duration })));
 
   test('the opened dot glows, and is still with reduced motion', async ({ page }) => {
-    await open(page, '#/core/happy');
+    await open(page, '/happy');
     // Spec v2.2 §4.3: v1.2's halo, on a 2 s cycle.
     expect(await dotAnimations(page)).toEqual([{ name: 'fw-halo', duration: 2000 }]);
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -846,22 +849,22 @@ test.describe('v2.2: the wheel under the column', () => {
     test(`${w}×${h}${inset ? ` ${inset} inset` : ''}: the opened word ends 1.5rem before the card`, async ({ page }) => {
       if (inset) await withInset(page, inset);
       await page.setViewportSize({ width: w, height: h });
-      for (const hash of ['#/core/happy/content/joyful', '#/core/happy/content', '#/body/head/wide-eyes']) {
-        await open(page, hash);
+      for (const url of ['/happy/content/joyful', '/happy/content', '/body/head/wide-eyes']) {
+        await open(page, url);
         await settled(page);
-        await expectClearOfCard(page, hash);
+        await expectClearOfCard(page, url);
       }
     });
   }
 
   test('852×393 left inset: the aim width is unchanged', async ({ page, context }) => {
     await page.setViewportSize({ width: 852, height: 393 });
-    await open(page, '#/core/happy/content/joyful');
+    await open(page, '/happy/content/joyful');
     const plain = (await opened(page)).vp.width;
     const other = await context.newPage();
     await withInset(other, 'left');
     await other.setViewportSize({ width: 852, height: 393 });
-    await open(other, '#/core/happy/content/joyful');
+    await open(other, '/happy/content/joyful');
     expect((await opened(other)).vp.width).toBeCloseTo(plain, 3);
   });
 
@@ -870,20 +873,20 @@ test.describe('v2.2: the wheel under the column', () => {
     await withInset(page, 'left');
     await withInset(page, 'right');
     await page.setViewportSize({ width: 852, height: 393 });
-    for (const hash of ['#/core/happy', '#/core/happy/content', '#/core/happy/content/joyful', '#/body/arms/sweaty-palms', '#/body/head/wide-eyes']) {
-      await open(page, hash);
+    for (const url of ['/happy', '/happy/content', '/happy/content/joyful', '/body/arms/sweaty-palms', '/body/head/wide-eyes']) {
+      await open(page, url);
       await settled(page);
       const { cam, vp, ring } = await opened(page);
       const R = vp.radius * cam.scale;
       const inner = [0.12, 0.32, 0.62][ring]!;
-      expect(cam.cx + inner * R - 10, `${hash}: clear of the notch`).toBeGreaterThanOrEqual(59 + 16 - 0.5);
-      await expectClearOfCard(page, hash);
+      expect(cam.cx + inner * R - 10, `${url}: clear of the notch`).toBeGreaterThanOrEqual(59 + 16 - 0.5);
+      await expectClearOfCard(page, url);
     }
   });
 
   test('852×393, the notch turning to the left after load: re-aims clear of it', async ({ page }) => {
     await page.setViewportSize({ width: 852, height: 393 });
-    await open(page, '#/core/happy/content');
+    await open(page, '/happy/content');
     await settled(page);
     await page.addStyleTag({ content: '#app { padding-left: 59px !important }' });
     await page.waitForTimeout(200);
@@ -895,7 +898,7 @@ test.describe('v2.2: the wheel under the column', () => {
   test('resizing to sideways re-aims at the card', async ({ page }) => {
     await withInset(page, 'right');
     await page.setViewportSize({ width: 393, height: 852 });
-    await open(page, '#/core/happy/content/joyful');
+    await open(page, '/happy/content/joyful');
     await page.setViewportSize({ width: 852, height: 393 });
     await page.waitForTimeout(200);
     await idle(page);
@@ -910,7 +913,7 @@ test.describe('v2.2: the wheel under the column', () => {
   ] as const) {
     test(`852×393, ${label} after load: re-aims at the card`, async ({ page }) => {
       await page.setViewportSize({ width: 852, height: 393 });
-      await open(page, '#/core/happy/content/joyful');
+      await open(page, '/happy/content/joyful');
       await settled(page);
       await page.addStyleTag({ content: css });
       await page.waitForTimeout(200);
@@ -937,7 +940,7 @@ test.describe('v2.2: the wheel under the column', () => {
 
   test('a tap in the column on the wheel opens that word', async ({ page }) => {
     await page.setViewportSize({ width: 895, height: 470 });
-    await open(page, '#/body/head/wide-eyes');
+    await open(page, '/body/head/wide-eyes');
     await settled(page);
     const p = await columnPointOnWheel(page);
     await page.waitForTimeout(320);
@@ -950,7 +953,7 @@ test.describe('v2.2: the wheel under the column', () => {
 
   test('a drag starting in the column spins the wheel', async ({ page }) => {
     await page.setViewportSize({ width: 895, height: 470 });
-    await open(page, '#/body/head/wide-eyes');
+    await open(page, '/body/head/wide-eyes');
     await settled(page);
     const p = await columnPointOnWheel(page);
     const before = (await page.evaluate(() => window.__fw.camera())).rotation;

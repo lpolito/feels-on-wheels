@@ -15,7 +15,7 @@
 
 ## Shipping changes
 
-`main` is protected: changes reach it only through a pull request, and the `CI` workflow's checks (`checks` and `e2e` in five browsers) must pass to merge. Merging deploys the live site, unless the PR only changes `docs/` or top-level Markdown files. Work on a branch, push it, and open a PR; never push to `main`.
+`main` is protected: changes reach it only through a pull request, and the `CI` workflow's checks (`checks` and `e2e` in five browsers) must pass to merge. Merging deploys the live site, unless the PR only changes `docs/` or top-level Markdown files: Cloudflare's GitHub integration builds and deploys it (`wrangler.jsonc`, with the build settings in Cloudflare's dashboard), and posts a preview link on each PR. Work on a branch, push it, and open a PR; never push to `main`.
 
 ## Sources and credits
 

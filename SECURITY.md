@@ -8,4 +8,4 @@ Please report it privately, not in a public issue: use [Report a vulnerability](
 
 ## Supported versions
 
-Only the live site, <https://lpolito.github.io/feels-on-wheels/>, and the `main` branch are supported. Fixes ship by merging to `main`, which redeploys the site.
+Only the live site, <https://feelsonwheels.app/>, and the `main` branch are supported. Fixes ship by merging to `main`, which redeploys the site.

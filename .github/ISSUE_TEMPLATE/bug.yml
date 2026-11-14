@@ -14,7 +14,7 @@ body:
     attributes:
       label: Link
       description: The address in your browser when it happened. It includes the word you had open.
-      placeholder: https://lpolito.github.io/feels-on-wheels/#/core/happy/interested/curious
+      placeholder: https://feelsonwheels.app/#/core/happy/interested/curious
   - type: input
     id: device
     attributes:

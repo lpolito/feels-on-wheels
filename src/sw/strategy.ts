@@ -28,3 +28,15 @@ export function navigationUrls(requestUrl: string, indexUrl: string): string[] {
   page.hash = '';
   return [page.href, indexUrl];
 }
+
+/**
+ * Fetches one precache URL, refusing anything that isn't a plain 200: a response that followed a redirect can't
+ * answer a page load, so caching one would break that page. Throwing fails the install, and the previous worker
+ * keeps serving.
+ */
+export async function precacheResponse(url: string, fetcher: (url: string) => Promise<Response>): Promise<Response> {
+  const res = await fetcher(url);
+  if (res.redirected) throw new Error(`precache: ${url} redirected to ${res.url}`);
+  if (!res.ok) throw new Error(`precache: ${url} answered ${res.status}`);
+  return res;
+}

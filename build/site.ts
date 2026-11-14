@@ -24,7 +24,7 @@ export function escapeHtml(s: string): string {
 }
 
 export function pageUrl(page: PageId, site: SiteConfig): string {
-  return page === 'index' ? site.url : `${site.url}about.html`;
+  return page === 'index' ? site.url : `${site.url}about`;
 }
 
 const meta = (attr: 'name' | 'property', key: string, value: string | number): string =>
@@ -104,7 +104,7 @@ export function aboutLinks(site: SiteConfig): Record<string, string> {
     contributing: `${site.repo}/blob/main/CONTRIBUTING.md`,
     author: site.author.url,
     home: './',
-    about: './about.html',
+    about: './about',
   };
 }
 

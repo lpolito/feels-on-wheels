@@ -9,12 +9,22 @@ const SKIP = /(^|\/)(\.DS_Store|sw\.js)$|\.map$/;
 
 export interface BuiltFile { path: string; content: string | Uint8Array }
 
+/**
+ * Pages are cached under the address they're served at, not their file name: Cloudflare redirects `about.html` to
+ * `/about` and `index.html` to `/`, and a cached redirect can't answer a page load.
+ */
+const PAGE_ADDRESSES: Record<string, string | null> = { 'index.html': null, 'about.html': 'about' };
+
 /** Precache list (relative to the worker's scope, root first) and a version derived from every file's content. */
 export function precacheManifest(files: BuiltFile[]): { files: string[]; version: string } {
   const kept = files.filter((f) => !SKIP.test(f.path)).sort((a, b) => a.path.localeCompare(b.path));
   const hash = createHash('sha256');
   for (const f of kept) hash.update(f.path).update('\0').update(f.content).update('\0');
-  return { files: ['./', ...kept.map((f) => `./${f.path}`)], version: hash.digest('hex').slice(0, 12) };
+  const urls = kept.flatMap((f) => {
+    const address = f.path in PAGE_ADDRESSES ? PAGE_ADDRESSES[f.path] : f.path;
+    return address === null ? [] : [`./${address}`];
+  });
+  return { files: ['./', ...urls.sort()], version: hash.digest('hex').slice(0, 12) };
 }
 
 function listFiles(dir: string): string[] {

@@ -23,7 +23,7 @@ test('About loads offline after the first visit (Review Focus 4)', async ({ page
   });
   await page.reload();
   await context.setOffline(true);
-  await page.goto('/about.html?ref=x');
+  await page.goto('/about?ref=x');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Feels on Wheels');
   await context.setOffline(false);
 });

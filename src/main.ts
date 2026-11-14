@@ -416,11 +416,14 @@ aimWatch.observe(float);
 
 // ── Offline support (spec §6.5) ─────────────────────────────────────────
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  addEventListener('load', () => {
+  const register = (): void => {
     navigator.serviceWorker.register('./sw.js').catch(() => {
       // Offline support is an enhancement; the app works without it.
     });
-  });
+  };
+  // The app may already have waited for load (the missing-tokens wait above), and a late load listener never fires.
+  if (document.readyState === 'complete') register();
+  else addEventListener('load', register, { once: true });
 }
 
 // ── Test hook (build:test only) ──────────────────────────────────────────

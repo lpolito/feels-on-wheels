@@ -111,7 +111,7 @@ export class FwToolbar extends HTMLElement {
     this.#label = label;
     const about = document.createElement('a');
     about.className = 'fw-about';
-    about.href = './about.html';
+    about.href = './about';
     about.setAttribute('aria-label', t('about'));
     about.title = t('about');
     about.append(infoIcon());

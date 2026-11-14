@@ -68,8 +68,15 @@ describe('going public (spec 2026-11-09)', () => {
     expect(lock.packages['']?.name).toBe(pkg.name);
   });
 
-  test('site config has a URL ending in /', () => {
-    expect(site.url).toMatch(/^https:\/\/.+\/$/);
+  test('the site lives at feelsonwheels.app and is not indexed yet', () => {
+    expect(site.url).toBe('https://feelsonwheels.app/');
     expect(site.indexable).toBe(false);
+  });
+
+  test("wrangler serves dist/ as static files with Cloudflare's default HTML handling", () => {
+    const config = JSON.parse(readFileSync('wrangler.jsonc', 'utf8').replace(/^\s*\/\/.*$/gm, '')) as Record<string, unknown>;
+    expect(config['name']).toBe('feels-on-wheels');
+    expect(config['main']).toBeUndefined();
+    expect(config['assets']).toEqual({ directory: './dist/', html_handling: 'auto-trailing-slash', not_found_handling: 'none' });
   });
 });

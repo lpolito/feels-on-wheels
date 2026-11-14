@@ -21,7 +21,8 @@ Ideas don't have version numbers. When Lucas picks one to build, it moves into t
 | v2.1: Polish from using v2 (card headings, heartbeat, sliding switch, context-ring labels, sideways phones, body colors) | Shipped | [spec](superpowers/specs/2026-11-08-feelings-wheel-v2.1-design.md), [plan](superpowers/plans/2026-11-08-feelings-wheel-v2.1.md). One change from the spec's §6.1: the sideways layout also needs 560 px of width, so small split-screen windows keep the portrait layout instead of a column too thin for the card. |
 | v2.2: Polish from using v2.1 (wheel under the card's column, one-line breadcrumbs, halo dot, core feeling on the body wheel, message heading, no wheel chevron) | Shipped | [spec](superpowers/specs/2026-11-08-feelings-wheel-v2.2-design.md), [plan](superpowers/plans/2026-11-08-feelings-wheel-v2.2.md) |
 | v2.2.1: Sideways phones with the notch on the left: the opened word keeps 1rem clear of the notch, not the screen's edge | Shipped | No spec; the fix for the known issue found using v2.2 (the camera's left margin now starts after `safe-area-inset-left`). Commits on main after 9fc8944. |
-| Going public, step 1: shareable | Shipped 2026-11-09 | [spec](superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md), [plan](superpowers/plans/2026-11-09-feels-on-wheels-going-public.md). Live at <https://lpolito.github.io/feels-on-wheels/>, not announced or indexed. What's left is in [before launching](#before-launching). |
+| Going public, step 1: shareable | Shipped 2026-11-09 | [spec](superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md), [plan](superpowers/plans/2026-11-09-feels-on-wheels-going-public.md). Was live at `lpolito.github.io/feels-on-wheels/` until the move below. |
+| Going public: Cloudflare, feelsonwheels.app and About at `/about` | Shipped 2026-11-13 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-cloudflare-domain.md). Live at <https://feelsonwheels.app/>, served by Cloudflare Workers, not announced or indexed. The github.io address stops working; nothing forwards from it (Lucas, 2026-11-13). What's left is in [before launching](#before-launching). |
 
 ## Ideas
 
@@ -42,7 +43,6 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [A dark home-screen icon](#a-dark-home-screen-icon) | The toolbar, sharing and installing | Idea |
 | [About page rework](#about-page-rework) | [The About page](#the-about-page) | Idea |
 | [Real paths, a small router and cleaner URLs](#real-paths-a-small-router-and-cleaner-urls) | [URLs, routing and hosting](#urls-routing-and-hosting) | Idea; decide before launch |
-| [Cloudflare instead of GitHub Pages](#cloudflare-instead-of-github-pages) | URLs, routing and hosting | Idea; decide before launch |
 | [Languages](#languages) | URLs, routing and hosting | Planned |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
@@ -137,7 +137,7 @@ These all compete for the same few places (the toolbar, the start message, the A
 - Lucas's idea, 2026-11-12: Add to Home Screen is buried on iOS, so make it easier, with instructions or a link to how.
 - Today the About page has one sentence on it ("Private and offline").
 - What's possible: Safari on iOS has no install prompt a page can trigger, so there it can only be instructions (Share, then Add to Home Screen). Chrome and Edge on Android and desktop fire `beforeinstallprompt`, so there it can be a real Install button.
-- To decide when designing: where it shows (About, the start message, a one-time hint), how to tell it's already installed (`display-mode: standalone`) so it doesn't nag, and whether it ships with the [domain move](#before-launching), since installs at the github.io address don't carry over.
+- To decide when designing: where it shows (About, the start message, a one-time hint), how to tell it's already installed (`display-mode: standalone`) so it doesn't nag. Installs at the old github.io address didn't carry over to feelsonwheels.app.
 
 #### A dark home-screen icon
 
@@ -149,9 +149,16 @@ These all compete for the same few places (the toolbar, the start message, the A
 
 #### About page rework
 
+**What's on the page** (Lucas, 2026-11-13): make it friendlier by keeping only what a visitor cares about.
+
+- **Keep:** what it's for, how to use it, the credits, Made by, and Help translate.
+- **Keep the install steps** from "Private and offline" (install from the browser's menu, or Add to Home Screen on an iPhone or iPad): installing isn't discoverable, and it's a nice thing to find.
+- **Drop:** the "Source and license" section, and the rest of "Private and offline" ("who cares"). What they say stays in the README, where it belongs (its License section, and the Private and Offline bullets). Nothing about AI on the page: the "Made with AI, with love" headline from 2026-11-12 went in the README's "Built with AI" section instead (2026-11-13).
+- **Link the GitHub repo with a small GitHub icon,** likely in Made by, in place of the source section's link.
+- To decide when designing: where the install steps go once their section is gone ("How to use it", or their own short section), and how they meet [help adding it to the home screen](#help-adding-it-to-the-home-screen); and the icon's accessible name, since it's a link with no visible text.
+
 Lucas's ideas, 2026-11-12:
 
-- **A headline:** "Made with AI, with love." Probably for the "Made by" section; confirm where.
 - **Why it exists,** in Lucas's words (a draft to edit before it goes on the page): the original feelings wheel helped immensely in his own therapy. He had a hard time identifying his emotions and thought he was incapable of it. After a lot of work and mindfulness, and having actual words for the emotions, he was able to. He used to look at [feelingswheel.com](reference/core-feelings-wheel.md#the-reference-site) almost daily, and wanted to make an accessible, beautiful, fast and versatile version for others to enjoy.
 - **A dedication** to A, E and M. Where it goes is open.
 - **The credit links feel off.** Each source's author name links to the work, and Roberts's link goes to an imgur post whose image is gone ([known issue](#the-about-page-1)). To decide: what to link (the work, its title, or the [reference notes](reference/README.md)), and whether to use the archive.org copy already in [core-feelings-wheel.md](reference/core-feelings-wheel.md).
@@ -167,37 +174,26 @@ Decide these together, and before launch: once links are shared and indexed, eve
 
 #### Real paths, a small router and cleaner URLs
 
-Lucas's ideas: he doesn't like the `/core/` prefix and wants room for languages (2026-11-09). On 2026-11-12: he doesn't like the URLs at all, they're too permissive; he doesn't want to see `about.html` in the address bar, only `/about`; and modern apps don't need hash routing, so why does this one lean on it? Could a small router of our own replace it, without a backend and while keeping dependencies near zero?
+Lucas's ideas: he doesn't like the `/core/` prefix and wants room for languages (2026-11-09). On 2026-11-12: he doesn't like the URLs at all, they're too permissive; he doesn't want to see `about.html` in the address bar, only `/about` (done 2026-11-13); and modern apps don't need hash routing, so why does this one lean on it? Could a small router of our own replace it, without a backend and while keeping dependencies near zero?
 
-- **Today (v2.2.1):** everything is in the hash. The feelings wheel at rest has none. An opened word is `#/core/happy/playful/…`, and the body wheel is `#/body` or `#/body/…`. `core` is the feelings wheel's internal id (`src/state/url.ts`, v2 spec §4.3). About is a separate page, `about.html`.
-- **Why the hash:** GitHub Pages only serves files. `/happy/playful` has no file, so it 404s unless a `404.html` hands the path to the app (which answers with a 404 status, bad for search) or the build writes a page for every word. The hash needs no server help.
+- **Today (v2.2.1):** everything is in the hash. The feelings wheel at rest has none. An opened word is `#/core/happy/playful/…`, and the body wheel is `#/body` or `#/body/…`. `core` is the feelings wheel's internal id (`src/state/url.ts`, v2 spec §4.3). About is a separate page at `/about` (the file `about.html`; Cloudflare redirects `/about.html` there).
+- **Why the hash:** the app started on GitHub Pages, which only serves files. `/happy/playful` had no file, so it 404'd unless a `404.html` handed the path to the app (which answers with a 404 status, bad for search) or the build wrote a page for every word. The hash needs no server help. Cloudflare, the host since 2026-11-13, can serve the app for paths without a file (`not_found_handling` in `wrangler.jsonc`, a plain 404 for now).
 - **Why it's permissive** (seen in the code, to confirm in the browser):
   - the service worker answers any page request in its scope with the app's shell when it hasn't cached that exact page (`navigationUrls` in `src/sw/strategy.ts`), so once it's installed, any path under the app loads the wheel;
   - an unknown hash gives the start view rather than a not-found, and any query is ignored (`fromHash`).
-- **`/about` is not the same problem.** As a real file (`about/index.html`), the address bar shows `/about/`, and it works on GitHub Pages today, no router or backend needed. Without the trailing slash, GitHub Pages redirects `/about` to `/about/`. Its relative links (`./icons/…`, `./src/…`) and the service worker's list of pages would move with it, and `about.html` should redirect.
+- **About moved to `/about` on 2026-11-13,** with the move to Cloudflare: Cloudflare serves `about.html` at `/about` and redirects the `.html` address there, so the service worker precaches pages by their address (`./`, `./about`), refuses to cache a redirect, and itself redirects `/about.html`, `/about/` and `/index.html` to the clean address, since an installed worker answers before Cloudflare can.
 - **No backend is needed for real paths either.** The History API (`pushState`, `popstate`) gives clean paths in the browser; what's needed is a host that serves the app for paths without a file, or a static page per word written at build time. The second also gives every feeling its own indexable page, with its definition as the description, a big win for search. A router for this app is a small table of paths and two listeners, small enough to write ourselves.
 - To decide when designing:
   - **Dropping `core`:** the feelings wheel's words at `/happy/…` and other wheels under their own name (`/body/…`). That needs a rule so a wheel's name can never be a core feeling's id. Or each wheel gets a public name (`feelings`, `body`) separate from its internal id.
-  - **Hash or real paths,** and which host ([Cloudflare](#cloudflare-instead-of-github-pages) changes the answer).
+  - **Hash or real paths.** On Cloudflare, real paths need no `404.html` workaround, and `_headers` and `_redirects` files allow security and cache headers and permanent redirects.
   - **What unknown URLs do:** a real not-found page with a link to the wheel, or the start view.
   - **Where the language goes:**
     - A **path prefix** (`/es/…`) works on one domain and on any static host, and is what search engines handle best (with `hreflang` links between languages).
-    - A **subdomain** (`es.feelsonwheels.app`) needs DNS per language. GitHub Pages allows one custom domain per repo, so it's a poor fit there.
+    - A **subdomain** (`es.feelsonwheels.app`) needs DNS per language. Cloudflare allows any number of custom domains, so it's possible now.
     - A **query** (`?lang=es`) or a choice saved only on the device is invisible to search.
   - **Slugs:** stable English ids in every language (`/es/happy/…`) or translated ones (`/es/feliz/…`).
   - **History:** whether opening a word still pushes history the way it does today (v2 §4.2), and how that meets the [going back on phones](#navigation) known issue.
-  - Old `#/core/…` links must keep working either way.
-
-#### Cloudflare instead of GitHub Pages
-
-- Lucas's question, 2026-11-12: the domain will be registered at Cloudflare, which Lucas already uses for a lot. Should the site be hosted there too?
-- What it would change (to confirm when designing; Cloudflare now also offers static sites on Workers, so check which it recommends):
-  - it can serve the app for paths without a file, so real paths need no `404.html` workaround;
-  - `_headers` and `_redirects` files allow security and cache headers and permanent redirects (`about.html` to `/about/`), which GitHub Pages can't do. Old `#/core/…` links still need the app to redirect them, since the hash never reaches a server;
-  - a preview deploy for every pull request;
-  - any number of custom domains, so language subdomains become possible;
-  - DNS and hosting in one place.
-- What moving costs: a new deploy workflow in place of the GitHub Pages one, and updating the shipping rules in `AGENTS.md` and the [domain move](#before-launching) steps.
+  - Old `#/core/…` links don't need to keep working (Lucas, 2026-11-13).
 
 #### Languages
 
@@ -237,29 +233,27 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 
 ### The About page
 
-- **The About page sometimes takes several moments to open.** Found 2026-11-12, tapping the About icon. About is a separate page (`about.html`), so opening it is a full page load rather than a view inside the app. Not yet measured whether the wait is the service worker, the network or the page itself.
+- **The About page sometimes takes several moments to open.** Found 2026-11-12, tapping the About icon. About is a separate page (`/about`), so opening it is a full page load rather than a view inside the app. Not yet measured whether the wait is the service worker, the network or the page itself.
 - **Roberts's credit link shows nothing.** Found 2026-11-12: the imgur post's image now redirects to imgur's "removed" picture (checked 2026-11-12), so the credit links to an empty post. [core-feelings-wheel.md](reference/core-feelings-wheel.md) still says it was online on 2026-11-09 and has an archive.org copy; update the note when the link is fixed. Part of the [About page rework](#about-page-rework).
 
 ### Code and tests
 
 - **The perf leak check is flaky.** `tests/perf/switch.spec.ts` sometimes counts 3 live wheels instead of 2 after 20 switches: about 1 run in 10, on main before v2.1 too, so it's garbage-collection timing rather than a leak. Worth a sturdier check (more GC turns, or a retry) before trusting a failure.
+- **The end-to-end suite skips offline in WebKit.** Playwright can't emulate offline with a service worker there, so the offline tests run only in Chromium and Firefox. Checked by hand on 2026-11-13 by stopping the server instead: the wheel and About loaded from the cache. A test that stops or blocks the server would cover it.
 - **Opened-word position lives in two places.** `main.ts` keeps its own copy of the phone's opened-word position and syncs it into the controller in three places; the controller could own it. (v1.3 review)
 - **The card's heading size watcher isn't disconnected when the card hides.** Harmless. (v1.3 review)
 
 ## Before launching
 
-The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens in two steps: first shareable, then launched. Step 1 [shipped](#versions) on 2026-11-09. Step 2 is what's left before announcing it and letting search engines index it. Nothing here is started.
+The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens in two steps: first shareable, then launched. Step 1 [shipped](#versions) on 2026-11-09. Step 2 is what's left before announcing it and letting search engines index it. The host and the domain are done (2026-11-13); the rest isn't started.
 
 - **Lucas reviews the definitions and sensations** in [content-review.md](content-review.md). This was moved out of v1.1.
-- **Trademark check** on "Feels on Wheels" (USPTO search) before buying a domain. The name was only checked against web, app-store and domain lookups.
-- **Decide the host and the URL structure** together: [Cloudflare instead of GitHub Pages](#cloudflare-instead-of-github-pages) and [real paths, a small router and cleaner URLs](#real-paths-a-small-router-and-cleaner-urls), while no links are out in the world.
-- **Move to a domain** (going-public spec §3.3; Lucas wants a real domain before linking it from his site). feelsonwheels.app is the likely one (unregistered on 2026-11-09), registered at Cloudflare:
-  - set `site.url` in `site.config.ts` (this changes the canonical URL, `og:url`, `og:image`, the JSON-LD, robots.txt and the sitemap) and `indexable: true` (removes `noindex`);
-  - on GitHub Pages: add `public/CNAME`, set the custom domain and "Enforce HTTPS" in the repo's Pages settings, and point DNS at GitHub Pages. On Cloudflare: add the domain to the project instead;
-  - update the repo's homepage (`gh repo edit --homepage`);
-  - deploy and re-check the link previews.
-  - Installs and saved themes at the github.io address don't carry over.
-- **Optional, after the move:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
+- **Decide the URL structure:** [real paths, a small router and cleaner URLs](#real-paths-a-small-router-and-cleaner-urls), while no links are out in the world. The host is decided: Cloudflare (2026-11-13).
+- **Moved to feelsonwheels.app** on 2026-11-13 ([spec](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-design.md)), still `noindex`. No trademark check (Lucas decided against it, 2026-11-13). Installs and saved themes at the github.io address didn't carry over.
+- **Let search engines in:** set `indexable: true` in `site.config.ts` (removes `noindex`), deploy, and re-check the link previews.
+  - Decide first whether the `workers.dev` address and the preview links should say `noindex` once the domain is indexable, since they serve the same pages.
+  - Decide whether `/about.html` should redirect with a 301 (a `_redirects` file) instead of Cloudflare's 307.
+- **Optional, after letting search engines in:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
 - **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, gray like the site's other icons; on hover it takes the wheel's seven colors and spins once, settling.
 - **The old private repo:** archive or delete `lpolito/feelings-wheel` once the public one is settled.
 - **Known issues and ideas:** decide which to finish before announcing it. The [About page rework](#about-page-rework), [share button](#share-button) and [help adding it to the home screen](#help-adding-it-to-the-home-screen) are the ones a first visitor would notice.

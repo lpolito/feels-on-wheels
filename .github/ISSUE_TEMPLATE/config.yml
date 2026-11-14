@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Try the app
-    url: https://lpolito.github.io/feels-on-wheels/
+    url: https://feelsonwheels.app/
     about: Feels on Wheels, live.
   - name: Contributing guide
     url: https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md

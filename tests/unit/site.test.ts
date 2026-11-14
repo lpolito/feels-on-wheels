@@ -41,7 +41,7 @@ describe('head tags', () => {
 
   test('the About page has its own canonical and title, and no JSON-LD', () => {
     const h = headTags('about', site, strings);
-    expect(h).toContain('<link rel="canonical" href="https://lpolito.github.io/feels-on-wheels/about.html">');
+    expect(h).toContain('<link rel="canonical" href="https://lpolito.github.io/feels-on-wheels/about">');
     expect(h).toContain('<title>About Feels on Wheels</title>');
     expect(h).not.toContain('application/ld+json');
   });
@@ -88,7 +88,7 @@ describe('generated files', () => {
 
   test('the sitemap lists the wheel and About', () => {
     const locs = [...sitemapXml(site).matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
-    expect(locs).toEqual(['https://lpolito.github.io/feels-on-wheels/', 'https://lpolito.github.io/feels-on-wheels/about.html']);
+    expect(locs).toEqual(['https://lpolito.github.io/feels-on-wheels/', 'https://lpolito.github.io/feels-on-wheels/about']);
   });
 });
 
@@ -104,13 +104,13 @@ describe('About page', () => {
       contributing: 'https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md',
       author: 'https://lucaspolito.dev/',
       home: './',
-      about: './about.html',
+      about: './about',
     });
   });
 
   test('the noscript message links to About (spec §7.2)', () => {
     const noscript = (en as unknown as { page: PageStrings }).page.noscript;
-    expect(linkify(noscript, links)).toContain('<a href="./about.html">');
+    expect(linkify(noscript, links)).toContain('<a href="./about">');
   });
 
   test('linkify escapes text and turns [label](target) into links', () => {

@@ -109,7 +109,7 @@
     - Delete the Roberts known issue, and its now-empty "The About page" Known issues group.
     - Drop the About page rework from the Before launching bullet.
     - In Help adding it to the home screen, the line about "Private and offline" now points at the Install it section (`/about#install`).
-    - Add the Shipped row `About page rework | Shipped <merge date> | [spec](…), [plan](…) |` with an empty last column.
+    - Add the Shipped row `| About page rework | Shipped <merge date> | [spec](…), [plan](…) |`. If what shipped differs from the spec, write the differences in `docs/superpowers/specs/2026-11-14-feels-on-wheels-about-rework-changes.md` and add `, [changes](…)` to the row.
     - Repoint any remaining link to `#about-page-rework` or `#the-about-page`.
   - In `docs/reference/core-feelings-wheel.md`, note under the imgur bullet that the image was removed (checked 2026-11-12) and that the app's credit now links the archive.org copy.
 

@@ -9,6 +9,7 @@ const focusedPath = (page: Page) => page.evaluate(() => {
   return window.__fw.pathOf(Number(el.dataset['index']));
 });
 const offCenter = (page: Page, path: string) => page.evaluate((p) => window.__fw.offCenter(p), path);
+const coreAtThree = (page: Page) => page.evaluate(() => window.__fw.coreAtThree());
 
 test('the message comes first, then the switch, the toolbar, the wheel', async ({ page }) => {
   for (const path of ['/', '/body', '/plaful']) {
@@ -83,7 +84,7 @@ test("the first key selects the word at 3 o'clock and opens nothing", async ({ p
     await open(page);
     await tabbableWord(page).focus();
     const path = (await focusedPath(page))!;
-    expect(path, key).not.toBeNull();
+    expect(path, key).toBe(await coreAtThree(page));
     expect((await state(page)).selected, key).toBeNull();
     await page.keyboard.press(key);
     await idle(page);
@@ -118,10 +119,15 @@ test('Tab during the intro spin picks the word it lands on', async ({ page, isMo
   test.skip(!isMobile, 'the intro spin plays on phones');
   await page.goto('/');
   await page.waitForFunction(() => window.__fw !== undefined);
-  await tabbableWord(page).focus();
+  // Focus goes in mid-spin: the intro is still turning the wheel.
+  const spinning = await page.evaluate(() => {
+    document.querySelector<HTMLElement>('#a11y-tree [role="treeitem"][tabindex="0"]')!.focus();
+    return window.__fw.moving();
+  });
+  expect(spinning).toBe(true);
   await idle(page);
   const path = (await focusedPath(page))!;
-  expect(path).not.toBeNull();
+  expect(path).toBe(await coreAtThree(page));
   expect(await offCenter(page, path)).toBeLessThan(1e-3);
   await page.keyboard.press('ArrowDown');
   await idle(page);
@@ -142,4 +148,58 @@ test("Start over leaves focus on the word at 3 o'clock with nothing selected", a
   expect((await state(page)).selected).toBeNull();
   expect(await focusedPath(page)).toBe(path);
   await expect(tabbableWord(page)).toBeFocused();
+});
+
+test("a spin stopped by a tap off the wheel leaves the word at 3 o'clock tabbable", async ({ page }) => {
+  await open(page);
+  // An arc around the wheel's center through its core ring, then a point off the wheel that the canvas gets.
+  const geo = await page.evaluate(() => {
+    const fw = window.__fw;
+    const rect = document.getElementById('wheel')!.getBoundingClientRect();
+    const cam = fw.camera();
+    const c = { x: rect.left + cam.cx, y: rect.top + cam.cy };
+    const p = fw.segmentScreenPoint(fw.coreAtThree());
+    const d = Math.hypot(p.x - c.x, p.y - c.y);
+    const outside = fw.viewport().radius * cam.scale + 24;
+    let off: { x: number; y: number } | null = null;
+    for (let k = 0; k < 16 && !off; k++) {
+      const a = (k / 16) * 2 * Math.PI;
+      const q = { x: c.x + outside * Math.cos(a), y: c.y + outside * Math.sin(a) };
+      if (document.elementFromPoint(q.x, q.y)?.id === 'wheel') off = q;
+    }
+    return { c, d, off };
+  });
+  expect(geo.off).not.toBeNull();
+  const at = (deg: number) => ({ x: geo.c.x + geo.d * Math.cos((deg * Math.PI) / 180), y: geo.c.y + geo.d * Math.sin((deg * Math.PI) / 180) });
+  // Whether the wheel was still spinning as the tap came, recorded as it lands, before the app handles it.
+  await page.evaluate(() => {
+    document.addEventListener('pointerup', () => { (window as unknown as { __spunAtTap: boolean }).__spunAtTap = window.__fw.moving(); }, true);
+  });
+  const tabbablePath = () => tabbableWord(page).evaluate((el) => window.__fw.pathOf(Number(el.dataset['index'])));
+  // A busy machine can let the fling settle before the tap arrives; a settle would catch the tree up by itself, so
+  // retry until the tap really stops a spin.
+  let caught = false;
+  let before = '';
+  for (let attempt = 0; attempt < 5 && !caught; attempt++) {
+    // Past the double-tap window, so this tap isn't a double tap with the last attempt's.
+    if (attempt > 0) await page.waitForTimeout(320);
+    await idle(page);
+    before = (await tabbablePath())!;
+    const start = at(-80);
+    await page.mouse.move(start.x, start.y);
+    await page.mouse.down();
+    for (const deg of [-50, -20, 10, 40, 70]) await page.mouse.move(at(deg).x, at(deg).y);
+    await page.mouse.up();
+    await page.mouse.click(geo.off!.x, geo.off!.y);
+    caught = await page.evaluate(() => (window as unknown as { __spunAtTap: boolean }).__spunAtTap);
+  }
+  expect(caught).toBe(true);
+  expect(await page.evaluate(() => window.__fw.moving())).toBe(false);
+  expect((await state(page)).selected).toBeNull();
+  const now = await coreAtThree(page);
+  expect(now).not.toBe(before);
+  // The mouse put focus in the tree; it follows the tabbable word, which is the one at 3 o'clock.
+  await expect(tabbableWord(page)).toHaveCount(1);
+  expect(await tabbablePath()).toBe(now);
+  expect(await focusedPath(page)).toBe(now);
 });

@@ -404,6 +404,8 @@ function showAbout(how: 'push' | 'replace' | 'none', from?: Element): void {
     if (how === 'none') onAbout = true;
     controller.setViewport(vp, opts);
     camera.stop();
+    // A spin stopped here never settles: the word at 3 o'clock becomes tabbable now, for the return.
+    tree.rest();
     const active = from ?? document.activeElement;
     opener = active instanceof HTMLElement && app.contains(active) ? active : null;
   }
@@ -535,7 +537,11 @@ addEventListener('popstate', () => {
 });
 
 // ── Input & resize ───────────────────────────────────────────────────────
-attachGestures(canvas, (intents) => controller.handle(intents));
+attachGestures(canvas, (intents) => {
+  controller.handle(intents);
+  // A tap on a spinning wheel stops it ("stop here"), and a stopped spin never settles: catch the tree up.
+  if (!camera.moving && intents.some((i) => i.type === 'tap')) tree.rest();
+});
 
 /** `onlyIfChanged`: skip when the viewport and options measure the same (the card resizing as it unfolds). */
 function remeasure(onlyIfChanged: boolean): void {
@@ -552,6 +558,8 @@ function remeasure(onlyIfChanged: boolean): void {
   setOpenedHalf(store.get());
   opts = { ...opts, openedY: openedYFor(store.get()) };
   controller.setViewport(vp, opts);
+  // A resize mid-spin jumps to where the spin was headed, which never settles: catch the tree up.
+  if (!camera.moving) tree.rest();
   drawNow();
 }
 
@@ -598,6 +606,8 @@ if (TEST) {
       moving: () => camera.moving,
       drawTimes: () => drawTimes.slice(),
       pathOf: (i: number | null) => (i === null ? null : layout.segments[i]!.path),
+      /** Question-first spec §3: the path of the core word at 3 o'clock where the wheel is headed. */
+      coreAtThree: () => layout.segments[controller.coreAtThree()]!.path,
       offCenter: (path: string) => {
         const off = normAngle(layout.segments[layout.byPath.get(path)!]!.mid + camera.current.rotation);
         return Math.min(off, TAU - off);

@@ -155,7 +155,7 @@ test.describe('switching wheels (desktop)', () => {
 
 test.describe('body wheel cards (desktop)', () => {
   test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'desktop flows'));
-  const headings = (page: Page) => page.locator('fw-card .fw-card-body h3');
+  const headings = (page: Page) => page.locator('fw-card .fw-card-body h2');
   const rowsText = (page: Page) => page.locator('fw-card ul.fw-rows a').allTextContents();
 
   test('Chest → Racing heart → Scared by taps shows the cards in spec §6.2', async ({ page }) => {
@@ -374,20 +374,20 @@ test.describe('v2.2: the message heading', () => {
 
   test('the message opens with its question as a heading', async ({ page }) => {
     await open(page, '/');
-    await expect(page.locator('fw-hint h2')).toHaveText('How are you feeling?');
+    await expect(page.locator('fw-hint h1')).toHaveText('How are you feeling?');
     await open(page, '/body');
-    await expect(page.locator('fw-hint h2')).toHaveText('What do you notice in your body?');
+    await expect(page.locator('fw-hint h1')).toHaveText('What do you notice in your body?');
   });
 
   test('320 px: the body heading wraps onto two lines inside the panel', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 });
     await open(page, '/body');
-    const { h, lh } = await page.locator('fw-hint h2').evaluate((e) => ({
+    const { h, lh } = await page.locator('fw-hint h1').evaluate((e) => ({
       h: e.getBoundingClientRect().height, lh: Number.parseFloat(getComputedStyle(e).lineHeight),
     }));
     expect(h).toBeGreaterThan(1.5 * lh);
     const panel = (await hint(page).boundingBox())!;
-    const head = (await page.locator('fw-hint h2').boundingBox())!;
+    const head = (await page.locator('fw-hint h1').boundingBox())!;
     expect(head.x >= panel.x && head.x + head.width <= panel.x + panel.width + 0.5).toBe(true);
   });
 

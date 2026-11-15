@@ -40,3 +40,18 @@ test('the message sits where the card does', async ({ page }) => {
   await idle(page);
   near(await box('#message'), await box('#float'));
 });
+
+test('the h1 follows the URL', async ({ page }) => {
+  const h1 = page.getByRole('heading', { level: 1 });
+  await open(page, '/');
+  await expect(h1).toHaveText('How are you feeling?');
+  await open(page, '/plaful');
+  await expect(h1).toHaveText('Feeling not found!');
+  await open(page, '/');
+  await tapPath(page, 'angry');
+  await expect(h1).toHaveCount(0);
+  await expect(page.getByRole('heading', { level: 2, name: 'Angry' })).toBeVisible();
+  await open(page, '/angry');
+  await expect(h1).toHaveText('Angry');
+  await expect(page.getByRole('heading', { level: 2, name: 'Narrow it down' })).toBeVisible();
+});

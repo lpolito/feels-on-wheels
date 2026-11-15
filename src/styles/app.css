@@ -313,6 +313,7 @@ fw-card {
   background: var(--surface);
 }
 .fw-card-heading {
+  font-weight: bold;
   font-size: 1.35rem;
   line-height: 1.2;
 }
@@ -414,7 +415,7 @@ fw-card[data-open] :is(.fw-crumbs-wrap, .fw-card-body) { grid-template-rows: 1fr
 .fw-sep { color: var(--muted); }
 
 .fw-card-content { padding: 0 1.25rem 1.25rem var(--edge); }
-.fw-card-content h3 {
+.fw-card-content h2 {
   margin-top: 1rem;
   margin-bottom: 0.25rem;
   font-size: 0.8rem;

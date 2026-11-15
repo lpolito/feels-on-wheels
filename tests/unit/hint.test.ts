@@ -18,7 +18,7 @@ describe('<fw-hint>', () => {
     const el = mount();
     el.content = { title: 'Hello?', text: 'Spin to explore.' };
     expect(el.hidden).toBe(false);
-    expect(el.querySelector('h2.fw-hint-title')!.textContent).toBe('Hello?');
+    expect(el.querySelector('h1.fw-hint-title')!.textContent).toBe('Hello?');
     expect(el.querySelector('p.fw-hint-text')!.textContent).toBe('Spin to explore.');
     el.content = null;
     expect(el.hidden).toBe(true);
@@ -27,7 +27,7 @@ describe('<fw-hint>', () => {
   test('renders a heading, then the text around the link (spec v2.2 §5)', () => {
     const el = mount();
     el.content = content;
-    expect(el.querySelector('h2.fw-hint-title')!.textContent).toBe('How are you feeling?');
+    expect(el.querySelector('h1.fw-hint-title')!.textContent).toBe('How are you feeling?');
     const p = el.querySelector('p.fw-hint-text')!;
     expect(p.textContent).toBe('Tap or spin to explore, or start from body sensations instead.');
     expect(p.querySelector('a.fw-hint-link')).not.toBeNull();
@@ -37,7 +37,7 @@ describe('<fw-hint>', () => {
     const el = mount();
     el.content = content;
     el.content = { ...content, title: 'What do you notice in your body?' };
-    expect(el.querySelector('h2.fw-hint-title')!.textContent).toBe('What do you notice in your body?');
+    expect(el.querySelector('h1.fw-hint-title')!.textContent).toBe('What do you notice in your body?');
   });
 
   test('the message is plain text, not a live region', () => {

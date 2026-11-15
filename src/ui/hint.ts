@@ -61,7 +61,7 @@ export class FwHint extends HTMLElement {
     }
     if (c.variant === 'notFound') this.dataset['variant'] = 'not-found';
     else delete this.dataset['variant'];
-    const title = document.createElement('h2');
+    const title = document.createElement('h1');
     title.className = 'fw-hint-title';
     title.textContent = c.title;
     const line = document.createElement('p');

@@ -199,6 +199,7 @@ export class FwCard extends HTMLElement {
   }
 
   #headingObserver: ResizeObserver | null = null;
+  #heading: HTMLElement | null = null;
 
   /**
    * Spec v1.3 §5.2 (WCAG 2.4.11): keep `scroll-padding-top` at the sticky row's height, so an element focused while
@@ -303,6 +304,8 @@ export class FwCard extends HTMLElement {
   #setOpen(open: boolean): void {
     this.toggleAttribute('data-open', open);
     this.#toggle!.setAttribute('aria-expanded', String(open));
+    // The opened word's name is the page's h1; while it is only selected, the message above holds that place.
+    this.#heading!.setAttribute('aria-level', open ? '1' : '2');
     // A folded body stays for its fold-away animation, out of reach of the keyboard and assistive tech. Focus inside
     // it would drop to <body> once it's inert, so it moves to the toggle first (v1.1 §5.2's rule for rebuilds).
     const active = document.activeElement;
@@ -339,9 +342,9 @@ export class FwCard extends HTMLElement {
         }
         content.append(p);
       } else if (s.kind === 'list') {
-        content.append(h('h3', {}, s.heading), h('ul', { className: 'fw-sensations' }, ...s.items.map((i) => h('li', {}, i))));
+        content.append(h('h2', {}, s.heading), h('ul', { className: 'fw-sensations' }, ...s.items.map((i) => h('li', {}, i))));
       } else if (s.kind === 'links') {
-        content.append(h('h3', {}, s.heading), s.inline
+        content.append(h('h2', {}, s.heading), s.inline
           ? h('p', { className: 'fw-close-to' }, ...s.rows.map((r) => this.#inkedLink(r)))
           : h('ul', { className: 'fw-rows' }, ...s.rows.map((r) => h('li', {}, this.#inkedLink(r, '\u00A0›')))));
       } else {
@@ -370,7 +373,9 @@ export class FwCard extends HTMLElement {
       dot(m.hue), h('span', { className: 'fw-card-title' }, m.title), chevronIcon());
     toggle.addEventListener('click', () => this.#emit(this.#model.kind === 'opened' ? { type: 'close' } : { type: 'activate' }));
     // Accordion pattern: the toggle sits inside a heading, so the sections below have a parent.
-    const heading = h('h2', { className: 'fw-card-heading' }, toggle);
+    const heading = h('div', { className: 'fw-card-heading' }, toggle);
+    heading.setAttribute('role', 'heading');
+    this.#heading = heading;
     // The bar sticks; Share sits after the toggle in focus order, and the CSS draws it just left of the fold arrow.
     const bar = h('div', { className: 'fw-card-bar' }, heading);
     const head = h('div', { className: 'fw-card-head' }, bar);

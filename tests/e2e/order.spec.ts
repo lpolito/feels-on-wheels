@@ -226,25 +226,29 @@ test('the ring shows when Tab reaches the wheel, and goes when a word is selecte
 
 test('a click or tap on the wheel brings focus without a ring', async ({ page }) => {
   await open(page);
-  await tapPath(page, 'angry');
-  await tapPath(page, 'angry');
-  expect(await ringShown(page)).toBe(false);
-  // A tap on the wheel with nothing selected leaves focus in the tree, quietly.
-  await open(page);
-  const geo = await page.evaluate(() => {
+  // An empty spot of the canvas, off the wheel's cells, so the click selects nothing.
+  const off = await page.evaluate(() => {
     const rect = document.getElementById('wheel')!.getBoundingClientRect();
     const cam = window.__fw.camera();
-    return { x: rect.left + cam.cx, y: rect.top + cam.cy, r: window.__fw.viewport().radius * cam.scale + 24 };
-  });
-  for (let k = 0; k < 16; k++) {
-    const a = (k / 16) * 2 * Math.PI;
-    const q = { x: geo.x + geo.r * Math.cos(a), y: geo.y + geo.r * Math.sin(a) };
-    if (await page.evaluate(({ x, y }) => document.elementFromPoint(x, y)?.id === 'wheel', q)) {
-      await page.mouse.click(q.x, q.y);
-      break;
+    const r = window.__fw.viewport().radius * cam.scale + 24;
+    for (let k = 0; k < 16; k++) {
+      const a = (k / 16) * 2 * Math.PI;
+      const q = { x: rect.left + cam.cx + r * Math.cos(a), y: rect.top + cam.cy + r * Math.sin(a) };
+      if (document.elementFromPoint(q.x, q.y)?.id === 'wheel') return q;
     }
-  }
+    return null;
+  });
+  expect(off).not.toBeNull();
+  await page.mouse.click(off!.x, off!.y);
+  await idle(page);
+  expect((await state(page)).selected).toBeNull();
+  expect(await focused(page)).toBe('LI');
+  expect(await page.evaluate(() => document.activeElement!.hasAttribute('data-quiet-focus'))).toBe(true);
   expect(await ringShown(page)).toBe(false);
+  // A key that selects nothing clears the quiet mark, and the ring appears.
+  await page.keyboard.press('Shift');
+  expect((await state(page)).selected).toBeNull();
+  expect(await ringShown(page)).toBe(true);
 });
 
 test('tap a word, then Escape: the ring shows', async ({ page }) => {

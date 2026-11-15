@@ -209,6 +209,55 @@ describe('taps', () => {
     expect(seen.map((a) => a.type)).toEqual(['close']);
   });
 
+  test("a tap on the selected word while the wheel zooms out from closing opens it (only a spin is 'stop here')", () => {
+    const hostile = idx('angry/aggressive/hostile');
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    store.dispatch({ type: 'close' });
+    step(50);
+    expect(camera.moving).toBe(true);
+    ctl.handle([{ type: 'tap', ...screenOf(hostile) }]);
+    step(2000);
+    expect(store.get()).toEqual(opened('angry/aggressive/hostile'));
+  });
+
+  test('a tap on another word while the wheel zooms out from closing selects it, and the wheel still comes to rest', () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    store.dispatch({ type: 'close' });
+    step(50);
+    expect(camera.moving).toBe(true);
+    const other = idx('angry/aggressive/provoked');
+    ctl.handle([{ type: 'tap', ...screenOf(other) }]);
+    step(3000);
+    expect(store.get()).toMatchObject({ selected: other, opened: false });
+    expect(camera.current.scale).toBe(1);
+  });
+
+  test('a tap on the opened word while the wheel zooms in from opening closes it', () => {
+    const hostile = idx('angry/aggressive/hostile');
+    setup({ ...initialState, selected: hostile });
+    step(500);
+    store.dispatch({ type: 'open', segment: hostile });
+    step(50);
+    expect(camera.moving).toBe(true);
+    ctl.handle([{ type: 'tap', ...screenOf(hostile) }]);
+    step(2000);
+    expect(store.get()).toEqual({ selected: hostile, opened: false, view: { mode: 'wheel' } });
+  });
+
+  test('a tap on the selected word while the keys turn the wheel opens it', () => {
+    setup({ ...initialState, selected: idx('angry') });
+    step(500);
+    store.dispatch({ type: 'step', delta: 1 });
+    step(50);
+    expect(camera.moving).toBe(true);
+    const sel = store.get().selected!;
+    ctl.handle([{ type: 'tap', ...screenOf(sel) }]);
+    step(2000);
+    expect(store.get()).toMatchObject({ selected: sel, opened: true });
+  });
+
   test('tap outside while selected clears', () => {
     ctl.handle([{ type: 'tap', ...screenOf(idx('sad')) }]);
     ctl.handle([{ type: 'tap', x: 2, y: 2 }]);

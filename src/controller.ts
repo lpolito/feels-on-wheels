@@ -58,6 +58,13 @@ export function createController(
   let lastTapHit: number | null = null;
   /** A user spin is in flight in a ring view: its settle picks the word at 3 o'clock. */
   let userSpin = false;
+  /**
+   * Where the user's last fling (a spin, in any view) aims the rotation. Only while the camera still heads there is
+   * the wheel "spinning", so a tap means "stop here" (v1.1 §3); the app's own moves (opening, closing, the keys'
+   * turn) re-aim or leave it, and a tap during them acts as usual.
+   */
+  let spinTarget: number | null = null;
+  const spinning = (): boolean => camera.moving && spinTarget !== null && camera.target.rotation === spinTarget;
 
   const cam = camera.current;
   const seg = (i: number) => layout.segments[i]!;
@@ -131,6 +138,7 @@ export function createController(
     const ring = ringOf(store.get());
     userSpin = ring !== null;
     camera.fling(v, ring, layout);
+    spinTarget = camera.target.rotation;
     if (ring !== null && store.get().opened && predictOpenedY) {
       setOpenedY(predictOpenedY(segmentAt(layout, ring, normAngle(-camera.target.rotation))));
     }
@@ -170,8 +178,11 @@ export function createController(
     const ring = ringOf(s);
     switch (i.type) {
       case 'tap': {
-        const wasMoving = camera.moving;
-        camera.stop();
+        const wasMoving = spinning();
+        spinTarget = null;
+        // Only a spin is caught; the app's own move (opening, closing, a key's turn) carries on to wherever the tap's
+        // action sends it, so the wheel never stops part-way zoomed.
+        if (wasMoving) camera.stop();
         userSpin = false;
         beforeLastTap = s;
         const hit = hitTest(layout, cam, vp, i.x, i.y);

@@ -33,7 +33,7 @@
 
 ## Social preview images
 
-`public/og/` holds a link-preview image for each core feeling and body area, drawn by `scripts/make-og-image.mjs` from the app's own wheels, layout and colors. When a wheel file, the color tokens (`src/styles/tokens.css`), the color code (`src/render/colors.ts`), the layout code (`src/model/layout.ts`), the app's name or the tagline changes, run `node scripts/make-og-image.mjs` and commit `public/og/` in the same change.
+`public/og/` holds a link-preview image for each core feeling and body area, drawn by `scripts/make-og-image.mjs` from the app's own wheels, layout and colors. When a wheel file, the color tokens (`src/styles/tokens.css`), the color code (`src/render/colors.ts`), the layout code (`src/model/layout.ts`), the app's name or the tagline changes, run `node scripts/make-og-image.mjs` and commit `public/og/` in the same change. The images' alt text (`page.imageAlt` in `src/data/locales/en.json`) quotes the app's name and the tagline, so change it with them.
 
 ## Spelling
 

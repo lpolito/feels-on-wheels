@@ -92,3 +92,13 @@ describe('going public (spec 2026-11-09)', () => {
     expect(config['previews']).toEqual({});
   });
 });
+
+describe('link previews (share and preview spec)', () => {
+  test("the preview image's alt text quotes the tagline the image shows, and names the wheel and wedge", () => {
+    const tagline = en.titles.home.slice(en.titles.home.indexOf(': ') + 2);
+    const shown = tagline.charAt(0).toUpperCase() + tagline.slice(1);
+    expect(en.page.imageAlt).toContain(shown);
+    expect(en.page.imageAlt).toContain('{wheel}');
+    expect(en.page.imageAlt).toContain('{wedge}');
+  });
+});

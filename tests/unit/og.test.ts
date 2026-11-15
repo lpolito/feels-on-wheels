@@ -1,6 +1,7 @@
+import { existsSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
-import { OG_SIZE, ogImage, ogImagePath, ogWedge } from '../../src/og';
+import { OG_BASE, OG_SIZE, ogImage, ogImagePath, ogWedge } from '../../src/og';
 import { parsePath, routeTable } from '../../src/state/url';
 
 const { wheels, locale } = loadData();
@@ -25,6 +26,22 @@ describe('preview image per route (share and preview spec §5)', () => {
   test('ogWedge and ogImagePath', () => {
     expect(ogWedge(route('/sad/lonely'), table)).toEqual({ wheel: 'core', wedge: 'sad' });
     expect(ogImagePath({ wheel: 'body', wedge: 'chest' })).toBe('og/body-chest.png');
+  });
+
+  test('a wheel at rest with no base wedge shows the first wheel and its base, together', () => {
+    expect(ogWedge({ kind: 'wheel', wheel: 'other', path: null }, table)).toEqual({ wheel: table.first, wedge: OG_BASE[table.first] });
+  });
+
+  test('every wheel at rest and every ring-0 wedge of every wheel has an image in public/og/', () => {
+    const exists = (w: { wheel: string; wedge: string }) => existsSync(new URL(`../../public/${ogImagePath(w)}`, import.meta.url));
+    for (const [wheel, paths] of table.wheels) {
+      const atRest = ogWedge({ kind: 'wheel', wheel, path: null }, table);
+      expect(exists(atRest), `${wheel} at rest → ${ogImagePath(atRest)}`).toBe(true);
+      for (const path of [...paths.keys()].filter((p) => !p.includes('/'))) {
+        const w = ogWedge({ kind: 'wheel', wheel, path }, table);
+        expect(exists(w), `${wheel}/${path} → ${ogImagePath(w)}`).toBe(true);
+      }
+    }
   });
 
   test('the size is 1200 by 630', () => {

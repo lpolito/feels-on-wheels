@@ -8,11 +8,14 @@ export const OG_SIZE = { width: 1200, height: 630 } as const;
 /** The wedge in front for a wheel at rest. */
 export const OG_BASE: Readonly<Record<string, string>> = { core: 'happy', body: 'whole-body' };
 
-/** Which wheel and wedge a route's preview image shows. Pure, like routeMeta. */
+/**
+ * Which wheel and wedge a route's preview image shows. Pure, like routeMeta. Anything else, including a wheel at rest
+ * with no base wedge, shows the first wheel at rest.
+ */
 export function ogWedge(route: Route, table: RouteTable): { wheel: string; wedge: string } {
   if (route.kind === 'wheel') {
     const wedge = route.path === null ? OG_BASE[route.wheel] : route.path.split('/')[0];
-    return { wheel: route.wheel, wedge: wedge ?? OG_BASE[table.first]! };
+    if (wedge !== undefined) return { wheel: route.wheel, wedge };
   }
   return { wheel: table.first, wedge: OG_BASE[table.first]! };
 }

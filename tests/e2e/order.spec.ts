@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { open, tabStops, tapPath } from './helpers';
+import { idle, open, tabStops, tapPath } from './helpers';
 
 test('the message comes first, then the switch, the toolbar, the wheel', async ({ page }) => {
   for (const path of ['/', '/body', '/plaful']) {
@@ -32,11 +32,11 @@ test('the message sits where the card does', async ({ page }) => {
     expect(Math.abs(a.right - b.right)).toBeLessThanOrEqual(1);
     expect(Math.abs(a.bottom - b.bottom)).toBeLessThanOrEqual(1);
   };
-  for (const size of [null, { width: 390, height: 844 }]) {
-    if (size) await page.setViewportSize(size);
-    await open(page);
-    const message = await box('#message');
-    await tapPath(page, 'angry');
-    near(message, await box('#float'));
-  }
+  const message = await box('#message');
+  await tapPath(page, 'angry');
+  near(message, await box('#float'));
+  // Resized with the page loaded and a word selected: both boxes follow the new layout together.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await idle(page);
+  near(await box('#message'), await box('#float'));
 });

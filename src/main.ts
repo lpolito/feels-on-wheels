@@ -286,7 +286,7 @@ function renderUi(s: State): void {
 }
 
 // ── URL & history (URL redesign spec §1, §6; history rule spec 2026-11-14) ──────────────────────────
-const writer = createHistoryWriter(history, () => performance.now());
+const writer = createHistoryWriter(history, () => performance.now(), () => location.pathname);
 const routeOf = (s: State): Extract<Route, { kind: 'wheel' }> => ({ kind: 'wheel', wheel: layout.wheelId, path: pathOf(layout, s) });
 const urlFor = (s: State): string => formatRoute(table, routeOf(s));
 const showTitle = (route: Route): void => {

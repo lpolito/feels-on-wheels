@@ -105,6 +105,24 @@ test.describe('desktop', () => {
     expect((await state(page)).opened).toBe(true);
   });
 
+  test('opening and closing at once from the card toggle adds an entry for each, so Back reopens the word', async ({ page }) => {
+    await open(page);
+    await tapPath(page, 'angry');
+    expect(await page.evaluate(() => location.pathname)).toBe('/');
+    // Enter twice on the toggle, well inside the writer's 250 ms merge window. (A double click is unreliable here:
+    // on desktop the card unfolds around its middle, so the toggle slides out from under the second click.)
+    await head(page).focus();
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Enter');
+    await idle(page);
+    expect(await page.evaluate(() => location.pathname)).toBe('/');
+    expect((await state(page)).opened).toBe(false);
+    await page.goBack();
+    await idle(page);
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
+    expect((await state(page)).opened).toBe(true);
+  });
+
   test('Escape closes then clears', async ({ page }) => {
     await open(page, '/sad');
     await page.keyboard.press('Escape');

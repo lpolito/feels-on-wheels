@@ -7,20 +7,23 @@ import { initialState, reduce, type Action, type State } from '../../src/state/s
 const layout = buildLayout(loadData().wheel);
 const idx = (p: string): number => layout.byPath.get(p)!;
 
-function fakeHistory() {
+/** Records calls, and keeps the current entry's URL like `location.pathname` would. */
+function fakeHistory(start = '/') {
   const calls: string[] = [];
-  return {
+  const fake = {
     calls,
-    pushState: (_d: unknown, _t: string, url?: string | URL | null) => { calls.push(`push ${url}`); },
-    replaceState: (_d: unknown, _t: string, url?: string | URL | null) => { calls.push(`replace ${url}`); },
+    url: start,
+    pushState: (_d: unknown, _t: string, url?: string | URL | null) => { calls.push(`push ${url}`); fake.url = String(url); },
+    replaceState: (_d: unknown, _t: string, url?: string | URL | null) => { calls.push(`replace ${url}`); fake.url = String(url); },
   };
+  return fake;
 }
 
 describe('history writer', () => {
   test('separate changes push separate entries', () => {
     let now = 0;
     const h = fakeHistory();
-    const w = createHistoryWriter(h, () => now);
+    const w = createHistoryWriter(h, () => now, () => h.url);
     w.push('/angry');
     now += 1000;
     w.push('/sad');
@@ -30,7 +33,7 @@ describe('history writer', () => {
   test('a burst of rapid changes (held arrow key) becomes one entry', () => {
     let now = 0;
     const h = fakeHistory();
-    const w = createHistoryWriter(h, () => now);
+    const w = createHistoryWriter(h, () => now, () => h.url);
     for (let i = 0; i < 20; i++) {
       w.push(`/x${i}`);
       now += 30;
@@ -39,10 +42,30 @@ describe('history writer', () => {
     expect(h.calls.at(-1)).toBe('replace /x19');
   });
 
+  test('a quick push back to the entry before (open, then close) is its own entry, so Back still goes somewhere', () => {
+    let now = 0;
+    const h = fakeHistory('/');
+    const w = createHistoryWriter(h, () => now, () => h.url);
+    w.push('/angry');
+    now += 100;
+    w.push('/');
+    expect(h.calls).toEqual(['push /angry', 'push /']);
+  });
+
+  test('a quick push elsewhere still merges', () => {
+    let now = 0;
+    const h = fakeHistory('/');
+    const w = createHistoryWriter(h, () => now, () => h.url);
+    w.push('/angry');
+    now += 100;
+    w.push('/sad');
+    expect(h.calls).toEqual(['push /angry', 'replace /sad']);
+  });
+
   test('replace always replaces the current entry', () => {
     let now = 0;
     const h = fakeHistory();
-    const w = createHistoryWriter(h, () => now);
+    const w = createHistoryWriter(h, () => now, () => h.url);
     w.push('/angry');
     now += 1000;
     w.replace('/sad');
@@ -58,7 +81,7 @@ describe('history writer', () => {
       pushState: (d: unknown, _t: string, url?: string | URL | null) => { calls.push(['push', url, d]); },
       replaceState: (d: unknown, _t: string, url?: string | URL | null) => { calls.push(['replace', url, d]); },
     };
-    const w = createHistoryWriter(h, () => now);
+    const w = createHistoryWriter(h, () => now, () => '/body');
     w.push('/body');
     now += 10;
     w.push('/about', { fwInApp: true });
@@ -72,7 +95,7 @@ describe('history writer', () => {
       pushState: () => { throw new Error('SecurityError'); },
       replaceState: () => { throw new Error('SecurityError'); },
     };
-    const w = createHistoryWriter(throwing, () => 0);
+    const w = createHistoryWriter(throwing, () => 0, () => '/');
     expect(() => w.push('/angry')).not.toThrow();
   });
 
@@ -81,7 +104,7 @@ describe('history writer', () => {
       pushState: () => { throw new Error('SecurityError'); },
       replaceState: () => { throw new Error('SecurityError'); },
     };
-    const w = createHistoryWriter(throwing, () => 0);
+    const w = createHistoryWriter(throwing, () => 0, () => '/');
     expect(() => w.replace('/angry')).not.toThrow();
   });
 });

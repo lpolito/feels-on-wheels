@@ -314,6 +314,9 @@ fw-card {
 }
 .fw-card-heading {
   font-weight: bold;
+  /* The <h2> this was gets these from the reset; a div needs them itself. */
+  text-wrap: balance;
+  overflow-wrap: break-word;
   font-size: 1.35rem;
   line-height: 1.2;
 }

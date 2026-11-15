@@ -32,5 +32,11 @@ export function moveFocus(el: HTMLElement, opts?: FocusOptions): void {
   el.focus(opts);
   if (last !== 'pointer' || el.ownerDocument.activeElement !== el) return;
   el.setAttribute(QUIET, '');
-  el.addEventListener('blur', () => el.removeAttribute(QUIET), { once: true });
+  // The window losing focus (switching apps or tabs) blurs `el` while it stays the active element; keep the mark then.
+  const onBlur = (): void => {
+    if (el.ownerDocument.activeElement === el) return;
+    el.removeAttribute(QUIET);
+    el.removeEventListener('blur', onBlur);
+  };
+  el.addEventListener('blur', onBlur);
 }

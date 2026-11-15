@@ -404,7 +404,9 @@ fw-card[data-open] :is(.fw-crumbs-wrap, .fw-card-body) { grid-template-rows: 1fr
 .fw-link:is(:hover, :focus-visible) { color: var(--ink, var(--fg)); }
 .fw-rows { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; column-gap: 0.75rem; }
 .fw-rows .fw-link {
-  display: block;
+  /* Flex centers the word in the 44px row, as the button did. */
+  display: flex;
+  align-items: center;
   width: 100%;
   min-height: 44px;
   text-align: start;
@@ -415,7 +417,7 @@ fw-card[data-open] :is(.fw-crumbs-wrap, .fw-card-body) { grid-template-rows: 1fr
 .fw-close-to { display: flex; flex-wrap: wrap; gap: 0.25rem 0.9rem; }
 /* Spec v2 §6.2: the jump to the feeling on the feelings wheel. */
 .fw-jump-row { margin: 1rem 0 0; }
-.fw-jump { min-height: 44px; text-align: start; }
+.fw-jump { display: inline-flex; align-items: center; min-height: 44px; text-align: start; }
 
 @media (prefers-reduced-motion: reduce) {
   .fw-card-chevron, .fw-crumbs-wrap, .fw-card-body { transition: none; }

@@ -54,6 +54,16 @@ describe('moveFocus', () => {
     expect(btn.hasAttribute('data-quiet-focus')).toBe(false);
   });
 
+  test('a blur while it keeps focus (the window losing focus) keeps the mark', () => {
+    press();
+    moveFocus(btn);
+    btn.dispatchEvent(new FocusEvent('blur'));
+    expect(document.activeElement).toBe(btn);
+    expect(btn.hasAttribute('data-quiet-focus')).toBe(true);
+    btn.blur();
+    expect(btn.hasAttribute('data-quiet-focus')).toBe(false);
+  });
+
   test('passes focus options through', () => {
     press();
     moveFocus(btn, { preventScroll: true });

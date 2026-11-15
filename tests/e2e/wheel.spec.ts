@@ -193,6 +193,19 @@ test.describe('desktop', () => {
     });
   }
 
+  test("card rows center their word in the row, as they did as buttons", async ({ page }) => {
+    await open(page, '/angry');
+    await settled(page);
+    const offset = await page.locator('fw-card ul.fw-rows a', { hasText: 'Bitter' }).evaluate((a) => {
+      const box = a.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(a);
+      const text = range.getBoundingClientRect();
+      return Math.abs((text.top + text.bottom) / 2 - (box.top + box.bottom) / 2);
+    });
+    expect(offset).toBeLessThanOrEqual(2);
+  });
+
   test('card words link to their own address, and a plain click stays in the app', async ({ page }) => {
     await open(page, '/angry');
     await page.evaluate(() => { (window as unknown as { __noReload?: number }).__noReload = 1; });

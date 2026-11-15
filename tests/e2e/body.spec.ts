@@ -174,6 +174,16 @@ test.describe('body wheel cards (desktop)', () => {
     await expect(headings(page)).toHaveText(['You might notice', 'Could also be feeling']);
     await expect(page.locator('fw-card .fw-close-to a')).toHaveText(['Mad', 'Excited']);
     await expect(page.locator('fw-card .fw-jump')).toHaveText('See Scared on the feelings wheel\u00A0›');
+    // Keys and focus spec: the jump is a link to the word on the feelings wheel, and centers its text like a button did.
+    await expect(page.locator('fw-card .fw-jump')).toHaveAttribute('href', '/fearful/scared');
+    const offset = await page.locator('fw-card .fw-jump').evaluate((a) => {
+      const box = a.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(a);
+      const text = range.getBoundingClientRect();
+      return Math.abs((text.top + text.bottom) / 2 - (box.top + box.bottom) / 2);
+    });
+    expect(offset).toBeLessThanOrEqual(2);
     await expect(page.locator('fw-card nav.fw-crumbs a')).toHaveText(['Chest', 'Racing heart']);
   });
 

@@ -174,6 +174,38 @@ describe('taps', () => {
     expect(sameAngle(camera.current.rotation, rot)).toBeLessThan(1e-6);
   });
 
+  test('tapping the opened word closes it and keeps it selected', () => {
+    const hostile = idx('angry/aggressive/hostile');
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    const rot = camera.current.rotation;
+    ctl.handle([{ type: 'tap', ...screenOf(hostile) }]);
+    step(2000);
+    expect(store.get()).toEqual({ selected: hostile, opened: false, view: { mode: 'wheel' } });
+    expect(sameAngle(camera.current.rotation, rot)).toBeLessThan(1e-6);
+  });
+
+  test('tapping the opened word while the wheel moves only stops it', () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    ctl.handle([{ type: 'dragStart', x: 500, y: 450, axis: 'y' }, { type: 'dragEnd', vx: 0, vy: 2500 }]);
+    step(30);
+    expect(camera.moving).toBe(true);
+    ctl.handle([{ type: 'tap', ...screenOf(store.get().selected!) }]);
+    step(2000);
+    expect(store.get().opened).toBe(true);
+  });
+
+  test('double-tap on the opened word leaves it opened', () => {
+    const hostile = idx('angry/aggressive/hostile');
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    const p = screenOf(hostile);
+    ctl.handle([{ type: 'tap', ...p }, { type: 'doubleTap', ...p }]);
+    step(2000);
+    expect(store.get()).toEqual(opened('angry/aggressive/hostile'));
+  });
+
   test('tap outside while selected clears', () => {
     ctl.handle([{ type: 'tap', ...screenOf(idx('sad')) }]);
     ctl.handle([{ type: 'tap', x: 2, y: 2 }]);

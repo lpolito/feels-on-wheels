@@ -176,10 +176,13 @@ export function createController(
         beforeLastTap = s;
         const hit = hitTest(layout, cam, vp, i.x, i.y);
         lastTapHit = hit;
-        if (wasMoving && (hit === null || (!s.opened && hit === s.selected))) {
+        if (wasMoving && (hit === null || hit === s.selected)) {
           // Tapping a moving wheel means "stop here": never clear, close or open (spec §3.3).
         } else if (hit === null) {
           store.dispatch(s.opened ? { type: 'close' } : { type: 'clear' });
+        } else if (s.opened && hit === s.selected) {
+          // Keys and focus spec: tapping the opened word closes it, leaving it selected, like tapping off the wheel.
+          store.dispatch({ type: 'close' });
         } else {
           store.dispatch(s.opened ? { type: 'open', segment: hit } : { type: 'select', segment: hit });
         }

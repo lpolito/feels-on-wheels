@@ -80,6 +80,14 @@ test.describe('desktop', () => {
     expect(await page.evaluate(() => location.pathname)).toBe('/angry');
   });
 
+  test('tapping the opened word closes it, leaving it selected', async ({ page }) => {
+    await open(page, '/angry');
+    await tapPath(page, 'angry');
+    expect(await state(page)).toMatchObject({ opened: false, view: { mode: 'wheel' } });
+    expect(await selectedPath(page)).toBe('angry');
+    await expect(head(page)).toHaveAttribute('aria-expanded', 'false');
+  });
+
   test('Escape closes then clears', async ({ page }) => {
     await open(page, '/sad');
     await page.keyboard.press('Escape');

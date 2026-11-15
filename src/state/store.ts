@@ -18,13 +18,13 @@ export type Action =
   | { type: 'open'; segment: number }
   | { type: 'close' }
   | { type: 'clear' }
-  | { type: 'step'; delta: 1 | -1 }
-  | { type: 'toChild' }
-  | { type: 'toParent' }
+  | { type: 'step'; delta: 1 | -1; from?: number }
+  | { type: 'toChild'; from?: number }
+  | { type: 'toParent'; from?: number }
   /** '−' (spec v1.2 §3.6): like toParent while opened; otherwise nothing. */
   | { type: 'stepOut' }
-  /** Enter / Space / '+'. */
-  | { type: 'activate' }
+  /** Enter / Space / '+'. The key moves carry `from`: the word to select when nothing is selected. */
+  | { type: 'activate'; from?: number }
   | { type: 'escape' }
   /** The camera came to rest in a ring view with `segment` at 3 o'clock. */
   | { type: 'settled'; segment: number }
@@ -69,6 +69,19 @@ function selectOnly(s: State, i: number): State {
 
 const firstCore = (layout: Layout): number => layout.rings[0]!.segments[0]!;
 
+/** Adds `from` (the word a key selects from nothing) to the four key actions; any other action is returned as is. */
+export function withFrom(a: Action, from: number): Action {
+  switch (a.type) {
+    case 'step':
+    case 'toChild':
+    case 'toParent':
+    case 'activate':
+      return { ...a, from };
+    default:
+      return a;
+  }
+}
+
 function next(layout: Layout, s: State, a: Action): State {
   const seg = (i: number) => layout.segments[i]!;
   const sel = s.selected;
@@ -83,12 +96,12 @@ function next(layout: Layout, s: State, a: Action): State {
     case 'clear':
       return { ...s, selected: null, opened: false, view: WHEEL };
     case 'step': {
-      if (sel === null) return selectOnly(s, firstCore(layout));
+      if (sel === null) return selectOnly(s, a.from ?? firstCore(layout));
       const to = ringNeighbor(layout, sel, a.delta);
       return s.opened ? open(layout, s, to) : selectOnly(s, to);
     }
     case 'toChild': {
-      if (sel === null) return s;
+      if (sel === null) return selectOnly(s, a.from ?? firstCore(layout));
       if (s.opened) {
         const c = centerChild(layout, sel);
         return c === null ? s : open(layout, s, c);
@@ -98,7 +111,7 @@ function next(layout: Layout, s: State, a: Action): State {
       return c === null ? s : selectOnly(s, c);
     }
     case 'toParent': {
-      if (sel === null) return s;
+      if (sel === null) return selectOnly(s, a.from ?? firstCore(layout));
       const p = seg(sel).parent;
       if (s.opened) return p < 0 ? next(layout, s, { type: 'close' }) : open(layout, s, p);
       return p < 0 ? s : selectOnly(s, p);
@@ -106,7 +119,7 @@ function next(layout: Layout, s: State, a: Action): State {
     case 'stepOut':
       return s.opened ? next(layout, s, { type: 'toParent' }) : s;
     case 'activate':
-      if (sel === null) return selectOnly(s, firstCore(layout));
+      if (sel === null) return selectOnly(s, a.from ?? firstCore(layout));
       return s.opened ? s : open(layout, s, sel);
     case 'escape':
       if (s.opened) return next(layout, s, { type: 'close' });

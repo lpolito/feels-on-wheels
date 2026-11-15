@@ -1,11 +1,12 @@
 import { describe, expect, test, vi } from 'vitest';
 import { loadData } from '../../src/data/load';
-import { buildLayout } from '../../src/model/layout';
-import { centerChild, createStore, initialState, reduce, type Action, type State } from '../../src/state/store';
+import { buildLayout, ringNeighbor } from '../../src/model/layout';
+import { centerChild, createStore, initialState, reduce, withFrom, type Action, type State } from '../../src/state/store';
 
 const layout = buildLayout(loadData().wheel);
 const idx = (p: string): number => layout.byPath.get(p)!;
 const run = (s: State, ...actions: Action[]): State => actions.reduce((acc, a) => reduce(layout, acc, a), s);
+const ringNeighborOf = (p: string): number => ringNeighbor(layout, idx(p), 1);
 const wheel = { mode: 'wheel' } as const;
 const ring = (r: number) => ({ mode: 'ring', ring: r }) as const;
 const selected = (p: string, extra: Partial<State> = {}): State => ({ ...initialState, selected: idx(p), ...extra });
@@ -230,5 +231,42 @@ describe('store', () => {
     store.subscribe(fn);
     store.dispatch({ type: 'close' });
     expect(fn).not.toHaveBeenCalled();
+  });
+});
+
+describe('key moves from nothing (the word the first key selects)', () => {
+  const sad = idx('sad');
+  const moves: [string, Action][] = [
+    ['step +1', { type: 'step', delta: 1, from: sad }],
+    ['step -1', { type: 'step', delta: -1, from: sad }],
+    ['toChild', { type: 'toChild', from: sad }],
+    ['toParent', { type: 'toParent', from: sad }],
+    ['activate', { type: 'activate', from: sad }],
+  ];
+  test('with nothing selected, each key move selects its from word and opens nothing', () => {
+    for (const [, a] of moves) {
+      expect(run(initialState, a)).toEqual({ selected: sad, opened: false, view: wheel });
+    }
+  });
+
+  test('from is ignored once something is selected', () => {
+    const s = run(selected('angry'), { type: 'step', delta: 1, from: sad });
+    expect(s.selected).toBe(ringNeighborOf('angry'));
+    expect(s.selected).not.toBe(sad);
+  });
+
+  test('toChild and toParent with nothing selected and no from select the first core', () => {
+    const first = layout.rings[0]!.segments[0]!;
+    expect(run(initialState, { type: 'toChild' }).selected).toBe(first);
+    expect(run(initialState, { type: 'toParent' }).selected).toBe(first);
+  });
+
+  test('withFrom adds from to the four key actions and leaves the others unchanged', () => {
+    expect(withFrom({ type: 'step', delta: -1 }, 3)).toEqual({ type: 'step', delta: -1, from: 3 });
+    expect(withFrom({ type: 'toChild' }, 3)).toEqual({ type: 'toChild', from: 3 });
+    expect(withFrom({ type: 'toParent' }, 3)).toEqual({ type: 'toParent', from: 3 });
+    expect(withFrom({ type: 'activate' }, 3)).toEqual({ type: 'activate', from: 3 });
+    expect(withFrom({ type: 'escape' }, 3)).toEqual({ type: 'escape' });
+    expect(withFrom({ type: 'select', segment: 1 }, 3)).toEqual({ type: 'select', segment: 1 });
   });
 });

@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { buildLayout } from '../../src/model/layout';
-import { TAU, hitTest, normAngle, segmentAt, type Camera, type Viewport } from '../../src/model/geometry';
+import { TAU, hitTest, normAngle, rotationToCenter, segmentAt, type Camera, type Viewport } from '../../src/model/geometry';
 import { createCameraController, ringFocusCamera, type CameraController } from '../../src/camera';
 import { createStore, initialState, type Action, type State, type Store } from '../../src/state/store';
-import { createController, type Controller } from '../../src/controller';
+import { DEFAULT_ROTATION, createController, type Controller } from '../../src/controller';
 
 const layout = buildLayout(loadData().wheel);
 const idx = (p: string): number => layout.byPath.get(p)!;
@@ -909,5 +909,24 @@ describe('viewport', () => {
     step(2000);
     expect(sameAngle(camera.current.rotation, rot)).toBeLessThan(1e-6);
     expect(camera.current.scale).toBe(1);
+  });
+});
+
+describe('keys from nothing', () => {
+  test("coreAtThree is the core word at 3 o'clock where the wheel is headed", () => {
+    expect(ctl.coreAtThree()).toBe(segmentAt(layout, 0, normAngle(-DEFAULT_ROTATION)));
+    const r = DEFAULT_ROTATION + 2;
+    camera.animateTo({ rotation: r });
+    step(50);
+    expect(camera.moving).toBe(true);
+    expect(ctl.coreAtThree()).toBe(segmentAt(layout, 0, normAngle(-r)));
+  });
+
+  test('a key selection from nothing turns the wheel to center it', () => {
+    const x = idx('sad');
+    const before = camera.target.rotation;
+    store.dispatch({ type: 'step', delta: 1, from: x });
+    expect(store.get().selected).toBe(x);
+    expect(camera.target.rotation).toBeCloseTo(rotationToCenter(layout.segments[x]!, before), 9);
   });
 });

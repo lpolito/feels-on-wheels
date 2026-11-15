@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { aboutHeading, aboutLink, backToWheel, idle, open, ring, selectedPath, sideways, state } from './helpers';
+import { aboutHeading, aboutLink, backToWheel, focused, idle, open, ring, selectedPath, state } from './helpers';
 
 // Going-public spec §8 and URL redesign spec §3: About is a view in the one shell, with its theme and accessibility.
 
@@ -12,7 +12,7 @@ const markPage = (): void => {
 };
 const notReloaded = (): number | undefined => (window as unknown as { __noReload?: number }).__noReload;
 
-test('the toolbar link opens About in the app: no reload, its URL and title, focus on its heading', async ({ page }) => {
+test('the message\'s About link opens About in the app: no reload, its URL and title, focus on its heading', async ({ page }) => {
   await open(page);
   await page.evaluate(markPage);
   await aboutLink(page).click();
@@ -26,23 +26,22 @@ test('the toolbar link opens About in the app: no reload, its URL and title, foc
   expect(await page.evaluate(notReloaded)).toBe(1);
 });
 
-test('from a word on the body wheel, "Back to the wheel" lands on that word with no new entry, focus back on the About link', async ({ page }) => {
-  await sideways(page);
+test('from a word on the body wheel, Start over then About: "Back to the wheel" lands on the body wheel with no new entry, focus back on the About link', async ({ page }) => {
   await open(page, '/body/chest/tight-chest');
   await page.evaluate(markPage);
+  // The message, and its About link, show once nothing is selected.
+  await page.locator('fw-toolbar .fw-start-over').click();
   await aboutLink(page).click();
   await expect(aboutHeading(page)).toBeFocused();
   const entries = await page.evaluate(() => history.length);
   // Opening it in a new tab lands on the wheel as you left it.
-  await expect(backToWheel(page)).toHaveAttribute('href', '/body/chest/tight-chest');
+  await expect(backToWheel(page)).toHaveAttribute('href', '/body');
   await backToWheel(page).click();
-  await expect(page).toHaveURL(/\/body\/chest\/tight-chest$/);
+  await expect(page).toHaveURL(/\/body$/);
   await idle(page);
   expect(await page.evaluate(() => window.__fw.wheel())).toBe('body');
-  expect(await selectedPath(page)).toBe('chest/tight-chest');
-  expect((await state(page)).opened).toBe(true);
-  await expect(page.locator('fw-card .fw-card-title')).toHaveText('Tight chest');
-  await expect(page).toHaveTitle('Tight chest · Feels on Wheels');
+  expect((await state(page)).selected).toBeNull();
+  await expect(page).toHaveTitle('Body sensations wheel · Feels on Wheels');
   expect(await page.evaluate(() => history.length)).toBe(entries);
   await expect(aboutLink(page)).toBeFocused();
   await expect(page.locator('#about')).toBeHidden();
@@ -105,11 +104,26 @@ test('the heading links home, like a site title: a new entry, the wheel, focus b
   expect(await page.evaluate(() => history.length)).toBe(entries + 1);
 });
 
-test('from an opened word, the heading starts fresh: the whole wheel, nothing selected', async ({ page }) => {
-  await sideways(page);
+test('with a word selected behind About, the heading starts fresh: the whole wheel, nothing selected', async ({ page }) => {
+  // About opens only from the message, with nothing selected; Back and Forward can still put it in front of a selected word.
   await open(page, '/happy/playful');
+  await page.locator('fw-toolbar .fw-start-over').click();
+  await idle(page);
   await aboutLink(page).click();
   await expect(aboutHeading(page)).toBeFocused();
+  await page.goBack();
+  await expect(page).toHaveURL(/\/$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/happy\/playful$/);
+  await idle(page);
+  expect((await state(page)).opened).toBe(true);
+  // Forward to / closes the word and keeps it selected (spec v1.2 §3.1), then on to About.
+  await page.goForward();
+  await expect(page).toHaveURL(/\/$/);
+  await page.goForward();
+  await expect(page).toHaveURL(/\/about$/);
+  await expect(aboutHeading(page)).toBeVisible();
+  expect(await selectedPath(page)).toBe('happy/playful');
   await page.waitForTimeout(320);
   await page.getByRole('heading', { level: 1 }).getByRole('link', { name: 'Feels on Wheels', exact: true }).click();
   await expect(page).toHaveURL(/\/$/);
@@ -191,20 +205,22 @@ for (const [theme, bg] of [['dark', 'rgb(18, 17, 20)'], ['light', 'rgb(255, 255,
   });
 }
 
-test('on phones, About gives way to Start over while a word is selected', async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 568 });
-  await page.goto('/happy/content/joyful');
-  await expect(page.locator('fw-toolbar .fw-start-over')).toBeVisible();
-  await expect(page.locator('fw-toolbar .fw-about')).toBeHidden();
-  await page.locator('fw-toolbar .fw-start-over').click();
-  await expect(page.locator('fw-toolbar .fw-about')).toBeVisible();
-});
+for (const at of ['/', '/body']) {
+  test(`the message's About link opens About; Back returns focus to it (${at})`, async ({ page }) => {
+    await open(page, at);
+    await aboutLink(page).click();
+    await expect(page).toHaveURL(/\/about$/);
+    await expect(aboutHeading(page)).toBeFocused();
+    await page.evaluate(() => history.back());
+    await expect(page).toHaveURL((u) => u.pathname === at);
+    await expect.poll(() => focused(page)).toBe('A.fw-hint-about-link');
+  });
+}
 
-test('on wide screens, About stays while a word is selected', async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto('/happy/content/joyful');
-  await expect(page.locator('fw-toolbar .fw-start-over')).toBeVisible();
-  await expect(page.locator('fw-toolbar .fw-about')).toBeVisible();
+test('the not-found message links to About', async ({ page }) => {
+  await open(page, '/nope');
+  await expect(aboutLink(page)).toBeVisible();
+  await expect(aboutLink(page)).toHaveAttribute('href', '/about');
 });
 
 test('About renders when storage throws (Review Focus 5)', async ({ page }) => {

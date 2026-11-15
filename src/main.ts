@@ -19,6 +19,7 @@ import { createHistoryWriter, historyOp } from './state/history';
 import { formatRoute, parsePath, pathOf, routeTable, stateFor, type Route } from './state/url';
 import { cardModel, type FwCard, type JumpContext } from './ui/card';
 import type { FwHint, HintContent } from './ui/hint';
+import { shareLink } from './ui/share';
 import { applyPref, readPref, resolvedTheme, safeStorage, themeName, writePref, type ThemePref } from './ui/theme';
 import type { FwToolbar } from './ui/toolbar';
 import type { FwWheelSwitch } from './ui/wheel-switch';
@@ -225,14 +226,18 @@ canvas.addEventListener('pointerleave', () => canvas.classList.remove('fw-over-d
  */
 let notFound: { word: string } | null = null;
 
-/** Spec v1.3 §3.1 and v2 §4.1: the message shows exactly when nothing is selected, with a link to another wheel. */
+/**
+ * Spec v1.3 §3.1 and v2 §4.1: the message shows exactly when nothing is selected, with a link to another wheel; share
+ * spec 2026-11-15 §4: and a line linking to About, on not found too.
+ */
 function hintContent(s: State): HintContent {
   if (s.selected !== null) return null;
   const text = wheelText(layout.wheelId);
   const wheel = data.suggests[layout.wheelId]!;
   // Spec v2.1 §6.3: the other wheel's own URL, so a new tab opens that wheel.
   const href = formatRoute(table, { kind: 'wheel', wheel, path: null });
-  const usual = { title: text.hintTitle, text: text.hint, link: { label: text.hintLink, wheel, href } };
+  const about = { label: t('about'), href: formatRoute(table, { kind: 'about' }) };
+  const usual = { title: text.hintTitle, text: text.hint, link: { label: text.hintLink, wheel, href }, about };
   if (notFound === null) return usual;
   return { ...usual, title: t('notFoundTitle'), lead: `${t('notFoundText', { word: notFound.word })} `, variant: 'notFound' };
 }
@@ -469,8 +474,9 @@ function applyRoute(route: Route, how: 'push' | 'replace' | 'none', link?: { pat
 }
 
 /**
- * Spec §2: a plain click on a same-origin link is shown in the app (the hint's link already handles its own). A link
- * to the address already showing changes nothing, and "Back to the wheel" on an About opened in the app is a Back.
+ * Spec §2: a plain click on a same-origin link is shown in the app, the hint's About link included (its link to the
+ * other wheel handles its own). A link to the address already showing changes nothing, and "Back to the wheel" on an
+ * About opened in the app is a Back.
  * About's heading link starts fresh: home, then Start over's clear, which adds no entry since the address stays /.
  */
 document.addEventListener('click', (e) => {
@@ -495,6 +501,26 @@ app.addEventListener('fw-wheel', (e) => {
   // Focus: the switch keeps its own button; the message's link and the card's jump are rebuilt, so focus follows.
   if (from === hint) hint.focusLink();
   else if (from === card && !opened) tree.focusSelected();
+});
+
+/**
+ * Share spec 2026-11-15 §1-3: the toolbar's Share shares the home page, whatever wheel is showing; an opened word's
+ * card shares that word's own address. Without a share sheet the link is copied: the button says so, and so does the
+ * announcer, since its label is hidden from screen readers.
+ */
+app.addEventListener('fw-share', (e) => {
+  const detail = (e as CustomEvent<{ what: 'site' } | { what: 'word'; wheel: string; path: Path }>).detail;
+  const target = e.target as FwToolbar | FwCard;
+  const route: Route = detail.what === 'site'
+    ? { kind: 'wheel', wheel: table.first, path: null }
+    : { kind: 'wheel', wheel: detail.wheel, path: detail.path };
+  const title = routeMeta(route, table, data.locale).title;
+  const url = new URL(detail.what === 'site' ? '/' : formatRoute(table, route), location.origin).href;
+  void shareLink({ title, url }).then((result) => {
+    if (result !== 'copied') return;
+    target.showCopied();
+    announce(t('linkCopied'));
+  });
 });
 
 addEventListener('popstate', () => {

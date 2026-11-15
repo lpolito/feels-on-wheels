@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { aboutHeading, aboutLink, backToWheel, focused, hint, idle, open, selectedPath, settled, sideways, state, tapPath, title } from './helpers';
+import { aboutHeading, aboutLink, backToWheel, focused, hint, idle, open, selectedPath, settled, state, tapPath, title } from './helpers';
 
 // URL redesign spec §1, §2, §6, §7: real paths, titles that follow the route, and not found.
 
@@ -189,9 +189,9 @@ test('Review Focus 1: a first load at /about, then the wheel, draws it at its fu
 });
 
 test('Review Focus 5: Back and Forward across About during a spin', async ({ page }) => {
-  await sideways(page);
-  // Opened, so the fling is a ring spin whose settle would pick a word.
-  await open(page, '/fearful/scared');
+  // About opens from the message, so with nothing selected: the fling spins the whole wheel.
+  await open(page, '/');
+  const homeTitle = await page.title();
   const box = (await page.locator('#wheel').boundingBox())!;
   const x = box.x + box.width * 0.4;
   await page.mouse.move(x, box.y + box.height * 0.2);
@@ -207,36 +207,29 @@ test('Review Focus 5: Back and Forward across About during a spin', async ({ pag
   const onWheel = async (): Promise<void> => {
     await expect(page.locator('#app')).toBeVisible();
     await idle(page);
-    const s = await state(page);
-    expect(s.opened).toBe(true);
-    expect(path(page)).toBe(`/${await selectedPath(page)}`);
-    await expect(page).toHaveTitle(`${await title(page).textContent()} · Feels on Wheels`);
+    expect((await state(page)).selected).toBeNull();
+    expect(path(page)).toBe('/');
+    await expect(page).toHaveTitle(homeTitle);
     expect(await focused(page)).not.toBe('BODY');
   };
   await onAbout();
   await page.goBack();
   await onWheel();
-  const left = path(page);
   await page.goForward();
   await onAbout();
   await page.goBack();
   await onWheel();
-  expect(path(page)).toBe(left);
 });
 
-test('Back from About keeps a selected word on the same wheel', async ({ page }) => {
-  await sideways(page);
-  await open(page);
-  await tapPath(page, 'angry');
-  expect(await selectedPath(page)).toBe('angry');
-  expect((await state(page)).opened).toBe(false);
+test('Back from About keeps the wheel it was opened from', async ({ page }) => {
+  await open(page, '/body');
   await aboutLink(page).click();
   await expect(aboutHeading(page)).toBeFocused();
   await page.goBack();
-  await expect(page).toHaveURL((u) => u.pathname === '/');
+  await expect(page).toHaveURL((u) => u.pathname === '/body');
   await idle(page);
-  expect(await selectedPath(page)).toBe('angry');
-  expect((await state(page)).opened).toBe(false);
+  expect(await page.evaluate(() => window.__fw.wheel())).toBe('body');
+  expect((await state(page)).selected).toBeNull();
   await expect(aboutLink(page)).toBeFocused();
 });
 
@@ -293,21 +286,22 @@ test.describe('history: picking adds an entry, moving by direction replaces it',
     expect((await state(page)).opened).toBe(true);
   });
 
-  test('a word opened by a tap, then About, then "Back to the wheel" lands on it; Back again returns to the whole wheel', async ({ page }) => {
-    await sideways(page);
+  test('a word opened by a tap, Start over, About, then "Back to the wheel": the whole wheel, and Back again reopens the word', async ({ page }) => {
     await open(page);
     await tapPath(page, 'angry');
     await tapPath(page, 'angry');
+    await page.locator('fw-toolbar .fw-start-over').click();
+    await idle(page);
     await aboutLink(page).click();
     await expect(aboutHeading(page)).toBeFocused();
     await backToWheel(page).click();
+    await expect(page).toHaveURL((u) => u.pathname === '/');
+    await idle(page);
+    expect((await state(page)).selected).toBeNull();
+    await page.goBack();
     await expect(page).toHaveURL((u) => u.pathname === '/angry');
     await idle(page);
     expect((await state(page)).opened).toBe(true);
-    await page.goBack();
-    await expect(page).toHaveURL((u) => u.pathname === '/');
-    await idle(page);
-    expect((await state(page)).opened).toBe(false);
     expect(await selectedPath(page)).toBe('angry');
   });
 

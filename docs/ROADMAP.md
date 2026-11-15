@@ -116,6 +116,7 @@ Polish to what's there; these could ship together as one change.
   - random on every visit, a gentler fixed start, or something in between (a different word each day);
   - whether the intro spin lands on it;
   - the end-to-end and viewport tests expect a fixed start, so they need a way to pin it.
+- **The first word Tab lands on sits at 3 o'clock** (Lucas, 2026-11-14). Tabbing into the wheel selects the first core word, Fearful, which on the whole wheel sits near 12 o'clock. Lucas wants it already at 3 o'clock, where the arrow keys put every word since the [keys and focus change](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md). Either the wheel starts with its first word there, or Tab selects whichever word is at 3 o'clock. Ties in with the [known issue](#navigation) about tabbing into the phone's half-wheel after a spin.
 
 #### Return to the word you jumped from
 

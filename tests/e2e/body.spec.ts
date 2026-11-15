@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { hint, idle, open, selectedPath, settled, state, tapPath, title } from './helpers';
+import { hint, idle, open, ring, selectedPath, settled, state, tapPath, title } from './helpers';
 
 const AREAS = /^(head|face|chest|breath|stomach|arms|whole-body|posture)$/;
 const wheelId = (page: Page) => page.evaluate(() => window.__fw.wheel());
@@ -24,6 +24,19 @@ test.describe('switching wheels (desktop)', () => {
     await expect(switchButton(page, 'Body')).toBeFocused();
     await expect(switchButton(page, 'Body')).toHaveAttribute('aria-pressed', 'true');
     await expect(switchButton(page, 'Feelings')).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  test('after a click, the new message link has focus but no ring; by keyboard it shows one (keys and focus spec)', async ({ page }) => {
+    await open(page);
+    await hintLink(page).click();
+    await idle(page);
+    await expect(hintLink(page)).toBeFocused();
+    expect(await ring(hintLink(page))).toBe('none');
+    await page.keyboard.press('Enter');
+    await idle(page);
+    expect(await wheelId(page)).toBe('core');
+    await expect(hintLink(page)).toBeFocused();
+    expect(await ring(hintLink(page))).toBe('solid');
   });
 
   test('the message link switches to Body and back', async ({ page }) => {

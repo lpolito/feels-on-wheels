@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { aboutHeading, aboutLink, backToWheel, idle, open, selectedPath, sideways, state } from './helpers';
+import { aboutHeading, aboutLink, backToWheel, idle, open, ring, selectedPath, sideways, state } from './helpers';
 
 // Going-public spec §8 and URL redesign spec §3: About is a view in the one shell, with its theme and accessibility.
 
@@ -64,6 +64,28 @@ test('the keyboard path: Enter on the About link, then Enter on "Back to the whe
   await expect(page).toHaveURL(/\/$/);
   await expect(aboutLink(page)).toBeFocused();
   expect((await state(page)).selected).toBeNull();
+});
+
+test('after a click, About\'s heading and the About link on leaving show no ring (keys and focus spec)', async ({ page }) => {
+  await open(page);
+  await aboutLink(page).click();
+  await expect(aboutHeading(page)).toBeFocused();
+  expect(await ring(aboutHeading(page))).toBe('none');
+  await backToWheel(page).click();
+  await expect(aboutLink(page)).toBeFocused();
+  expect(await ring(aboutLink(page))).toBe('none');
+});
+
+test('by keyboard, the About link shows its ring on leaving', async ({ page }) => {
+  await open(page);
+  await aboutLink(page).focus();
+  await page.keyboard.press('Enter');
+  await expect(aboutHeading(page)).toBeFocused();
+  expect(await ring(aboutHeading(page))).toBe('none');
+  await backToWheel(page).focus();
+  await page.keyboard.press('Enter');
+  await expect(aboutLink(page)).toBeFocused();
+  expect(await ring(aboutLink(page))).toBe('solid');
 });
 
 test('the heading links home, like a site title: a new entry, the wheel, focus back on the About link', async ({ page }) => {

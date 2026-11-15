@@ -1,4 +1,5 @@
 import { nodeLabel, t, wheelText } from '../i18n';
+import { moveFocus } from './focus';
 import { keyToAction } from '../input/keyboard';
 import type { Layout } from '../model/layout';
 import type { Action, State } from '../state/store';
@@ -125,14 +126,14 @@ export function createA11yTree(root: HTMLElement, layout: Layout, dispatch: (a: 
       for (const seg of layout.segments) {
         if (seg.children.length > 0) els[seg.index]!.setAttribute('aria-expanded', String(open.has(seg.index)));
       }
-      if (hadFocus && document.activeElement !== els[want]) els[want]!.focus({ preventScroll: true });
+      if (hadFocus && document.activeElement !== els[want]) moveFocus(els[want]!, { preventScroll: true });
     },
     focusSelected() {
       const el = els[tabbable >= 0 ? tabbable : layout.rings[0]!.segments[0]!]!;
       if (document.activeElement === el) return;
       focusingProgrammatically = true;
       try {
-        el.focus({ preventScroll: true });
+        moveFocus(el, { preventScroll: true });
       } finally {
         focusingProgrammatically = false;
       }

@@ -1,3 +1,5 @@
+import { moveFocus } from '../a11y/focus';
+
 /**
  * Spec v2 §4.1: the start message, with an optional link to another wheel where `text` has "{link}". Spec v2.2 §5:
  * `title`, the wheel's question, heads it. URL redesign §7: the not-found variant puts `lead`, plain text that is
@@ -37,7 +39,7 @@ export class FwHint extends HTMLElement {
 
   /** Focus the link (after it switched wheels, the new wheel's link takes its place). */
   focusLink(): void {
-    this.#link?.focus();
+    if (this.#link) moveFocus(this.#link);
   }
 
   connectedCallback(): void {

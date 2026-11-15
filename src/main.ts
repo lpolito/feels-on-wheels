@@ -1,5 +1,6 @@
 import { data } from './boot';
 import { createAnnouncer } from './a11y/announce';
+import { installFocusTracking, moveFocus } from './a11y/focus';
 import { announceFor, createA11yTree, type A11yTree } from './a11y/tree';
 import { createCameraController, isPortrait, openedHalfHeight, restView, type CameraController, type CameraOpts } from './camera';
 import { createController, type Controller } from './controller';
@@ -30,6 +31,8 @@ const FADE_MS = 150;
 const PULSE_MS = 180;
 
 const $ = <T extends Element>(sel: string): T => document.querySelector<T>(sel)!;
+// Keys and focus spec: the app's own focus moves draw no ring after a tap (src/a11y/focus.ts).
+installFocusTracking();
 const media = (q: string): MediaQueryList => matchMedia(q);
 
 // ── Wheels (spec v2 §7) ──────────────────────────────────────────────────
@@ -399,7 +402,7 @@ function showAbout(how: 'push' | 'replace' | 'none', from?: Element): void {
   backLink.href = urlFor(store.get());
   if (entering) {
     scrollTo(0, 0);
-    if (!firstLoad) aboutHeading.focus();
+    if (!firstLoad) moveFocus(aboutHeading);
   }
   const url = formatRoute(table, { kind: 'about' });
   if (how === 'push') writer.push(url, IN_APP);
@@ -458,7 +461,7 @@ function applyRoute(route: Route, how: 'push' | 'replace' | 'none', link?: { pat
   if (leaving) {
     const back = opener;
     opener = null;
-    back?.focus();
+    if (back) moveFocus(back);
     if (!back || document.activeElement !== back) tree.focusSelected();
   }
 }

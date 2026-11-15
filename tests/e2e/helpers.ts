@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 export async function open(page: Page, path = '/'): Promise<void> {
   await page.goto(path);
@@ -50,3 +50,6 @@ export const focused = (page: Page) => page.evaluate(() => {
   const el = document.activeElement;
   return el ? `${el.tagName}${el.classList.length ? `.${[...el.classList].join('.')}` : ''}` : 'none';
 });
+
+/** The element's computed outline style: 'none' when its focus ring is hidden (keys and focus spec). */
+export const ring = (l: Locator) => l.evaluate((e) => getComputedStyle(e).outlineStyle);

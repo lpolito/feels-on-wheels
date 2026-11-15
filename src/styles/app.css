@@ -91,6 +91,11 @@ button, select, fw-toolbar .fw-about {
   cursor: pointer;
 }
 :is(button, select, a, [role="treeitem"]):focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+/* Keys and focus spec: the app moved focus here after a tap or click (src/a11y/focus.ts), so no ring until a key.
+   !important so no more specific ring wins. */
+[data-quiet-focus]:focus { outline: none !important; }
+/* About's heading isn't a control: it takes focus only so screen readers read it out. */
+#about h1:focus { outline: none; }
 
 fw-toolbar {
   position: absolute;

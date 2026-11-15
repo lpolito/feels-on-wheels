@@ -1,4 +1,5 @@
 import type { FeelingId, FeelingsDict } from '../data/types';
+import { moveFocus } from '../a11y/focus';
 import { coreKind, definition, nodeLabel, sensationLabel, t } from '../i18n';
 import { siblings, type Home, type Layout, type Path } from '../model/layout';
 import type { Action, State } from '../state/store';
@@ -134,7 +135,7 @@ export class FwCard extends HTMLElement {
     this.render();
     if (!hadFocus) return;
     if (m.kind === 'none') this.dispatchEvent(new CustomEvent('fw-focus-lost', { bubbles: true }));
-    else this.#toggle?.focus();
+    else if (this.#toggle) moveFocus(this.#toggle);
   }
 
   /** Hue → hover ink (spec v1.2 §5.2), from colors.ts inkFor. */
@@ -239,7 +240,7 @@ export class FwCard extends HTMLElement {
     // A folded body stays for its fold-away animation, out of reach of the keyboard and assistive tech. Focus inside
     // it would drop to <body> once it's inert, so it moves to the toggle first (v1.1 §5.2's rule for rebuilds).
     const active = document.activeElement;
-    if (!open && active && (this.#body?.contains(active) || this.#crumbs?.contains(active))) this.#toggle!.focus();
+    if (!open && active && (this.#body?.contains(active) || this.#crumbs?.contains(active))) moveFocus(this.#toggle!);
     if (this.#body) this.#body.inert = !open;
     if (this.#crumbs) this.#crumbs.inert = !open;
   }

@@ -196,14 +196,17 @@ describe('taps', () => {
     expect(store.get().opened).toBe(true);
   });
 
-  test('double-tap on the opened word leaves it opened', () => {
+  test('double-tap on the opened word closes it, once: the second tap does nothing more', () => {
     const hostile = idx('angry/aggressive/hostile');
     setup(opened('angry/aggressive/hostile'));
     step(1000);
+    const seen: Action[] = [];
+    store.subscribe((_s, _p, a) => seen.push(a));
     const p = screenOf(hostile);
     ctl.handle([{ type: 'tap', ...p }, { type: 'doubleTap', ...p }]);
     step(2000);
-    expect(store.get()).toEqual(opened('angry/aggressive/hostile'));
+    expect(store.get()).toEqual({ selected: hostile, opened: false, view: { mode: 'wheel' } });
+    expect(seen.map((a) => a.type)).toEqual(['close']);
   });
 
   test('tap outside while selected clears', () => {

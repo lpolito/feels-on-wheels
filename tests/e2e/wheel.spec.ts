@@ -88,6 +88,23 @@ test.describe('desktop', () => {
     await expect(head(page)).toHaveAttribute('aria-expanded', 'false');
   });
 
+  test('double-clicking the opened word closes it with one history entry, so Back reopens it', async ({ page }) => {
+    await open(page);
+    await tapPath(page, 'angry');
+    await tapPath(page, 'angry');
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
+    await page.waitForTimeout(320);
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
+    await page.mouse.dblclick(p.x, p.y);
+    await idle(page);
+    expect(await state(page)).toMatchObject({ opened: false, view: { mode: 'wheel' } });
+    expect(await page.evaluate(() => location.pathname)).toBe('/');
+    await page.goBack();
+    await idle(page);
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
+    expect((await state(page)).opened).toBe(true);
+  });
+
   test('Escape closes then clears', async ({ page }) => {
     await open(page, '/sad');
     await page.keyboard.press('Escape');

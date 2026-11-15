@@ -194,7 +194,10 @@ export function createController(
         const hit = beforeLastTap ? lastTapHit : hitTest(layout, cam, vp, i.x, i.y);
         beforeLastTap = null;
         lastTapHit = null;
-        if (hit !== null) store.dispatch({ type: 'open', segment: hit });
+        // A double tap on the opened word means close: its first tap already did, and reopening would add a history
+        // entry that the writer merges into the close's, leaving the word twice in a row.
+        if (before.opened && hit !== null && hit === before.selected) { /* the first tap closed it */ }
+        else if (hit !== null) store.dispatch({ type: 'open', segment: hit });
         else if (before.opened) store.dispatch({ type: 'close' });
         if (!camera.moving) goToRest();
         return;

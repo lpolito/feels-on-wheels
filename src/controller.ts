@@ -5,7 +5,7 @@ import {
   TAU, drawWidthOf, hitTest, normAngle, rotationToCenter, segmentAt, snapRotation, type Camera, type Viewport,
 } from './model/geometry';
 import { resolvePinch } from './model/pinch';
-import type { State, Store } from './state/store';
+import type { Action, State, Store } from './state/store';
 
 export interface Controller {
   handle(intents: Intent[]): void;
@@ -27,6 +27,11 @@ const MIN_SCALE = 0.8;
 const MAX_SCALE_HEADROOM = 1.2;
 const WHEEL_SCROLL_RATE = 0.004;
 const WHEEL_ZOOM_IDLE_MS = 150;
+/**
+ * Keys and focus spec: on the whole wheel only keys dispatch these (a swipe there is a spin; pinches act only while
+ * opened), so a selection they make turns the wheel to put it at 3 o'clock, where an opened word sits.
+ */
+const KEY_MOVES = new Set<Action['type']>(['step', 'toChild', 'toParent', 'activate']);
 /** The intro spins in over about this many median core widths. */
 const INTRO_SEGMENTS = 1.5;
 
@@ -53,6 +58,13 @@ export function createController(
   let lastTapHit: number | null = null;
   /** A user spin is in flight in a ring view: its settle picks the word at 3 o'clock. */
   let userSpin = false;
+  /**
+   * Where the user's last fling (a spin, in any view) aims the rotation. Only while the camera still heads there is
+   * the wheel "spinning", so a tap means "stop here" (v1.1 §3); the app's own moves (opening, closing, the keys'
+   * turn) re-aim or leave it, and a tap during them acts as usual.
+   */
+  let spinTarget: number | null = null;
+  const spinning = (): boolean => camera.moving && spinTarget !== null && camera.target.rotation === spinTarget;
 
   const cam = camera.current;
   const seg = (i: number) => layout.segments[i]!;
@@ -126,6 +138,7 @@ export function createController(
     const ring = ringOf(store.get());
     userSpin = ring !== null;
     camera.fling(v, ring, layout);
+    spinTarget = camera.target.rotation;
     if (ring !== null && store.get().opened && predictOpenedY) {
       setOpenedY(predictOpenedY(segmentAt(layout, ring, normAngle(-camera.target.rotation))));
     }
@@ -141,7 +154,13 @@ export function createController(
       return;
     }
     const ring = ringOf(s);
-    if (ring === null || dragAxis !== null || s.selected === null || a.type === 'settled') return;
+    if (ring === null) {
+      if (dragAxis === null && s.selected !== null && s.selected !== prev.selected && KEY_MOVES.has(a.type)) {
+        camera.animateTo({ rotation: rotationToCenter(seg(s.selected), camera.target.rotation) });
+      }
+      return;
+    }
+    if (dragAxis !== null || s.selected === null || a.type === 'settled') return;
     if (s.selected !== prev.selected || camera.moving) {
       camera.animateTo({ rotation: rotationToCenter(seg(s.selected), cam.rotation) });
     }
@@ -159,16 +178,22 @@ export function createController(
     const ring = ringOf(s);
     switch (i.type) {
       case 'tap': {
-        const wasMoving = camera.moving;
-        camera.stop();
+        const wasMoving = spinning();
+        spinTarget = null;
+        // Only a spin is caught; the app's own move (opening, closing, a key's turn) carries on to wherever the tap's
+        // action sends it, so the wheel never stops part-way zoomed.
+        if (wasMoving) camera.stop();
         userSpin = false;
         beforeLastTap = s;
         const hit = hitTest(layout, cam, vp, i.x, i.y);
         lastTapHit = hit;
-        if (wasMoving && (hit === null || (!s.opened && hit === s.selected))) {
+        if (wasMoving && (hit === null || hit === s.selected)) {
           // Tapping a moving wheel means "stop here": never clear, close or open (spec §3.3).
         } else if (hit === null) {
           store.dispatch(s.opened ? { type: 'close' } : { type: 'clear' });
+        } else if (s.opened && hit === s.selected) {
+          // Keys and focus spec: tapping the opened word closes it, leaving it selected, like tapping off the wheel.
+          store.dispatch({ type: 'close' });
         } else {
           store.dispatch(s.opened ? { type: 'open', segment: hit } : { type: 'select', segment: hit });
         }
@@ -180,7 +205,9 @@ export function createController(
         const hit = beforeLastTap ? lastTapHit : hitTest(layout, cam, vp, i.x, i.y);
         beforeLastTap = null;
         lastTapHit = null;
-        if (hit !== null) store.dispatch({ type: 'open', segment: hit });
+        // A double tap on the opened word means close (Lucas, 2026-11-14): its first tap already did.
+        if (before.opened && hit !== null && hit === before.selected) { /* the first tap closed it */ }
+        else if (hit !== null) store.dispatch({ type: 'open', segment: hit });
         else if (before.opened) store.dispatch({ type: 'close' });
         if (!camera.moving) goToRest();
         return;

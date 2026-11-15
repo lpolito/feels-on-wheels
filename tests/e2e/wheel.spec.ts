@@ -30,7 +30,7 @@ test.describe('desktop', () => {
     await expect(head(page)).toHaveAttribute('aria-expanded', 'true');
     expect(await page.evaluate(() => location.pathname)).toBe('/angry');
     expect(await page.evaluate(() => history.length)).toBe(entries + 1);
-    await expect(page.locator('fw-card ul.fw-rows button')).toHaveCount(8);
+    await expect(page.locator('fw-card ul.fw-rows a')).toHaveCount(8);
     await page.goBack();
     await idle(page);
     expect(await page.evaluate(() => location.pathname)).toBe('/');
@@ -62,7 +62,7 @@ test.describe('desktop', () => {
   test('narrow-it-down row opens Aggressive with an Angry crumb; crumb reopens Angry', async ({ page }) => {
     await open(page, '/angry');
     const entries = await page.evaluate(() => history.length);
-    await page.locator('fw-card ul.fw-rows button', { hasText: 'Aggressive' }).click();
+    await page.locator('fw-card ul.fw-rows a', { hasText: 'Aggressive' }).click();
     await expectTitle(page, 'Aggressive');
     // History rule spec: a card link adds an entry, so Back returns to the word before.
     expect(await page.evaluate(() => history.length)).toBe(entries + 1);
@@ -73,11 +73,54 @@ test.describe('desktop', () => {
     await page.goForward();
     await idle(page);
     await expectTitle(page, 'Aggressive');
-    const crumb = page.locator('fw-card .fw-crumbs button', { hasText: 'Angry' });
+    const crumb = page.locator('fw-card .fw-crumbs a', { hasText: 'Angry' });
     await expect(crumb).toBeVisible();
     await crumb.click();
     await expectTitle(page, 'Angry');
     expect(await page.evaluate(() => location.pathname)).toBe('/angry');
+  });
+
+  test('tapping the opened word closes it, leaving it selected', async ({ page }) => {
+    await open(page, '/angry');
+    await tapPath(page, 'angry');
+    expect(await state(page)).toMatchObject({ opened: false, view: { mode: 'wheel' } });
+    expect(await selectedPath(page)).toBe('angry');
+    await expect(head(page)).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('double-clicking the opened word closes it with one history entry, so Back reopens it', async ({ page }) => {
+    await open(page);
+    await tapPath(page, 'angry');
+    await tapPath(page, 'angry');
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
+    await page.waitForTimeout(320);
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
+    await page.mouse.dblclick(p.x, p.y);
+    await idle(page);
+    expect(await state(page)).toMatchObject({ opened: false, view: { mode: 'wheel' } });
+    expect(await page.evaluate(() => location.pathname)).toBe('/');
+    await page.goBack();
+    await idle(page);
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
+    expect((await state(page)).opened).toBe(true);
+  });
+
+  test('opening and closing at once from the card toggle adds an entry for each, so Back reopens the word', async ({ page }) => {
+    await open(page);
+    await tapPath(page, 'angry');
+    expect(await page.evaluate(() => location.pathname)).toBe('/');
+    // Enter twice on the toggle, well inside the writer's 250 ms merge window. (A double click is unreliable here:
+    // on desktop the card unfolds around its middle, so the toggle slides out from under the second click.)
+    await head(page).focus();
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Enter');
+    await idle(page);
+    expect(await page.evaluate(() => location.pathname)).toBe('/');
+    expect((await state(page)).opened).toBe(false);
+    await page.goBack();
+    await idle(page);
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
+    expect((await state(page)).opened).toBe(true);
   });
 
   test('Escape closes then clears', async ({ page }) => {
@@ -132,9 +175,21 @@ test.describe('desktop', () => {
     await expect(page.locator('[role="treeitem"][aria-selected="true"]')).toHaveAttribute('aria-label', 'Disgusted');
   });
 
+  test("arrow keys turn the whole wheel so the selection sits at 3 o'clock", async ({ page }) => {
+    await open(page);
+    await tapPath(page, 'angry');
+    for (let i = 0; i < 4; i++) await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('ArrowRight');
+    await idle(page);
+    const path = await selectedPath(page);
+    expect(path).toContain('/');
+    expect(await page.evaluate((p) => window.__fw.offCenter(p!), path)).toBeLessThan(1e-3);
+    expect(await state(page)).toMatchObject({ opened: false, view: { mode: 'wheel' } });
+  });
+
   test('arrows work after a Close-to link', async ({ page }) => {
     await open(page, '/angry/aggressive/hostile');
-    await page.locator('fw-card .fw-close-to button', { hasText: 'Provoked' }).click();
+    await page.locator('fw-card .fw-close-to a', { hasText: 'Provoked' }).click();
     await idle(page);
     expect(await selectedPath(page)).toBe('angry/aggressive/provoked');
     await page.keyboard.press('ArrowDown');
@@ -145,7 +200,7 @@ test.describe('desktop', () => {
 
   test('Enter on a focused row activates it, not the wheel', async ({ page }) => {
     await open(page, '/angry');
-    await page.locator('fw-card ul.fw-rows button').first().focus();
+    await page.locator('fw-card ul.fw-rows a').first().focus();
     await page.keyboard.press('Enter');
     await idle(page);
     expect(await page.evaluate(() => location.pathname)).toBe('/angry/let-down');
@@ -163,14 +218,52 @@ test.describe('desktop', () => {
       await expect(page.locator('[role="treeitem"][tabindex="0"]')).toBeFocused();
     });
 
-    test(`${name} on a focused card row opens that row, not the wheel`, async ({ page }) => {
+    // Keys and focus spec: card rows are links, so Enter opens them and Space, as on any link, doesn't.
+    test(`${name} on a focused card row ${key === 'Enter' ? 'opens that row' : 'leaves the wheel as it is'}, not the wheel`, async ({ page }) => {
       await open(page, '/angry');
-      await page.locator('fw-card ul.fw-rows button', { hasText: 'Bitter' }).focus();
+      await page.locator('fw-card ul.fw-rows a', { hasText: 'Bitter' }).focus();
       await page.keyboard.press(key);
       await idle(page);
-      expect(await page.evaluate(() => location.pathname)).toBe('/angry/bitter');
+      expect(await page.evaluate(() => location.pathname)).toBe(key === 'Enter' ? '/angry/bitter' : '/angry');
     });
   }
+
+  test("card rows center their word in the row, as they did as buttons", async ({ page }) => {
+    await open(page, '/angry');
+    await settled(page);
+    const offset = await page.locator('fw-card ul.fw-rows a', { hasText: 'Bitter' }).evaluate((a) => {
+      const box = a.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(a);
+      const text = range.getBoundingClientRect();
+      return Math.abs((text.top + text.bottom) / 2 - (box.top + box.bottom) / 2);
+    });
+    expect(offset).toBeLessThanOrEqual(2);
+  });
+
+  test('card words link to their own address, and a plain click stays in the app', async ({ page }) => {
+    await open(page, '/angry');
+    await page.evaluate(() => { (window as unknown as { __noReload?: number }).__noReload = 1; });
+    const bitter = page.locator('fw-card ul.fw-rows a', { hasText: 'Bitter' });
+    await expect(bitter).toHaveAttribute('href', '/angry/bitter');
+    await bitter.click();
+    await idle(page);
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry/bitter');
+    await expect(page.locator('fw-card .fw-crumbs a', { hasText: 'Angry' })).toHaveAttribute('href', '/angry');
+    expect(await page.evaluate(() => (window as unknown as { __noReload?: number }).__noReload)).toBe(1);
+  });
+
+  test('⌘ or Ctrl-click on a card word opens it in a new tab', async ({ page, context, browserName, isMobile }) => {
+    test.skip(browserName !== 'chromium' || Boolean(isMobile), 'new tabs from a modified click: checked in desktop Chromium');
+    await open(page, '/angry');
+    const [tab] = await Promise.all([
+      context.waitForEvent('page'),
+      page.locator('fw-card ul.fw-rows a', { hasText: 'Bitter' }).click({ modifiers: ['ControlOrMeta'] }),
+    ]);
+    await tab.waitForLoadState();
+    expect(new URL(tab.url()).pathname).toBe('/angry/bitter');
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
+  });
 
   test('Escape on a focused Start over closes, then clears and moves focus to the wheel', async ({ page }) => {
     await open(page, '/angry');
@@ -395,7 +488,7 @@ test.describe('desktop', () => {
 
   test('Escape on a focused row closes and leaves focus on the card toggle', async ({ page }) => {
     await open(page, '/angry');
-    await page.locator('fw-card ul.fw-rows button').first().focus();
+    await page.locator('fw-card ul.fw-rows a').first().focus();
     await page.keyboard.press('Escape');
     await idle(page);
     expect((await state(page)).opened).toBe(false);
@@ -407,7 +500,7 @@ test.describe('desktop', () => {
     await settled(page);
     const box = async (sel: string) => (await page.locator(sel).first().boundingBox())!;
     const dot = await box('fw-card .fw-card-toggle .fw-dot');
-    const crumb = await box('fw-card nav.fw-crumbs button');
+    const crumb = await box('fw-card nav.fw-crumbs a');
     const body = await box('fw-card .fw-definition');
     const title = await box('fw-card .fw-card-title');
     expect(Math.abs(crumb.x - dot.x)).toBeLessThanOrEqual(1);
@@ -456,7 +549,7 @@ test.describe('desktop', () => {
     await settled(page);
     const card = page.locator('fw-card');
     await card.evaluate((el) => { el.scrollTop = el.scrollHeight; });
-    const rows = page.locator('fw-card ul.fw-rows button');
+    const rows = page.locator('fw-card ul.fw-rows a');
     // Walk focus up from the last row to the first, as Shift+Tab would.
     for (let k = (await rows.count()) - 1; k >= 0; k--) await rows.nth(k).focus();
     const first = (await rows.first().boundingBox())!;
@@ -583,7 +676,7 @@ test.describe('phone', () => {
     await open(page, '/fearful/scared');
     await settled(page);
     const before = (await page.locator('fw-card').boundingBox())!;
-    await page.locator('fw-card ul.fw-rows button').first().click();
+    await page.locator('fw-card ul.fw-rows a').first().click();
     const path = (await selectedPath(page))!;
     expect(path).toBe('fearful/scared/helpless');
     const { y, mid, cardTop } = await openedPlacement(page, path);

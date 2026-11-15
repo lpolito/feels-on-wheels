@@ -174,6 +174,90 @@ describe('taps', () => {
     expect(sameAngle(camera.current.rotation, rot)).toBeLessThan(1e-6);
   });
 
+  test('tapping the opened word closes it and keeps it selected', () => {
+    const hostile = idx('angry/aggressive/hostile');
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    const rot = camera.current.rotation;
+    ctl.handle([{ type: 'tap', ...screenOf(hostile) }]);
+    step(2000);
+    expect(store.get()).toEqual({ selected: hostile, opened: false, view: { mode: 'wheel' } });
+    expect(sameAngle(camera.current.rotation, rot)).toBeLessThan(1e-6);
+  });
+
+  test('tapping the opened word while the wheel moves only stops it', () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    ctl.handle([{ type: 'dragStart', x: 500, y: 450, axis: 'y' }, { type: 'dragEnd', vx: 0, vy: 2500 }]);
+    step(30);
+    expect(camera.moving).toBe(true);
+    ctl.handle([{ type: 'tap', ...screenOf(store.get().selected!) }]);
+    step(2000);
+    expect(store.get().opened).toBe(true);
+  });
+
+  test('double-tap on the opened word closes it, once: the second tap does nothing more', () => {
+    const hostile = idx('angry/aggressive/hostile');
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    const seen: Action[] = [];
+    store.subscribe((_s, _p, a) => seen.push(a));
+    const p = screenOf(hostile);
+    ctl.handle([{ type: 'tap', ...p }, { type: 'doubleTap', ...p }]);
+    step(2000);
+    expect(store.get()).toEqual({ selected: hostile, opened: false, view: { mode: 'wheel' } });
+    expect(seen.map((a) => a.type)).toEqual(['close']);
+  });
+
+  test("a tap on the selected word while the wheel zooms out from closing opens it (only a spin is 'stop here')", () => {
+    const hostile = idx('angry/aggressive/hostile');
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    store.dispatch({ type: 'close' });
+    step(50);
+    expect(camera.moving).toBe(true);
+    ctl.handle([{ type: 'tap', ...screenOf(hostile) }]);
+    step(2000);
+    expect(store.get()).toEqual(opened('angry/aggressive/hostile'));
+  });
+
+  test('a tap on another word while the wheel zooms out from closing selects it, and the wheel still comes to rest', () => {
+    setup(opened('angry/aggressive/hostile'));
+    step(1000);
+    store.dispatch({ type: 'close' });
+    step(50);
+    expect(camera.moving).toBe(true);
+    const other = idx('angry/aggressive/provoked');
+    ctl.handle([{ type: 'tap', ...screenOf(other) }]);
+    step(3000);
+    expect(store.get()).toMatchObject({ selected: other, opened: false });
+    expect(camera.current.scale).toBe(1);
+  });
+
+  test('a tap on the opened word while the wheel zooms in from opening closes it', () => {
+    const hostile = idx('angry/aggressive/hostile');
+    setup({ ...initialState, selected: hostile });
+    step(500);
+    store.dispatch({ type: 'open', segment: hostile });
+    step(50);
+    expect(camera.moving).toBe(true);
+    ctl.handle([{ type: 'tap', ...screenOf(hostile) }]);
+    step(2000);
+    expect(store.get()).toEqual({ selected: hostile, opened: false, view: { mode: 'wheel' } });
+  });
+
+  test('a tap on the selected word while the keys turn the wheel opens it', () => {
+    setup({ ...initialState, selected: idx('angry') });
+    step(500);
+    store.dispatch({ type: 'step', delta: 1 });
+    step(50);
+    expect(camera.moving).toBe(true);
+    const sel = store.get().selected!;
+    ctl.handle([{ type: 'tap', ...screenOf(sel) }]);
+    step(2000);
+    expect(store.get()).toMatchObject({ selected: sel, opened: true });
+  });
+
   test('tap outside while selected clears', () => {
     ctl.handle([{ type: 'tap', ...screenOf(idx('sad')) }]);
     ctl.handle([{ type: 'tap', x: 2, y: 2 }]);
@@ -285,6 +369,53 @@ describe('taps', () => {
     expect(camera.moving).toBe(true);
     ctl.handle([{ type: 'tap', ...screenOf(sad, { ...camera.current }) }]);
     expect(store.get()).toMatchObject({ selected: sad, opened: false });
+  });
+});
+
+describe('keys turn the whole wheel', () => {
+  const keyMoves: [string, State, Action][] = [
+    ['step', { ...initialState, selected: idx('angry') }, { type: 'step', delta: 1 }],
+    ['toChild', { ...initialState, selected: idx('angry') }, { type: 'toChild' }],
+    ['toParent', { ...initialState, selected: idx('angry/aggressive') }, { type: 'toParent' }],
+    ['activate', initialState, { type: 'activate' }],
+  ];
+  for (const [name, from, action] of keyMoves) {
+    test(`${name} on the whole wheel turns the new selection to 3 o'clock`, () => {
+      setup(from);
+      step(500);
+      store.dispatch(action);
+      step(2000);
+      const s = store.get();
+      expect(s).toMatchObject({ opened: false, view: { mode: 'wheel' } });
+      expect(s.selected).not.toBeNull();
+      expect(offCenter(s.selected!)).toBeLessThan(1e-6);
+      expect(camera.current.scale).toBe(1);
+    });
+  }
+
+  test("a key during a fling still ends with the selection at 3 o'clock", () => {
+    setup({ ...initialState, selected: idx('angry') });
+    step(500);
+    ctl.handle([
+      { type: 'dragStart', x: 600, y: 200, axis: 'x' },
+      { type: 'drag', x: 700, y: 250, dx: 100, dy: 50 },
+      { type: 'dragEnd', vx: 2000, vy: 0 },
+    ]);
+    step(50);
+    expect(camera.moving).toBe(true);
+    store.dispatch({ type: 'step', delta: 1 });
+    step(4000);
+    expect(offCenter(store.get().selected!)).toBeLessThan(1e-6);
+  });
+
+  test('resizing after the keys turned the wheel keeps the rotation', () => {
+    setup({ ...initialState, selected: idx('angry') });
+    step(500);
+    store.dispatch({ type: 'step', delta: 1 });
+    step(2000);
+    ctl.setViewport({ width: 1000, height: 800, radius: 380 }, opts);
+    step(500);
+    expect(offCenter(store.get().selected!)).toBeLessThan(1e-6);
   });
 });
 

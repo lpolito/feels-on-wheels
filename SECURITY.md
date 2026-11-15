@@ -1,6 +1,6 @@
 # Security
 
-Feels on Wheels is a static web app: no accounts, no server, no tracking, and nothing you choose leaves your device. Security issues are still possible, for example in the build, the service worker, or the GitHub Actions workflows.
+Feels on Wheels is a static web app with one small Cloudflare Worker. It has no accounts, no database, and no tracking, and nothing you choose leaves your device. Security issues are still possible, for example in the build, the Worker, the service worker, or the GitHub Actions workflows.
 
 ## Reporting a vulnerability
 

@@ -21,7 +21,7 @@ const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { 
 beforeAll(() => setLocale(locale));
 
 describe('cardModel', () => {
-  const row = (p: string, label: string, hue = 'angry') => ({ index: idx(p), label, hue });
+  const row = (p: string, label: string, hue = 'angry') => ({ index: idx(p), label, hue, path: p });
   const sens = (id: string) => (feelings[id]?.sensations ?? []).map((s) => locale.sensations[s]);
 
   test('cardModel: none / selected / opened', () => {
@@ -59,18 +59,18 @@ describe('cardModel', () => {
     expect(m.hue).toBe('chest');
     expect(m.sections).toEqual([{
       kind: 'links', heading: 'Narrow it down', inline: false,
-      rows: ['racing-heart', 'tight-chest', 'hollow-chest', 'warm-chest'].map((s) => ({ index: bIdx(`chest/${s}`), label: locale.sensations[s], hue: 'chest' })),
+      rows: ['racing-heart', 'tight-chest', 'hollow-chest', 'warm-chest'].map((s) => ({ index: bIdx(`chest/${s}`), label: locale.sensations[s], hue: 'chest', path: `chest/${s}` })),
     }]);
   });
 
   test('sensation card: one Could be section', () => {
     const m = cardModel(body, feelings, bOpened('chest/racing-heart'), jump);
     if (m.kind !== 'opened') throw new Error('expected opened');
-    expect(m.crumbs).toEqual([{ index: bIdx('chest'), label: 'Chest', hue: 'chest' }]);
+    expect(m.crumbs).toEqual([{ index: bIdx('chest'), label: 'Chest', hue: 'chest', path: 'chest' }]);
     expect(m.sections).toEqual([{
       kind: 'links', heading: 'Could be feeling', inline: false,
       rows: [['scared', 'Scared', 'fearful'], ['mad', 'Mad', 'angry'], ['excited', 'Excited', 'surprised']]
-        .map(([id, label, hue]) => ({ index: bIdx(`chest/racing-heart/${id}`), label, hue })),
+        .map(([id, label, hue]) => ({ index: bIdx(`chest/racing-heart/${id}`), label, hue, path: `chest/racing-heart/${id}` })),
     }]);
   });
 
@@ -87,8 +87,8 @@ describe('cardModel', () => {
       },
       { kind: 'list', heading: 'You might notice', items: sens('scared') },
       { kind: 'links', heading: 'Could also be feeling', inline: true, rows: [
-        { index: bIdx('chest/racing-heart/mad'), label: 'Mad', hue: 'angry' },
-        { index: bIdx('chest/racing-heart/excited'), label: 'Excited', hue: 'surprised' },
+        { index: bIdx('chest/racing-heart/mad'), label: 'Mad', hue: 'angry', path: 'chest/racing-heart/mad' },
+        { index: bIdx('chest/racing-heart/excited'), label: 'Excited', hue: 'surprised', path: 'chest/racing-heart/excited' },
       ] },
       { kind: 'jump', label: 'See Scared on the feelings wheel', wheel: 'core', path: 'fearful/scared' },
     ]);
@@ -146,20 +146,25 @@ describe('<fw-card>', () => {
     expect(actions).toEqual([{ type: 'activate' }, { type: 'close' }]);
   });
 
-  test('crumb, row and close-to buttons emit open(index)', () => {
+  test('crumb, row and close-to links emit open(index) on a plain click', () => {
     const { el, actions } = mount();
+    el.hrefFor = (w, p) => `/${w}/${p}`;
     el.model = cardModel(layout, feelings, opened('angry/aggressive/hostile'));
-    const crumbs = [...el.querySelectorAll<HTMLButtonElement>('.fw-crumbs button')];
+    const crumbs = [...el.querySelectorAll<HTMLAnchorElement>('.fw-crumbs a')];
     expect(crumbs.map((b) => b.textContent)).toEqual(['Angry', 'Aggressive']);
     expect(el.querySelector('.fw-crumbs')!.getAttribute('aria-label')).toBe(locale.ui['path']);
     crumbs[1]!.click();
-    const close = el.querySelector<HTMLButtonElement>('.fw-close-to button')!;
+    const close = el.querySelector<HTMLAnchorElement>('.fw-close-to a')!;
     expect(close.textContent).toBe('Provoked');
     close.click();
     el.model = cardModel(layout, feelings, opened('angry'));
-    const rows = [...el.querySelectorAll<HTMLButtonElement>('ul.fw-rows button')];
+    const rows = [...el.querySelectorAll<HTMLAnchorElement>('ul.fw-rows a')];
     expect(rows).toHaveLength(8);
-    rows[4]!.click();
+    expect(rows.every((r) => r instanceof HTMLAnchorElement)).toBe(true);
+    expect(rows[4]!.getAttribute('href')).toBe('/core/angry/aggressive');
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
+    rows[4]!.dispatchEvent(click);
+    expect(click.defaultPrevented).toBe(true);
     expect(actions).toEqual([
       { type: 'open', segment: idx('angry/aggressive') },
       { type: 'open', segment: idx('angry/aggressive/provoked') },
@@ -167,10 +172,32 @@ describe('<fw-card>', () => {
     ]);
   });
 
+  test('crumbs and close-to words link to their own paths', () => {
+    const { el } = mount();
+    el.hrefFor = (w, p) => `/${w}/${p}`;
+    el.model = cardModel(layout, feelings, opened('angry/aggressive/hostile'));
+    expect([...el.querySelectorAll('.fw-crumbs a')].map((a) => a.getAttribute('href'))).toEqual(['/core/angry', '/core/angry/aggressive']);
+    expect(el.querySelector('.fw-close-to a')!.getAttribute('href')).toBe('/core/angry/aggressive/provoked');
+  });
+
+  test('a modified or middle click on a card link is left to the browser', () => {
+    const { el, actions } = mount();
+    el.model = cardModel(layout, feelings, opened('angry'));
+    const row = el.querySelector<HTMLAnchorElement>('ul.fw-rows a')!;
+    for (const init of [{ metaKey: true }, { ctrlKey: true }, { shiftKey: true }, { altKey: true }, { button: 1 }]) {
+      const e = new MouseEvent('click', { bubbles: true, cancelable: true, ...init });
+      // Stop it reaching the document, where happy-dom would follow the link.
+      el.addEventListener('click', (ev) => ev.stopPropagation(), { once: true });
+      row.dispatchEvent(e);
+      expect(e.defaultPrevented).toBe(false);
+    }
+    expect(actions).toEqual([]);
+  });
+
   test('same model does not rebuild; rebuild with focus inside moves focus to the header', () => {
     const { el } = mount();
     el.model = cardModel(layout, feelings, opened('angry'));
-    const row = el.querySelector<HTMLButtonElement>('ul.fw-rows button')!;
+    const row = el.querySelector<HTMLAnchorElement>('ul.fw-rows a')!;
     row.focus();
     el.model = cardModel(layout, feelings, opened('angry'));
     expect(document.activeElement).toBe(row);
@@ -204,7 +231,7 @@ describe('<fw-card>', () => {
     el.model = cardModel(layout, feelings, opened('angry/aggressive/hostile'));
     expect(head(el).querySelector('button, a')).toBeNull();
     const nav = el.querySelector('.fw-card-head > nav.fw-crumbs')!;
-    expect([...nav.querySelectorAll('button')].map((b) => b.textContent)).toEqual(['Angry', 'Aggressive']);
+    expect([...nav.querySelectorAll('a')].map((b) => b.textContent)).toEqual(['Angry', 'Aggressive']);
     expect(el.querySelector('.fw-card-body .fw-crumbs')).toBeNull();
     // Core words have none.
     el.model = cardModel(layout, feelings, opened('sad'));
@@ -235,7 +262,7 @@ describe('<fw-card>', () => {
     expect(document.activeElement).toBe(toggle);
     expect(el.hasAttribute('data-open')).toBe(true);
     expect(toggle.getAttribute('aria-expanded')).toBe('true');
-    expect(el.querySelectorAll('.fw-card-head > nav.fw-crumbs button')).toHaveLength(2);
+    expect(el.querySelectorAll('.fw-card-head > nav.fw-crumbs a')).toHaveLength(2);
     expect(el.querySelector('.fw-card-body .fw-definition')).not.toBeNull();
     expect(el.querySelector<HTMLElement>('.fw-card-body')!.inert).toBe(false);
   });
@@ -248,7 +275,7 @@ describe('<fw-card>', () => {
     el.model = cardModel(layout, feelings, selected('angry'));
     expect(head(el)).toBe(toggle);
     expect(el.querySelector('.fw-card-body')).toBe(body);
-    expect(body.querySelectorAll('ul.fw-rows button')).toHaveLength(8);
+    expect(body.querySelectorAll('ul.fw-rows a')).toHaveLength(8);
     // Folded away: out of reach of the keyboard and assistive tech.
     expect(body.inert).toBe(true);
     expect(el.hasAttribute('data-open')).toBe(false);
@@ -262,11 +289,11 @@ describe('<fw-card>', () => {
   test('closing in place with focus in the body or crumbs moves focus to the toggle', () => {
     const { el } = mount();
     el.model = cardModel(layout, feelings, opened('angry'));
-    el.querySelector<HTMLButtonElement>('ul.fw-rows button')!.focus();
+    el.querySelector<HTMLAnchorElement>('ul.fw-rows a')!.focus();
     el.model = cardModel(layout, feelings, selected('angry'));
     expect(document.activeElement).toBe(head(el));
     el.model = cardModel(layout, feelings, opened('angry/aggressive/hostile'));
-    el.querySelector<HTMLButtonElement>('nav.fw-crumbs button')!.focus();
+    el.querySelector<HTMLAnchorElement>('nav.fw-crumbs a')!.focus();
     el.model = cardModel(layout, feelings, selected('angry/aggressive/hostile'));
     expect(document.activeElement).toBe(head(el));
   });
@@ -446,14 +473,16 @@ describe('<fw-toolbar>', () => {
 });
 
 describe('<fw-card> on the body wheel', () => {
-  test('the jump button dispatches fw-wheel with wheel and path', () => {
+  test('the jump link has its path and dispatches fw-wheel with wheel and path', () => {
     document.body.innerHTML = '<fw-card></fw-card>';
     const el = document.querySelector<FwCard>('fw-card')!;
     const got: unknown[] = [];
     document.body.addEventListener('fw-wheel', (e) => got.push((e as CustomEvent).detail));
+    el.hrefFor = (w, p) => `/${w}/${p}`;
     el.model = cardModel(body, feelings, bOpened('chest/racing-heart/scared'), jump);
-    const b = el.querySelector<HTMLButtonElement>('.fw-jump')!;
+    const b = el.querySelector<HTMLAnchorElement>('a.fw-jump')!;
     expect(b.textContent).toBe('See Scared on the feelings wheel\u00A0›');
+    expect(b.getAttribute('href')).toBe('/core/fearful/scared');
     b.click();
     expect(got).toEqual([{ wheel: 'core', path: 'fearful/scared' }]);
   });
@@ -463,7 +492,7 @@ describe('<fw-card> on the body wheel', () => {
     const el = document.querySelector<FwCard>('fw-card')!;
     el.inks = { chest: '#111111', fearful: '#222222', angry: '#333333', surprised: '#444444' };
     el.model = cardModel(body, feelings, bOpened('chest/racing-heart'), jump);
-    const rows = [...el.querySelectorAll<HTMLButtonElement>('ul.fw-rows button')];
+    const rows = [...el.querySelectorAll<HTMLAnchorElement>('ul.fw-rows a')];
     expect(rows.map((r) => r.textContent)).toEqual(['Scared\u00A0›', 'Mad\u00A0›', 'Excited\u00A0›']);
     expect(rows.map((r) => r.style.getPropertyValue('--ink'))).toEqual(['#222222', '#333333', '#444444']);
     expect(el.querySelector('h3')!.textContent).toBe('Could be feeling');
@@ -503,14 +532,16 @@ describe('the core feeling on the body wheel (spec v2.2 §4.4)', () => {
     document.body.innerHTML = '<fw-card></fw-card>';
     const el = document.querySelector<FwCard>('fw-card')!;
     el.inks = { happy: '#123456' };
+    el.hrefFor = (w, p) => `/${w}/${p}`;
     const got: unknown[] = [];
     document.body.addEventListener('fw-wheel', (e) => got.push((e as CustomEvent).detail));
     el.model = cardModel(body, feelings, bOpened('head/wide-eyes/interested'), jump);
     const p = el.querySelector('.fw-definition')!;
     expect(p.textContent).toBe(`${locale.feelings['interested']!.definition} A happy feeling.`);
-    const link = p.querySelector<HTMLButtonElement>('button.fw-link')!;
+    const link = p.querySelector<HTMLAnchorElement>('a.fw-link')!;
     expect(link.textContent).toBe('happy');
     expect(link.style.getPropertyValue('--ink')).toBe('#123456');
+    expect(link.getAttribute('href')).toBe('/core/happy');
     link.click();
     expect(got).toEqual([{ wheel: 'core', path: 'happy' }]);
   });

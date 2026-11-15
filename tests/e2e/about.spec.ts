@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { aboutHeading, aboutLink, backToWheel, idle, open, selectedPath, sideways, state } from './helpers';
+import { aboutHeading, aboutLink, backToWheel, idle, open, ring, selectedPath, sideways, state } from './helpers';
 
 // Going-public spec §8 and URL redesign spec §3: About is a view in the one shell, with its theme and accessibility.
 
@@ -66,6 +66,28 @@ test('the keyboard path: Enter on the About link, then Enter on "Back to the whe
   expect((await state(page)).selected).toBeNull();
 });
 
+test('after a click, About\'s heading and the About link on leaving show no ring (keys and focus spec)', async ({ page }) => {
+  await open(page);
+  await aboutLink(page).click();
+  await expect(aboutHeading(page)).toBeFocused();
+  expect(await ring(aboutHeading(page))).toBe('none');
+  await backToWheel(page).click();
+  await expect(aboutLink(page)).toBeFocused();
+  expect(await ring(aboutLink(page))).toBe('none');
+});
+
+test('by keyboard, the About link shows its ring on leaving', async ({ page }) => {
+  await open(page);
+  await aboutLink(page).focus();
+  await page.keyboard.press('Enter');
+  await expect(aboutHeading(page)).toBeFocused();
+  expect(await ring(aboutHeading(page))).toBe('none');
+  await backToWheel(page).focus();
+  await page.keyboard.press('Enter');
+  await expect(aboutLink(page)).toBeFocused();
+  expect(await ring(aboutLink(page))).toBe('solid');
+});
+
 test('the heading links home, like a site title: a new entry, the wheel, focus back on the About link', async ({ page }) => {
   await open(page);
   await aboutLink(page).click();
@@ -94,6 +116,20 @@ test('from an opened word, the heading starts fresh: the whole wheel, nothing se
   await idle(page);
   expect((await state(page)).selected).toBeNull();
   expect((await state(page)).opened).toBe(false);
+});
+
+test('every link off the site opens a new tab and says so; the links home stay in this tab (keys and focus spec)', async ({ page }) => {
+  await page.goto('/about');
+  await expect(aboutHeading(page)).toBeVisible();
+  const external = page.locator('#about a[href^="https://"]');
+  expect(await external.count()).toBeGreaterThan(2);
+  for (const a of await external.all()) {
+    await expect(a).toHaveAttribute('target', '_blank');
+    await expect(a).toHaveAccessibleName(/\(opens in a new tab\)$/);
+  }
+  await expect(page.locator('#about a[target]:not([href^="https://"])')).toHaveCount(0);
+  await expect(page.locator('#about .about-home')).not.toHaveAttribute('target', /./);
+  await expect(backToWheel(page)).not.toHaveAttribute('target', /./);
 });
 
 test('the sign-off links the repo with the GitHub icon, named for screen readers, with a big enough target', async ({ page }) => {

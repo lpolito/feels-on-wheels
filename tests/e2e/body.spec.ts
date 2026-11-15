@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { hint, idle, open, selectedPath, settled, state, tapPath, title } from './helpers';
+import { hint, idle, open, ring, selectedPath, settled, state, tapPath, title } from './helpers';
 
 const AREAS = /^(head|face|chest|breath|stomach|arms|whole-body|posture)$/;
 const wheelId = (page: Page) => page.evaluate(() => window.__fw.wheel());
@@ -24,6 +24,19 @@ test.describe('switching wheels (desktop)', () => {
     await expect(switchButton(page, 'Body')).toBeFocused();
     await expect(switchButton(page, 'Body')).toHaveAttribute('aria-pressed', 'true');
     await expect(switchButton(page, 'Feelings')).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  test('after a click, the new message link has focus but no ring; by keyboard it shows one (keys and focus spec)', async ({ page }) => {
+    await open(page);
+    await hintLink(page).click();
+    await idle(page);
+    await expect(hintLink(page)).toBeFocused();
+    expect(await ring(hintLink(page))).toBe('none');
+    await page.keyboard.press('Enter');
+    await idle(page);
+    expect(await wheelId(page)).toBe('core');
+    await expect(hintLink(page)).toBeFocused();
+    expect(await ring(hintLink(page))).toBe('solid');
   });
 
   test('the message link switches to Body and back', async ({ page }) => {
@@ -140,7 +153,7 @@ test.describe('switching wheels (desktop)', () => {
 test.describe('body wheel cards (desktop)', () => {
   test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'desktop flows'));
   const headings = (page: Page) => page.locator('fw-card .fw-card-body h3');
-  const rowsText = (page: Page) => page.locator('fw-card ul.fw-rows button').allTextContents();
+  const rowsText = (page: Page) => page.locator('fw-card ul.fw-rows a').allTextContents();
 
   test('Chest → Racing heart → Scared by taps shows the cards in spec §6.2', async ({ page }) => {
     await open(page, '/body');
@@ -159,9 +172,19 @@ test.describe('body wheel cards (desktop)', () => {
     await expect(title(page)).toHaveText('Scared');
     await expect(page.locator('fw-card .fw-definition')).not.toBeEmpty();
     await expect(headings(page)).toHaveText(['You might notice', 'Could also be feeling']);
-    await expect(page.locator('fw-card .fw-close-to button')).toHaveText(['Mad', 'Excited']);
+    await expect(page.locator('fw-card .fw-close-to a')).toHaveText(['Mad', 'Excited']);
     await expect(page.locator('fw-card .fw-jump')).toHaveText('See Scared on the feelings wheel\u00A0›');
-    await expect(page.locator('fw-card nav.fw-crumbs button')).toHaveText(['Chest', 'Racing heart']);
+    // Keys and focus spec: the jump is a link to the word on the feelings wheel, and centers its text like a button did.
+    await expect(page.locator('fw-card .fw-jump')).toHaveAttribute('href', '/fearful/scared');
+    const offset = await page.locator('fw-card .fw-jump').evaluate((a) => {
+      const box = a.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(a);
+      const text = range.getBoundingClientRect();
+      return Math.abs((text.top + text.bottom) / 2 - (box.top + box.bottom) / 2);
+    });
+    expect(offset).toBeLessThanOrEqual(2);
+    await expect(page.locator('fw-card nav.fw-crumbs a')).toHaveText(['Chest', 'Racing heart']);
   });
 
   test('the jump link opens Fearful › Scared on the feelings wheel; Back returns to the body wheel', async ({ page }) => {

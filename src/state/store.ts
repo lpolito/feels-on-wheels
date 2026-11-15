@@ -93,8 +93,9 @@ function next(layout: Layout, s: State, a: Action): State {
         const c = centerChild(layout, sel);
         return c === null ? s : open(layout, s, c);
       }
-      const c = seg(sel).children[0];
-      return c === undefined ? s : selectOnly(s, c);
+      // Keys turn the whole wheel too (keys and focus spec), so the center child is the one straight outward.
+      const c = centerChild(layout, sel);
+      return c === null ? s : selectOnly(s, c);
     }
     case 'toParent': {
       if (sel === null) return s;

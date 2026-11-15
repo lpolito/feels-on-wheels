@@ -23,6 +23,7 @@ Each change is used before the next one is designed. When Lucas picks an idea to
 | Going public: Cloudflare, feelsonwheels.app and About at `/about` | Shipped 2026-11-13 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-cloudflare-domain.md), [changes](superpowers/specs/2026-11-13-feels-on-wheels-cloudflare-domain-changes.md) |
 | <a id="real-paths-a-small-router-and-cleaner-urls"></a>URLs: real paths, a small router, and a Worker for first visits | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-urls-routing.md), [changes](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-changes.md) |
 | <a id="about-page-rework"></a><a id="the-about-page-1"></a>About page rework: why it exists with a sign-off, install steps, the GitHub icon and fixed credit links | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-design.md), [plan](superpowers/plans/2026-11-14-feels-on-wheels-about-rework.md), [changes](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-changes.md) |
+| Keys turn the wheel, no focus ring after a tap, real links on the card, new tabs on About, and tap the opened word to close it | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md), [plan](superpowers/plans/2026-11-14-feels-on-wheels-keys-and-focus.md), [changes](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-changes.md) |
 
 ## Ideas
 
@@ -35,8 +36,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Strength](#strength) | New ways to identify an emotion | Shelved (2026-11-08) |
 | [Wheels for kids](#wheels-for-kids) | New ways to identify an emotion | Idea |
 | [Rework the body wheel's areas and sensations](#rework-the-body-wheels-areas-and-sensations) | [The body wheel's content](#the-body-wheels-content) | Idea |
-| [Tap the opened word to close it](#tap-the-opened-word-to-close-it) | [The wheel and the card](#the-wheel-and-the-card) | Idea |
-| [A different word to start on](#a-different-word-to-start-on) | The wheel and the card | Idea |
+| [A different word to start on](#a-different-word-to-start-on) | [The wheel and the card](#the-wheel-and-the-card) | Idea |
 | [Return to the word you jumped from](#return-to-the-word-you-jumped-from) | The wheel and the card | Idea |
 | [Feeling links underlined in their feeling's color](#feeling-links-underlined-in-their-feelings-color) | The wheel and the card | Idea |
 | [About in the start message](#about-in-the-start-message) | [The toolbar, sharing and installing](#the-toolbar-sharing-and-installing) | Idea |
@@ -108,11 +108,6 @@ Lucas, 2026-11-14: the body wheel needs reworking to be more consistent.
 
 Polish to what's there; these could ship together as one change.
 
-#### Tap the opened word to close it
-
-- Tapping the opened word's wedge on the wheel closes its card. Lucas's idea, 2026-11-12.
-- To decide when designing: whether closing leaves the word selected (one step back) or goes back to the whole wheel, whether a click and the keyboard do the same, and how it meets the phone's half-wheel, where the opened word sits at the aim.
-
 #### A different word to start on
 
 - Lucas's idea, 2026-11-12: the wheel always opens on Fearful, which is an unfortunate first word to see. Could it start somewhere random?
@@ -121,6 +116,7 @@ Polish to what's there; these could ship together as one change.
   - random on every visit, a gentler fixed start, or something in between (a different word each day);
   - whether the intro spin lands on it;
   - the end-to-end and viewport tests expect a fixed start, so they need a way to pin it.
+- **The first word Tab lands on sits at 3 o'clock** (Lucas, 2026-11-14). Tabbing into the wheel selects the first core word, Fearful, which on the whole wheel sits near 12 o'clock. Lucas wants it already at 3 o'clock, where the arrow keys put every word since the [keys and focus change](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md). Either the wheel starts with its first word there, or Tab selects whichever word is at 3 o'clock. Ties in with the [known issue](#navigation) about tabbing into the phone's half-wheel after a spin.
 
 #### Return to the word you jumped from
 
@@ -235,7 +231,7 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 ### Navigation
 
 - **Going back on phones.** Swiping back doesn't work at all on the wheel: it takes every touch, so the browser's Back button is the only way back. An app installed to the iPhone home screen has no Back at all. Lucas (2026-11-14): better history rules for phones wait on an in-app back button. History follows the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md): picking a word or a place adds an entry, moving by direction replaces it. Related: [return to the word you jumped from](#return-to-the-word-you-jumped-from).
-- **Keyboard selection on the phone's half-wheel.** Choosing a word by keyboard or the accessible tree can select one on the hidden left half without turning the wheel to show it. Lucas wants to try it before deciding whether the wheel should turn to show it.
+- **Tabbing into the phone's half-wheel.** Since the [keys and focus change](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md), the arrow keys turn the wheel so the selection sits at 3 o'clock. Tabbing into the wheel with nothing selected still selects the first core word without turning it, so after a spin that word can be on the hidden left half until the first arrow key.
 
 ### Code and tests
 

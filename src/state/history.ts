@@ -29,19 +29,29 @@ export interface HistoryWriter {
 }
 
 /**
- * Writes the URL to history. Pushes closer together than 250ms (a held arrow key) replace the entry instead, and
- * History API errors (Safari/Firefox throw past ~100 pushes per 10s) are swallowed.
+ * Writes the URL to history. Pushes closer together than 250ms (a held key) replace the entry instead, unless that
+ * would leave it the same as the entry before it (open, then close at once: a double click on the card's toggle or
+ * the opened word), so Back always goes somewhere. History API errors (Safari/Firefox throw past ~100 pushes per 10s)
+ * are swallowed.
  */
 export function createHistoryWriter(
-  h: Pick<History, 'pushState' | 'replaceState'>, now: () => number, coalesceMs = COALESCE_MS,
+  h: Pick<History, 'pushState' | 'replaceState'>, now: () => number,
+  /** The current entry's URL (`location.pathname`). */
+  current: () => string,
+  coalesceMs = COALESCE_MS,
 ): HistoryWriter {
   let last = -Infinity;
+  /** The URL of the entry before the one the last real push made. */
+  let below: string | null = null;
   return {
     push(url, state = null) {
       const t = now();
       try {
-        if (state === null && t - last < coalesceMs) h.replaceState(null, '', url);
-        else h.pushState(state, '', url);
+        if (state === null && t - last < coalesceMs && url !== below) h.replaceState(null, '', url);
+        else {
+          below = current();
+          h.pushState(state, '', url);
+        }
       } catch {
         // The URL is a convenience; the app state is already correct.
       }

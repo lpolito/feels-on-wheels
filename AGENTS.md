@@ -31,6 +31,10 @@
 
 `site.config.ts` is the only place the public URL lives. Never hard-code it elsewhere; the build fills canonical URLs, preview tags, robots.txt and the sitemap from it.
 
+## Social preview images
+
+`public/og/` holds a link-preview image for each core feeling and body area, drawn by `scripts/make-og-image.mjs` from the app's own wheels, layout and colors. When a wheel file, the color tokens (`src/styles/tokens.css`), the color code (`src/render/colors.ts`), the layout code (`src/model/layout.ts`), the app's name or the tagline changes, run `node scripts/make-og-image.mjs` and commit `public/og/` in the same change.
+
 ## Spelling
 
 Use US spelling everywhere: app text, docs, code and comments (color, license, center, gray, behavior, toward). Approved specs and plans stay as written.

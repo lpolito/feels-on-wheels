@@ -39,11 +39,9 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [A different word to start on](#a-different-word-to-start-on) | [The wheel and the card](#the-wheel-and-the-card) | Idea |
 | [Return to the word you jumped from](#return-to-the-word-you-jumped-from) | The wheel and the card | Idea |
 | [Feeling links underlined in their feeling's color](#feeling-links-underlined-in-their-feelings-color) | The wheel and the card | Idea |
-| [About in the start message](#about-in-the-start-message) | [The toolbar, sharing and installing](#the-toolbar-sharing-and-installing) | Idea |
-| [Share button](#share-button) | The toolbar, sharing and installing | Idea |
-| [Help adding it to the home screen](#help-adding-it-to-the-home-screen) | The toolbar, sharing and installing | Idea |
-| [A dark home-screen icon](#a-dark-home-screen-icon) | The toolbar, sharing and installing | Idea |
-| [A new social preview image](#a-new-social-preview-image) | [The social preview](#the-social-preview) | Idea |
+| [About in the start message](#about-in-the-start-message) | [The toolbar, sharing and installing](#the-toolbar-sharing-and-installing) | Planned ([spec](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md)) |
+| [Share button](#share-button) | The toolbar, sharing and installing | Planned ([spec](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md)) |
+| [A new social preview image](#a-new-social-preview-image) | [The social preview](#the-social-preview) | Planned ([spec](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md)) |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
@@ -155,19 +153,6 @@ These all compete for the same few places (the toolbar, the start message, the A
   - where it goes (toolbar, opened card, About page);
   - whether it shares the app or the opened word. Sharing a word shares its URL, which the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) settles; with its real paths, a shared word gets its own link preview.
 
-#### Help adding it to the home screen
-
-- Lucas's idea, 2026-11-12: Add to Home Screen is buried on iOS, so make it easier, with instructions or a link to how.
-- Today the About page has one sentence on it, in its "Install it" section (`/about#install`).
-- What's possible: Safari on iOS has no install prompt a page can trigger, so there it can only be instructions (Share, then Add to Home Screen). Chrome and Edge on Android and desktop fire `beforeinstallprompt`, so there it can be a real Install button.
-- To decide when designing: where it shows (About, the start message, a one-time hint), how to tell it's already installed (`display-mode: standalone`) so it doesn't nag. Installs at the old github.io address didn't carry over to feelsonwheels.app.
-
-#### A dark home-screen icon
-
-- Lucas's idea, 2026-11-12: an icon that's dark when the phone is in dark mode.
-- To research when designing; nothing is checked yet. As far as known, there's no standard way for a web app to give its home-screen icon a dark version: the manifest's icons and `apple-touch-icon` take one image each. What might come close: newer iOS can darken or tint home-screen icons itself, and Android can draw a themed icon from a `monochrome` icon in the manifest. The browser-tab icon (`icon.svg`) can already follow dark mode with a media query inside the SVG.
-- Today the manifest's `theme_color` and `background_color` are both white (`build/site.ts`).
-
 ### The social preview
 
 #### A new social preview image
@@ -252,7 +237,7 @@ The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens
   - Decide first whether the `workers.dev` address and the preview links should say `noindex` once the domain is indexable, since they serve the same pages.
 - **Optional, after letting search engines in:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
 - **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, gray like the site's other icons; on hover it takes the wheel's seven colors and spins once, settling.
-- **Known issues and ideas:** decide which to finish before announcing it. The [share button](#share-button) and [help adding it to the home screen](#help-adding-it-to-the-home-screen) are the ones a first visitor would notice. Lucas wants [a new social preview image](#a-new-social-preview-image) and tagline before launching (2026-11-14).
+- **Known issues and ideas:** decide which to finish before announcing it. The [share button](#share-button), [About in the start message](#about-in-the-start-message) and [a new social preview image](#a-new-social-preview-image) with a new tagline are [planned](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md) for before launching. Help adding it to the home screen and a dark home-screen icon were dropped (2026-11-15).
 
 ## Content rules
 

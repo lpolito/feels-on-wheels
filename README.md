@@ -19,7 +19,7 @@ It's meant to have everything you'd want from a modern web app, with accessibili
 
 ## Made with AI, with love
 
-Feels on Wheels was built with AI, openly and on purpose. It's the first project Lucas made this way.
+Feels on Wheels was built with AI, openly and on purpose. It's the first project Lucas has taken from idea to finished app with AI.
 
 - **[Claude Code](https://claude.com/claude-code)**, Anthropic's AI coding assistant, wrote the code and helped weigh up how to build each piece.
 - **[Superpowers](https://github.com/obra/superpowers)**, Jesse Vincent's skills plugin for Claude Code, shaped how every change was made, and was used heavily:

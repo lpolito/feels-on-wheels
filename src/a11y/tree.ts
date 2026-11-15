@@ -2,12 +2,17 @@ import { nodeLabel, t, wheelText } from '../i18n';
 import { moveFocus } from './focus';
 import { keyToAction } from '../input/keyboard';
 import type { Layout } from '../model/layout';
-import type { Action, State } from '../state/store';
+import { withFrom, type Action, type State } from '../state/store';
 
 export interface A11yTree {
   update(s: State): void;
-  /** Moves DOM focus into the tree (the selection, or the first core word) without scrolling. */
+  /** Moves DOM focus into the tree (the selection, or else the tabbable word) without scrolling. */
   focusSelected(): void;
+  /**
+   * The wheel came to rest (question-first spec §3): with nothing selected, the word at 3 o'clock becomes tabbable,
+   * and takes focus only from the word that was.
+   */
+  rest(): void;
 }
 
 /** "Hostile. In Angry, Aggressive." — or "Angry." for a core word. */
@@ -40,13 +45,16 @@ export function announceFor(layout: Layout, prev: State, next: State): string | 
   return null;
 }
 
-/** Spec §8: a visually hidden role="tree" mirroring the wheel, with roving tabindex. */
-export function createA11yTree(root: HTMLElement, layout: Layout, dispatch: (a: Action) => void): A11yTree {
+/**
+ * Spec §8: a visually hidden role="tree" mirroring the wheel, with roving tabindex. Question-first spec §3: focus
+ * never selects. With nothing selected, the tabbable word is `startWord()` (the word at 3 o'clock), and the tree moves
+ * focus between words on its own only when a selection clears and from the old tabbable word in `rest()`.
+ */
+export function createA11yTree(root: HTMLElement, layout: Layout, dispatch: (a: Action) => void, startWord: () => number): A11yTree {
   const els: HTMLLIElement[] = [];
   let tabbable = -1;
   let selected: number | null = null;
   let current: number | null = null;
-  let focusingProgrammatically = false;
 
   root.setAttribute('role', 'tree');
   root.setAttribute('aria-label', wheelText(layout.wheelId).name);
@@ -82,34 +90,31 @@ export function createA11yTree(root: HTMLElement, layout: Layout, dispatch: (a: 
   build(layout.rings[0]!.segments, top);
   root.append(top);
 
+  const makeTabbable = (i: number): void => {
+    if (i === tabbable) return;
+    if (tabbable >= 0) els[tabbable]!.tabIndex = -1;
+    els[i]!.tabIndex = 0;
+    tabbable = i;
+  };
+
   root.addEventListener('keydown', (e) => {
     // Browser zoom (Ctrl/Cmd +/−) and Back (Alt/Cmd+Left) stay with the browser.
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     const action = keyToAction(e.key);
-    if (action) {
-      e.preventDefault();
-      e.stopPropagation();
-      dispatch(action);
-    }
-  });
-
-  // Spec §3.1: keyboard focus is the selection. Tabbing in with nothing selected selects the first core word,
-  // so the outline shows where focus is (WCAG 2.4.7). Our own focusSelected() never selects.
-  root.addEventListener('focusin', (e) => {
-    const from = e.relatedTarget as Node | null;
-    if (focusingProgrammatically || selected !== null || (from && root.contains(from))) return;
-    dispatch({ type: 'select', segment: layout.rings[0]!.segments[0]! });
+    if (!action) return;
+    e.preventDefault();
+    e.stopPropagation();
+    // Question-first spec §3: from nothing, a key selects the word with focus (a screen reader's cursor may be on any).
+    const li = (e.target as Element).closest<HTMLElement>('[role="treeitem"]');
+    dispatch(li ? withFrom(action, Number(li.dataset['index'])) : action);
   });
 
   return {
     update(s) {
-      const want = s.selected ?? layout.rings[0]!.segments[0]!;
       const hadFocus = root.contains(document.activeElement);
-      if (want !== tabbable) {
-        if (tabbable >= 0) els[tabbable]!.tabIndex = -1;
-        els[want]!.tabIndex = 0;
-        tabbable = want;
-      }
+      // With nothing selected and nothing just cleared, leave the tabbable word and focus where they are.
+      const want = s.selected ?? (tabbable < 0 || selected !== null ? startWord() : null);
+      if (want !== null) makeTabbable(want);
       if (s.selected !== selected) {
         if (selected !== null) els[selected]!.removeAttribute('aria-selected');
         if (s.selected !== null) els[s.selected]!.setAttribute('aria-selected', 'true');
@@ -126,17 +131,18 @@ export function createA11yTree(root: HTMLElement, layout: Layout, dispatch: (a: 
       for (const seg of layout.segments) {
         if (seg.children.length > 0) els[seg.index]!.setAttribute('aria-expanded', String(open.has(seg.index)));
       }
-      if (hadFocus && document.activeElement !== els[want]) moveFocus(els[want]!, { preventScroll: true });
+      if (want !== null && hadFocus && document.activeElement !== els[want]) moveFocus(els[want]!, { preventScroll: true });
     },
     focusSelected() {
-      const el = els[tabbable >= 0 ? tabbable : layout.rings[0]!.segments[0]!]!;
-      if (document.activeElement === el) return;
-      focusingProgrammatically = true;
-      try {
-        moveFocus(el, { preventScroll: true });
-      } finally {
-        focusingProgrammatically = false;
-      }
+      if (tabbable < 0) makeTabbable(startWord());
+      const el = els[tabbable]!;
+      if (document.activeElement !== el) moveFocus(el, { preventScroll: true });
+    },
+    rest() {
+      if (selected !== null || tabbable < 0) return;
+      const old = els[tabbable]!;
+      makeTabbable(startWord());
+      if (document.activeElement === old && old !== els[tabbable]) moveFocus(els[tabbable]!, { preventScroll: true });
     },
   };
 }

@@ -14,7 +14,7 @@ import { inAppLink } from './router';
 import { buildFillTable, inkFor, readPalette } from './render/colors';
 import { createSpriteCache } from './render/sprites';
 import { createWheelRenderer, labelFont, type WheelRenderer } from './render/wheel';
-import { createStore, initialState, type Action, type State, type Store } from './state/store';
+import { createStore, initialState, withFrom, type Action, type State, type Store } from './state/store';
 import { createHistoryWriter, historyOp } from './state/history';
 import { formatRoute, parsePath, pathOf, routeTable, stateFor, type Route } from './state/url';
 import { cardModel, type FwCard, type JumpContext } from './ui/card';
@@ -203,7 +203,8 @@ document.addEventListener('keydown', (e) => {
   const action = routeKey(e.key, keyTarget(e.target as Element | null), e.metaKey || e.ctrlKey || e.altKey);
   if (!action) return;
   e.preventDefault();
-  dispatch(action);
+  // Question-first spec §3: from nothing, a key from outside the tree selects the word at 3 o'clock.
+  dispatch(withFrom(action, controller.coreAtThree()));
 });
 
 // A mouse click on the wheel puts keyboard focus in the tree, so the arrows work at once.
@@ -366,7 +367,8 @@ function mount(next: Layout, initial: State, intro: boolean): void {
   prevLit = lit;
   fadeStart = -Infinity;
   pulseStart = -Infinity;
-  tree = createA11yTree(freshTreeRoot(), layout, dispatch);
+  tree = createA11yTree(freshTreeRoot(), layout, dispatch, () => controller.coreAtThree());
+  camera.onSettle(() => tree.rest());
   unsubscribe = store.subscribe(onState);
   wheelSwitch.current = layout.wheelId;
 

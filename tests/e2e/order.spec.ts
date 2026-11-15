@@ -1,5 +1,14 @@
-import { expect, test } from '@playwright/test';
-import { idle, open, tabStops, tapPath } from './helpers';
+import { expect, test, type Page } from '@playwright/test';
+import { aboutLink, focused, hint, idle, open, selectedPath, state, tabStops, tapPath } from './helpers';
+
+const tabbableWord = (page: Page) => page.locator('#a11y-tree [role="treeitem"][tabindex="0"]');
+/** The path of the tree's focused word, or null when focus is elsewhere. */
+const focusedPath = (page: Page) => page.evaluate(() => {
+  const el = document.activeElement;
+  if (!(el instanceof HTMLElement) || el.getAttribute('role') !== 'treeitem') return null;
+  return window.__fw.pathOf(Number(el.dataset['index']));
+});
+const offCenter = (page: Page, path: string) => page.evaluate((p) => window.__fw.offCenter(p), path);
 
 test('the message comes first, then the switch, the toolbar, the wheel', async ({ page }) => {
   for (const path of ['/', '/body', '/plaful']) {
@@ -54,4 +63,83 @@ test('the h1 follows the URL', async ({ page }) => {
   await open(page, '/angry');
   await expect(h1).toHaveText('Angry');
   await expect(page.getByRole('heading', { level: 2, name: 'Narrow it down' })).toBeVisible();
+});
+
+test('Tab onto the wheel selects nothing and keeps the message and Share', async ({ page, browserName }) => {
+  test.skip(browserName === 'webkit', 'WebKit skips links on Tab; the order itself is checked through tabStops');
+  await open(page);
+  for (let k = 0; k < 10 && (await focused(page)) !== 'LI'; k++) await page.keyboard.press('Tab');
+  expect(await focused(page)).toBe('LI');
+  expect((await state(page)).selected).toBeNull();
+  await expect(hint(page)).toBeVisible();
+  await expect(page.locator('fw-toolbar .fw-share')).toBeVisible();
+  await page.keyboard.press('Tab');
+  expect(await focusedPath(page)).toBeNull();
+  expect((await state(page)).selected).toBeNull();
+});
+
+test("the first key selects the word at 3 o'clock and opens nothing", async ({ page, browserName }) => {
+  for (const key of ['ArrowDown', 'ArrowRight', 'ArrowLeft', 'Enter']) {
+    await open(page);
+    await tabbableWord(page).focus();
+    const path = (await focusedPath(page))!;
+    expect(path, key).not.toBeNull();
+    expect((await state(page)).selected, key).toBeNull();
+    await page.keyboard.press(key);
+    await idle(page);
+    expect(await selectedPath(page), key).toBe(path);
+    expect((await state(page)).opened, key).toBe(false);
+    expect(await offCenter(page, path), key).toBeLessThan(1e-3);
+  }
+  // Enter again opens it, and the card is the next Tab stop.
+  await page.keyboard.press('Enter');
+  await idle(page);
+  expect((await state(page)).opened).toBe(true);
+  const stops = await tabStops(page);
+  expect(stops[stops.indexOf('LI') + 1]).toBe('BUTTON.fw-card-toggle');
+  // WebKit's Tab skips buttons by default.
+  if (browserName === 'webkit') return;
+  await page.keyboard.press('Tab');
+  expect(await focused(page)).toBe('BUTTON.fw-card-toggle');
+});
+
+test("an arrow on the message's About link selects a word and keeps focus on the wheel", async ({ page }) => {
+  await open(page);
+  await aboutLink(page).focus();
+  await page.keyboard.press('ArrowRight');
+  await idle(page);
+  const s = await state(page);
+  expect(s.selected).not.toBeNull();
+  await expect(hint(page)).toBeHidden();
+  expect(await focusedPath(page)).toBe(await selectedPath(page));
+});
+
+test('Tab during the intro spin picks the word it lands on', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'the intro spin plays on phones');
+  await page.goto('/');
+  await page.waitForFunction(() => window.__fw !== undefined);
+  await tabbableWord(page).focus();
+  await idle(page);
+  const path = (await focusedPath(page))!;
+  expect(path).not.toBeNull();
+  expect(await offCenter(page, path)).toBeLessThan(1e-3);
+  await page.keyboard.press('ArrowDown');
+  await idle(page);
+  expect(await selectedPath(page)).toBe(path);
+});
+
+test("Start over leaves focus on the word at 3 o'clock with nothing selected", async ({ page }) => {
+  await open(page);
+  await tabbableWord(page).focus();
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowDown');
+  await idle(page);
+  const path = (await selectedPath(page))!;
+  expect(await offCenter(page, path)).toBeLessThan(1e-3);
+  await page.getByRole('button', { name: 'Start over' }).focus();
+  await page.keyboard.press('Enter');
+  await idle(page);
+  expect((await state(page)).selected).toBeNull();
+  expect(await focusedPath(page)).toBe(path);
+  await expect(tabbableWord(page)).toBeFocused();
 });

@@ -23,9 +23,10 @@ const same = (a: HintContent, b: HintContent): boolean =>
     && a.link?.label === b.link?.label && a.link?.wheel === b.link?.wheel && a.link?.href === b.link?.href);
 
 /**
- * The message in the card's place while nothing is selected (spec v1.3 §3.1, §4.1). `null` hides it. Not a live
- * region. Its link dispatches 'fw-wheel' ({ wheel }) on a plain click; spec v2.1 §6.3: it's an <a> to the other
- * wheel's URL, so it wraps with the sentence, and a modified click is left to the browser.
+ * The message in the card's place while nothing is selected (spec v1.3 §3.1, §4.1). `null` hides it, emitting
+ * 'fw-focus-lost' if focus was inside. Not a live region. Its link dispatches 'fw-wheel' ({ wheel }) on a plain
+ * click; spec v2.1 §6.3: it's an <a> to the other wheel's URL, so it wraps with the sentence, and a modified click is
+ * left to the browser.
  */
 export class FwHint extends HTMLElement {
   #content: HintContent = null;
@@ -37,8 +38,11 @@ export class FwHint extends HTMLElement {
 
   set content(v: HintContent) {
     if (same(this.#content, v) && this.isConnected) return;
+    const hadFocus = this.contains(document.activeElement);
     this.#content = v;
     this.#render();
+    // Question-first spec §6: an arrow key on one of its links selects a word and hides it; main.ts moves focus on.
+    if (hadFocus && v === null) this.dispatchEvent(new CustomEvent('fw-focus-lost', { bubbles: true }));
   }
 
   /** Focus the link (after it switched wheels, the new wheel's link takes its place). */

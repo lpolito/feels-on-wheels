@@ -64,6 +64,19 @@ describe('<fw-hint>', () => {
     expect(got).toEqual([{ wheel: 'body' }]);
   });
 
+  test('hiding with focus inside emits fw-focus-lost', () => {
+    const el = mount();
+    let lost = 0;
+    document.body.addEventListener('fw-focus-lost', () => lost++);
+    el.content = content;
+    el.content = null;
+    expect(lost).toBe(0);
+    el.content = content;
+    el.focusLink();
+    el.content = null;
+    expect(lost).toBe(1);
+  });
+
   test('focusLink focuses the link', () => {
     const el = mount();
     el.content = content;

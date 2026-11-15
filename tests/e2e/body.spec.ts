@@ -124,6 +124,8 @@ test.describe('switching wheels (desktop)', () => {
     await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
     await expect(page.locator('#a11y-tree [role="treeitem"]:focus')).toHaveCount(1);
+    // Question-first spec §3: reaching the wheel selects nothing; the first arrow does.
+    expect((await state(page)).selected).toBeNull();
     await page.keyboard.press('ArrowDown');
     await idle(page);
     expect(await selectedPath(page)).toMatch(AREAS);

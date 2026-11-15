@@ -24,6 +24,7 @@ Each change is used before the next one is designed. When Lucas picks an idea to
 | <a id="real-paths-a-small-router-and-cleaner-urls"></a>URLs: real paths, a small router, and a Worker for first visits | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-urls-routing.md), [changes](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-changes.md) |
 | <a id="about-page-rework"></a><a id="the-about-page-1"></a>About page rework: why it exists with a sign-off, install steps, the GitHub icon and fixed credit links | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-design.md), [plan](superpowers/plans/2026-11-14-feels-on-wheels-about-rework.md), [changes](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-changes.md) |
 | Keys turn the wheel, no focus ring after a tap, real links on the card, new tabs on About, and tap the opened word to close it | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md), [plan](superpowers/plans/2026-11-14-feels-on-wheels-keys-and-focus.md), [changes](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-changes.md) |
+| Share buttons, About in the start message, and per-feeling link previews | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-share-and-preview.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-changes.md) |
 
 ## Ideas
 
@@ -39,9 +40,6 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [A different word to start on](#a-different-word-to-start-on) | [The wheel and the card](#the-wheel-and-the-card) | Idea |
 | [Return to the word you jumped from](#return-to-the-word-you-jumped-from) | The wheel and the card | Idea |
 | [Feeling links underlined in their feeling's color](#feeling-links-underlined-in-their-feelings-color) | The wheel and the card | Idea |
-| [About in the start message](#about-in-the-start-message) | [The toolbar, sharing and installing](#the-toolbar-sharing-and-installing) | Planned ([spec](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md)) |
-| [Share button](#share-button) | The toolbar, sharing and installing | Planned ([spec](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md)) |
-| [A new social preview image](#a-new-social-preview-image) | [The social preview](#the-social-preview) | Planned ([spec](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md)) |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
@@ -134,38 +132,6 @@ Polish to what's there; these could ship together as one change.
   - what areas and sensations do, since they're links too but not feelings;
   - forced colors, where links keep the system's link color.
 
-### The toolbar, sharing and installing
-
-These all compete for the same few places (the toolbar, the start message, the About page), so design them together.
-
-#### About in the start message
-
-- Lucas's idea, 2026-11-12: move the About link from the toolbar into the start message ("the message", v2.2), to free up room and so the phone's toolbar buttons never change place or order. Today on phones About gives way to Start over while a word is selected (going-public spec).
-- The freed toolbar slot could hold the [share button](#share-button).
-- More people would arrive at About from the start, so the way back to the wheel matters more. About has "‹ Back to the wheel" at its end; a floating back button was considered and dropped for now (2026-11-14).
-- To decide when designing: how to reach About once the start message is gone (after the first word is opened), since the toolbar link is the only other way; and whether the noscript message's About link changes.
-
-#### Share button
-
-- A share button somewhere. Lucas's idea, 2026-11-12.
-- Likely the Web Share API (`navigator.share`) where there is one, phones especially, and copying the link where there isn't.
-- To decide when designing:
-  - where it goes (toolbar, opened card, About page);
-  - whether it shares the app or the opened word. Sharing a word shares its URL, which the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) settles; with its real paths, a shared word gets its own link preview.
-
-### The social preview
-
-#### A new social preview image
-
-Lucas's idea, 2026-11-14: rework the picture link previews show (`public/og-image.png`). Today it's the app icon beside "Feels on Wheels" and "Name what you feel", on dark.
-
-- **Make it look like the app** in a small, wide window: part of the wheel coming in from the left edge, the way it rests there, and the app's name where the start message's card would be.
-- **A mock of the wheel, not the real one:** something that reads as the wheel (its colored rings and cells) without its words, simple like the favicon, so it still reads as a small thumbnail.
-- **Rethink the tagline** "Name what you feel". Lucas is open to alternatives; not decided. Besides the picture, it's in the home page's title (`titles.home` in `src/data/locales/en.json`) and the picture's alt text (`imageAlt`), and tests check the title.
-- To decide when designing: the tagline; light or dark; whether the toolbar's controls (the wheel switch, the buttons) show, and how much of the app's look it copies before it stops reading as a preview.
-- `scripts/make-og-image.mjs` renders the picture; rerun it by hand after a change.
-- To do before [launching](#before-launching).
-
 ### URLs, routing and hosting
 
 What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md), which settled the URL structure: [languages](#languages) fill the room it leaves for them, and ["Did you mean"](#did-you-mean-on-not-found) and [Start over](#start-over-on-not-found) build on its not-found message.
@@ -237,7 +203,7 @@ The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens
   - Decide first whether the `workers.dev` address and the preview links should say `noindex` once the domain is indexable, since they serve the same pages.
 - **Optional, after letting search engines in:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
 - **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, gray like the site's other icons; on hover it takes the wheel's seven colors and spins once, settling.
-- **Known issues and ideas:** decide which to finish before announcing it. The [share button](#share-button), [About in the start message](#about-in-the-start-message) and [a new social preview image](#a-new-social-preview-image) with a new tagline are [planned](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md) for before launching. Help adding it to the home screen and a dark home-screen icon were dropped (2026-11-15).
+- **Known issues and ideas:** decide which to finish before announcing it. Help adding it to the home screen and a dark home-screen icon were dropped (2026-11-15).
 
 ## Content rules
 

@@ -189,34 +189,58 @@ test('Review Focus 1: a first load at /about, then the wheel, draws it at its fu
 });
 
 test('Review Focus 5: Back and Forward across About during a spin', async ({ page }) => {
-  // About opens from the message, so with nothing selected: the fling spins the whole wheel.
-  await open(page, '/');
+  // About opens from the message, with nothing selected; history can still open it on a ring spin. Entries: the word,
+  // then / (Start over), then About. Back twice to the opened word, so the fling is a ring spin whose settle would pick
+  // a word, then straight on to About.
+  await open(page, '/fearful/scared');
+  await page.locator('fw-toolbar .fw-start-over').click();
+  await idle(page);
   const homeTitle = await page.title();
+  await aboutLink(page).click();
+  await expect(aboutHeading(page)).toBeFocused();
+  await page.goBack();
+  await expect(page).toHaveURL((u) => u.pathname === '/');
+  await page.goBack();
+  await expect(page).toHaveURL((u) => u.pathname === '/fearful/scared');
+  await idle(page);
+  expect((await state(page)).opened).toBe(true);
   const box = (await page.locator('#wheel').boundingBox())!;
   const x = box.x + box.width * 0.4;
   await page.mouse.move(x, box.y + box.height * 0.2);
   await page.mouse.down();
   await page.mouse.move(x, box.y + box.height * 0.8, { steps: 4 });
   await page.mouse.up();
-  await aboutLink(page).click();
+  await page.evaluate(() => history.go(2));
   const onAbout = async (): Promise<void> => {
     await expect(page).toHaveURL((u) => u.pathname === '/about');
     await expect(page).toHaveTitle('About Feels on Wheels');
     await expect(aboutHeading(page)).toBeFocused();
+    expect(await page.evaluate(() => window.__fw.moving())).toBe(false);
   };
+  // The spin lands as About opens: About keeps its address, and its back link is the landed word, still opened.
+  await onAbout();
+  const landed = `/${await selectedPath(page)}`;
+  // A word on the same ring: on phones the spin can carry it under another core feeling.
+  expect(landed).toMatch(/^\/[a-z-]+\/[a-z-]+$/);
+  expect((await state(page)).opened).toBe(true);
+  await expect(backToWheel(page)).toHaveAttribute('href', landed);
+  // Back from About is the / entry: the whole wheel, the landed word still selected (spec v1.2 §3.1).
   const onWheel = async (): Promise<void> => {
     await expect(page.locator('#app')).toBeVisible();
     await idle(page);
-    expect((await state(page)).selected).toBeNull();
     expect(path(page)).toBe('/');
+    expect((await state(page)).opened).toBe(false);
+    expect(`/${await selectedPath(page)}`).toBe(landed);
     await expect(page).toHaveTitle(homeTitle);
     expect(await focused(page)).not.toBe('BODY');
   };
-  await onAbout();
   await page.goBack();
   await onWheel();
+  // Forward again: the wheel as Back left it, the landed word selected and closed, so the back link is /.
   await page.goForward();
   await onAbout();
+  expect(`/${await selectedPath(page)}`).toBe(landed);
+  await expect(backToWheel(page)).toHaveAttribute('href', '/');
   await page.goBack();
   await onWheel();
 });

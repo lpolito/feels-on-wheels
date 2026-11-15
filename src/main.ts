@@ -398,6 +398,8 @@ function showAbout(how: 'push' | 'replace' | 'none', from?: Element): void {
   const firstLoad = layout === undefined;
   const entering = !onAbout;
   if (entering && !firstLoad) {
+    // From Back or Forward the address is already About's, so the landing must not write over its entry.
+    if (how === 'none') onAbout = true;
     controller.setViewport(vp, opts);
     camera.stop();
     const active = from ?? document.activeElement;

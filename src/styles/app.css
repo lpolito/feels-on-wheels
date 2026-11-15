@@ -332,12 +332,19 @@ fw-card {
   text-align: start;
 }
 .fw-card-title { flex: 1; padding-inline-end: 2.75rem; }
-/* Share comes after the toggle in focus order but sits just left of the fold arrow (1rem edge + 1.1rem arrow + gap). */
-.fw-card-share {
+/*
+ * Share comes after the toggle in focus order but sits just left of the fold arrow (1rem edge + 1.1rem arrow + gap).
+ * Its "Link copied" label is the button's sibling in the wrap, so tapping the label doesn't share again.
+ */
+.fw-card-share-wrap {
   position: absolute;
   top: 50%;
   inset-inline-end: calc(1rem + 1.1rem + 0.15rem);
   translate: 0 -50%;
+  display: inline-flex;
+}
+.fw-card-share-wrap[hidden] { display: none; }
+.fw-card-share {
   display: inline-grid;
   place-items: center;
   width: 40px;

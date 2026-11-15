@@ -133,7 +133,39 @@ describe('<fw-card> share button', () => {
     expect(b.title).toBe('Share Aroused');
     expect(b.closest('button.fw-card-toggle')).toBeNull();
     expect(b.closest('h2')).toBeNull();
-    expect(b.querySelector('.fw-share-label')!.getAttribute('aria-hidden')).toBe('true');
+    expect(b.querySelector('.fw-share-label')).toBeNull();
+  });
+
+  test('"Link copied" is beside Share, not inside it, so tapping it never shares again', () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    const label = el.querySelector<HTMLElement>('.fw-share-label')!;
+    expect(label.getAttribute('aria-hidden')).toBe('true');
+    expect(label.closest('button')).toBeNull();
+    expect(label.parentElement).toBe(share(el)!.parentElement);
+    let shares = 0;
+    el.addEventListener('fw-share', () => shares++);
+    label.click();
+    expect(shares).toBe(0);
+  });
+
+  test('closing hides the label with its button', () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    const wrap = share(el)!.parentElement!;
+    expect(wrap.hidden).toBe(false);
+    el.model = cardModel(layout, feelings, selected('happy/playful/aroused'));
+    expect(wrap.hidden).toBe(true);
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    expect(wrap.hidden).toBe(false);
+  });
+
+  test('folding with Share focused hands focus to the toggle', () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    share(el)!.focus();
+    el.model = cardModel(layout, feelings, selected('happy/playful/aroused'));
+    expect(document.activeElement).toBe(el.querySelector('.fw-card-toggle'));
   });
 
   test('a selected card has no share button showing; opening shows it, closing hides it', () => {
@@ -158,7 +190,7 @@ describe('<fw-card> share button', () => {
     const got: unknown[] = [];
     el.addEventListener('fw-share', (e) => got.push((e as CustomEvent).detail));
     share(el)!.click();
-    expect(got).toEqual([{ what: 'word', wheel: 'core', path: 'happy/playful/aroused', title: 'Aroused' }]);
+    expect(got).toEqual([{ what: 'word', wheel: 'core', path: 'happy/playful/aroused' }]);
   });
 
   test('focus order: toggle, then Share', () => {

@@ -113,7 +113,7 @@ type Shown = Exclude<CardModel, { kind: 'none' }>;
 
 /**
  * The floating accordion card (spec v1.2 §5). Emits 'fw-action' (Action), 'fw-focus-lost' and, from the Share button of an
- * opened word, 'fw-share' ({ what: 'word', wheel, path, title }).
+ * opened word, 'fw-share' ({ what: 'word', wheel, path }).
  *
  * The same word going between selected and opened updates in place, so the CSS unfold can run and focus stays put;
  * any other change rebuilds.
@@ -131,6 +131,7 @@ export class FwCard extends HTMLElement {
   #crumbs: HTMLElement | null = null;
   #body: HTMLDivElement | null = null;
   #share: HTMLButtonElement | null = null;
+  #shareWrap: HTMLSpanElement | null = null;
   #shareLabel: HTMLSpanElement | null = null;
   #shareTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -278,19 +279,24 @@ export class FwCard extends HTMLElement {
     this.#setOpen(m.kind === 'opened');
   }
 
-  /** The Share button (and its "Link copied" label) at the end of the bar; only an opened word has one. */
+  /**
+   * The Share button at the end of the bar, and its "Link copied" label beside it (not inside, so a tap on the label
+   * doesn't share again), as the toolbar does; only an opened word has one.
+   */
   #addShare(m: Extract<CardModel, { kind: 'opened' }>): void {
     const { wheel, path, title } = m;
     const label = h('span', { className: 'fw-share-label' }, t('linkCopied'));
     label.setAttribute('aria-hidden', 'true');
     const name = t('shareWord', { label: title });
-    const share = h('button', { type: 'button', className: 'fw-card-share', title: name }, shareIcon(), label);
+    const share = h('button', { type: 'button', className: 'fw-card-share', title: name }, shareIcon());
     share.setAttribute('aria-label', name);
     share.addEventListener('click', () => {
-      this.dispatchEvent(new CustomEvent('fw-share', { detail: { what: 'word', wheel, path, title }, bubbles: true }));
+      this.dispatchEvent(new CustomEvent('fw-share', { detail: { what: 'word', wheel, path }, bubbles: true }));
     });
-    this.#toggle!.closest('.fw-card-bar')!.append(share);
+    const wrap = h('span', { className: 'fw-card-share-wrap' }, share, label);
+    this.#toggle!.closest('.fw-card-bar')!.append(wrap);
     this.#share = share;
+    this.#shareWrap = wrap;
     this.#shareLabel = label;
   }
 
@@ -301,6 +307,7 @@ export class FwCard extends HTMLElement {
     // it would drop to <body> once it's inert, so it moves to the toggle first (v1.1 §5.2's rule for rebuilds).
     const active = document.activeElement;
     if (this.#share) this.#share.hidden = !open;
+    if (this.#shareWrap) this.#shareWrap.hidden = !open;
     if (!open && active && (active === this.#share || this.#body?.contains(active) || this.#crumbs?.contains(active))) moveFocus(this.#toggle!);
     if (this.#body) this.#body.inert = !open;
     if (this.#crumbs) this.#crumbs.inert = !open;
@@ -348,7 +355,7 @@ export class FwCard extends HTMLElement {
   render(): void {
     const m = this.#model;
     this.hidden = m.kind === 'none';
-    this.#toggle = this.#head = this.#crumbs = this.#body = this.#share = this.#shareLabel = null;
+    this.#toggle = this.#head = this.#crumbs = this.#body = this.#share = this.#shareWrap = this.#shareLabel = null;
     if (this.#shareTimer !== null) clearTimeout(this.#shareTimer);
     this.#shareTimer = null;
     // Another word: start at the top, with its breadcrumbs showing (spec v1.3 §5.2).

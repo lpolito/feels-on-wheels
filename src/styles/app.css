@@ -83,7 +83,7 @@ html[data-route="about"] body { -webkit-text-size-adjust: 100%; }
 #wheel.fw-over-disc { cursor: grab; }
 #wheel:active { cursor: grabbing; }
 
-button, select, fw-toolbar .fw-about {
+button, select {
   color: inherit;
   background: var(--surface);
   border: 1px solid color-mix(in srgb, var(--fg) 18%, transparent);
@@ -105,14 +105,7 @@ fw-toolbar {
   display: flex;
   gap: 0.5rem;
 }
-fw-toolbar :is(button, .fw-about) { min-width: 44px; min-height: 44px; padding: 0 0.9rem; font-size: 1rem; }
-/* Going-public spec §8.4: the ⓘ link to the About page, sized and styled like the theme button. */
-fw-toolbar .fw-about { width: 44px; padding: 0; display: inline-grid; place-items: center; text-decoration: none; }
-fw-toolbar .fw-about .fw-icon { width: 1.3rem; height: 1.3rem; }
-/* On phones, three toolbar buttons don't fit beside the wheel switch: About gives way to Start over while a word is selected. */
-@media (max-width: 30rem) {
-  fw-toolbar .fw-start-over:not([hidden]) ~ .fw-about { display: none; }
-}
+fw-toolbar button { min-width: 44px; min-height: 44px; padding: 0 0.9rem; font-size: 1rem; }
 
 /* Spec v2 §4.1: "Feelings | Body", top left, the current wheel filled. */
 fw-wheel-switch {
@@ -162,12 +155,13 @@ fw-wheel-switch[data-instant] :is(.fw-switch-thumb, button) { transition: none; 
   fw-toolbar { right: max(0.75rem, env(safe-area-inset-right)); top: max(0.75rem, env(safe-area-inset-top)); gap: 0.35rem; }
 }
 /* Spec v1.3 §6.2: the theme toggle and its short-lived label. */
-.fw-theme { position: relative; display: inline-flex; }
-fw-toolbar .fw-theme-toggle { width: 44px; padding: 0; display: inline-grid; place-items: center; }
-.fw-theme-toggle .fw-icon { width: 1.3rem; height: 1.3rem; }
+.fw-theme, .fw-share-wrap { position: relative; display: inline-flex; }
+.fw-share-wrap[hidden] { display: none; }
+fw-toolbar :is(.fw-theme-toggle, .fw-share) { width: 44px; padding: 0; display: inline-grid; place-items: center; }
+:is(.fw-theme-toggle, .fw-share) .fw-icon { width: 1.3rem; height: 1.3rem; }
 .fw-theme-toggle svg[hidden] { display: none; }
 .fw-icon-fill { fill: currentColor; stroke: none; }
-.fw-theme-label {
+:is(.fw-theme-label, .fw-share-label) {
   position: absolute;
   top: calc(100% + 6px);
   right: 0;
@@ -185,6 +179,7 @@ fw-toolbar .fw-theme-toggle { width: 44px; padding: 0; display: inline-grid; pla
 }
 /* Touch screens keep :hover on a tapped button until the next tap elsewhere, so only real hover shows the label. */
 .fw-theme-label[data-show],
+.fw-share-label[data-show],
 .fw-theme-toggle:focus-visible + .fw-theme-label {
   opacity: 1;
   visibility: visible;
@@ -200,7 +195,7 @@ fw-toolbar .fw-theme-toggle { width: 44px; padding: 0; display: inline-grid; pla
     pointer-events: auto;
   }
 }
-@media (prefers-reduced-motion: reduce) { .fw-theme-label { transition: none; } }
+@media (prefers-reduced-motion: reduce) { :is(.fw-theme-label, .fw-share-label) { transition: none; } }
 fw-toolbar .fw-start-over { display: inline-flex; align-items: center; gap: 0.4rem; }
 fw-toolbar .fw-start-over[hidden] { display: none; }
 /* v2: on narrow phones the wheel switch shares the top edge, so "Start over" keeps only its icon; the words stay its name. */
@@ -272,6 +267,26 @@ fw-hint[data-variant="not-found"] {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+/* The About line: quieter than the instruction, its link underlined like the other hint link. */
+.fw-hint-about {
+  margin-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+.fw-hint-about-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 2px;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.fw-hint-about-link .fw-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+}
 /* Swapping the message and the card fades the newcomer in. */
 @media (prefers-reduced-motion: no-preference) {
   fw-hint, fw-card { transition: opacity 150ms ease-out; }
@@ -291,11 +306,13 @@ fw-card {
 }
 /* Spec v1.3 §5.2: the wrapper doesn't box the heading in, so the heading can stick for the card's full height. */
 .fw-card-head { display: contents; }
-.fw-card-heading {
+.fw-card-bar {
   position: sticky;
   top: 0;
   z-index: 1;
   background: var(--surface);
+}
+.fw-card-heading {
   font-size: 1.35rem;
   line-height: 1.2;
 }
@@ -314,7 +331,30 @@ fw-card {
   font-weight: 700;
   text-align: start;
 }
-.fw-card-title { flex: 1; }
+.fw-card-title { flex: 1; padding-inline-end: 2.75rem; }
+/*
+ * Share comes after the toggle in focus order but sits just left of the fold arrow (1rem edge + 1.1rem arrow + gap).
+ * Its "Link copied" label is the button's sibling in the wrap, so tapping the label doesn't share again.
+ */
+.fw-card-share-wrap {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: calc(1rem + 1.1rem + 0.15rem);
+  translate: 0 -50%;
+  display: inline-flex;
+}
+.fw-card-share-wrap[hidden] { display: none; }
+.fw-card-share {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.fw-card-share[hidden] { display: none; }
+.fw-card-share .fw-icon { width: 1.3rem; height: 1.3rem; }
 /* 1.2rem from the dot to the name (the toggle's gap is 0.3rem); spec v1.3 §5.1 had 1.5rem. */
 .fw-card-toggle .fw-dot { margin-inline-end: calc(1.2rem - 0.3rem); }
 .fw-card-chevron {

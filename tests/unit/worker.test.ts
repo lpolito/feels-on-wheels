@@ -98,6 +98,14 @@ describe('real paths', () => {
   });
 
   test.each([
+    ['/sad/lonely', 'og/core-sad.png'],
+    ['/body', 'og/body-whole-body.png'],
+  ])('%s has its preview image %s in the head', async (path, file) => {
+    const { html } = await get(path);
+    expect(metaOf(html, 'property', 'og:image')).toBe(`${site.url}${file}`);
+  });
+
+  test.each([
     ['/body', 'Body sensations wheel · Feels on Wheels', titles.wheelDescriptions.body],
     ['/body/chest/tight-chest', 'Tight chest · Feels on Wheels', 'Tight chest: the feelings it can come with, on the body sensations wheel.'],
     ['/body/chest', 'Chest · Feels on Wheels', 'Chest: what you might notice there, and the feelings it can come with.'],

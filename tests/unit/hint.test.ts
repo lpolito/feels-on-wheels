@@ -134,4 +134,42 @@ describe('<fw-hint>', () => {
     el.content = { ...content, lead: 'Two. ' };
     expect(el.querySelector('p.fw-hint-text')!.textContent).toMatch(/^Two\. /);
   });
+
+  describe('the About line', () => {
+    const about = { label: 'About Feels on Wheels', href: '/about' };
+
+    test('renders the About line after the text', () => {
+      const el = mount();
+      el.content = { ...content, about };
+      const a = el.querySelector<HTMLAnchorElement>('a.fw-hint-about-link')!;
+      expect(a.getAttribute('href')).toBe('/about');
+      expect(a.textContent).toBe('About Feels on Wheels');
+      expect(a.closest('p.fw-hint-about')!.previousElementSibling).toBe(el.querySelector('p.fw-hint-text'));
+      expect(a.querySelector('svg')!.getAttribute('aria-hidden')).toBe('true');
+    });
+
+    test('also on the not-found variant', () => {
+      const el = mount();
+      el.content = { ...content, variant: 'notFound', about };
+      expect(el.querySelector('a.fw-hint-about-link')).not.toBeNull();
+    });
+
+    test('the same content keeps the same link element', () => {
+      const el = mount();
+      el.content = { ...content, about: { ...about } };
+      const a = el.querySelector('a.fw-hint-about-link');
+      el.content = { ...content, about: { ...about } };
+      expect(el.querySelector('a.fw-hint-about-link')).toBe(a);
+    });
+
+    test('a changed about re-renders', () => {
+      const el = mount();
+      el.content = { ...content, about };
+      const a = el.querySelector('a.fw-hint-about-link');
+      el.content = { ...content, about: { ...about, href: '/about-us' } };
+      const b = el.querySelector('a.fw-hint-about-link');
+      expect(b).not.toBe(a);
+      expect(b!.getAttribute('href')).toBe('/about-us');
+    });
+  });
 });

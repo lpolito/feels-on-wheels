@@ -109,6 +109,110 @@ describe('cardModel', () => {
   });
 });
 
+describe('cardModel path', () => {
+  test('cardModel gives an opened word its path', () => {
+    const m = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    if (m.kind !== 'opened') throw new Error('expected opened');
+    expect(m.path).toBe('happy/playful/aroused');
+  });
+});
+
+describe('<fw-card> share button', () => {
+  const mount = (): FwCard => {
+    document.body.innerHTML = '<fw-card></fw-card>';
+    return document.querySelector<FwCard>('fw-card')!;
+  };
+  const share = (el: FwCard) => el.querySelector<HTMLButtonElement>('button.fw-card-share');
+  const shown = (b: HTMLElement | null) => b !== null && !b.hidden;
+
+  test('an opened card has a share button named for its word', () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    const b = share(el)!;
+    expect(b.getAttribute('aria-label')).toBe('Share Aroused');
+    expect(b.title).toBe('Share Aroused');
+    expect(b.closest('button.fw-card-toggle')).toBeNull();
+    expect(b.closest('h2')).toBeNull();
+    expect(b.querySelector('.fw-share-label')).toBeNull();
+  });
+
+  test('"Link copied" is beside Share, not inside it, so tapping it never shares again', () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    const label = el.querySelector<HTMLElement>('.fw-share-label')!;
+    expect(label.getAttribute('aria-hidden')).toBe('true');
+    expect(label.closest('button')).toBeNull();
+    expect(label.parentElement).toBe(share(el)!.parentElement);
+    let shares = 0;
+    el.addEventListener('fw-share', () => shares++);
+    label.click();
+    expect(shares).toBe(0);
+  });
+
+  test('closing hides the label with its button', () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    const wrap = share(el)!.parentElement!;
+    expect(wrap.hidden).toBe(false);
+    el.model = cardModel(layout, feelings, selected('happy/playful/aroused'));
+    expect(wrap.hidden).toBe(true);
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    expect(wrap.hidden).toBe(false);
+  });
+
+  test('folding with Share focused hands focus to the toggle', () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    share(el)!.focus();
+    el.model = cardModel(layout, feelings, selected('happy/playful/aroused'));
+    expect(document.activeElement).toBe(el.querySelector('.fw-card-toggle'));
+  });
+
+  test('a selected card has no share button showing; opening shows it, closing hides it', () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, selected('happy/playful/aroused'));
+    expect(shown(share(el))).toBe(false);
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    expect(shown(share(el))).toBe(true);
+    el.model = cardModel(layout, feelings, selected('happy/playful/aroused'));
+    expect(shown(share(el))).toBe(false);
+  });
+
+  test("the heading's accessible text is only the word", () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    expect(el.querySelector('h2.fw-card-heading')!.textContent).not.toContain('Share');
+  });
+
+  test('Share emits fw-share for the word', () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    const got: unknown[] = [];
+    el.addEventListener('fw-share', (e) => got.push((e as CustomEvent).detail));
+    share(el)!.click();
+    expect(got).toEqual([{ what: 'word', wheel: 'core', path: 'happy/playful/aroused' }]);
+  });
+
+  test('focus order: toggle, then Share', () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    const pos = el.querySelector('.fw-card-toggle')!.compareDocumentPosition(share(el)!);
+    expect(pos & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  test('showCopied shows the label, then hides it', () => {
+    vi.useFakeTimers();
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    const label = el.querySelector('.fw-share-label')!;
+    el.showCopied();
+    expect(label.hasAttribute('data-show')).toBe(true);
+    vi.advanceTimersByTime(1600);
+    expect(label.hasAttribute('data-show')).toBe(false);
+    vi.useRealTimers();
+  });
+});
+
 describe('<fw-card>', () => {
   const mount = (): { el: FwCard; actions: Action[] } => {
     document.body.innerHTML = '<button id="outside">x</button><fw-card></fw-card>';
@@ -244,7 +348,7 @@ describe('<fw-card>', () => {
     const toggle = head(el);
     expect(toggle.type).toBe('button');
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
-    expect(toggle.parentElement!.matches('.fw-card-head > h2.fw-card-heading')).toBe(true);
+    expect(toggle.parentElement!.matches('.fw-card-head > .fw-card-bar > h2.fw-card-heading')).toBe(true);
     expect(toggle.querySelector('.fw-dot')).not.toBeNull();
     expect(toggle.querySelector('.fw-card-title')!.textContent).toBe('Aggressive');
     expect(toggle.querySelector('.fw-card-chevron')).not.toBeNull();
@@ -332,13 +436,13 @@ describe('<fw-card>', () => {
     el.model = cardModel(layout, feelings, opened('angry/aggressive'));
     const stub = (sel: string, prop: 'offsetHeight' | 'scrollHeight', v: number) =>
       Object.defineProperty(el.querySelector(sel)!, prop, { configurable: true, get: () => v });
-    stub('.fw-card-heading', 'offsetHeight', 56);
+    stub('.fw-card-bar', 'offsetHeight', 56);
     stub('.fw-crumbs-inner', 'scrollHeight', 30);
     stub('.fw-card-body-inner', 'scrollHeight', 250);
     expect(el.unfoldedHeight()).toBe(336);
     // A core word has no crumbs.
     el.model = cardModel(layout, feelings, opened('angry'));
-    stub('.fw-card-heading', 'offsetHeight', 56);
+    stub('.fw-card-bar', 'offsetHeight', 56);
     stub('.fw-card-body-inner', 'scrollHeight', 400);
     expect(el.unfoldedHeight()).toBe(456);
   });
@@ -382,6 +486,72 @@ describe('<fw-card>', () => {
 });
 
 describe('<fw-toolbar>', () => {
+  test('Share shows while nothing is selected, Start over while something is', () => {
+    document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+    const el = document.querySelector<FwToolbar>('fw-toolbar')!;
+    const share = el.querySelector<HTMLButtonElement>('button.fw-share')!;
+    const startOver = el.querySelector<HTMLButtonElement>('button.fw-start-over')!;
+    el.selected = false;
+    expect(share.hidden).toBe(false);
+    expect(startOver.hidden).toBe(true);
+    el.selected = true;
+    expect(share.hidden).toBe(true);
+    expect(startOver.hidden).toBe(false);
+    expect(el.querySelector('.fw-about')).toBeNull();
+  });
+
+  test('Share is named for what it shares', () => {
+    document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+    const share = document.querySelector<HTMLButtonElement>('fw-toolbar button.fw-share')!;
+    expect(share.getAttribute('aria-label')).toBe('Share Feels on Wheels');
+    expect(share.title).toBe('Share Feels on Wheels');
+  });
+
+  test('the theme button is last, in the corner', () => {
+    document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+    const el = document.querySelector<FwToolbar>('fw-toolbar')!;
+    expect(el.lastElementChild!.matches('span.fw-theme')).toBe(true);
+  });
+
+  test('Share emits fw-share for the site', () => {
+    document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+    const el = document.querySelector<FwToolbar>('fw-toolbar')!;
+    const got: unknown[] = [];
+    document.body.addEventListener('fw-share', (e) => got.push((e as CustomEvent).detail));
+    el.querySelector<HTMLButtonElement>('button.fw-share')!.click();
+    expect(got).toEqual([{ what: 'site' }]);
+  });
+
+  test('showCopied shows "Link copied" for 1.5 s', () => {
+    vi.useFakeTimers();
+    try {
+      document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+      const el = document.querySelector<FwToolbar>('fw-toolbar')!;
+      const label = el.querySelector<HTMLElement>('.fw-share-label')!;
+      expect(label.hasAttribute('data-show')).toBe(false);
+      el.showCopied();
+      expect(label.hasAttribute('data-show')).toBe(true);
+      expect(label.textContent).toBe('Link copied');
+      expect(label.getAttribute('aria-hidden')).toBe('true');
+      vi.advanceTimersByTime(1400);
+      expect(label.hasAttribute('data-show')).toBe(true);
+      vi.advanceTimersByTime(200);
+      expect(label.hasAttribute('data-show')).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  test('hiding a focused Share hands focus to the wheel', () => {
+    document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+    const el = document.querySelector<FwToolbar>('fw-toolbar')!;
+    let lost = 0;
+    el.addEventListener('fw-focus-lost', () => lost++);
+    el.querySelector<HTMLButtonElement>('button.fw-share')!.focus();
+    el.selected = true;
+    expect(lost).toBe(1);
+  });
+
   test('hiding Start over while it has focus emits fw-focus-lost', () => {
     document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
     const el = document.querySelector<FwToolbar>('fw-toolbar')!;

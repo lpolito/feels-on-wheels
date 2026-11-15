@@ -17,12 +17,12 @@ const strings: PageStrings = {
   shortName: 'Feels',
   imageAlt: 'The wheel.',
   noscript: 'Needs JavaScript.',
-  titles: { home: 'Feels on Wheels: name what you feel', homeDescription: 'A free feelings wheel.', about: 'About Feels on Wheels', aboutDescription: 'About it.' },
+  titles: { home: 'Feels on Wheels: find the word for what you feel', homeDescription: 'A free feelings wheel.', about: 'About Feels on Wheels', aboutDescription: 'About it.' },
   about: { heading: 'Feels on Wheels', summary: 's', back: 'Back', newTab: '(opens in a new tab)', sections: [] },
 };
 
-const home: HeadMeta = { title: strings.titles.home, description: strings.titles.homeDescription, path: '', jsonLd: true, noindex: false };
-const about: HeadMeta = { title: strings.titles.about, description: strings.titles.aboutDescription, path: 'about', jsonLd: false, noindex: false };
+const home: HeadMeta = { title: strings.titles.home, description: strings.titles.homeDescription, path: '', jsonLd: true, noindex: false, image: { path: 'og/core-happy.png', alt: 'The wheel.' } };
+const about: HeadMeta = { title: strings.titles.about, description: strings.titles.aboutDescription, path: 'about', jsonLd: false, noindex: false, image: { path: 'og/core-happy.png', alt: 'The wheel.' } };
 
 const jsonLd = (html: string): Record<string, unknown> => {
   const m = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/.exec(html);
@@ -33,14 +33,23 @@ const jsonLd = (html: string): Record<string, unknown> => {
 describe('head tags', () => {
   test('the wheel page has its title, canonical, preview tags and manifest link', () => {
     const h = headTags(home, site, strings);
-    expect(h).toContain('<title>Feels on Wheels: name what you feel</title>');
+    expect(h).toContain('<title>Feels on Wheels: find the word for what you feel</title>');
     expect(h).toContain('<link rel="canonical" href="https://lpolito.github.io/feels-on-wheels/">');
     expect(h).toContain('<meta property="og:url" content="https://lpolito.github.io/feels-on-wheels/">');
-    expect(h).toContain('<meta property="og:image" content="https://lpolito.github.io/feels-on-wheels/og-image.png">');
+    expect(h).toContain('<meta property="og:image" content="https://lpolito.github.io/feels-on-wheels/og/core-happy.png">');
+    expect(h).toContain('<meta property="og:image:alt" content="The wheel.">');
+    expect(h).toContain('<meta name="twitter:image:alt" content="The wheel.">');
     expect(h).toContain('<meta property="og:image:width" content="1200">');
     expect(h).toContain('<meta property="og:image:height" content="630">');
     expect(h).toContain('<meta name="twitter:card" content="summary_large_image">');
     expect(h).toContain('<link rel="manifest" href="/manifest.webmanifest">');
+  });
+
+  test('a meta with another image writes that image and its alt', () => {
+    const h = headTags({ ...home, image: { path: 'og/core-sad.png', alt: 'Sad "wedges".' } }, site, strings);
+    expect(h).toContain('<meta property="og:image" content="https://lpolito.github.io/feels-on-wheels/og/core-sad.png">');
+    expect(h).toContain('<meta property="og:image:alt" content="Sad &quot;wedges&quot;.">');
+    expect(h).toContain('<meta name="twitter:image:alt" content="Sad &quot;wedges&quot;.">');
   });
 
   test('the head is wrapped in markers, each once', () => {
@@ -74,7 +83,7 @@ describe('head tags', () => {
   });
 
   test('a route\'s path makes its canonical and og:url, and its title and description are used as given', () => {
-    const h = headTags({ title: 'Playful · Feels on Wheels', description: 'Fun & light.', path: 'happy/playful', jsonLd: false, noindex: false }, site, strings);
+    const h = headTags({ title: 'Playful · Feels on Wheels', description: 'Fun & light.', path: 'happy/playful', jsonLd: false, noindex: false, image: { path: 'og/core-happy.png', alt: 'x' } }, site, strings);
     expect(h).toContain('<link rel="canonical" href="https://lpolito.github.io/feels-on-wheels/happy/playful">');
     expect(h).toContain('<meta property="og:url" content="https://lpolito.github.io/feels-on-wheels/happy/playful">');
     expect(h).toContain('<title>Playful · Feels on Wheels</title>');

@@ -24,6 +24,7 @@ Each change is used before the next one is designed. When Lucas picks an idea to
 | <a id="real-paths-a-small-router-and-cleaner-urls"></a>URLs: real paths, a small router, and a Worker for first visits | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md), [plan](superpowers/plans/2026-11-13-feels-on-wheels-urls-routing.md), [changes](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-changes.md) |
 | <a id="about-page-rework"></a><a id="the-about-page-1"></a>About page rework: why it exists with a sign-off, install steps, the GitHub icon and fixed credit links | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-design.md), [plan](superpowers/plans/2026-11-14-feels-on-wheels-about-rework.md), [changes](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-changes.md) |
 | Keys turn the wheel, no focus ring after a tap, real links on the card, new tabs on About, and tap the opened word to close it | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md), [plan](superpowers/plans/2026-11-14-feels-on-wheels-keys-and-focus.md), [changes](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-changes.md) |
+| Share buttons, About in the start message, and per-feeling link previews | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-share-and-preview.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-changes.md) |
 
 ## Ideas
 
@@ -39,11 +40,6 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [A different word to start on](#a-different-word-to-start-on) | [The wheel and the card](#the-wheel-and-the-card) | Idea |
 | [Return to the word you jumped from](#return-to-the-word-you-jumped-from) | The wheel and the card | Idea |
 | [Feeling links underlined in their feeling's color](#feeling-links-underlined-in-their-feelings-color) | The wheel and the card | Idea |
-| [About in the start message](#about-in-the-start-message) | [The toolbar, sharing and installing](#the-toolbar-sharing-and-installing) | Idea |
-| [Share button](#share-button) | The toolbar, sharing and installing | Idea |
-| [Help adding it to the home screen](#help-adding-it-to-the-home-screen) | The toolbar, sharing and installing | Idea |
-| [A dark home-screen icon](#a-dark-home-screen-icon) | The toolbar, sharing and installing | Idea |
-| [A new social preview image](#a-new-social-preview-image) | [The social preview](#the-social-preview) | Idea |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
@@ -121,7 +117,7 @@ Polish to what's there; these could ship together as one change.
 #### Return to the word you jumped from
 
 - After jumping from the body wheel to the feelings wheel (the "See … on the feelings wheel" link, or v2.2's core-feeling link in the definition), a "Return to …" control takes you back to the body wheel with the card you came from open again.
-- Lucas's idea, 2026-11-09. Where it goes is open: on the opened card, as a toolbar button like Start over, or something else.
+- Lucas's idea, 2026-11-09. Where it goes is open: on the opened card, as a toolbar button like Start over, or something else. Since the [share change](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md), the toolbar's second slot is Share at rest and Start over while a word is selected, so a Return button in the toolbar would need another place.
 - Today the only way back is the browser's Back (the jump pushes history, v2 §4.2), which is the awkward gesture in the [going back on phones](#navigation) known issue. The jump still pushes history under the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md), so Back returns from it; this idea would add a way back that doesn't need the browser's Back.
 - To decide when designing: what the control says ("Back to Wide eyes"?), when it disappears (after moving on, switching wheels by hand, or Start over), and whether it also works the other way, or for the emoji wheel once there are three wheels.
 
@@ -135,51 +131,6 @@ Polish to what's there; these could ship together as one change.
   - whether the rows' dividers take the color too, or they get underlines;
   - what areas and sensations do, since they're links too but not feelings;
   - forced colors, where links keep the system's link color.
-
-### The toolbar, sharing and installing
-
-These all compete for the same few places (the toolbar, the start message, the About page), so design them together.
-
-#### About in the start message
-
-- Lucas's idea, 2026-11-12: move the About link from the toolbar into the start message ("the message", v2.2), to free up room and so the phone's toolbar buttons never change place or order. Today on phones About gives way to Start over while a word is selected (going-public spec).
-- The freed toolbar slot could hold the [share button](#share-button).
-- More people would arrive at About from the start, so the way back to the wheel matters more. About has "‹ Back to the wheel" at its end; a floating back button was considered and dropped for now (2026-11-14).
-- To decide when designing: how to reach About once the start message is gone (after the first word is opened), since the toolbar link is the only other way; and whether the noscript message's About link changes.
-
-#### Share button
-
-- A share button somewhere. Lucas's idea, 2026-11-12.
-- Likely the Web Share API (`navigator.share`) where there is one, phones especially, and copying the link where there isn't.
-- To decide when designing:
-  - where it goes (toolbar, opened card, About page);
-  - whether it shares the app or the opened word. Sharing a word shares its URL, which the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) settles; with its real paths, a shared word gets its own link preview.
-
-#### Help adding it to the home screen
-
-- Lucas's idea, 2026-11-12: Add to Home Screen is buried on iOS, so make it easier, with instructions or a link to how.
-- Today the About page has one sentence on it, in its "Install it" section (`/about#install`).
-- What's possible: Safari on iOS has no install prompt a page can trigger, so there it can only be instructions (Share, then Add to Home Screen). Chrome and Edge on Android and desktop fire `beforeinstallprompt`, so there it can be a real Install button.
-- To decide when designing: where it shows (About, the start message, a one-time hint), how to tell it's already installed (`display-mode: standalone`) so it doesn't nag. Installs at the old github.io address didn't carry over to feelsonwheels.app.
-
-#### A dark home-screen icon
-
-- Lucas's idea, 2026-11-12: an icon that's dark when the phone is in dark mode.
-- To research when designing; nothing is checked yet. As far as known, there's no standard way for a web app to give its home-screen icon a dark version: the manifest's icons and `apple-touch-icon` take one image each. What might come close: newer iOS can darken or tint home-screen icons itself, and Android can draw a themed icon from a `monochrome` icon in the manifest. The browser-tab icon (`icon.svg`) can already follow dark mode with a media query inside the SVG.
-- Today the manifest's `theme_color` and `background_color` are both white (`build/site.ts`).
-
-### The social preview
-
-#### A new social preview image
-
-Lucas's idea, 2026-11-14: rework the picture link previews show (`public/og-image.png`). Today it's the app icon beside "Feels on Wheels" and "Name what you feel", on dark.
-
-- **Make it look like the app** in a small, wide window: part of the wheel coming in from the left edge, the way it rests there, and the app's name where the start message's card would be.
-- **A mock of the wheel, not the real one:** something that reads as the wheel (its colored rings and cells) without its words, simple like the favicon, so it still reads as a small thumbnail.
-- **Rethink the tagline** "Name what you feel". Lucas is open to alternatives; not decided. Besides the picture, it's in the home page's title (`titles.home` in `src/data/locales/en.json`) and the picture's alt text (`imageAlt`), and tests check the title.
-- To decide when designing: the tagline; light or dark; whether the toolbar's controls (the wheel switch, the buttons) show, and how much of the app's look it copies before it stops reading as a preview.
-- `scripts/make-og-image.mjs` renders the picture; rerun it by hand after a change.
-- To do before [launching](#before-launching).
 
 ### URLs, routing and hosting
 
@@ -202,6 +153,7 @@ What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheel
 - Spanish first (the [reference site](reference/core-feelings-wheel.md#the-reference-site) had an Español toggle, and Braman publishes a Spanish wheel), plus a language switcher.
 - Adding a language means adding one locale file; no text is hard-coded.
 - To decide when designing: stable English slugs in every language (`/es/happy/…`) or translated ones (`/es/feliz/…`). The URL shape (a `/es/` prefix, English unprefixed) is set by the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) §9.
+- The link preview's alt text lowercases the wheel's name in code (`src/og.ts`: "the feelings wheel"), which is wrong for languages that capitalize nouns, such as German. To decide when designing: a separate lowercase name per wheel in the locale, or alt text written whole per wheel.
 
 ## Known issues
 
@@ -213,7 +165,7 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 
 - **Turning the phone makes the card's text huge.** Found 2026-11-12: going from portrait to sideways and back leaves the description text very large, possibly only when a word is open as it turns. Likely cause: Safari on iOS enlarges text when the phone turns unless told not to. `about.css` sets `-webkit-text-size-adjust: 100%`, but `app.css` doesn't. Likely fix: the same in `app.css`. No fix chosen yet.
 - **After turning the phone several times, taps land in the wrong place.** Found 2026-11-12: words stopped opening and closing, and a tap on a word acted on another. Swiping back fixed it. Not yet known whether it's the app or the browser. Worth checking first: a leftover page zoom from turning, and whether the app's mapping from a tap to a word uses a stale position of the wheel.
-- **Double-tapping the theme label zooms the page.** Found 2026-11-09 using v2.2.1, mostly on phones while tapping through the theme choices: a quick second tap lands on the label that shows the choice (`.fw-theme-label`, v1.3 §6.2) and the browser zooms into it. Pinching out doesn't undo it on iOS (Lucas, 2026-11-12), likely because the wheel's canvas takes every pinch for itself (`touch-action: none`); the only way back is double-tapping the label again while it's showing, and once the label goes, that's gone too. The label takes taps while shown, so a tap on it never reaches the wheel beneath, and as plain text it gets the browser's double-tap-to-zoom; the button beside it doesn't. Likely fix: `touch-action: manipulation` on the label (or the toolbar), which turns off double-tap zoom there while leaving pinch zoom alone. No fix chosen yet.
+- **Double-tapping the toolbar's or the card's labels zooms the page.** Found 2026-11-09 using v2.2.1, mostly on phones while tapping through the theme choices: a quick second tap lands on the label that shows the choice (`.fw-theme-label`, v1.3 §6.2) and the browser zooms into it. The "Link copied" labels under the toolbar's and the card's Share (`.fw-share-label`, [share change](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md)) follow the same rule, so they likely do the same. Pinching out doesn't undo it on iOS (Lucas, 2026-11-12), likely because the wheel's canvas takes every pinch for itself (`touch-action: none`); the only way back is double-tapping the label again while it's showing, and once the label goes, that's gone too. Each label takes taps while shown, so a tap on it never reaches the wheel beneath, and as plain text it gets the browser's double-tap-to-zoom; the button beside it doesn't. Likely fix: `touch-action: manipulation` on the labels (or the toolbar and the card's bar), which turns off double-tap zoom there while leaving pinch zoom alone. No fix chosen yet.
 
 ### Layout and labels
 
@@ -231,6 +183,7 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 ### Navigation
 
 - **Going back on phones.** Swiping back doesn't work at all on the wheel: it takes every touch, so the browser's Back button is the only way back. An app installed to the iPhone home screen has no Back at all. Lucas (2026-11-14): better history rules for phones wait on an in-app back button. History follows the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md): picking a word or a place adds an entry, moving by direction replaces it. Related: [return to the word you jumped from](#return-to-the-word-you-jumped-from).
+- **Tab selects a word on reaching the wheel, hiding About and Share.** Found in the [share change](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md)'s final review, 2026-11-15. Moving forward with Tab, reaching the wheel selects the first word (`src/a11y/tree.ts`, on focus), which hides the start message with its About link and swaps the toolbar's Share for Start over. So going forward, a keyboard user never reaches About or Share at rest, only by Escape or Shift+Tab from the end of the page. Before the share change, the toolbar's About stayed reachable by forward Tab on desktop. Likely fix: put `<fw-toolbar>` (and possibly `#float`, which holds the start message and the card) before the wheel in the page, so Tab reaches them before the wheel selects anything. That changes the reading order for screen readers too, so it's a design call. No fix chosen yet.
 - **Tabbing into the phone's half-wheel.** Since the [keys and focus change](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md), the arrow keys turn the wheel so the selection sits at 3 o'clock. Tabbing into the wheel with nothing selected still selects the first core word without turning it, so after a spin that word can be on the hidden left half until the first arrow key.
 
 ### Code and tests
@@ -252,7 +205,7 @@ The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens
   - Decide first whether the `workers.dev` address and the preview links should say `noindex` once the domain is indexable, since they serve the same pages.
 - **Optional, after letting search engines in:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
 - **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, gray like the site's other icons; on hover it takes the wheel's seven colors and spins once, settling.
-- **Known issues and ideas:** decide which to finish before announcing it. The [share button](#share-button) and [help adding it to the home screen](#help-adding-it-to-the-home-screen) are the ones a first visitor would notice. Lucas wants [a new social preview image](#a-new-social-preview-image) and tagline before launching (2026-11-14).
+- **Known issues and ideas:** decide which to finish before announcing it. Help adding it to the home screen and a dark home-screen icon were dropped (2026-11-15).
 
 ## Content rules
 

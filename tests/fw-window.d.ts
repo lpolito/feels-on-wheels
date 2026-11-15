@@ -22,6 +22,10 @@ declare global {
       /** v2.1: labels drawn per ring in the last frame. */
       labelsByRing(): number[];
     };
+    /** share.spec.ts: what the stubbed share sheet was given. */
+    __shared?: { title: string; url: string };
+    /** share.spec.ts: what the stubbed clipboard was given. */
+    __copied?: string;
     __rafCount: number;
     __probe: number[];
     gc?: () => void;

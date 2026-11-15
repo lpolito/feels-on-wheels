@@ -54,7 +54,7 @@ describe('going public (spec 2026-11-09)', () => {
     expect(page.name).toBe('Feels on Wheels');
     expect(page.shortName).toBe('Feels on Wheels');
     const { titles } = en;
-    expect(titles.home).toBe('Feels on Wheels: name what you feel');
+    expect(titles.home).toBe('Feels on Wheels: find the word for what you feel');
     expect(titles.homeDescription.length).toBeGreaterThanOrEqual(100);
     expect(titles.homeDescription.length).toBeLessThanOrEqual(160);
     for (const w of loadData().wheels.slice(1)) {
@@ -90,5 +90,15 @@ describe('going public (spec 2026-11-09)', () => {
   test('wrangler has a previews block, which Workers Builds needs for pull request previews (`wrangler preview`)', () => {
     const config = JSON.parse(readFileSync('wrangler.jsonc', 'utf8').replace(/^\s*\/\/.*$/gm, '')) as Record<string, unknown>;
     expect(config['previews']).toEqual({});
+  });
+});
+
+describe('link previews (share and preview spec)', () => {
+  test("the preview image's alt text quotes the tagline the image shows, and names the wheel and wedge", () => {
+    const tagline = en.titles.home.slice(en.titles.home.indexOf(': ') + 2);
+    const shown = tagline.charAt(0).toUpperCase() + tagline.slice(1);
+    expect(en.page.imageAlt).toContain(shown);
+    expect(en.page.imageAlt).toContain('{wheel}');
+    expect(en.page.imageAlt).toContain('{wedge}');
   });
 });

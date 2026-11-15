@@ -59,6 +59,11 @@ describe('precache manifest', () => {
     expect(m.files).toEqual(['./', './assets/index-abc.js', './icons/icon.svg']);
   });
 
+  test('link-preview images are left out of the precache', () => {
+    const m = precacheManifest([...files, { path: 'og/core-happy.png', content: 'x' }]);
+    expect(m.files).toEqual(['./', './assets/index-abc.js', './icons/icon.svg']);
+  });
+
   test('the shell is ./ and no page address is precached: About is part of the shell now', () => {
     const m = precacheManifest(files);
     expect(m.files[0]).toBe('./');

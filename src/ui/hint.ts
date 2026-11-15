@@ -1,5 +1,6 @@
 import { moveFocus } from '../a11y/focus';
 import { isPlainClick } from '../router';
+import { infoIcon } from './icons';
 
 /**
  * Spec v2 §4.1: the start message, with an optional link to another wheel where `text` has "{link}". Spec v2.2 §5:
@@ -12,11 +13,13 @@ export type HintContent = {
   link?: { label: string; wheel: string; href: string };
   variant?: 'notFound';
   lead?: string;
+  about?: { label: string; href: string };
 } | null;
 
 const same = (a: HintContent, b: HintContent): boolean =>
   a === b || (a !== null && b !== null && a.title === b.title && a.text === b.text
     && a.variant === b.variant && a.lead === b.lead
+    && a.about?.label === b.about?.label && a.about?.href === b.about?.href
     && a.link?.label === b.link?.label && a.link?.wheel === b.link?.wheel && a.link?.href === b.link?.href);
 
 /**
@@ -65,9 +68,10 @@ export class FwHint extends HTMLElement {
     line.className = 'fw-hint-text';
     if (c.lead) line.append(c.lead);
     const [before, after = ''] = c.link ? c.text.split('{link}') : [c.text];
+    const about = this.#aboutLine(c.about);
     if (!c.link) {
       line.append(before!);
-      this.replaceChildren(title, line);
+      this.replaceChildren(title, line, ...about);
       return;
     }
     const { label, wheel, href } = c.link;
@@ -83,7 +87,22 @@ export class FwHint extends HTMLElement {
     this.#link = link;
     // One inline run, so the link wraps with the sentence.
     line.append(before!, link, after);
-    this.replaceChildren(title, line);
+    this.replaceChildren(title, line, ...about);
+  }
+
+  /** The line linking to About. It handles no clicks: main.ts's document handler shows same-origin links in the app. */
+  #aboutLine(about: { label: string; href: string } | undefined): HTMLParagraphElement[] {
+    if (!about) return [];
+    const p = document.createElement('p');
+    p.className = 'fw-hint-about';
+    const a = document.createElement('a');
+    a.className = 'fw-hint-about-link';
+    a.href = about.href;
+    const text = document.createElement('span');
+    text.textContent = about.label;
+    a.append(infoIcon(), text);
+    p.append(a);
+    return [p];
   }
 }
 

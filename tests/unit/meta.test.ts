@@ -9,7 +9,7 @@ const m = (p: string) => routeMeta(parsePath(table, p).route, table, locale);
 
 describe('route meta (§6)', () => {
   test('§6 table', () => {
-    expect(m('/')).toEqual({ title: 'Feels on Wheels: name what you feel', description: locale.titles.homeDescription });
+    expect(m('/')).toEqual({ title: 'Feels on Wheels: find the word for what you feel', description: locale.titles.homeDescription });
     expect(m('/happy/playful')).toEqual({ title: 'Playful · Feels on Wheels', description: 'In the mood for fun and lightheartedness.' });
     expect(m('/body/chest/tight-chest/anxious').title).toBe('Anxious · Feels on Wheels');
     expect(m('/body')).toEqual({ title: 'Body sensations wheel · Feels on Wheels', description: locale.titles.wheelDescriptions['body'] });

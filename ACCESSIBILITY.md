@@ -61,12 +61,13 @@ Lucas maintains Feels on Wheels on his own and owns its accessibility. This file
 
 These are known and tracked in the [roadmap's known issues](docs/ROADMAP.md#known-issues).
 
+- **Moving through the page with Tab selects a word as soon as you reach the wheel**, which hides the start message, with its About link, and the toolbar's Share. Press Escape to bring them back, or Shift+Tab from the end of the page.
 - **Moving into the wheel with the keyboard or a screen reader on a phone-size screen**, after spinning it, can select its first word while that word is on the half of the wheel that's off screen. The first arrow key turns the wheel to show it.
 - **On a phone, swiping back from the edge of the screen doesn't work on the wheel**, because the wheel takes every touch. Use the browser's Back button instead. In the app installed to an iPhone's home screen there's no Back at all: use Start over, or "Back to the wheel" on the About page.
 - **On the wheel, pinching zooms the wheel itself, not the page.** To make text larger, use the browser's or the system's text size or zoom settings.
 - **Small windows**, which can include a computer's browser zoomed in a long way, may show the body sensations wheel without labels until you open something. The card's words are still there.
 - **On some phones, turning the phone sideways and back** can leave the card's text much larger than it should be, and after several turns, taps can land on the wrong word. Closing the word, or reloading the page, may set it right.
-- **Double-tapping the label that shows the theme choice** zooms the page on phones, and pinching out doesn't undo it. Double-tap the label again while it's still showing to zoom back out.
+- **Double-tapping a label under the toolbar's buttons**, such as the one that shows the theme choice or "Link copied", or the card's "Link copied", zooms the page on phones, and pinching out doesn't undo it. Double-tap the label again while it's still showing to zoom back out.
 - **Long body sensation words**, such as "Hollow feeling in your chest", can run past the edges of their cell when opened. The card shows them in full.
 - **On very short phones**, the opened word can sit under the toolbar.
 - **Linux computers with a wide default font** may show the wheel switch overlapping the toolbar on very narrow windows.

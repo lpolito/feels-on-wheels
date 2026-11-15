@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { aboutHeading, aboutLink, backToWheel, focused, hint, idle, open, selectedPath, settled, sideways, state, tapPath, title } from './helpers';
+import { aboutHeading, aboutLink, backToWheel, focused, hint, idle, open, selectedPath, settled, state, tapPath, title } from './helpers';
 
 // URL redesign spec §1, §2, §6, §7: real paths, titles that follow the route, and not found.
 
@@ -24,7 +24,7 @@ test('deep links open their cells, with the cell in the title', async ({ page })
 
 test('the title follows the route: a word, another wheel, then Back', async ({ page }) => {
   await open(page);
-  await expect(page).toHaveTitle('Feels on Wheels: name what you feel');
+  await expect(page).toHaveTitle('Feels on Wheels: find the word for what you feel');
   await tapPath(page, 'angry');
   await tapPath(page, 'angry');
   await expect(page).toHaveTitle('Angry · Feels on Wheels');
@@ -117,7 +117,7 @@ test('on not found, tapping a word opens it at its own path, and the message nev
   expect(new URL(page.url()).pathname).toBe('/');
   await expect(hintTitle(page)).toHaveText('How are you feeling?');
   await expect(notFound(page)).toHaveCount(0);
-  await expect(page).toHaveTitle('Feels on Wheels: name what you feel');
+  await expect(page).toHaveTitle('Feels on Wheels: find the word for what you feel');
 });
 
 for (const colorScheme of ['light', 'dark'] as const) {
@@ -189,54 +189,77 @@ test('Review Focus 1: a first load at /about, then the wheel, draws it at its fu
 });
 
 test('Review Focus 5: Back and Forward across About during a spin', async ({ page }) => {
-  await sideways(page);
-  // Opened, so the fling is a ring spin whose settle would pick a word.
+  // About opens from the message, with nothing selected; history can still open it on a ring spin. Entries: the word,
+  // then / (Start over), then About. Back twice to the opened word, so the fling is a ring spin whose settle would pick
+  // a word, then straight on to About.
   await open(page, '/fearful/scared');
+  await page.locator('fw-toolbar .fw-start-over').click();
+  await idle(page);
+  const homeTitle = await page.title();
+  await aboutLink(page).click();
+  await expect(aboutHeading(page)).toBeFocused();
+  await page.goBack();
+  await expect(page).toHaveURL((u) => u.pathname === '/');
+  await page.goBack();
+  await expect(page).toHaveURL((u) => u.pathname === '/fearful/scared');
+  await idle(page);
+  expect((await state(page)).opened).toBe(true);
   const box = (await page.locator('#wheel').boundingBox())!;
   const x = box.x + box.width * 0.4;
   await page.mouse.move(x, box.y + box.height * 0.2);
   await page.mouse.down();
   await page.mouse.move(x, box.y + box.height * 0.8, { steps: 4 });
   await page.mouse.up();
-  await aboutLink(page).click();
+  // Read and go in one step, so the spin is known to be still moving when history moves on.
+  const movingAtGo = await page.evaluate(() => {
+    const moving = window.__fw.moving();
+    history.go(2);
+    return moving;
+  });
+  expect(movingAtGo).toBe(true);
   const onAbout = async (): Promise<void> => {
     await expect(page).toHaveURL((u) => u.pathname === '/about');
     await expect(page).toHaveTitle('About Feels on Wheels');
     await expect(aboutHeading(page)).toBeFocused();
+    expect(await page.evaluate(() => window.__fw.moving())).toBe(false);
   };
+  // The spin lands as About opens: About keeps its address, and its back link is the landed word, still opened.
+  await onAbout();
+  const landed = `/${await selectedPath(page)}`;
+  // A word on the same ring: on phones the spin can carry it under another core feeling.
+  expect(landed).toMatch(/^\/[a-z-]+\/[a-z-]+$/);
+  expect((await state(page)).opened).toBe(true);
+  await expect(backToWheel(page)).toHaveAttribute('href', landed);
+  // Back from About is the / entry: the whole wheel, the landed word still selected (spec v1.2 §3.1).
   const onWheel = async (): Promise<void> => {
     await expect(page.locator('#app')).toBeVisible();
     await idle(page);
-    const s = await state(page);
-    expect(s.opened).toBe(true);
-    expect(path(page)).toBe(`/${await selectedPath(page)}`);
-    await expect(page).toHaveTitle(`${await title(page).textContent()} · Feels on Wheels`);
+    expect(path(page)).toBe('/');
+    expect((await state(page)).opened).toBe(false);
+    expect(`/${await selectedPath(page)}`).toBe(landed);
+    await expect(page).toHaveTitle(homeTitle);
     expect(await focused(page)).not.toBe('BODY');
   };
-  await onAbout();
   await page.goBack();
   await onWheel();
-  const left = path(page);
+  // Forward again: the wheel as Back left it, the landed word selected and closed, so the back link is /.
   await page.goForward();
   await onAbout();
+  expect(`/${await selectedPath(page)}`).toBe(landed);
+  await expect(backToWheel(page)).toHaveAttribute('href', '/');
   await page.goBack();
   await onWheel();
-  expect(path(page)).toBe(left);
 });
 
-test('Back from About keeps a selected word on the same wheel', async ({ page }) => {
-  await sideways(page);
-  await open(page);
-  await tapPath(page, 'angry');
-  expect(await selectedPath(page)).toBe('angry');
-  expect((await state(page)).opened).toBe(false);
+test('Back from About keeps the wheel it was opened from', async ({ page }) => {
+  await open(page, '/body');
   await aboutLink(page).click();
   await expect(aboutHeading(page)).toBeFocused();
   await page.goBack();
-  await expect(page).toHaveURL((u) => u.pathname === '/');
+  await expect(page).toHaveURL((u) => u.pathname === '/body');
   await idle(page);
-  expect(await selectedPath(page)).toBe('angry');
-  expect((await state(page)).opened).toBe(false);
+  expect(await page.evaluate(() => window.__fw.wheel())).toBe('body');
+  expect((await state(page)).selected).toBeNull();
   await expect(aboutLink(page)).toBeFocused();
 });
 
@@ -293,21 +316,22 @@ test.describe('history: picking adds an entry, moving by direction replaces it',
     expect((await state(page)).opened).toBe(true);
   });
 
-  test('a word opened by a tap, then About, then "Back to the wheel" lands on it; Back again returns to the whole wheel', async ({ page }) => {
-    await sideways(page);
+  test('a word opened by a tap, Start over, About, then "Back to the wheel": the whole wheel, and Back again reopens the word', async ({ page }) => {
     await open(page);
     await tapPath(page, 'angry');
     await tapPath(page, 'angry');
+    await page.locator('fw-toolbar .fw-start-over').click();
+    await idle(page);
     await aboutLink(page).click();
     await expect(aboutHeading(page)).toBeFocused();
     await backToWheel(page).click();
+    await expect(page).toHaveURL((u) => u.pathname === '/');
+    await idle(page);
+    expect((await state(page)).selected).toBeNull();
+    await page.goBack();
     await expect(page).toHaveURL((u) => u.pathname === '/angry');
     await idle(page);
     expect((await state(page)).opened).toBe(true);
-    await page.goBack();
-    await expect(page).toHaveURL((u) => u.pathname === '/');
-    await idle(page);
-    expect((await state(page)).opened).toBe(false);
     expect(await selectedPath(page)).toBe('angry');
   });
 

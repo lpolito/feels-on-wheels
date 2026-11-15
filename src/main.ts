@@ -131,6 +131,12 @@ let pendingDraw = 0;
 const TEST = import.meta.env.MODE === 'test';
 const drawTimes: number[] = [];
 
+/** True when the tree has keyboard focus: `:focus-visible`, and not focus the app moved after a pointer press. */
+function treeFocusVisible(): boolean {
+  const el = document.activeElement;
+  return el instanceof HTMLElement && el.closest('#a11y-tree') !== null && el.matches(':focus-visible') && !el.hasAttribute('data-quiet-focus');
+}
+
 function frame(): void {
   pendingDraw = 0;
   if (onAbout) return;
@@ -143,6 +149,7 @@ function frame(): void {
     cam: camera.current, vp, lit, prevLit, fadeT, pulseT,
     selected: s.selected, opened: s.opened,
     mode: s.view.mode, ring: s.view.mode === 'ring' ? s.view.ring : null, remPx: opts.remPx, moreContrast: moreContrast.matches,
+    focusRing: s.selected === null && treeFocusVisible(),
   });
   if (TEST) {
     drawTimes.push(performance.now() - t0);
@@ -206,6 +213,10 @@ document.addEventListener('keydown', (e) => {
   // Question-first spec §3: from nothing, a key from outside the tree selects the word at 3 o'clock.
   dispatch(withFrom(action, controller.coreAtThree()));
 });
+
+// The ring follows keyboard focus; draws are a frame later, so the quiet mark is already cleared by then.
+for (const type of ['focusin', 'focusout']) document.addEventListener(type, requestDraw);
+document.addEventListener('keydown', requestDraw, true);
 
 // A mouse click on the wheel puts keyboard focus in the tree, so the arrows work at once.
 canvas.addEventListener('pointerup', (e) => {
@@ -615,6 +626,7 @@ if (TEST) {
       wheel: () => layout.wheelId,
       liveWheels: () => live.filter((r) => r.deref() !== undefined).length,
       labelsByRing: () => renderer.stats.labelsByRing.slice(),
+      focusRing: () => renderer.stats.focusRing,
     },
   });
 }

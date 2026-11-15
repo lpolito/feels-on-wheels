@@ -67,7 +67,7 @@ function frame(vp: Viewport, overrides: Partial<Frame> = {}): Frame {
   const all = litMask(layout, null);
   return {
     cam: overviewCamera(vp, 0), vp, lit: all, prevLit: all, fadeT: 1,
-    selected: null, opened: false, pulseT: 1, mode: 'wheel', ring: null, remPx: 16, ...overrides,
+    selected: null, opened: false, pulseT: 1, mode: 'wheel', ring: null, remPx: 16, focusRing: false, ...overrides,
   };
 }
 
@@ -92,7 +92,7 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     r.resize(phone.width, phone.height, 1);
     const all = litMask(body, null);
     const cam = ringFocusCamera(body, 0, phone, 0, { remPx, portrait: true, rest: 'whole' as const, openedY: null });
-    r.draw({ cam, vp: phone, lit: all, prevLit: all, fadeT: 1, selected: null, opened: false, pulseT: 1, mode: 'ring', ring: 0, remPx });
+    r.draw({ cam, vp: phone, lit: all, prevLit: all, fadeT: 1, selected: null, opened: false, pulseT: 1, mode: 'ring', ring: 0, remPx, focusRing: false });
     const sizes = (ring: number) => rec.texts.flatMap((t, k) => (labelsOn(ring).has(t) ? [pxOf(rec.fonts[k]!)] : []));
     return { r, sizes };
   }
@@ -209,6 +209,26 @@ describe('wheel renderer', () => {
     // Spec v2.2 §6: the outline ring and the inner gap line; no chevron.
     expect(sel.strokes.length - none.strokes.length).toBe(2);
     expect(sel.shadowSets).toBe(0);
+  });
+
+  test('focusRing draws one 3px circle in the focus color just outside the wheel', () => {
+    const { r, rec } = draw(desk, { focusRing: true });
+    const cam = overviewCamera(desk, 0);
+    const radius = desk.radius * cam.scale * layout.rings[layout.rings.length - 1]!.outer + 2 + 3 / 2;
+    const ringStrokes = rec.strokeLog.filter((x) => x.style === palette.focus);
+    expect(ringStrokes).toHaveLength(1);
+    expect(ringStrokes[0]!.lineWidth).toBe(3);
+    expect(ringStrokes[0]!.arcs).toHaveLength(1);
+    const arc = ringStrokes[0]!.arcs[0]!;
+    expect(arc.r).toBeCloseTo(radius, 6);
+    expect(arc.a1 - arc.a0).toBeCloseTo(Math.PI * 2, 9);
+    expect(r.stats.focusRing).toBe(true);
+  });
+
+  test('no ring without focusRing', () => {
+    const { r, rec } = draw(desk, {});
+    expect(rec.strokes).not.toContain(palette.focus);
+    expect(r.stats.focusRing).toBe(false);
   });
 
   test('opened: shadowBlur set exactly once per frame', () => {

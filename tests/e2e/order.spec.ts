@@ -203,3 +203,68 @@ test("a spin stopped by a tap off the wheel leaves the word at 3 o'clock tabbabl
   expect(await tabbablePath()).toBe(now);
   expect(await focusedPath(page)).toBe(now);
 });
+
+const ringShown = async (page: Page) => {
+  await page.evaluate(() => new Promise<void>((done) => requestAnimationFrame(() => requestAnimationFrame(() => done()))));
+  return page.evaluate(() => window.__fw.focusRing());
+};
+
+test('the ring shows when Tab reaches the wheel, and goes when a word is selected', async ({ page }) => {
+  await open(page);
+  expect(await ringShown(page)).toBe(false);
+  await page.keyboard.press('Tab');
+  await tabbableWord(page).focus();
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
+  expect(await focused(page)).toBe('LI');
+  expect(await ringShown(page)).toBe(true);
+  await page.keyboard.press('ArrowDown');
+  await idle(page);
+  expect(await selectedPath(page)).not.toBeNull();
+  expect(await ringShown(page)).toBe(false);
+});
+
+test('a click or tap on the wheel brings focus without a ring', async ({ page }) => {
+  await open(page);
+  await tapPath(page, 'angry');
+  await tapPath(page, 'angry');
+  expect(await ringShown(page)).toBe(false);
+  // A tap on the wheel with nothing selected leaves focus in the tree, quietly.
+  await open(page);
+  const geo = await page.evaluate(() => {
+    const rect = document.getElementById('wheel')!.getBoundingClientRect();
+    const cam = window.__fw.camera();
+    return { x: rect.left + cam.cx, y: rect.top + cam.cy, r: window.__fw.viewport().radius * cam.scale + 24 };
+  });
+  for (let k = 0; k < 16; k++) {
+    const a = (k / 16) * 2 * Math.PI;
+    const q = { x: geo.x + geo.r * Math.cos(a), y: geo.y + geo.r * Math.sin(a) };
+    if (await page.evaluate(({ x, y }) => document.elementFromPoint(x, y)?.id === 'wheel', q)) {
+      await page.mouse.click(q.x, q.y);
+      break;
+    }
+  }
+  expect(await ringShown(page)).toBe(false);
+});
+
+test('tap a word, then Escape: the ring shows', async ({ page }) => {
+  await open(page);
+  await tapPath(page, 'angry');
+  expect(await ringShown(page)).toBe(false);
+  await page.keyboard.press('Escape');
+  await idle(page);
+  expect((await state(page)).selected).toBeNull();
+  expect(await ringShown(page)).toBe(true);
+});
+
+test('the ring goes when focus leaves the wheel', async ({ page, browserName }) => {
+  test.skip(browserName === 'webkit', 'WebKit skips links on Tab');
+  await open(page);
+  await tabbableWord(page).focus();
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
+  expect(await ringShown(page)).toBe(true);
+  await page.keyboard.press('Tab');
+  expect(await focusedPath(page)).toBeNull();
+  expect(await ringShown(page)).toBe(false);
+});

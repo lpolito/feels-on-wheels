@@ -109,6 +109,78 @@ describe('cardModel', () => {
   });
 });
 
+describe('cardModel path', () => {
+  test('cardModel gives an opened word its path', () => {
+    const m = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    if (m.kind !== 'opened') throw new Error('expected opened');
+    expect(m.path).toBe('happy/playful/aroused');
+  });
+});
+
+describe('<fw-card> share button', () => {
+  const mount = (): FwCard => {
+    document.body.innerHTML = '<fw-card></fw-card>';
+    return document.querySelector<FwCard>('fw-card')!;
+  };
+  const share = (el: FwCard) => el.querySelector<HTMLButtonElement>('button.fw-card-share');
+  const shown = (b: HTMLElement | null) => b !== null && !b.hidden;
+
+  test('an opened card has a share button named for its word', () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    const b = share(el)!;
+    expect(b.getAttribute('aria-label')).toBe('Share Aroused');
+    expect(b.title).toBe('Share Aroused');
+    expect(b.closest('button.fw-card-toggle')).toBeNull();
+    expect(b.closest('h2')).toBeNull();
+    expect(b.querySelector('.fw-share-label')!.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  test('a selected card has no share button showing; opening shows it, closing hides it', () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, selected('happy/playful/aroused'));
+    expect(shown(share(el))).toBe(false);
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    expect(shown(share(el))).toBe(true);
+    el.model = cardModel(layout, feelings, selected('happy/playful/aroused'));
+    expect(shown(share(el))).toBe(false);
+  });
+
+  test("the heading's accessible text is only the word", () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    expect(el.querySelector('h2.fw-card-heading')!.textContent).not.toContain('Share');
+  });
+
+  test('Share emits fw-share for the word', () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    const got: unknown[] = [];
+    el.addEventListener('fw-share', (e) => got.push((e as CustomEvent).detail));
+    share(el)!.click();
+    expect(got).toEqual([{ what: 'word', wheel: 'core', path: 'happy/playful/aroused', title: 'Aroused' }]);
+  });
+
+  test('focus order: toggle, then Share', () => {
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    const pos = el.querySelector('.fw-card-toggle')!.compareDocumentPosition(share(el)!);
+    expect(pos & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  test('showCopied shows the label, then hides it', () => {
+    vi.useFakeTimers();
+    const el = mount();
+    el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
+    const label = el.querySelector('.fw-share-label')!;
+    el.showCopied();
+    expect(label.hasAttribute('data-show')).toBe(true);
+    vi.advanceTimersByTime(1600);
+    expect(label.hasAttribute('data-show')).toBe(false);
+    vi.useRealTimers();
+  });
+});
+
 describe('<fw-card>', () => {
   const mount = (): { el: FwCard; actions: Action[] } => {
     document.body.innerHTML = '<button id="outside">x</button><fw-card></fw-card>';
@@ -244,7 +316,7 @@ describe('<fw-card>', () => {
     const toggle = head(el);
     expect(toggle.type).toBe('button');
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
-    expect(toggle.parentElement!.matches('.fw-card-head > h2.fw-card-heading')).toBe(true);
+    expect(toggle.parentElement!.matches('.fw-card-head > .fw-card-bar > h2.fw-card-heading')).toBe(true);
     expect(toggle.querySelector('.fw-dot')).not.toBeNull();
     expect(toggle.querySelector('.fw-card-title')!.textContent).toBe('Aggressive');
     expect(toggle.querySelector('.fw-card-chevron')).not.toBeNull();
@@ -332,13 +404,13 @@ describe('<fw-card>', () => {
     el.model = cardModel(layout, feelings, opened('angry/aggressive'));
     const stub = (sel: string, prop: 'offsetHeight' | 'scrollHeight', v: number) =>
       Object.defineProperty(el.querySelector(sel)!, prop, { configurable: true, get: () => v });
-    stub('.fw-card-heading', 'offsetHeight', 56);
+    stub('.fw-card-bar', 'offsetHeight', 56);
     stub('.fw-crumbs-inner', 'scrollHeight', 30);
     stub('.fw-card-body-inner', 'scrollHeight', 250);
     expect(el.unfoldedHeight()).toBe(336);
     // A core word has no crumbs.
     el.model = cardModel(layout, feelings, opened('angry'));
-    stub('.fw-card-heading', 'offsetHeight', 56);
+    stub('.fw-card-bar', 'offsetHeight', 56);
     stub('.fw-card-body-inner', 'scrollHeight', 400);
     expect(el.unfoldedHeight()).toBe(456);
   });

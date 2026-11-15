@@ -83,7 +83,7 @@ html[data-route="about"] body { -webkit-text-size-adjust: 100%; }
 #wheel.fw-over-disc { cursor: grab; }
 #wheel:active { cursor: grabbing; }
 
-button, select, fw-toolbar .fw-about {
+button, select {
   color: inherit;
   background: var(--surface);
   border: 1px solid color-mix(in srgb, var(--fg) 18%, transparent);
@@ -286,11 +286,13 @@ fw-card {
 }
 /* Spec v1.3 §5.2: the wrapper doesn't box the heading in, so the heading can stick for the card's full height. */
 .fw-card-head { display: contents; }
-.fw-card-heading {
+.fw-card-bar {
   position: sticky;
   top: 0;
   z-index: 1;
   background: var(--surface);
+}
+.fw-card-heading {
   font-size: 1.35rem;
   line-height: 1.2;
 }
@@ -309,7 +311,23 @@ fw-card {
   font-weight: 700;
   text-align: start;
 }
-.fw-card-title { flex: 1; }
+.fw-card-title { flex: 1; padding-inline-end: 2.75rem; }
+/* Share comes after the toggle in focus order but sits just left of the fold arrow (1rem edge + 1.1rem arrow + gap). */
+.fw-card-share {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: calc(1rem + 1.1rem + 0.15rem);
+  translate: 0 -50%;
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.fw-card-share[hidden] { display: none; }
+.fw-card-share .fw-icon { width: 1.3rem; height: 1.3rem; }
 /* 1.2rem from the dot to the name (the toggle's gap is 0.3rem); spec v1.3 §5.1 had 1.5rem. */
 .fw-card-toggle .fw-dot { margin-inline-end: calc(1.2rem - 0.3rem); }
 .fw-card-chevron {

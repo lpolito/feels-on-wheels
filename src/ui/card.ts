@@ -1,4 +1,5 @@
 import type { FeelingId, FeelingsDict } from '../data/types';
+import { shareIcon } from './icons';
 import { moveFocus } from '../a11y/focus';
 import { coreKind, definition, nodeLabel, sensationLabel, t } from '../i18n';
 import { siblings, type Home, type Layout, type Path } from '../model/layout';
@@ -26,6 +27,8 @@ export type CardModel =
       index: number;
       title: string;
       hue: string;
+      /** The opened word's path on its wheel. */
+      path: Path;
       /** Ancestors, root first. */
       crumbs: Row[];
       sections: Section[];
@@ -74,7 +77,7 @@ export function cardModel(layout: Layout, feelings: FeelingsDict, s: State, jump
     const heading = seg.node.kind === 'sensation' ? t('couldBe') : t('narrowDown');
     sections.push({ kind: 'links', heading, inline: false, rows: children });
   }
-  return { kind: 'opened', wheel: layout.wheelId, index: seg.index, title, hue: seg.hue, crumbs, sections };
+  return { kind: 'opened', wheel: layout.wheelId, index: seg.index, title, hue: seg.hue, path: seg.path, crumbs, sections };
 }
 
 const h = <K extends keyof HTMLElementTagNameMap>(tag: K, props: Partial<HTMLElementTagNameMap[K]> = {}, ...kids: (Node | string)[]) => {
@@ -84,6 +87,9 @@ const h = <K extends keyof HTMLElementTagNameMap>(tag: K, props: Partial<HTMLEle
 };
 
 const SVG = 'http://www.w3.org/2000/svg';
+
+/** How long "Link copied" shows (the same as the toolbar's). */
+const LABEL_MS = 1500;
 
 function chevronIcon(): SVGSVGElement {
   const svg = document.createElementNS(SVG, 'svg');
@@ -106,7 +112,8 @@ function dot(hue: string): HTMLSpanElement {
 type Shown = Exclude<CardModel, { kind: 'none' }>;
 
 /**
- * The floating accordion card (spec v1.2 §5). Emits 'fw-action' (Action) and 'fw-focus-lost'.
+ * The floating accordion card (spec v1.2 §5). Emits 'fw-action' (Action), 'fw-focus-lost' and, from the Share button of an
+ * opened word, 'fw-share' ({ what: 'word', wheel, path, title }).
  *
  * The same word going between selected and opened updates in place, so the CSS unfold can run and focus stays put;
  * any other change rebuilds.
@@ -123,6 +130,9 @@ export class FwCard extends HTMLElement {
   #head: HTMLDivElement | null = null;
   #crumbs: HTMLElement | null = null;
   #body: HTMLDivElement | null = null;
+  #share: HTMLButtonElement | null = null;
+  #shareLabel: HTMLSpanElement | null = null;
+  #shareTimer: ReturnType<typeof setTimeout> | null = null;
 
   get model(): CardModel {
     return this.#model;
@@ -202,13 +212,25 @@ export class FwCard extends HTMLElement {
     this.#headingObserver.observe(heading);
   }
 
+  /** After Share copies the link (there was no share sheet to open): "Link copied" shows for 1.5 s. */
+  showCopied(): void {
+    if (!this.#shareLabel) return;
+    const label = this.#shareLabel;
+    label.setAttribute('data-show', '');
+    if (this.#shareTimer !== null) clearTimeout(this.#shareTimer);
+    this.#shareTimer = setTimeout(() => {
+      this.#shareTimer = null;
+      label.removeAttribute('data-show');
+    }, LABEL_MS);
+  }
+
   /**
    * Spec v1.3 §4.2: the card's height once fully unfolded (the heading, the crumbs' and the body's natural heights),
    * measurable as soon as it renders, before the unfold has run. 0 while hidden.
    */
   unfoldedHeight(): number {
     if (this.#model.kind === 'none' || !this.#toggle) return 0;
-    const heading = this.#toggle.parentElement as HTMLElement;
+    const heading = this.#toggle.closest<HTMLElement>('.fw-card-bar')!;
     const crumbs = this.#crumbs?.querySelector<HTMLElement>('.fw-crumbs-inner')?.scrollHeight ?? 0;
     const body = this.#body?.querySelector<HTMLElement>('.fw-card-body-inner')?.scrollHeight ?? 0;
     return heading.offsetHeight + crumbs + body;
@@ -241,6 +263,7 @@ export class FwCard extends HTMLElement {
   /** Same word, selected ↔ opened: fill (or keep) the crumbs and body, then flip the open state. */
   #update(m: Shown): void {
     if (m.kind === 'opened') {
+      if (!this.#share) this.#addShare(m);
       if (!this.#body) {
         if (m.crumbs.length > 0) {
           this.#crumbs = this.#crumbsNav(m.crumbs);
@@ -255,13 +278,30 @@ export class FwCard extends HTMLElement {
     this.#setOpen(m.kind === 'opened');
   }
 
+  /** The Share button (and its "Link copied" label) at the end of the bar; only an opened word has one. */
+  #addShare(m: Extract<CardModel, { kind: 'opened' }>): void {
+    const { wheel, path, title } = m;
+    const label = h('span', { className: 'fw-share-label' }, t('linkCopied'));
+    label.setAttribute('aria-hidden', 'true');
+    const name = t('shareWord', { label: title });
+    const share = h('button', { type: 'button', className: 'fw-card-share', title: name }, shareIcon(), label);
+    share.setAttribute('aria-label', name);
+    share.addEventListener('click', () => {
+      this.dispatchEvent(new CustomEvent('fw-share', { detail: { what: 'word', wheel, path, title }, bubbles: true }));
+    });
+    this.#toggle!.closest('.fw-card-bar')!.append(share);
+    this.#share = share;
+    this.#shareLabel = label;
+  }
+
   #setOpen(open: boolean): void {
     this.toggleAttribute('data-open', open);
     this.#toggle!.setAttribute('aria-expanded', String(open));
     // A folded body stays for its fold-away animation, out of reach of the keyboard and assistive tech. Focus inside
     // it would drop to <body> once it's inert, so it moves to the toggle first (v1.1 §5.2's rule for rebuilds).
     const active = document.activeElement;
-    if (!open && active && (this.#body?.contains(active) || this.#crumbs?.contains(active))) moveFocus(this.#toggle!);
+    if (this.#share) this.#share.hidden = !open;
+    if (!open && active && (active === this.#share || this.#body?.contains(active) || this.#crumbs?.contains(active))) moveFocus(this.#toggle!);
     if (this.#body) this.#body.inert = !open;
     if (this.#crumbs) this.#crumbs.inert = !open;
   }
@@ -308,7 +348,9 @@ export class FwCard extends HTMLElement {
   render(): void {
     const m = this.#model;
     this.hidden = m.kind === 'none';
-    this.#toggle = this.#head = this.#crumbs = this.#body = null;
+    this.#toggle = this.#head = this.#crumbs = this.#body = this.#share = this.#shareLabel = null;
+    if (this.#shareTimer !== null) clearTimeout(this.#shareTimer);
+    this.#shareTimer = null;
     // Another word: start at the top, with its breadcrumbs showing (spec v1.3 §5.2).
     this.scrollTop = 0;
     this.#applyInk();
@@ -322,11 +364,14 @@ export class FwCard extends HTMLElement {
     toggle.addEventListener('click', () => this.#emit(this.#model.kind === 'opened' ? { type: 'close' } : { type: 'activate' }));
     // Accordion pattern: the toggle sits inside a heading, so the sections below have a parent.
     const heading = h('h2', { className: 'fw-card-heading' }, toggle);
-    const head = h('div', { className: 'fw-card-head' }, heading);
-    this.#watchHeading(heading);
+    // The bar sticks; Share sits after the toggle in focus order, and the CSS draws it just left of the fold arrow.
+    const bar = h('div', { className: 'fw-card-bar' }, heading);
+    const head = h('div', { className: 'fw-card-head' }, bar);
+    this.#watchHeading(bar);
     this.#toggle = toggle;
     this.#head = head;
     if (m.kind === 'opened') {
+      this.#addShare(m);
       if (m.crumbs.length > 0) {
         this.#crumbs = this.#crumbsNav(m.crumbs);
         head.prepend(this.#crumbs);

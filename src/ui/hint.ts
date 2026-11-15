@@ -1,4 +1,5 @@
 import { moveFocus } from '../a11y/focus';
+import { isPlainClick } from '../router';
 
 /**
  * Spec v2 §4.1: the start message, with an optional link to another wheel where `text` has "{link}". Spec v2.2 §5:
@@ -75,7 +76,7 @@ export class FwHint extends HTMLElement {
     link.className = 'fw-hint-link';
     link.textContent = label;
     link.addEventListener('click', (e) => {
-      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if (!isPlainClick(e)) return;
       e.preventDefault();
       this.dispatchEvent(new CustomEvent('fw-wheel', { detail: { wheel }, bubbles: true }));
     });

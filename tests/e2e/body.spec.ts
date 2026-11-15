@@ -153,7 +153,7 @@ test.describe('switching wheels (desktop)', () => {
 test.describe('body wheel cards (desktop)', () => {
   test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'desktop flows'));
   const headings = (page: Page) => page.locator('fw-card .fw-card-body h3');
-  const rowsText = (page: Page) => page.locator('fw-card ul.fw-rows button').allTextContents();
+  const rowsText = (page: Page) => page.locator('fw-card ul.fw-rows a').allTextContents();
 
   test('Chest → Racing heart → Scared by taps shows the cards in spec §6.2', async ({ page }) => {
     await open(page, '/body');
@@ -172,9 +172,9 @@ test.describe('body wheel cards (desktop)', () => {
     await expect(title(page)).toHaveText('Scared');
     await expect(page.locator('fw-card .fw-definition')).not.toBeEmpty();
     await expect(headings(page)).toHaveText(['You might notice', 'Could also be feeling']);
-    await expect(page.locator('fw-card .fw-close-to button')).toHaveText(['Mad', 'Excited']);
+    await expect(page.locator('fw-card .fw-close-to a')).toHaveText(['Mad', 'Excited']);
     await expect(page.locator('fw-card .fw-jump')).toHaveText('See Scared on the feelings wheel\u00A0›');
-    await expect(page.locator('fw-card nav.fw-crumbs button')).toHaveText(['Chest', 'Racing heart']);
+    await expect(page.locator('fw-card nav.fw-crumbs a')).toHaveText(['Chest', 'Racing heart']);
   });
 
   test('the jump link opens Fearful › Scared on the feelings wheel; Back returns to the body wheel', async ({ page }) => {

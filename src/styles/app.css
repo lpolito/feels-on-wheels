@@ -386,7 +386,10 @@ fw-card[data-open] :is(.fw-crumbs-wrap, .fw-card-body) { grid-template-rows: 1fr
 .fw-sensations { padding-left: 1.1rem; }
 
 .fw-link {
+  /* Keys and focus spec: these are links now; inline-block keeps the size and padding they had as buttons. */
+  display: inline-block;
   min-height: 24px;
+  cursor: pointer;
   padding: 0.15rem 0.1rem;
   border: 0;
   border-radius: 4px;

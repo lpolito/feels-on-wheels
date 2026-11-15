@@ -2,9 +2,11 @@ import type { FeelingId, FeelingsDict } from '../data/types';
 import { moveFocus } from '../a11y/focus';
 import { coreKind, definition, nodeLabel, sensationLabel, t } from '../i18n';
 import { siblings, type Home, type Layout, type Path } from '../model/layout';
+import { isPlainClick } from '../router';
 import type { Action, State } from '../state/store';
 
-export type Row = { index: number; label: string; hue: string };
+/** A word the card links to: its segment, label, hue and path on the card's wheel. */
+export type Row = { index: number; label: string; hue: string; path: Path };
 
 /** One block of an opened card (spec v2 §6.1). `inline` links sit in a row of words; the others are one per line. */
 export type Section =
@@ -43,7 +45,7 @@ export function cardModel(layout: Layout, feelings: FeelingsDict, s: State, jump
   if (!s.opened) return { kind: 'selected', wheel: layout.wheelId, index: seg.index, title, hue: seg.hue };
   const row = (i: number): Row => {
     const x = layout.segments[i]!;
-    return { index: i, label: nodeLabel(x.node), hue: x.hue };
+    return { index: i, label: nodeLabel(x.node), hue: x.hue, path: x.path };
   };
   const crumbs: Row[] = [];
   for (let i = seg.parent; i >= 0; i = layout.segments[i]!.parent) crumbs.unshift(row(i));
@@ -112,6 +114,11 @@ type Shown = Exclude<CardModel, { kind: 'none' }>;
 export class FwCard extends HTMLElement {
   #model: CardModel = { kind: 'none' };
   #inks: Record<string, string> = {};
+  /**
+   * Keys and focus spec: each feeling word is a link to its address, so ⌘-click, middle-click and Copy Link work. Set
+   * by main.ts (formatRoute) before the first model; a plain click is still handled in the card.
+   */
+  hrefFor: (wheel: string, path: Path) => string = () => '#';
   #toggle: HTMLButtonElement | null = null;
   #head: HTMLDivElement | null = null;
   #crumbs: HTMLElement | null = null;
@@ -153,17 +160,31 @@ export class FwCard extends HTMLElement {
   }
 
   /** A row link in its own feeling's ink (spec v2 §6.1); falls back to the card's ink. */
-  #inkedLink(r: Row, trailing = ''): HTMLButtonElement {
+  #inkedLink(r: Row, trailing = ''): HTMLAnchorElement {
     const b = this.#link(r, trailing);
     const ink = this.#inks[r.hue];
     if (ink) b.style.setProperty('--ink', ink);
     return b;
   }
 
-  #link(r: Row, trailing = ''): HTMLButtonElement {
-    const b = h('button', { type: 'button', className: 'fw-link' }, r.label + trailing);
-    b.addEventListener('click', () => this.#emit({ type: 'open', segment: r.index }));
-    return b;
+  #link(r: Row, trailing = ''): HTMLAnchorElement {
+    const wheel = this.#model.kind === 'none' ? '' : this.#model.wheel;
+    return this.#anchor('fw-link', this.hrefFor(wheel, r.path), r.label + trailing, () => this.#emit({ type: 'open', segment: r.index }));
+  }
+
+  /** A link that runs `onPlain` for a plain click and leaves any other click (new tab, Copy Link) to the browser. */
+  #anchor(className: string, href: string, text: string, onPlain: () => void): HTMLAnchorElement {
+    const a = h('a', { className, href }, text);
+    a.addEventListener('click', (e) => {
+      if (!isPlainClick(e)) return;
+      e.preventDefault();
+      onPlain();
+    });
+    return a;
+  }
+
+  #toWheel(wheel: string, path: Path): void {
+    this.dispatchEvent(new CustomEvent('fw-wheel', { detail: { wheel, path }, bubbles: true }));
   }
 
   #headingObserver: ResizeObserver | null = null;
@@ -264,12 +285,9 @@ export class FwCard extends HTMLElement {
         if (s.core) {
           // Spec v2.2 §4.4: "… A happy feeling.", the core word opening that feeling on the first wheel.
           const { before, label, after, hue, wheel, path } = s.core;
-          const link = h('button', { type: 'button', className: 'fw-link' }, label);
+          const link = this.#anchor('fw-link', this.hrefFor(wheel, path), label, () => this.#toWheel(wheel, path));
           const ink = this.#inks[hue];
           if (ink) link.style.setProperty('--ink', ink);
-          link.addEventListener('click', () => {
-            this.dispatchEvent(new CustomEvent('fw-wheel', { detail: { wheel, path }, bubbles: true }));
-          });
           p.append(' ', before, link, after);
         }
         content.append(p);
@@ -280,10 +298,7 @@ export class FwCard extends HTMLElement {
           ? h('p', { className: 'fw-close-to' }, ...s.rows.map((r) => this.#inkedLink(r)))
           : h('ul', { className: 'fw-rows' }, ...s.rows.map((r) => h('li', {}, this.#inkedLink(r, '\u00A0›')))));
       } else {
-        const jump = h('button', { type: 'button', className: 'fw-link fw-jump' }, `${s.label}\u00A0›`);
-        jump.addEventListener('click', () => {
-          this.dispatchEvent(new CustomEvent('fw-wheel', { detail: { wheel: s.wheel, path: s.path }, bubbles: true }));
-        });
+        const jump = this.#anchor('fw-link fw-jump', this.hrefFor(s.wheel, s.path), `${s.label}\u00A0›`, () => this.#toWheel(s.wheel, s.path));
         content.append(h('p', { className: 'fw-jump-row' }, jump));
       }
     }

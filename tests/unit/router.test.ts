@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { inAppLink, type ClickInfo, type LinkInfo } from '../../src/router';
+import { inAppLink, isPlainClick, type ClickInfo, type LinkInfo } from '../../src/router';
 
 // URL redesign spec §2: which link clicks the app handles, and which it leaves to the browser (Review Focus 4).
 
@@ -39,4 +39,13 @@ describe('inAppLink', () => {
   ] as const)('%s goes to the browser', (_, change) => {
     expect(inAppLink(plain, { ...about, ...change }, origin)).toBeNull();
   });
+});
+
+describe('isPlainClick', () => {
+  const base: ClickInfo = { button: 0, metaKey: false, ctrlKey: false, shiftKey: false, altKey: false, defaultPrevented: false };
+  test('a plain left click', () => expect(isPlainClick(base)).toBe(true));
+  test.each([
+    ['⌘', { metaKey: true }], ['Ctrl', { ctrlKey: true }], ['Shift', { shiftKey: true }], ['Alt', { altKey: true }],
+    ['the middle button', { button: 1 }], ['a click already handled', { defaultPrevented: true }],
+  ])('%s is not', (_, extra) => expect(isPlainClick({ ...base, ...extra })).toBe(false));
 });

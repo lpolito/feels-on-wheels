@@ -55,6 +55,8 @@ const stage = $<HTMLElement>('#stage');
 const float = $<HTMLElement>('#float');
 const canvas = $<HTMLCanvasElement>('#wheel');
 const card = $<FwCard>('fw-card');
+// Keys and focus spec: the card's feeling words link to their own addresses.
+card.hrefFor = (wheel, path) => formatRoute(table, { kind: 'wheel', wheel, path });
 const hint = $<FwHint>('fw-hint');
 const toolbar = $<FwToolbar>('fw-toolbar');
 const wheelSwitch = $<FwWheelSwitch>('fw-wheel-switch');

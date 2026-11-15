@@ -118,6 +118,20 @@ test('from an opened word, the heading starts fresh: the whole wheel, nothing se
   expect((await state(page)).opened).toBe(false);
 });
 
+test('every link off the site opens a new tab and says so; the links home stay in this tab (keys and focus spec)', async ({ page }) => {
+  await page.goto('/about');
+  await expect(aboutHeading(page)).toBeVisible();
+  const external = page.locator('#about a[href^="https://"]');
+  expect(await external.count()).toBeGreaterThan(2);
+  for (const a of await external.all()) {
+    await expect(a).toHaveAttribute('target', '_blank');
+    await expect(a).toHaveAccessibleName(/\(opens in a new tab\)$/);
+  }
+  await expect(page.locator('#about a[target]:not([href^="https://"])')).toHaveCount(0);
+  await expect(page.locator('#about .about-home')).not.toHaveAttribute('target', /./);
+  await expect(backToWheel(page)).not.toHaveAttribute('target', /./);
+});
+
 test('the sign-off links the repo with the GitHub icon, named for screen readers, with a big enough target', async ({ page }) => {
   await page.goto('/about');
   await expect(aboutHeading(page)).toBeVisible();

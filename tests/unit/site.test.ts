@@ -148,8 +148,16 @@ describe('About page', () => {
   });
 
   test('linkify escapes text and turns [label](target) into links', () => {
-    expect(linkify('[Guide]({contributing}) & co', links)).toBe('<a href="https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md">Guide</a> &amp; co');
-    expect(linkify('see [this](https://example.com/a?b=1&c=2)', links)).toBe('see <a href="https://example.com/a?b=1&amp;c=2">this</a>');
+    expect(linkify('[Home]({home}) & co', links)).toBe('<a href="/">Home</a> &amp; co');
+    expect(linkify('see [this](https://example.com/a?b=1&c=2)', links, '(new)')).toBe('see <a href="https://example.com/a?b=1&amp;c=2" target="_blank" rel="noopener">this<span class="visually-hidden"> (new)</span></a>');
+  });
+
+  test('every link off the site opens a new tab and says so; links on the site stay', () => {
+    const out = linkify('[a](https://example.org/) [b]({accessibility}) [c]({home}) [d]({about})', links, '(opens in a new tab)');
+    expect(out).toContain('<a href="https://example.org/" target="_blank" rel="noopener">a<span class="visually-hidden"> (opens in a new tab)</span></a>');
+    expect(out).toContain('<a href="https://github.com/lpolito/feels-on-wheels/blob/main/ACCESSIBILITY.md" target="_blank" rel="noopener">b<span class="visually-hidden"> (opens in a new tab)</span></a>');
+    expect(out).toContain('<a href="/">c</a>');
+    expect(out).toContain('<a href="/about">d</a>');
   });
 
   test('linkify draws {github} as the GitHub icon, named by its label', () => {
@@ -167,14 +175,18 @@ describe('About page', () => {
     expect(linkify('[A "q" & b]({github})', links, '(new)')).toContain('aria-label="A &quot;q&quot; &amp; b (new)"');
   });
 
-  test('only the name and GitHub links open a new tab, and they say so to screen readers', () => {
-    expect(html.match(/target="_blank"/g)?.length).toBe(2);
+  test('on the About page, exactly the links off the site open a new tab, and they say so to screen readers', () => {
+    const anchors = html.match(/<a [^>]*>/g)!;
+    const external = anchors.filter((a) => /href="https:\/\//.test(a));
+    expect(external.length).toBeGreaterThan(2);
+    for (const a of anchors) expect(a.includes('target="_blank" rel="noopener"')).toBe(external.includes(a));
+    expect(html.match(/target="_blank"/g)?.length).toBe(external.length);
     expect(section('why')).toContain('aria-label="Feels on Wheels on GitHub (opens in a new tab)"');
-    expect(html.match(/<a [^>]*target="_blank" rel="noopener"/g)?.length).toBe(2);
   });
 
   test('a new-tab link needs the new-tab text', () => {
     expect(() => linkify('[Me]({author})', links)).toThrow(/new tab/);
+    expect(() => linkify('[x](https://example.org/)', links)).toThrow(/new tab/);
   });
 
   test('linkify refuses unknown link keys', () => {

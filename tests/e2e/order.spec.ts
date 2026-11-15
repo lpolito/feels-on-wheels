@@ -35,20 +35,27 @@ test('the message sits where the card does', async ({ page }) => {
   await open(page);
   const box = (sel: string) => page.locator(sel).evaluate((e) => {
     const r = e.getBoundingClientRect();
-    return { left: r.left, right: r.right, bottom: r.bottom };
+    return { left: r.left, right: r.right, bottom: r.bottom, middle: (r.top + r.bottom) / 2, anchor: getComputedStyle(e.parentElement!).justifyContent };
   });
-  const near = (a: { left: number; right: number; bottom: number }, b: typeof a) => {
+  // Same left and right edges. Vertically both sit where #float put them: on the bottom edge when it anchors to the
+  // bottom (portrait), else centered in the column, so their middles agree (the two have different heights).
+  const near = (a: Awaited<ReturnType<typeof box>>, b: typeof a) => {
+    expect(a.anchor).toBe(b.anchor);
     expect(Math.abs(a.left - b.left)).toBeLessThanOrEqual(1);
     expect(Math.abs(a.right - b.right)).toBeLessThanOrEqual(1);
-    expect(Math.abs(a.bottom - b.bottom)).toBeLessThanOrEqual(1);
+    const [x, y] = a.anchor === 'center' ? [a.middle, b.middle] : [a.bottom, b.bottom];
+    expect(Math.abs(x - y)).toBeLessThanOrEqual(1);
   };
-  const message = await box('#message');
+  const hintBox = await box('fw-hint');
   await tapPath(page, 'angry');
-  near(message, await box('#float'));
-  // Resized with the page loaded and a word selected: both boxes follow the new layout together.
+  near(hintBox, await box('fw-card'));
+  // Resized with the page loaded and a word selected: the card follows the new layout, and so does the hint after it.
   await page.setViewportSize({ width: 390, height: 844 });
   await idle(page);
-  near(await box('#message'), await box('#float'));
+  const cardBox = await box('fw-card');
+  await page.getByRole('button', { name: 'Start over' }).click();
+  await idle(page);
+  near(await box('fw-hint'), cardBox);
 });
 
 test('the h1 follows the URL', async ({ page }) => {
@@ -148,6 +155,28 @@ test("Start over leaves focus on the word at 3 o'clock with nothing selected", a
   expect((await state(page)).selected).toBeNull();
   expect(await focusedPath(page)).toBe(path);
   await expect(tabbableWord(page)).toBeFocused();
+  expect(await ringShown(page)).toBe(true);
+});
+
+test('a keyboard Start over from an inner word moves focus once, to the word at 3 o\'clock', async ({ page }) => {
+  await open(page);
+  await tabbableWord(page).focus();
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowRight');
+  await idle(page);
+  expect((await selectedPath(page))!.split('/').length).toBeGreaterThan(1);
+  await page.evaluate(() => {
+    const seen: string[] = [];
+    (window as unknown as { __seen: string[] }).__seen = seen;
+    document.addEventListener('focusin', (e) => {
+      const el = e.target as HTMLElement;
+      if (el.getAttribute('role') === 'treeitem') seen.push(window.__fw.pathOf(Number(el.dataset['index'])) ?? '');
+    }, true);
+  });
+  await page.getByRole('button', { name: 'Start over' }).focus();
+  await page.keyboard.press('Enter');
+  await idle(page);
+  expect(await page.evaluate(() => (window as unknown as { __seen: string[] }).__seen)).toEqual([await coreAtThree(page)]);
 });
 
 test("a spin stopped by a tap off the wheel leaves the word at 3 o'clock tabbable", async ({ page }) => {

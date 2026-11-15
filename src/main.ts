@@ -298,12 +298,13 @@ function placeOpened(s: State): void {
 }
 
 function renderUi(s: State): void {
+  // First, so focus is moved once: the card, message and toolbar may hand focus back to the tree below (fw-focus-lost).
+  tree.update(s);
   setOpenedHalf(s);
   card.model = cardModel(layout, feelings, s, jump);
   hint.content = hintContent(s);
   toolbar.selected = s.selected !== null;
   app.dataset['mode'] = s.view.mode;
-  tree.update(s);
 }
 
 // ── URL & history (URL redesign spec §1, §6; history rule spec 2026-11-14) ──────────────────────────

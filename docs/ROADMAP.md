@@ -25,6 +25,7 @@ Each change is used before the next one is designed. When Lucas picks an idea to
 | <a id="about-page-rework"></a><a id="the-about-page-1"></a>About page rework: why it exists with a sign-off, install steps, the GitHub icon and fixed credit links | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-design.md), [plan](superpowers/plans/2026-11-14-feels-on-wheels-about-rework.md), [changes](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-changes.md) |
 | Keys turn the wheel, no focus ring after a tap, real links on the card, new tabs on About, and tap the opened word to close it | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md), [plan](superpowers/plans/2026-11-14-feels-on-wheels-keys-and-focus.md), [changes](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-changes.md) |
 | Share buttons, About in the start message, and per-feeling link previews | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-share-and-preview.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-changes.md) |
+| Question first in page order, Tab onto the wheel selects nothing, a ring around the focused wheel, and the instruction by device | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-question-first.md) |
 
 ## Ideas
 
@@ -37,7 +38,6 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Strength](#strength) | New ways to identify an emotion | Shelved (2026-11-08) |
 | [Wheels for kids](#wheels-for-kids) | New ways to identify an emotion | Idea |
 | [Rework the body wheel's areas and sensations](#rework-the-body-wheels-areas-and-sensations) | [The body wheel's content](#the-body-wheels-content) | Idea |
-| [Question first in page and Tab order](#question-first-in-page-and-tab-order) | [The wheel and the card](#the-wheel-and-the-card) | Planned: [spec](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md) approved 2026-11-15 |
 | [A different word to start on](#a-different-word-to-start-on) | The wheel and the card | Idea |
 | [Return to the word you jumped from](#return-to-the-word-you-jumped-from) | The wheel and the card | Idea |
 | [Feeling links underlined in their feeling's color](#feeling-links-underlined-in-their-feelings-color) | The wheel and the card | Idea |
@@ -105,25 +105,6 @@ Lucas, 2026-11-14: the body wheel needs reworking to be more consistent.
 
 Polish to what's there; these could ship together as one change.
 
-#### Question first in page and Tab order
-
-- **Designed:** [spec](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md), approved 2026-11-15. It also makes Tab onto the wheel select nothing, with a ring around the wheel while it has keyboard focus, and words the message's instruction by device. The notes below are what the design started from.
-- Fixes the [known issue](#navigation) where Tab selects a word on reaching the wheel, hiding About and Share. Lucas, 2026-11-15, as a direction to design from.
-- **Fix it with the page's order, not by moving focus on load.** Focusing the message on load would disorient screen reader users and bring back the iPhone focus ring the [keys and focus change](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md) removed.
-- **The question comes first.** It works as the page's title for screen readers. Target order: the start message (the question, the link to the other wheel, About), the wheel switch, the toolbar (Share or Start over, the theme), the wheel's tree, then the card.
-- **The message and the card become separate pieces in the page:** the message before the wheel, the card after it. On screen they're still drawn in the same spot, one at a time, as today (both sit in `#float` now).
-- Rejected: moving `#float` as a whole before the wheel, since after you pick a word the card would be behind you and you'd need Shift+Tab to reach it; and putting the switch and toolbar before the message, which contradicts "question first".
-- **Accepted cost:** Tab no longer follows the screen's top-to-bottom order. A sighted keyboard user sees focus start at the message (at the bottom on phones), then jump to the top row. WCAG 2.4.3 asks for a meaningful order, not a strictly visual one.
-- Related: the wheel page has no `<h1>`; the message's `<h2>` is its only heading, and a screen reader reaches it only after the whole tree.
-- To decide when designing:
-  - whether the message's question becomes the page's `<h1>`, or there's a visually hidden `<h1>` (About has its own);
-  - that the not-found message, the same panel, reads well first;
-  - whether Tab still selects the first word on reaching the wheel; worth designing with [a different word to start on](#a-different-word-to-start-on) (Tab landing at 3 o'clock) and the [half-wheel](#navigation) known issue;
-  - what a screen reader hears, and in what order, on first load, on the body wheel and after Start over;
-  - focus handoffs that assume today's order: `fw-focus-lost` going to the tree, About returning focus to the message's About link, and the message's link after switching wheels;
-  - the end-to-end tests that check Tab or focus order;
-  - About in the start message is still on trial from the [share change](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md); if it comes out, rethink the order.
-
 #### A different word to start on
 
 - Lucas's idea, 2026-11-12: the wheel always opens on Fearful, which is an unfortunate first word to see. Could it start somewhere random?
@@ -132,7 +113,6 @@ Polish to what's there; these could ship together as one change.
   - random on every visit, a gentler fixed start, or something in between (a different word each day);
   - whether the intro spin lands on it;
   - the end-to-end and viewport tests expect a fixed start, so they need a way to pin it.
-- **The first word Tab lands on sits at 3 o'clock** (Lucas, 2026-11-14). Tabbing into the wheel selects the first core word, Fearful, which on the whole wheel sits near 12 o'clock. Lucas wants it already at 3 o'clock, where the arrow keys put every word since the [keys and focus change](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md). Either the wheel starts with its first word there, or Tab selects whichever word is at 3 o'clock. Ties in with the [known issue](#navigation) about tabbing into the phone's half-wheel after a spin.
 
 #### Return to the word you jumped from
 
@@ -203,8 +183,7 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 ### Navigation
 
 - **Going back on phones.** Swiping back doesn't work at all on the wheel: it takes every touch, so the browser's Back button is the only way back. An app installed to the iPhone home screen has no Back at all. Lucas (2026-11-14): better history rules for phones wait on an in-app back button. History follows the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md): picking a word or a place adds an entry, moving by direction replaces it. Related: [return to the word you jumped from](#return-to-the-word-you-jumped-from).
-- **Tab selects a word on reaching the wheel, hiding About and Share.** Found in the [share change](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md)'s final review, 2026-11-15. Moving forward with Tab, reaching the wheel selects the first word (`src/a11y/tree.ts`, on focus), which hides the start message with its About link and swaps the toolbar's Share for Start over. So going forward, a keyboard user never reaches About or Share at rest, only by Escape or Shift+Tab from the end of the page. Before the share change, the toolbar's About stayed reachable by forward Tab on desktop. Direction chosen 2026-11-15: [question first in page and Tab order](#question-first-in-page-and-tab-order), with the start message first and the card after the wheel; its [spec](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md) is approved.
-- **Tabbing into the phone's half-wheel.** Since the [keys and focus change](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md), the arrow keys turn the wheel so the selection sits at 3 o'clock. Tabbing into the wheel with nothing selected still selects the first core word without turning it, so after a spin that word can be on the hidden left half until the first arrow key.
+- **Phone screen readers probably can't open a word.** VoiceOver on iPhone and TalkBack act on an item by double-tapping it, which sends a click, and the tree's words listen only for keys (`src/a11y/tree.ts` has no click handling). Found in the [question-first change](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md)'s design, 2026-11-15. Not yet checked on a phone. No fix chosen yet.
 
 ### Link previews
 

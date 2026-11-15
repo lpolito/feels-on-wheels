@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { expectTitle, head, hint, idle, open, selectedPath, settled, state, tapPath, title } from './helpers';
+import { exploreLead, expectTitle, head, hint, idle, open, selectedPath, settled, state, tapPath, title } from './helpers';
 
 const TAU = Math.PI * 2;
 const sameAngle = (a: number, b: number) => {
@@ -448,7 +448,7 @@ test.describe('desktop', () => {
     await open(page);
     expect((await state(page)).selected).toBeNull();
     await expect(hint(page).locator('.fw-hint-title')).toHaveText('How are you feeling?');
-    await expect(hint(page).locator('.fw-hint-text')).toHaveText('Tap or spin to explore, or start from body sensations instead.');
+    await expect(hint(page).locator('.fw-hint-text')).toHaveText(`${await exploreLead(page)}, or start from body sensations instead.`);
   });
 
   test("desktop: opened view's wheel edge meets the column", async ({ page }) => {
@@ -602,7 +602,7 @@ test.describe('phone', () => {
     expect(await page.evaluate(() => location.pathname)).toBe('/');
     await expect(hint(page)).toBeVisible();
     await expect(hint(page).locator('.fw-hint-title')).toHaveText('How are you feeling?');
-    await expect(hint(page).locator('.fw-hint-text')).toHaveText('Tap or spin to explore, or start from body sensations instead.');
+    await expect(hint(page).locator('.fw-hint-text')).toHaveText(`${await exploreLead(page)}, or start from body sensations instead.`);
   });
 
   test("phone: the wheel's center is on the left edge", async ({ page }) => {

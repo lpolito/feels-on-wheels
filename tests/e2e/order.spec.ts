@@ -272,3 +272,12 @@ test('the ring goes when focus leaves the wheel', async ({ page, browserName }) 
   expect(await focusedPath(page)).toBeNull();
   expect(await ringShown(page)).toBe(false);
 });
+
+test('the instruction names what works on the device', async ({ page }, info) => {
+  await open(page);
+  const phone = info.project.name === 'pixel' || info.project.name === 'iphone';
+  expect(await page.evaluate(() => matchMedia('(pointer: coarse)').matches)).toBe(phone);
+  await expect(hint(page).locator('.fw-hint-text')).toHaveText(phone
+    ? 'Tap, spin, or zoom to explore, or start from body sensations instead.'
+    : 'Click, spin, zoom, or use the arrow keys to explore, or start from body sensations instead.');
+});

@@ -24,6 +24,12 @@ export const head = (page: Page) => page.locator('fw-card .fw-card-toggle');
 export const title = (page: Page) => page.locator('fw-card .fw-card-title');
 export const hint = (page: Page) => page.locator('fw-hint');
 
+/** The start message's instruction up to "explore", worded for this device (touch or mouse and keyboard). */
+export const exploreLead = async (page: Page): Promise<string> =>
+  (await page.evaluate(() => matchMedia('(pointer: coarse)').matches))
+    ? 'Tap, spin, or zoom to explore'
+    : 'Click, spin, zoom, or use the arrow keys to explore';
+
 export async function expectTitle(page: Page, text: string): Promise<void> {
   await expect(title(page)).toHaveText(text);
 }

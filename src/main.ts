@@ -70,6 +70,9 @@ const reducedMotion = media('(prefers-reduced-motion: reduce)');
 const darkScheme = media('(prefers-color-scheme: dark)');
 const moreContrast = media('(prefers-contrast: more)');
 const forcedColors = media('(forced-colors: active)');
+/** Which instruction the start message gives: touch screens or a mouse and keyboard. */
+const coarse = media('(pointer: coarse)');
+const hintFor = (text: ReturnType<typeof wheelText>): string => (coarse.matches ? text.hintTouch : text.hintPointer);
 
 // WebKit can run this module before the stylesheets apply (seen on a busy machine). The palette, the stage size
 // and the phone/desktop start all read them, so wait for the page's load event when the tokens are missing.
@@ -187,6 +190,7 @@ function refreshColors(): void {
 }
 
 for (const mq of [darkScheme, moreContrast, forcedColors]) mq.addEventListener('change', refreshColors);
+coarse.addEventListener('change', () => renderUi(store.get()));
 toolbar.theme = themePref;
 app.addEventListener('fw-theme', (e) => {
   themePref = (e as CustomEvent<ThemePref>).detail;
@@ -249,7 +253,7 @@ function hintContent(s: State): HintContent {
   // Spec v2.1 §6.3: the other wheel's own URL, so a new tab opens that wheel.
   const href = formatRoute(table, { kind: 'wheel', wheel, path: null });
   const about = { label: t('about'), href: formatRoute(table, { kind: 'about' }) };
-  const usual = { title: text.hintTitle, text: text.hint, link: { label: text.hintLink, wheel, href }, about };
+  const usual = { title: text.hintTitle, text: hintFor(text), link: { label: text.hintLink, wheel, href }, about };
   if (notFound === null) return usual;
   return { ...usual, title: t('notFoundTitle'), lead: `${t('notFoundText', { word: notFound.word })} `, variant: 'notFound' };
 }
@@ -474,7 +478,7 @@ function applyRoute(route: Route, how: 'push' | 'replace' | 'none', link?: { pat
   }
   if (notFound !== null) {
     const text = wheelText(layout.wheelId);
-    announce(`${t('notFoundTitle')} ${t('notFoundText', { word: notFound.word })} ${text.hint.replace('{link}', text.hintLink)}`);
+    announce(`${t('notFoundTitle')} ${t('notFoundText', { word: notFound.word })} ${hintFor(text).replace('{link}', text.hintLink)}`);
   }
   if (how === 'none') showTitle(route);
   else if (route.kind === 'wheel') writeUrl(how, store.get());

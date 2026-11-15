@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { hint, idle, open, ring, selectedPath, settled, state, tapPath, title } from './helpers';
+import { exploreLead, hint, idle, open, ring, selectedPath, settled, state, tapPath, title } from './helpers';
 
 const AREAS = /^(head|face|chest|breath|stomach|arms|whole-body|posture)$/;
 const wheelId = (page: Page) => page.evaluate(() => window.__fw.wheel());
@@ -20,7 +20,7 @@ test.describe('switching wheels (desktop)', () => {
     expect((await state(page)).selected).toBeNull();
     expect(new URL(page.url()).pathname).toBe('/body');
     await expect(hint(page).locator('.fw-hint-title')).toHaveText('What do you notice in your body?');
-    await expect(hint(page).locator('.fw-hint-text')).toHaveText('Tap or spin to explore, or start from feelings instead.');
+    await expect(hint(page).locator('.fw-hint-text')).toHaveText(`${await exploreLead(page)}, or start from feelings instead.`);
     await expect(switchButton(page, 'Body')).toBeFocused();
     await expect(switchButton(page, 'Body')).toHaveAttribute('aria-pressed', 'true');
     await expect(switchButton(page, 'Feelings')).toHaveAttribute('aria-pressed', 'false');

@@ -58,5 +58,5 @@ export function wheelText(id: string): WheelText {
   const w = active?.wheels[id];
   if (w) return w;
   const key = missing(`wheels.${id}`);
-  return { switch: key, name: key, hintTitle: key, hint: key, hintLink: key };
+  return { switch: key, name: key, hintTitle: key, hintTouch: key, hintPointer: key, hintLink: key };
 }

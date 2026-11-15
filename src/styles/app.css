@@ -217,7 +217,7 @@ fw-toolbar .fw-start-over[hidden] { display: none; }
 #app { --column: min(30rem, 40vw); }
 /* Spec v2.2 §3.1: the wheel draws under the column too; main.ts aims the camera left of the card (§3.2). */
 
-#float {
+.fw-float {
   /* Spec v1.3 §5.1: the card's and the message's shared left edge. */
   --edge: 1.1rem;
   position: absolute;
@@ -233,7 +233,7 @@ fw-toolbar .fw-start-over[hidden] { display: none; }
   gap: 0.5rem;
   pointer-events: none;
 }
-#float > * { pointer-events: auto; }
+.fw-float > * { pointer-events: auto; }
 
 fw-hint, fw-card {
   background: var(--surface);
@@ -470,7 +470,7 @@ fw-card[data-open] :is(.fw-crumbs-wrap, .fw-card-body) { grid-template-rows: 1fr
  * 667 × 375) keeps the side column. Matches isPortrait() in camera.ts.
  */
 @container app (orientation: portrait) or ((max-width: 719.98px) and (min-height: 480px)) or (max-width: 559.98px) {
-  #float {
+  .fw-float {
     top: auto;
     left: calc(12px + env(safe-area-inset-left));
     right: calc(12px + env(safe-area-inset-right));

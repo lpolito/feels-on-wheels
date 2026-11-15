@@ -115,10 +115,13 @@ test.describe('switching wheels (desktop)', () => {
     expect(new URL(page.url()).pathname).toBe('/');
   });
 
-  test('Review Focus 3: Tab from the switch reaches the tree; arrows move through areas', async ({ page }) => {
+  test('Review Focus 3: Tab from the switch, past the toolbar, reaches the tree; arrows move through areas', async ({ page }) => {
     await open(page);
     await switchButton(page, 'Body').click();
     await idle(page);
+    // The toolbar (Share, theme) sits between the switch and the wheel.
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
     await expect(page.locator('#a11y-tree [role="treeitem"]:focus')).toHaveCount(1);
     await page.keyboard.press('ArrowDown');

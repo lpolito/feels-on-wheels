@@ -310,3 +310,67 @@ test('the instruction names what works on the device', async ({ page }, info) =>
     ? 'Tap, spin, or zoom to explore, or start from body sensations instead.'
     : 'Click, spin, zoom, or use the arrow keys to explore, or start from body sensations instead.');
 });
+
+const outlineOf = (page: Page, selector: string) =>
+  page.locator(selector).evaluate((e) => getComputedStyle(e).outlineStyle);
+/** Moves keyboard focus forward to the card's toggle: Tab where the browser stops on buttons, else focus() after a key. */
+const tabToToggle = async (page: Page, browserName: string) => {
+  if (browserName === 'webkit') await page.locator('fw-card .fw-card-toggle').focus();
+  else await page.keyboard.press('Tab');
+  await expect(page.locator('fw-card .fw-card-toggle')).toBeFocused();
+};
+
+test('the card shows a focus ring while its toggle has keyboard focus, folded or open', async ({ page, browserName }) => {
+  await open(page);
+  await page.keyboard.press('Shift');
+  await tabbableWord(page).focus();
+  await page.keyboard.press(' ');
+  await idle(page);
+  expect((await state(page)).opened).toBe(false);
+  await tabToToggle(page, browserName);
+  // The toggle's own ring would be clipped by the card's scroll box, so the card carries it.
+  expect(await outlineOf(page, 'fw-card')).toBe('solid');
+  expect(await outlineOf(page, 'fw-card .fw-card-toggle')).toBe('none');
+  await page.keyboard.press('Enter');
+  await idle(page);
+  expect((await state(page)).opened).toBe(true);
+  expect(await outlineOf(page, 'fw-card')).toBe('solid');
+  // Focus elsewhere: no ring on the card.
+  await tabbableWord(page).focus();
+  expect(await outlineOf(page, 'fw-card')).toBe('none');
+});
+
+test('no card ring after a tap or click on its toggle', async ({ page }) => {
+  await open(page);
+  await tapPath(page, 'angry');
+  await page.locator('fw-card .fw-card-toggle').click();
+  await idle(page);
+  expect(await outlineOf(page, 'fw-card')).toBe('none');
+});
+
+test('the selected word is outlined in the focus color only while the wheel has keyboard focus', async ({ page, browserName }) => {
+  const outlined = async () => {
+    await page.evaluate(() => new Promise<void>((done) => requestAnimationFrame(() => requestAnimationFrame(() => done()))));
+    return page.evaluate(() => window.__fw.focusOutline());
+  };
+  await open(page);
+  await page.keyboard.press('Shift');
+  await tabbableWord(page).focus();
+  await page.keyboard.press('ArrowDown');
+  await idle(page);
+  expect(await selectedPath(page)).not.toBeNull();
+  expect(await outlined()).toBe(true);
+  expect(await ringShown(page)).toBe(false);
+  await tabToToggle(page, browserName);
+  expect(await outlined()).toBe(false);
+  await page.keyboard.press('Shift+Tab');
+  await tabbableWord(page).focus();
+  expect(await outlined()).toBe(true);
+  await page.keyboard.press('Enter');
+  await idle(page);
+  expect((await state(page)).opened).toBe(true);
+  expect(await outlined()).toBe(true);
+  // A tap on another word: focus comes quietly, so the usual outline color.
+  await tapPath(page, 'sad');
+  expect(await outlined()).toBe(false);
+});

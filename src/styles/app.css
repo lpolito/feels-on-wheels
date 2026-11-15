@@ -336,6 +336,10 @@ fw-card {
   text-align: start;
 }
 .fw-card-title { flex: 1; padding-inline-end: 2.75rem; }
+/* The toggle fills the card's bar, so the card's own scroll box clips the toggle's ring (hidden while folded, cut off
+   while open). Ring the whole card instead, outside its box, and not after a tap (data-quiet-focus). */
+.fw-card-toggle:focus-visible { outline: none; }
+fw-card:has(.fw-card-toggle:focus-visible:not([data-quiet-focus])) { outline: 3px solid var(--focus); outline-offset: 2px; }
 /*
  * Share comes after the toggle in focus order but sits just left of the fold arrow (1rem edge + 1.1rem arrow + gap).
  * Its "Link copied" label is the button's sibling in the wrap, so tapping the label doesn't share again.

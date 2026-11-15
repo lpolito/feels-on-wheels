@@ -25,6 +25,7 @@ declare global {
       labelsByRing(): number[];
       /** Question-first spec §4: whether the focus ring was drawn in the last frame. */
       focusRing(): boolean;
+      focusOutline(): boolean;
     };
     /** share.spec.ts: what the stubbed share sheet was given. */
     __shared?: { title: string; url: string };

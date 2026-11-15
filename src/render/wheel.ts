@@ -24,15 +24,18 @@ export interface Frame {
   remPx: number;
   /** prefers-contrast: more → thicker gaps. */
   moreContrast?: boolean;
-  /** The tree has keyboard focus and nothing is selected: ring the wheel. */
-  focusRing: boolean;
+  /**
+   * The tree has keyboard focus: with nothing selected, ring the wheel; with a selection, draw its outline in the focus
+   * color instead of the usual outline color.
+   */
+  keyboardFocus: boolean;
 }
 
 export interface WheelRenderer {
   resize(cssW: number, cssH: number, dpr: number): void;
   setColors(t: FillTable, p: Palette): void;
   draw(f: Frame): void;
-  stats: { segmentsDrawn: number; labelsDrawn: number; labelFits: number; /** Labels drawn per ring this frame. */ labelsByRing: number[]; /** Whether the focus ring was drawn this frame. */ focusRing: boolean };
+  stats: { segmentsDrawn: number; labelsDrawn: number; labelFits: number; /** Labels drawn per ring this frame. */ labelsByRing: number[]; /** Whether the focus ring was drawn this frame. */ focusRing: boolean; /** Whether the selection's outline was drawn in the focus color this frame. */ focusOutline: boolean };
 }
 
 const FONT_STACK = 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
@@ -72,7 +75,7 @@ export function createWheelRenderer(
   let dpr = 1;
   let table: FillTable | null = null;
   let palette: Palette | null = null;
-  const stats = { segmentsDrawn: 0, labelsDrawn: 0, labelFits: 0, labelsByRing: layout.rings.map(() => 0), focusRing: false };
+  const stats = { segmentsDrawn: 0, labelsDrawn: 0, labelFits: 0, labelsByRing: layout.rings.map(() => 0), focusRing: false, focusOutline: false };
   const boldFonts = new Map<number, string>();
 
   const font = (px: number, bold = false): string => {
@@ -186,6 +189,7 @@ export function createWheelRenderer(
       stats.labelFits = 0;
       stats.labelsByRing.fill(0);
       stats.focusRing = false;
+      stats.focusOutline = false;
       if (!table || !palette) return;
       const { cam, vp } = f;
       const R = vp.radius * cam.scale;
@@ -248,7 +252,7 @@ export function createWheelRenderer(
       }
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      if (f.focusRing) {
+      if (f.keyboardFocus && f.selected === null) {
         g.beginPath();
         g.arc(cam.cx, cam.cy, R * layout.rings[layout.rings.length - 1]!.outer + FOCUS_GAP_PX + FOCUS_RING_PX / 2, 0, TAU);
         g.lineWidth = FOCUS_RING_PX;
@@ -261,7 +265,9 @@ export function createWheelRenderer(
       const s = layout.segments[f.selected]!;
       const ring = layout.rings[s.ring]!;
       if (!inWindow(s, ring, win)) return;
-      const ink = palette.outline;
+      // Keyboard focus on the selected word: its outline takes the focus color, as the app's other controls' rings do.
+      const ink = f.keyboardFocus ? palette.focus : palette.outline;
+      stats.focusOutline = f.keyboardFocus;
       const a0 = s.start + cam.rotation;
       const a1 = s.end + cam.rotation;
       const angle = s.mid + cam.rotation;

@@ -152,7 +152,7 @@ function frame(): void {
     cam: camera.current, vp, lit, prevLit, fadeT, pulseT,
     selected: s.selected, opened: s.opened,
     mode: s.view.mode, ring: s.view.mode === 'ring' ? s.view.ring : null, remPx: opts.remPx, moreContrast: moreContrast.matches,
-    focusRing: s.selected === null && treeFocusVisible(),
+    keyboardFocus: treeFocusVisible(),
   });
   if (TEST) {
     drawTimes.push(performance.now() - t0);
@@ -632,6 +632,7 @@ if (TEST) {
       liveWheels: () => live.filter((r) => r.deref() !== undefined).length,
       labelsByRing: () => renderer.stats.labelsByRing.slice(),
       focusRing: () => renderer.stats.focusRing,
+      focusOutline: () => renderer.stats.focusOutline,
     },
   });
 }

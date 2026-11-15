@@ -205,7 +205,7 @@ for (const [theme, bg] of [['dark', 'rgb(18, 17, 20)'], ['light', 'rgb(255, 255,
   });
 }
 
-for (const at of ['/', '/body']) {
+for (const at of ['/', '/body', '/nope']) {
   test(`the message's About link opens About; Back returns focus to it (${at})`, async ({ page }) => {
     await open(page, at);
     await aboutLink(page).click();

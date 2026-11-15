@@ -210,7 +210,13 @@ test('Review Focus 5: Back and Forward across About during a spin', async ({ pag
   await page.mouse.down();
   await page.mouse.move(x, box.y + box.height * 0.8, { steps: 4 });
   await page.mouse.up();
-  await page.evaluate(() => history.go(2));
+  // Read and go in one step, so the spin is known to be still moving when history moves on.
+  const movingAtGo = await page.evaluate(() => {
+    const moving = window.__fw.moving();
+    history.go(2);
+    return moving;
+  });
+  expect(movingAtGo).toBe(true);
   const onAbout = async (): Promise<void> => {
     await expect(page).toHaveURL((u) => u.pathname === '/about');
     await expect(page).toHaveTitle('About Feels on Wheels');

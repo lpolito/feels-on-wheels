@@ -88,8 +88,8 @@ describe('step', () => {
 });
 
 describe('toChild / toParent', () => {
-  test('toChild while selected selects the first child', () => {
-    expect(run(selected('angry'), { type: 'toChild' })).toEqual(selected('angry/let-down'));
+  test('toChild while selected selects the center child, as when opened', () => {
+    expect(run(selected('angry/aggressive'), { type: 'toChild' })).toEqual(selected('angry/aggressive/hostile'));
   });
 
   test('toChild while opened opens the center child', () => {

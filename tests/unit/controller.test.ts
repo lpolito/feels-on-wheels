@@ -288,6 +288,53 @@ describe('taps', () => {
   });
 });
 
+describe('keys turn the whole wheel', () => {
+  const keyMoves: [string, State, Action][] = [
+    ['step', { ...initialState, selected: idx('angry') }, { type: 'step', delta: 1 }],
+    ['toChild', { ...initialState, selected: idx('angry') }, { type: 'toChild' }],
+    ['toParent', { ...initialState, selected: idx('angry/aggressive') }, { type: 'toParent' }],
+    ['activate', initialState, { type: 'activate' }],
+  ];
+  for (const [name, from, action] of keyMoves) {
+    test(`${name} on the whole wheel turns the new selection to 3 o'clock`, () => {
+      setup(from);
+      step(500);
+      store.dispatch(action);
+      step(2000);
+      const s = store.get();
+      expect(s).toMatchObject({ opened: false, view: { mode: 'wheel' } });
+      expect(s.selected).not.toBeNull();
+      expect(offCenter(s.selected!)).toBeLessThan(1e-6);
+      expect(camera.current.scale).toBe(1);
+    });
+  }
+
+  test("a key during a fling still ends with the selection at 3 o'clock", () => {
+    setup({ ...initialState, selected: idx('angry') });
+    step(500);
+    ctl.handle([
+      { type: 'dragStart', x: 600, y: 200, axis: 'x' },
+      { type: 'drag', x: 700, y: 250, dx: 100, dy: 50 },
+      { type: 'dragEnd', vx: 2000, vy: 0 },
+    ]);
+    step(50);
+    expect(camera.moving).toBe(true);
+    store.dispatch({ type: 'step', delta: 1 });
+    step(4000);
+    expect(offCenter(store.get().selected!)).toBeLessThan(1e-6);
+  });
+
+  test('resizing after the keys turned the wheel keeps the rotation', () => {
+    setup({ ...initialState, selected: idx('angry') });
+    step(500);
+    store.dispatch({ type: 'step', delta: 1 });
+    step(2000);
+    ctl.setViewport({ width: 1000, height: 800, radius: 380 }, opts);
+    step(500);
+    expect(offCenter(store.get().selected!)).toBeLessThan(1e-6);
+  });
+});
+
 describe('spinning', () => {
   test('drag + dragEnd while opened settles exactly on a segment mid and opens it', () => {
     setup(opened('angry/aggressive'));

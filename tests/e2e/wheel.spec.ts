@@ -132,6 +132,18 @@ test.describe('desktop', () => {
     await expect(page.locator('[role="treeitem"][aria-selected="true"]')).toHaveAttribute('aria-label', 'Disgusted');
   });
 
+  test("arrow keys turn the whole wheel so the selection sits at 3 o'clock", async ({ page }) => {
+    await open(page);
+    await tapPath(page, 'angry');
+    for (let i = 0; i < 4; i++) await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('ArrowRight');
+    await idle(page);
+    const path = await selectedPath(page);
+    expect(path).toContain('/');
+    expect(await page.evaluate((p) => window.__fw.offCenter(p!), path)).toBeLessThan(1e-3);
+    expect(await state(page)).toMatchObject({ opened: false, view: { mode: 'wheel' } });
+  });
+
   test('arrows work after a Close-to link', async ({ page }) => {
     await open(page, '/angry/aggressive/hostile');
     await page.locator('fw-card .fw-close-to button', { hasText: 'Provoked' }).click();

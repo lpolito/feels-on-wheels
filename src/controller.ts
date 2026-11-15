@@ -5,7 +5,7 @@ import {
   TAU, drawWidthOf, hitTest, normAngle, rotationToCenter, segmentAt, snapRotation, type Camera, type Viewport,
 } from './model/geometry';
 import { resolvePinch } from './model/pinch';
-import type { State, Store } from './state/store';
+import type { Action, State, Store } from './state/store';
 
 export interface Controller {
   handle(intents: Intent[]): void;
@@ -27,6 +27,11 @@ const MIN_SCALE = 0.8;
 const MAX_SCALE_HEADROOM = 1.2;
 const WHEEL_SCROLL_RATE = 0.004;
 const WHEEL_ZOOM_IDLE_MS = 150;
+/**
+ * Keys and focus spec: on the whole wheel only keys dispatch these (a swipe there is a spin; pinches act only while
+ * opened), so a selection they make turns the wheel to put it at 3 o'clock, where an opened word sits.
+ */
+const KEY_MOVES = new Set<Action['type']>(['step', 'toChild', 'toParent', 'activate']);
 /** The intro spins in over about this many median core widths. */
 const INTRO_SEGMENTS = 1.5;
 
@@ -141,7 +146,13 @@ export function createController(
       return;
     }
     const ring = ringOf(s);
-    if (ring === null || dragAxis !== null || s.selected === null || a.type === 'settled') return;
+    if (ring === null) {
+      if (dragAxis === null && s.selected !== null && s.selected !== prev.selected && KEY_MOVES.has(a.type)) {
+        camera.animateTo({ rotation: rotationToCenter(seg(s.selected), camera.target.rotation) });
+      }
+      return;
+    }
+    if (dragAxis !== null || s.selected === null || a.type === 'settled') return;
     if (s.selected !== prev.selected || camera.moving) {
       camera.animateTo({ rotation: rotationToCenter(seg(s.selected), cam.rotation) });
     }

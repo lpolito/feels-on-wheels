@@ -183,7 +183,12 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 ### Navigation
 
 - **Going back on phones.** Swiping back doesn't work at all on the wheel: it takes every touch, so the browser's Back button is the only way back. An app installed to the iPhone home screen has no Back at all. Lucas (2026-11-14): better history rules for phones wait on an in-app back button. History follows the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md): picking a word or a place adds an entry, moving by direction replaces it. Related: [return to the word you jumped from](#return-to-the-word-you-jumped-from).
-- **Phone screen readers probably can't open a word.** VoiceOver on iPhone and TalkBack act on an item by double-tapping it, which sends a click, and the tree's words listen only for keys (`src/a11y/tree.ts` has no click handling). Found in the [question-first change](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md)'s design, 2026-11-15. Not yet checked on a phone. No fix chosen yet.
+- **With VoiceOver on iPhone, the wheel's words can't be reached.** Lucas tried it on 2026-11-15, after the [question-first change](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md): swiping through the page kept repeating the headings or whatever had focus, and never got to a word on the wheel, so he couldn't select one. He's new to VoiceOver, so it isn't yet known how much is the app and how much is how it was used; it needs someone who uses VoiceOver daily, or a careful walk-through. Likely causes, worth checking together:
+  - the tree is visually hidden (`.visually-hidden`: 1 px, clipped), and VoiceOver on iPhone moves by what it finds on screen, so it may skip a 1 px element or struggle to land in it;
+  - VoiceOver on iPhone and TalkBack barely support `role="tree"`;
+  - they act on an item by double-tapping it, which sends a click, and the tree's words listen only for keys (`src/a11y/tree.ts` has no click handling), so even a reached word likely can't be selected.
+
+  TalkBack hasn't been tried. No fix chosen yet.
 
 ### Link previews
 

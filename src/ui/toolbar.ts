@@ -1,4 +1,5 @@
 import { t } from '../i18n';
+import { shareIcon } from './icons';
 import { nextTheme, themeName, type ThemePref } from './theme';
 
 const SVG = 'http://www.w3.org/2000/svg';
@@ -40,29 +41,20 @@ function restartIcon(): SVGSVGElement {
   return svg;
 }
 
-/** A circled "i": the About page (going-public spec §8.4). */
-function infoIcon(): SVGSVGElement {
-  const svg = document.createElementNS(SVG, 'svg');
-  svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('aria-hidden', 'true');
-  svg.setAttribute('class', 'fw-icon');
-  for (const d of ['M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18z', 'M12 11v6M12 7.5v.01']) {
-    const path = document.createElementNS(SVG, 'path');
-    path.setAttribute('d', d);
-    svg.append(path);
-  }
-  return svg;
-}
-
 /**
- * "Start over" (while a word is selected), the theme control and the link to About. "Start over" emits 'fw-action' ({type:'clear'})
- * then 'fw-focus-lost' (spec v1.3 §3.2); the theme control emits 'fw-theme' (ThemePref).
+ * "Start over" (while a word is selected), "Share" (while nothing is) and the theme control, last, in the corner. "Start over" emits
+ * 'fw-action' ({type:'clear'}) then 'fw-focus-lost' (spec v1.3 §3.2); Share emits 'fw-share' ({what:'site'}); the theme control emits
+ * 'fw-theme' (ThemePref).
  */
 export class FwToolbar extends HTMLElement {
   #startOver: HTMLButtonElement | null = null;
   #themeButton: HTMLButtonElement | null = null;
   #label: HTMLSpanElement | null = null;
   #labelTimer: ReturnType<typeof setTimeout> | null = null;
+  #share: HTMLButtonElement | null = null;
+  #shareWrap: HTMLSpanElement | null = null;
+  #shareLabel: HTMLSpanElement | null = null;
+  #shareTimer: ReturnType<typeof setTimeout> | null = null;
   #selected = false;
   #theme: ThemePref = 'system';
 
@@ -109,13 +101,24 @@ export class FwToolbar extends HTMLElement {
     this.#startOver = startOver;
     this.#themeButton = theme;
     this.#label = label;
-    const about = document.createElement('a');
-    about.className = 'fw-about';
-    about.href = '/about';
-    about.setAttribute('aria-label', t('about'));
-    about.title = t('about');
-    about.append(infoIcon());
-    this.append(startOver, themeWrap, about);
+    const share = document.createElement('button');
+    share.type = 'button';
+    share.className = 'fw-share';
+    share.append(shareIcon());
+    share.addEventListener('click', () => {
+      this.dispatchEvent(new CustomEvent('fw-share', { detail: { what: 'site' }, bubbles: true }));
+    });
+    const shareLabel = document.createElement('span');
+    shareLabel.className = 'fw-share-label';
+    shareLabel.setAttribute('aria-hidden', 'true');
+    shareLabel.textContent = t('linkCopied');
+    const shareWrap = document.createElement('span');
+    shareWrap.className = 'fw-share-wrap';
+    shareWrap.append(share, shareLabel);
+    this.#share = share;
+    this.#shareWrap = shareWrap;
+    this.#shareLabel = shareLabel;
+    this.append(startOver, shareWrap, themeWrap);
     this.#sync();
   }
 
@@ -129,11 +132,27 @@ export class FwToolbar extends HTMLElement {
     }, LABEL_MS);
   }
 
+  /** After Share copies the link (it had no share sheet to open): "Link copied" shows for 1.5 s. */
+  showCopied(): void {
+    if (!this.#shareLabel) return;
+    this.#shareLabel.setAttribute('data-show', '');
+    if (this.#shareTimer !== null) clearTimeout(this.#shareTimer);
+    this.#shareTimer = setTimeout(() => {
+      this.#shareTimer = null;
+      this.#shareLabel!.removeAttribute('data-show');
+    }, LABEL_MS);
+  }
+
   #sync(): void {
-    if (!this.#startOver || !this.#themeButton || !this.#label) return;
-    // Hiding the focused button (Escape, Back) would drop focus to <body>: hand it to the wheel instead.
-    const hadFocus = !this.#selected && !this.#startOver.hidden && document.activeElement === this.#startOver;
+    if (!this.#startOver || !this.#themeButton || !this.#label || !this.#share || !this.#shareWrap) return;
+    // Hiding the focused button (Escape, Back, a tap on a word) would drop focus to <body>: hand it to the wheel instead.
+    const active = document.activeElement;
+    const hadFocus = (!this.#selected && !this.#startOver.hidden && active === this.#startOver) || (this.#selected && !this.#share.hidden && active === this.#share);
     this.#startOver.hidden = !this.#selected;
+    this.#share.hidden = this.#selected;
+    this.#shareWrap.hidden = this.#selected;
+    this.#share.setAttribute('aria-label', t('shareSite'));
+    this.#share.title = t('shareSite');
     if (hadFocus) this.dispatchEvent(new CustomEvent('fw-focus-lost', { bubbles: true }));
     this.#themeButton.setAttribute('aria-label', t('themeButton', { choice: themeName(this.#theme) }));
     for (const icon of this.#themeButton.querySelectorAll<SVGElement>('svg[data-theme]')) {

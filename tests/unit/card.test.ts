@@ -382,6 +382,72 @@ describe('<fw-card>', () => {
 });
 
 describe('<fw-toolbar>', () => {
+  test('Share shows while nothing is selected, Start over while something is', () => {
+    document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+    const el = document.querySelector<FwToolbar>('fw-toolbar')!;
+    const share = el.querySelector<HTMLButtonElement>('button.fw-share')!;
+    const startOver = el.querySelector<HTMLButtonElement>('button.fw-start-over')!;
+    el.selected = false;
+    expect(share.hidden).toBe(false);
+    expect(startOver.hidden).toBe(true);
+    el.selected = true;
+    expect(share.hidden).toBe(true);
+    expect(startOver.hidden).toBe(false);
+    expect(el.querySelector('.fw-about')).toBeNull();
+  });
+
+  test('Share is named for what it shares', () => {
+    document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+    const share = document.querySelector<HTMLButtonElement>('fw-toolbar button.fw-share')!;
+    expect(share.getAttribute('aria-label')).toBe('Share Feels on Wheels');
+    expect(share.title).toBe('Share Feels on Wheels');
+  });
+
+  test('the theme button is last, in the corner', () => {
+    document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+    const el = document.querySelector<FwToolbar>('fw-toolbar')!;
+    expect(el.lastElementChild!.matches('span.fw-theme')).toBe(true);
+  });
+
+  test('Share emits fw-share for the site', () => {
+    document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+    const el = document.querySelector<FwToolbar>('fw-toolbar')!;
+    const got: unknown[] = [];
+    document.body.addEventListener('fw-share', (e) => got.push((e as CustomEvent).detail));
+    el.querySelector<HTMLButtonElement>('button.fw-share')!.click();
+    expect(got).toEqual([{ what: 'site' }]);
+  });
+
+  test('showCopied shows "Link copied" for 1.5 s', () => {
+    vi.useFakeTimers();
+    try {
+      document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+      const el = document.querySelector<FwToolbar>('fw-toolbar')!;
+      const label = el.querySelector<HTMLElement>('.fw-share-label')!;
+      expect(label.hasAttribute('data-show')).toBe(false);
+      el.showCopied();
+      expect(label.hasAttribute('data-show')).toBe(true);
+      expect(label.textContent).toBe('Link copied');
+      expect(label.getAttribute('aria-hidden')).toBe('true');
+      vi.advanceTimersByTime(1400);
+      expect(label.hasAttribute('data-show')).toBe(true);
+      vi.advanceTimersByTime(200);
+      expect(label.hasAttribute('data-show')).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  test('hiding a focused Share hands focus to the wheel', () => {
+    document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
+    const el = document.querySelector<FwToolbar>('fw-toolbar')!;
+    let lost = 0;
+    el.addEventListener('fw-focus-lost', () => lost++);
+    el.querySelector<HTMLButtonElement>('button.fw-share')!.focus();
+    el.selected = true;
+    expect(lost).toBe(1);
+  });
+
   test('hiding Start over while it has focus emits fw-focus-lost', () => {
     document.body.innerHTML = '<fw-toolbar></fw-toolbar>';
     const el = document.querySelector<FwToolbar>('fw-toolbar')!;

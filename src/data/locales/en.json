@@ -23,6 +23,8 @@
     "seeOnWheel": "See {label} on the feelings wheel",
     "wheelSwitch": "Wheel",
     "about": "About Feels on Wheels",
+    "shareSite": "Share Feels on Wheels",
+    "linkCopied": "Link copied",
     "notFoundTitle": "Feeling not found!",
     "notFoundText": "There's no “{word}” on the wheel."
   },

@@ -3,12 +3,14 @@ import { join } from 'node:path';
 import type { Plugin } from 'vite';
 import { site } from '../site.config.ts';
 import { loadData } from '../src/data/load.ts';
-import { allPaths, reservedClash, routeTable } from '../src/state/url.ts';
+import { ogImage } from '../src/og.ts';
+import { allPaths, reservedClash, routeTable, type RouteTable } from '../src/state/url.ts';
 import { aboutLinks, headTags, linkify, renderAbout, robotsTxt, sitemapXml, webManifest, type HeadMeta, type PageStrings } from './site.ts';
 
 /** The shell's own head is `/`'s (URL redesign spec §5): the Worker swaps it for every other route's. */
-const shellHead = (s: PageStrings): HeadMeta => ({
+const shellHead = (s: PageStrings, table: RouteTable): HeadMeta => ({
   title: s.titles.home, description: s.titles.homeDescription, path: '', jsonLd: true, noindex: false,
+  image: ogImage({ kind: 'wheel', wheel: table.first, path: null }, table, loadData().locale, s.imageAlt),
 });
 
 /**
@@ -35,7 +37,7 @@ export function sitePlugin(): Plugin {
     transformIndexHtml(html) {
       const s = strings();
       return html
-        .replace('<!--site:head-->', headTags(shellHead(s), site, s))
+        .replace('<!--site:head-->', headTags(shellHead(s, table()), site, s))
         .replace('<!--site:noscript-->', linkify(s.noscript, aboutLinks(site)))
         .replace('<!--site:about-->', renderAbout(s.about, site));
     },

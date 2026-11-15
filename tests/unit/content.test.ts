@@ -54,7 +54,7 @@ describe('going public (spec 2026-11-09)', () => {
     expect(page.name).toBe('Feels on Wheels');
     expect(page.shortName).toBe('Feels on Wheels');
     const { titles } = en;
-    expect(titles.home).toBe('Feels on Wheels: name what you feel');
+    expect(titles.home).toBe('Feels on Wheels: find the word for what you feel');
     expect(titles.homeDescription.length).toBeGreaterThanOrEqual(100);
     expect(titles.homeDescription.length).toBeLessThanOrEqual(160);
     for (const w of loadData().wheels.slice(1)) {

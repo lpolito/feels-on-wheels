@@ -98,7 +98,7 @@ test('the heading links home, like a site title: a new entry, the wheel, focus b
   await page.waitForTimeout(320);
   await home.click();
   await expect(page).toHaveURL(/\/$/);
-  await expect(page).toHaveTitle('Feels on Wheels: name what you feel');
+  await expect(page).toHaveTitle('Feels on Wheels: find the word for what you feel');
   await expect(page.locator('#wheel')).toBeVisible();
   await expect(aboutLink(page)).toBeFocused();
   expect(await page.evaluate(() => history.length)).toBe(entries + 1);
@@ -186,7 +186,7 @@ test('a fresh load of /about: "Back to the wheel" goes to /', async ({ page }) =
   await backToWheel(page).click();
   await expect(page).toHaveURL(/\/$/);
   await expect(page.locator('#wheel')).toBeVisible();
-  await expect(page).toHaveTitle('Feels on Wheels: name what you feel');
+  await expect(page).toHaveTitle('Feels on Wheels: find the word for what you feel');
 });
 
 for (const [theme, bg] of [['dark', 'rgb(18, 17, 20)'], ['light', 'rgb(255, 255, 255)']] as const) {

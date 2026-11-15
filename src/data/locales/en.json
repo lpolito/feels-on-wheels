@@ -618,7 +618,7 @@
     }
   },
   "titles": {
-    "home": "Feels on Wheels: name what you feel",
+    "home": "Feels on Wheels: find the word for what you feel",
     "homeDescription": "A free feelings wheel and body sensations wheel that helps you find the word for what you feel. Fast, accessible, and works offline.",
     "about": "About Feels on Wheels",
     "aboutDescription": "What Feels on Wheels is for, how to use it, the feelings wheels it draws on, and how to help translate it into your language.",
@@ -633,7 +633,7 @@
   "page": {
     "name": "Feels on Wheels",
     "shortName": "Feels on Wheels",
-    "imageAlt": "The Feels on Wheels icon, a wheel of seven colored feelings, beside the words \"Feels on Wheels: Name what you feel\".",
+    "imageAlt": "The {wheel} with its {wedge} wedges in front, beside the words \"Feels on Wheels: Find the word for what you feel\".",
     "noscript": "Feels on Wheels needs JavaScript to draw the wheel. [About Feels on Wheels]({about})",
     "about": {
       "heading": "Feels on Wheels",

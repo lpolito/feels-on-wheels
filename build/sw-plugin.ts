@@ -5,7 +5,7 @@ import type { Plugin } from 'vite';
 
 const SW_ENTRY = 'src/sw/sw.ts';
 const SW_FILE = 'sw.js';
-const SKIP = /(^|\/)(\.DS_Store|sw\.js)$|\.map$/;
+const SKIP = /(^|\/)(\.DS_Store|sw\.js)$|\.map$|(^|\/)og\//;
 
 export interface BuiltFile { path: string; content: string | Uint8Array }
 

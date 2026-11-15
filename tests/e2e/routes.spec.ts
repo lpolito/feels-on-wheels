@@ -24,7 +24,7 @@ test('deep links open their cells, with the cell in the title', async ({ page })
 
 test('the title follows the route: a word, another wheel, then Back', async ({ page }) => {
   await open(page);
-  await expect(page).toHaveTitle('Feels on Wheels: name what you feel');
+  await expect(page).toHaveTitle('Feels on Wheels: find the word for what you feel');
   await tapPath(page, 'angry');
   await tapPath(page, 'angry');
   await expect(page).toHaveTitle('Angry · Feels on Wheels');
@@ -117,7 +117,7 @@ test('on not found, tapping a word opens it at its own path, and the message nev
   expect(new URL(page.url()).pathname).toBe('/');
   await expect(hintTitle(page)).toHaveText('How are you feeling?');
   await expect(notFound(page)).toHaveCount(0);
-  await expect(page).toHaveTitle('Feels on Wheels: name what you feel');
+  await expect(page).toHaveTitle('Feels on Wheels: find the word for what you feel');
 });
 
 for (const colorScheme of ['light', 'dark'] as const) {

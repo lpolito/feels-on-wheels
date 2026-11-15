@@ -2,6 +2,7 @@ import { headTags, type PageStrings } from '../../build/site.ts';
 import type { SiteConfig } from '../../site.config.ts';
 import type { Locale } from '../data/types.ts';
 import { routeMeta } from '../meta.ts';
+import { ogImage } from '../og.ts';
 import { canonicalPage } from '../sw/strategy.ts';
 import { formatRoute, parsePath, type RouteTable } from '../state/url.ts';
 
@@ -53,7 +54,7 @@ export async function handle(req: Request, assets: AssetsBinding, ctx: WorkerCon
   const { title, description } = routeMeta(route, table, ctx.locale);
   const path = found ? formatRoute(table, route, lang).slice(1) : '';
   const atRoot = route.kind === 'wheel' && route.wheel === table.first && route.path === null;
-  const tags = headTags({ title, description, path, jsonLd: atRoot, noindex: !found }, ctx.site, ctx.strings);
+  const tags = headTags({ title, description, path, jsonLd: atRoot, noindex: !found, image: ogImage(route, table, ctx.locale, ctx.strings.imageAlt) }, ctx.site, ctx.strings);
 
   const shell = await assets.fetch(new URL('/', req.url));
   if (!shell.ok) return shell;

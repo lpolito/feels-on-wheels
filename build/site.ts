@@ -6,6 +6,7 @@
  */
 import type { SiteConfig } from '../site.config';
 import type { Titles } from '../src/data/types.ts';
+import { OG_SIZE } from '../src/og.ts';
 
 export interface AboutSection { id: string; heading: string; body: string[]; items?: string[] }
 export interface AboutStrings {
@@ -22,8 +23,6 @@ export interface PageStrings {
   titles: Pick<Titles, 'home' | 'homeDescription' | 'about' | 'aboutDescription'>;
 }
 
-const OG_IMAGE = { path: 'og-image.png', width: 1200, height: 630 };
-
 export function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 }
@@ -38,6 +37,8 @@ export interface HeadMeta {
   jsonLd: boolean;
   /** noindex whatever site.indexable says (not found). */
   noindex: boolean;
+  /** The preview image: its path without a leading "/", and its alt text (share and preview spec §5). */
+  image: { path: string; alt: string };
 }
 
 const tag = (attr: 'name' | 'property', key: string, value: string | number): string =>
@@ -76,12 +77,12 @@ export function headTags(meta: HeadMeta, site: SiteConfig, strings: PageStrings)
     tag('property', 'og:description', description),
     tag('property', 'og:url', url),
     tag('property', 'og:locale', 'en_US'),
-    tag('property', 'og:image', `${site.url}${OG_IMAGE.path}`),
-    tag('property', 'og:image:width', OG_IMAGE.width),
-    tag('property', 'og:image:height', OG_IMAGE.height),
-    tag('property', 'og:image:alt', strings.imageAlt),
+    tag('property', 'og:image', `${site.url}${meta.image.path}`),
+    tag('property', 'og:image:width', OG_SIZE.width),
+    tag('property', 'og:image:height', OG_SIZE.height),
+    tag('property', 'og:image:alt', meta.image.alt),
     tag('name', 'twitter:card', 'summary_large_image'),
-    tag('name', 'twitter:image:alt', strings.imageAlt),
+    tag('name', 'twitter:image:alt', meta.image.alt),
     '<link rel="manifest" href="/manifest.webmanifest">',
     ...(meta.jsonLd ? [jsonLd(site, strings)] : []),
   ];

@@ -2,7 +2,7 @@
 
 Date: 2026-11-15. Status: **draft, not yet reviewed by Lucas.** Written from the brainstorm on 2026-11-15; the word lists in §3 are a first draft for him to edit. A project: new areas, sensations and feelings, new labels, and every feeling's "You might notice" redone.
 
-Builds on the [v2 body wheel spec](2026-11-08-feelings-wheel-v2-body-wheel-design.md). Everything there still holds unless this replaces it. The roadmap idea is [Rework the body wheel's areas and sensations](../../ROADMAP.md#rework-the-body-wheels-areas-and-sensations).
+Builds on the [v2 body wheel spec](2026-11-08-feelings-wheel-v2-body-wheel-design.md) and the [wheel and card spec](2026-11-15-feels-on-wheels-wheel-and-card-design.md). Everything there still holds unless this replaces it. The roadmap idea is [Rework the body wheel's areas and sensations](../../ROADMAP.md#rework-the-body-wheels-areas-and-sensations).
 
 ## Why
 
@@ -62,7 +62,7 @@ Urge labels read **"Want to …"** ("Want to hide"), not "Urge to …", so they'
 
 ## 3. The wheel
 
-Clockwise from 12 o'clock, in the order of §1. Which word the wheel starts on doesn't change in this spec.
+Clockwise from 12 o'clock, in the order of §1. The wheel still starts on Whole body at 3 o'clock (wheel and card spec §1); the rotation that puts it there follows from the new order.
 
 Counts: 8 areas, 49 sensations, 131 feeling cells (today: 8, 40, 105). Of the feeling cells, 71 are middle-ring words, 58 outer and 2 core. Every core feeling is reachable from at least 5 areas: Fearful 8, Angry 7, Sad 7, Surprised 7, Happy 6, Bad 6, Disgusted 5.
 
@@ -220,12 +220,12 @@ The new sensations with no old one (Mind goes blank, Tight throat, Dry mouth, Ga
 
 ## 9. Everything else it touches
 
-- **Data:** `src/data/wheels/body.json` (areas, sensations, feelings); `src/data/locales/en.json` (`areas` and `sensations` rewritten, old ids removed; `titles.areaDescription` per §7); `src/data/feelings.json` per §5.
+- **Data:** `src/data/wheels/body.json` (areas, sensations, feelings; `start` stays `whole-body`); `src/data/locales/en.json` (`areas` and `sensations` rewritten, old ids removed; `titles.areaDescription` per §7); `src/data/feelings.json` per §5.
 - **Colors:** `src/styles/tokens.css` area tokens renamed in all three theme blocks.
-- **Link previews:** run `node scripts/make-og-image.mjs` and commit `public/og/`. The old area images (`body-face.png`, `body-breath.png`, `body-posture.png`) go; `body-throat.png`, `body-shoulders.png` and `body-urges.png` arrive. `page.imageAlt` doesn't change.
+- **Link previews:** run `node scripts/make-og-image.mjs` and commit `public/og/`. The old area images (`body-face.png`, `body-breath.png`, `body-posture.png`) go; `body-throat.png`, `body-shoulders.png` and `body-urges.png` arrive. `page.imageAlt` doesn't change, and `/body`'s own preview still shows Whole body, since it reads the wheel's `start`.
 - **Credits:** the About page (`page.about`) credits the two new sources once the app uses them: Nummenmaa and others' bodily maps, and Frijda's action tendencies. The notes are already in [reference/](../../reference/README.md).
 - **Known issues:** if shorter labels fix the [long label spilling past its cell](../../ROADMAP.md#layout-and-labels) or the tiny windows with no labels at rest, remove them from the roadmap and `ACCESSIBILITY.md`; if not, update their examples, which name old labels.
-- **Tests:** the data test's area → sensations table, `AREA_HUES` in the colors test, the area regex in `tests/e2e/body.spec.ts`, the body palette in `wheel-render.test.ts`, and tests that use removed paths (`posture/shrinking/humiliated` in `card.test.ts`). Most body tests use `chest/racing-heart/scared`, which stays.
+- **Tests:** the data test's area → sensations table, `AREA_HUES` in the colors test, the area regex in `tests/e2e/body.spec.ts`, the body palette in `wheel-render.test.ts`, and tests that use removed paths (`posture/shrinking/humiliated` in `card.test.ts`). Most body tests use `chest/racing-heart/scared` and `whole-body`, which stay.
 
 ## 10. The rules live with the data
 

@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { buildLayout } from '../../src/model/layout';
 import { TAU, hitTest, normAngle, rotationToCenter, segmentAt, type Camera, type Viewport } from '../../src/model/geometry';
-import { createCameraController, ringFocusCamera, type CameraController } from '../../src/camera';
+import { createCameraController, restRotation, ringFocusCamera, type CameraController } from '../../src/camera';
 import { createStore, initialState, type Action, type State, type Store } from '../../src/state/store';
-import { DEFAULT_ROTATION, createController, type Controller } from '../../src/controller';
+import { createController, type Controller } from '../../src/controller';
 
 const layout = buildLayout(loadData().wheel);
 const idx = (p: string): number => layout.byPath.get(p)!;
@@ -631,11 +631,11 @@ describe('side view (sideways phone, spec v2.1 §6.2)', () => {
     if (rotation !== undefined) expect(sameAngle(camera.current.rotation, rotation)).toBeLessThan(1e-6);
   };
 
-  test("starts on the side view with Fearful at 3 o'clock", () => {
+  test("starts on the side view with Happy at 3 o'clock", () => {
     setupSide();
     expectSide();
     expect(camera.current.scale).toBeGreaterThan(1.5);
-    expect(offCenter(idx('fearful'))).toBeLessThan(1e-9);
+    expect(offCenter(idx('happy'))).toBeLessThan(1e-9);
   });
 
   test('playIntro only spins', () => {
@@ -690,10 +690,10 @@ describe('half-wheel (phone)', () => {
     return w[Math.floor(w.length / 2)]!;
   };
 
-  test("phone starts on the half-wheel with Fearful at 3 o'clock", () => {
+  test("phone starts on the half-wheel with Happy at 3 o'clock", () => {
     setupPhone();
     expectHalf();
-    expect(offCenter(idx('fearful'))).toBeLessThan(1e-9);
+    expect(offCenter(idx('happy'))).toBeLessThan(1e-9);
     expect(camera.moving).toBe(false);
   });
 
@@ -732,29 +732,29 @@ describe('half-wheel (phone)', () => {
   test('tap selects on the half-wheel without moving the camera', () => {
     setupPhone();
     const before = { ...camera.current };
-    ctl.handle([{ type: 'tap', ...phoneScreenOf(idx('fearful')) }]);
+    ctl.handle([{ type: 'tap', ...phoneScreenOf(idx('happy')) }]);
     step(1000);
-    expect(store.get()).toMatchObject({ selected: idx('fearful'), opened: false, view: { mode: 'wheel' } });
+    expect(store.get()).toMatchObject({ selected: idx('happy'), opened: false, view: { mode: 'wheel' } });
     expect(camera.current).toEqual(before);
   });
 
   test('closing an opened word lands on the half-wheel at the current rotation', () => {
     setupPhone();
-    const angry = idx('angry'); // beside Fearful, on the visible half
-    ctl.handle([{ type: 'tap', ...phoneScreenOf(angry) }]);
-    ctl.handle([{ type: 'tap', ...phoneScreenOf(angry) }]);
+    const surprised = idx('surprised'); // beside Happy, on the visible half
+    ctl.handle([{ type: 'tap', ...phoneScreenOf(surprised) }]);
+    ctl.handle([{ type: 'tap', ...phoneScreenOf(surprised) }]);
     step(2000);
     expect(store.get().opened).toBe(true);
     const rot = camera.current.rotation;
     store.dispatch({ type: 'close' });
     step(2000);
     expectHalf(rot);
-    expect(store.get()).toMatchObject({ selected: angry, opened: false, view: { mode: 'wheel' } });
+    expect(store.get()).toMatchObject({ selected: surprised, opened: false, view: { mode: 'wheel' } });
   });
 
   test('setViewport portrait→landscape on the half-wheel with a selection keeps the selection, not opened, full wheel at the same rotation', () => {
     setupPhone();
-    ctl.handle([{ type: 'tap', ...phoneScreenOf(idx('angry')) }]);
+    ctl.handle([{ type: 'tap', ...phoneScreenOf(idx('surprised')) }]);
     step(1000);
     const rot = camera.current.rotation;
     const before = store.get();
@@ -762,7 +762,7 @@ describe('half-wheel (phone)', () => {
     ctl.setViewport(land, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null });
     step(2000);
     expect(store.get()).toBe(before);
-    expect(before).toMatchObject({ selected: idx('angry'), opened: false, view: { mode: 'wheel' } });
+    expect(before).toMatchObject({ selected: idx('surprised'), opened: false, view: { mode: 'wheel' } });
     expect(camera.current.scale).toBe(1);
     expect(camera.current.cx).toBe(422);
     expect(camera.current.cy).toBe(195);
@@ -913,9 +913,13 @@ describe('viewport', () => {
 });
 
 describe('keys from nothing', () => {
+  test("the whole wheel rests with the start word at 3 o'clock", () => {
+    expect(sameAngle(camera.current.rotation, restRotation(layout))).toBeLessThan(1e-12);
+  });
+
   test("coreAtThree is the core word at 3 o'clock where the wheel is headed", () => {
-    expect(ctl.coreAtThree()).toBe(segmentAt(layout, 0, normAngle(-DEFAULT_ROTATION)));
-    const r = DEFAULT_ROTATION + 2;
+    expect(ctl.coreAtThree()).toBe(layout.start);
+    const r = restRotation(layout) + 2;
     camera.animateTo({ rotation: r });
     step(50);
     expect(camera.moving).toBe(true);

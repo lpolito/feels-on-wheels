@@ -83,9 +83,9 @@ export function useHalfWheel(layout: Layout, vp: Viewport): boolean {
   return vp.height >= vp.width && shouldStartZoomed(layout, vp);
 }
 
-/** Rotation that centers the first core word (Fearful) at 3 o'clock. */
-export function halfRestRotation(layout: Layout): number {
-  return -layout.segments[layout.rings[0]!.segments[0]!]!.mid;
+/** Rotation that centers the wheel's start word at 3 o'clock, in every view (wheel and card spec §1). */
+export function restRotation(layout: Layout): number {
+  return -layout.segments[layout.start]!.mid;
 }
 
 export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rotation: number, o: CameraOpts): Camera {

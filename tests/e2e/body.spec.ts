@@ -314,7 +314,7 @@ test.describe('v2.1: the wheel switch', () => {
   test('three options fit at 320 px', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 });
     await open(page);
-    await tapPath(page, 'fearful');
+    await tapPath(page, 'happy');
     await expect(page.locator('fw-toolbar .fw-start-over')).toBeVisible();
     await page.evaluate(() => {
       const sw = document.querySelector('fw-wheel-switch') as HTMLElement & { wheels: unknown; current: string };
@@ -480,5 +480,30 @@ test.describe('body wheel deep link (phone)', () => {
     const p = await page.evaluate(() => window.__fw.segmentScreenPoint('chest/racing-heart/scared'));
     const card = (await page.locator('fw-card').boundingBox())!;
     expect(p.y).toBeLessThan(card.y);
+  });
+});
+
+// Wheel and card spec §1: the body wheel rests with Whole body at 3 o'clock; only phones spin in.
+test.describe('body wheel start word', () => {
+  const offCenter = (page: Page, path: string) => page.evaluate((p) => window.__fw.offCenter(p), path);
+
+  test.describe('desktop', () => {
+    test.use({ viewport: { width: 1280, height: 800 } });
+    test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'desktop window'));
+
+    test("the whole wheel rests with Whole body at 3 o'clock", async ({ page }) => {
+      await open(page, '/body');
+      expect(await offCenter(page, 'whole-body')).toBeLessThan(1e-6);
+      expect(await page.evaluate(() => window.__fw.coreAtThree())).toBe('whole-body');
+    });
+  });
+
+  test.describe('phone', () => {
+    test.use({ viewport: { width: 390, height: 844 } });
+
+    test("the intro lands with Whole body at 3 o'clock", async ({ page }) => {
+      await open(page, '/body');
+      expect(await offCenter(page, 'whole-body')).toBeLessThan(1e-6);
+    });
   });
 });

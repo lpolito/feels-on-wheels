@@ -61,7 +61,7 @@ Lucas maintains Feels on Wheels on his own and owns its accessibility. This file
 
 These are known and tracked in the [roadmap's known issues](docs/ROADMAP.md#known-issues).
 
-- **On a phone, swiping back from the edge of the screen doesn't work on the wheel**, because the wheel takes every touch. Use the browser's Back button instead. In the app installed to an iPhone's home screen there's no Back at all: use Start over, or "Back to the wheel" on the About page.
+- **On a phone, swiping back from the edge of the screen doesn't work on the wheel**, because the wheel takes every touch. Use the browser's Back button instead. In the app installed to an iPhone's home screen there's no Back at all: use Start over, or "Back to the wheel" on the About page. After jumping from the body wheel to the feelings wheel, "Back to the body wheel" above the card goes back without the browser's Back.
 - **On an iPhone with VoiceOver, the words on the wheel can't be reached**, so you can't pick a word that way. TalkBack on Android likely has the same problem but hasn't been tried. Until it's fixed, a word's own address (such as `/angry`) opens its card directly.
 - **On the wheel, pinching zooms the wheel itself, not the page.** To make text larger, use the browser's or the system's text size or zoom settings.
 - **Small windows**, which can include a computer's browser zoomed in a long way, may show the body sensations wheel without labels until you open something. The card's words are still there.

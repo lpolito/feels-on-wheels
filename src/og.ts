@@ -5,19 +5,16 @@ import type { Route, RouteTable } from './state/url';
 /** Link-preview image size (share and preview spec §5). */
 export const OG_SIZE = { width: 1200, height: 630 } as const;
 
-/** The wedge in front for a wheel at rest. */
-export const OG_BASE: Readonly<Record<string, string>> = { core: 'happy', body: 'whole-body' };
-
 /**
- * Which wheel and wedge a route's preview image shows. Pure, like routeMeta. Anything else, including a wheel at rest
- * with no base wedge, shows the first wheel at rest.
+ * Which wheel and wedge a route's preview image shows: a wheel at rest shows its start (wheel and card spec §1). Pure,
+ * like routeMeta. Anything else, including a wheel with no start, shows the first wheel at rest.
  */
 export function ogWedge(route: Route, table: RouteTable): { wheel: string; wedge: string } {
   if (route.kind === 'wheel') {
-    const wedge = route.path === null ? OG_BASE[route.wheel] : route.path.split('/')[0];
+    const wedge = route.path === null ? table.starts.get(route.wheel) : route.path.split('/')[0];
     if (wedge !== undefined) return { wheel: route.wheel, wedge };
   }
-  return { wheel: table.first, wedge: OG_BASE[table.first]! };
+  return { wheel: table.first, wedge: table.starts.get(table.first)! };
 }
 
 export function ogImagePath(w: { wheel: string; wedge: string }): string {

@@ -12,6 +12,7 @@ export interface RouteTable {
   first: string; // the first wheel's id, served at the root
   wheels: ReadonlyMap<string, ReadonlyMap<Path, NodeRef>>; // in wheel order
   langs: readonly string[]; // prefixed languages; [] today (§9)
+  starts: ReadonlyMap<string, string>; // each wheel's start (wheel and card spec §1)
 }
 
 /** The longest word the not-found page echoes back. */
@@ -33,7 +34,7 @@ function wheelPaths(wheel: Wheel): Map<Path, NodeRef> {
 }
 
 export function routeTable(wheels: readonly Wheel[], langs: readonly string[] = []): RouteTable {
-  return { first: wheels[0]!.id, wheels: new Map(wheels.map((w) => [w.id, wheelPaths(w)])), langs };
+  return { first: wheels[0]!.id, wheels: new Map(wheels.map((w) => [w.id, wheelPaths(w)])), langs, starts: new Map(wheels.map((w) => [w.id, w.start])) };
 }
 
 function clip(word: string): string {

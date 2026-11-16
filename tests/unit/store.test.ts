@@ -70,9 +70,9 @@ describe('open / close / clear / escape', () => {
 });
 
 describe('step', () => {
-  test('step with nothing selected selects the first core', () => {
+  test('step with nothing selected selects the start word', () => {
     const s = run(initialState, { type: 'step', delta: 1 });
-    expect(s.selected).toBe(layout.rings[0]!.segments[0]);
+    expect(s.selected).toBe(layout.start);
     expect(s.opened).toBe(false);
   });
 
@@ -139,8 +139,8 @@ describe('toChild / toParent', () => {
 });
 
 describe('activate', () => {
-  test('activate with nothing selected selects the first core', () => {
-    expect(run(initialState, { type: 'activate' }).selected).toBe(layout.rings[0]!.segments[0]);
+  test('activate with nothing selected selects the start word', () => {
+    expect(run(initialState, { type: 'activate' }).selected).toBe(layout.start);
   });
 
   test('activate while selected opens', () => {
@@ -255,8 +255,8 @@ describe('key moves from nothing (the word the first key selects)', () => {
     expect(s.selected).not.toBe(sad);
   });
 
-  test('toChild and toParent with nothing selected and no from select the first core', () => {
-    const first = layout.rings[0]!.segments[0]!;
+  test('toChild and toParent with nothing selected and no from select the start word', () => {
+    const first = layout.start;
     expect(run(initialState, { type: 'toChild' }).selected).toBe(first);
     expect(run(initialState, { type: 'toParent' }).selected).toBe(first);
   });

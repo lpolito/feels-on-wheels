@@ -62,6 +62,18 @@ describe('core wheel data', () => {
 });
 
 describe('validation', () => {
+  test('validateWheel needs start to name one of its center nodes', () => {
+    for (const start of [undefined, 42, 'nope', 'aggressive']) {
+      const bad = structuredClone(wheel) as unknown as Record<string, unknown>;
+      bad['start'] = start;
+      expect(() => validateWheel(bad, feelings, ids()), String(start)).toThrow(DataError);
+    }
+  });
+
+  test('the feelings wheel starts on Happy and the body wheel on Whole body', () => {
+    expect(wheels.map((w) => [w.id, w.start])).toEqual([['core', 'happy'], ['body', 'whole-body']]);
+  });
+
   test('validateWheel throws DataError on unknown feeling id', () => {
     const bad = structuredClone(wheel);
     bad.children[0]!.feeling = 'nope';

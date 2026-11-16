@@ -49,6 +49,10 @@ export function validateWheel(
     }
   };
   visit(w.children as WheelNode[], 0);
+  // Wheel and card spec §1: the wheel rests on one of its center nodes.
+  if (typeof w.start !== 'string' || !(w.children as WheelNode[]).some((n) => nodeRef(n).id === w.start)) {
+    fail(`wheel ${w.id}: start must name one of its center nodes`);
+  }
   return w as unknown as Wheel;
 }
 

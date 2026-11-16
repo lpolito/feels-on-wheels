@@ -24,6 +24,11 @@ describe('shadeRing (spec v2.1 §7.1)', () => {
 });
 
 describe('buildLayout', () => {
+  test("layout.start is the wheel's start segment, on ring 0", () => {
+    const s = layout.segments[layout.start]!;
+    expect([s.path, s.ring]).toEqual(['happy', 0]);
+  });
+
   test('segment angles in each ring tile [0, 2π) with no gaps', () => {
     for (const ring of layout.rings) {
       let prevEnd = 0;

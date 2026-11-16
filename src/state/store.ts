@@ -67,7 +67,8 @@ function selectOnly(s: State, i: number): State {
   return { ...s, selected: i, opened: false, view: WHEEL };
 }
 
-const firstCore = (layout: Layout): number => layout.rings[0]!.segments[0]!;
+/** A key from nothing with no `from`: the wheel's start word. */
+const startCore = (layout: Layout): number => layout.start;
 
 /** Adds `from` (the word a key selects from nothing) to the four key actions; any other action is returned as is. */
 export function withFrom(a: Action, from: number): Action {
@@ -96,12 +97,12 @@ function next(layout: Layout, s: State, a: Action): State {
     case 'clear':
       return { ...s, selected: null, opened: false, view: WHEEL };
     case 'step': {
-      if (sel === null) return selectOnly(s, a.from ?? firstCore(layout));
+      if (sel === null) return selectOnly(s, a.from ?? startCore(layout));
       const to = ringNeighbor(layout, sel, a.delta);
       return s.opened ? open(layout, s, to) : selectOnly(s, to);
     }
     case 'toChild': {
-      if (sel === null) return selectOnly(s, a.from ?? firstCore(layout));
+      if (sel === null) return selectOnly(s, a.from ?? startCore(layout));
       if (s.opened) {
         const c = centerChild(layout, sel);
         return c === null ? s : open(layout, s, c);
@@ -111,7 +112,7 @@ function next(layout: Layout, s: State, a: Action): State {
       return c === null ? s : selectOnly(s, c);
     }
     case 'toParent': {
-      if (sel === null) return selectOnly(s, a.from ?? firstCore(layout));
+      if (sel === null) return selectOnly(s, a.from ?? startCore(layout));
       const p = seg(sel).parent;
       if (s.opened) return p < 0 ? next(layout, s, { type: 'close' }) : open(layout, s, p);
       return p < 0 ? s : selectOnly(s, p);
@@ -119,7 +120,7 @@ function next(layout: Layout, s: State, a: Action): State {
     case 'stepOut':
       return s.opened ? next(layout, s, { type: 'toParent' }) : s;
     case 'activate':
-      if (sel === null) return selectOnly(s, a.from ?? firstCore(layout));
+      if (sel === null) return selectOnly(s, a.from ?? startCore(layout));
       return s.opened ? s : open(layout, s, sel);
     case 'escape':
       if (s.opened) return next(layout, s, { type: 'close' });

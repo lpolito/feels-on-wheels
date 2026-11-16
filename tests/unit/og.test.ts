@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
-import { OG_BASE, OG_SIZE, ogImage, ogImagePath, ogWedge } from '../../src/og';
+import { OG_SIZE, ogImage, ogImagePath, ogWedge } from '../../src/og';
 import { parsePath, routeTable } from '../../src/state/url';
 
 const { wheels, locale } = loadData();
@@ -29,7 +29,7 @@ describe('preview image per route (share and preview spec §5)', () => {
   });
 
   test('a wheel at rest with no base wedge shows the first wheel and its base, together', () => {
-    expect(ogWedge({ kind: 'wheel', wheel: 'other', path: null }, table)).toEqual({ wheel: table.first, wedge: OG_BASE[table.first] });
+    expect(ogWedge({ kind: 'wheel', wheel: 'other', path: null }, table)).toEqual({ wheel: table.first, wedge: 'happy' });
   });
 
   test('every wheel at rest and every ring-0 wedge of every wheel has an image in public/og/', () => {

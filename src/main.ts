@@ -14,7 +14,7 @@ import { inAppLink } from './router';
 import { buildFillTable, inkFor, readPalette } from './render/colors';
 import { createSpriteCache } from './render/sprites';
 import { createWheelRenderer, labelFont, type WheelRenderer } from './render/wheel';
-import { createStore, initialState, type Action, type State, type Store } from './state/store';
+import { createStore, initialState, withFrom, type Action, type State, type Store } from './state/store';
 import { createHistoryWriter, historyOp } from './state/history';
 import { formatRoute, parsePath, pathOf, routeTable, stateFor, type Route } from './state/url';
 import { cardModel, type FwCard, type JumpContext } from './ui/card';
@@ -70,6 +70,9 @@ const reducedMotion = media('(prefers-reduced-motion: reduce)');
 const darkScheme = media('(prefers-color-scheme: dark)');
 const moreContrast = media('(prefers-contrast: more)');
 const forcedColors = media('(forced-colors: active)');
+/** Which instruction the start message gives: touch screens or a mouse and keyboard. */
+const coarse = media('(pointer: coarse)');
+const hintFor = (text: ReturnType<typeof wheelText>): string => (coarse.matches ? text.hintTouch : text.hintPointer);
 
 // WebKit can run this module before the stylesheets apply (seen on a busy machine). The palette, the stage size
 // and the phone/desktop start all read them, so wait for the page's load event when the tokens are missing.
@@ -131,6 +134,12 @@ let pendingDraw = 0;
 const TEST = import.meta.env.MODE === 'test';
 const drawTimes: number[] = [];
 
+/** True when the tree has keyboard focus: `:focus-visible`, and not focus the app moved after a pointer press. */
+function treeFocusVisible(): boolean {
+  const el = document.activeElement;
+  return el instanceof HTMLElement && el.closest('#a11y-tree') !== null && el.matches(':focus-visible') && !el.hasAttribute('data-quiet-focus');
+}
+
 function frame(): void {
   pendingDraw = 0;
   if (onAbout) return;
@@ -143,6 +152,7 @@ function frame(): void {
     cam: camera.current, vp, lit, prevLit, fadeT, pulseT,
     selected: s.selected, opened: s.opened,
     mode: s.view.mode, ring: s.view.mode === 'ring' ? s.view.ring : null, remPx: opts.remPx, moreContrast: moreContrast.matches,
+    keyboardFocus: treeFocusVisible(),
   });
   if (TEST) {
     drawTimes.push(performance.now() - t0);
@@ -180,6 +190,7 @@ function refreshColors(): void {
 }
 
 for (const mq of [darkScheme, moreContrast, forcedColors]) mq.addEventListener('change', refreshColors);
+coarse.addEventListener('change', () => renderUi(store.get()));
 toolbar.theme = themePref;
 app.addEventListener('fw-theme', (e) => {
   themePref = (e as CustomEvent<ThemePref>).detail;
@@ -203,8 +214,13 @@ document.addEventListener('keydown', (e) => {
   const action = routeKey(e.key, keyTarget(e.target as Element | null), e.metaKey || e.ctrlKey || e.altKey);
   if (!action) return;
   e.preventDefault();
-  dispatch(action);
+  // Question-first spec §3: from nothing, a key from outside the tree selects the word at 3 o'clock.
+  dispatch(withFrom(action, controller.coreAtThree()));
 });
+
+// The ring follows keyboard focus; draws are a frame later, so the quiet mark is already cleared by then.
+for (const type of ['focusin', 'focusout']) document.addEventListener(type, requestDraw);
+document.addEventListener('keydown', requestDraw, true);
 
 // A mouse click on the wheel puts keyboard focus in the tree, so the arrows work at once.
 canvas.addEventListener('pointerup', (e) => {
@@ -237,7 +253,7 @@ function hintContent(s: State): HintContent {
   // Spec v2.1 §6.3: the other wheel's own URL, so a new tab opens that wheel.
   const href = formatRoute(table, { kind: 'wheel', wheel, path: null });
   const about = { label: t('about'), href: formatRoute(table, { kind: 'about' }) };
-  const usual = { title: text.hintTitle, text: text.hint, link: { label: text.hintLink, wheel, href }, about };
+  const usual = { title: text.hintTitle, text: hintFor(text), link: { label: text.hintLink, wheel, href }, about };
   if (notFound === null) return usual;
   return { ...usual, title: t('notFoundTitle'), lead: `${t('notFoundText', { word: notFound.word })} `, variant: 'notFound' };
 }
@@ -282,12 +298,13 @@ function placeOpened(s: State): void {
 }
 
 function renderUi(s: State): void {
+  // First, so focus is moved once: the card, message and toolbar may hand focus back to the tree below (fw-focus-lost).
+  tree.update(s);
   setOpenedHalf(s);
   card.model = cardModel(layout, feelings, s, jump);
   hint.content = hintContent(s);
   toolbar.selected = s.selected !== null;
   app.dataset['mode'] = s.view.mode;
-  tree.update(s);
 }
 
 // ── URL & history (URL redesign spec §1, §6; history rule spec 2026-11-14) ──────────────────────────
@@ -366,7 +383,8 @@ function mount(next: Layout, initial: State, intro: boolean): void {
   prevLit = lit;
   fadeStart = -Infinity;
   pulseStart = -Infinity;
-  tree = createA11yTree(freshTreeRoot(), layout, dispatch);
+  tree = createA11yTree(freshTreeRoot(), layout, dispatch, () => controller.coreAtThree());
+  camera.onSettle(() => tree.rest());
   unsubscribe = store.subscribe(onState);
   wheelSwitch.current = layout.wheelId;
 
@@ -402,6 +420,8 @@ function showAbout(how: 'push' | 'replace' | 'none', from?: Element): void {
     if (how === 'none') onAbout = true;
     controller.setViewport(vp, opts);
     camera.stop();
+    // A spin stopped here never settles: the word at 3 o'clock becomes tabbable now, for the return.
+    tree.rest();
     const active = from ?? document.activeElement;
     opener = active instanceof HTMLElement && app.contains(active) ? active : null;
   }
@@ -459,7 +479,7 @@ function applyRoute(route: Route, how: 'push' | 'replace' | 'none', link?: { pat
   }
   if (notFound !== null) {
     const text = wheelText(layout.wheelId);
-    announce(`${t('notFoundTitle')} ${t('notFoundText', { word: notFound.word })} ${text.hint.replace('{link}', text.hintLink)}`);
+    announce(`${t('notFoundTitle')} ${t('notFoundText', { word: notFound.word })} ${hintFor(text).replace('{link}', text.hintLink)}`);
   }
   if (how === 'none') showTitle(route);
   else if (route.kind === 'wheel') writeUrl(how, store.get());
@@ -533,7 +553,11 @@ addEventListener('popstate', () => {
 });
 
 // ── Input & resize ───────────────────────────────────────────────────────
-attachGestures(canvas, (intents) => controller.handle(intents));
+attachGestures(canvas, (intents) => {
+  controller.handle(intents);
+  // A tap on a spinning wheel stops it ("stop here"), and a stopped spin never settles: catch the tree up.
+  if (!camera.moving && intents.some((i) => i.type === 'tap')) tree.rest();
+});
 
 /** `onlyIfChanged`: skip when the viewport and options measure the same (the card resizing as it unfolds). */
 function remeasure(onlyIfChanged: boolean): void {
@@ -550,6 +574,8 @@ function remeasure(onlyIfChanged: boolean): void {
   setOpenedHalf(store.get());
   opts = { ...opts, openedY: openedYFor(store.get()) };
   controller.setViewport(vp, opts);
+  // A resize mid-spin jumps to where the spin was headed, which never settles: catch the tree up.
+  if (!camera.moving) tree.rest();
   drawNow();
 }
 
@@ -596,6 +622,8 @@ if (TEST) {
       moving: () => camera.moving,
       drawTimes: () => drawTimes.slice(),
       pathOf: (i: number | null) => (i === null ? null : layout.segments[i]!.path),
+      /** Question-first spec §3: the path of the core word at 3 o'clock where the wheel is headed. */
+      coreAtThree: () => layout.segments[controller.coreAtThree()]!.path,
       offCenter: (path: string) => {
         const off = normAngle(layout.segments[layout.byPath.get(path)!]!.mid + camera.current.rotation);
         return Math.min(off, TAU - off);
@@ -603,6 +631,8 @@ if (TEST) {
       wheel: () => layout.wheelId,
       liveWheels: () => live.filter((r) => r.deref() !== undefined).length,
       labelsByRing: () => renderer.stats.labelsByRing.slice(),
+      focusRing: () => renderer.stats.focusRing,
+      focusOutline: () => renderer.stats.focusOutline,
     },
   });
 }

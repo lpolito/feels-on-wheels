@@ -132,7 +132,7 @@ describe('<fw-card> share button', () => {
     expect(b.getAttribute('aria-label')).toBe('Share Aroused');
     expect(b.title).toBe('Share Aroused');
     expect(b.closest('button.fw-card-toggle')).toBeNull();
-    expect(b.closest('h2')).toBeNull();
+    expect(b.closest('[role="heading"]')).toBeNull();
     expect(b.querySelector('.fw-share-label')).toBeNull();
   });
 
@@ -181,7 +181,7 @@ describe('<fw-card> share button', () => {
   test("the heading's accessible text is only the word", () => {
     const el = mount();
     el.model = cardModel(layout, feelings, opened('happy/playful/aroused'));
-    expect(el.querySelector('h2.fw-card-heading')!.textContent).not.toContain('Share');
+    expect(el.querySelector('.fw-card-heading')!.textContent).not.toContain('Share');
   });
 
   test('Share emits fw-share for the word', () => {
@@ -342,13 +342,28 @@ describe('<fw-card>', () => {
     expect(el.querySelector('nav.fw-crumbs')).toBeNull();
   });
 
-  test('toggle is a button with aria-expanded inside an h2', () => {
+  test('the heading is level 2 when selected and level 1 when opened', () => {
+    const { el } = mount();
+    el.model = cardModel(layout, feelings, selected('angry/aggressive'));
+    const heading = el.querySelector('[role="heading"]')!;
+    expect(heading.getAttribute('aria-level')).toBe('2');
+    const toggle = head(el);
+    toggle.focus();
+    el.model = cardModel(layout, feelings, opened('angry/aggressive'));
+    expect(el.querySelector('[role="heading"]')).toBe(heading);
+    expect(heading.getAttribute('aria-level')).toBe('1');
+    expect(document.activeElement).toBe(toggle);
+    el.model = cardModel(layout, feelings, selected('angry/aggressive'));
+    expect(heading.getAttribute('aria-level')).toBe('2');
+  });
+
+  test('toggle is a button with aria-expanded inside a heading', () => {
     const { el } = mount();
     el.model = cardModel(layout, feelings, selected('angry/aggressive'));
     const toggle = head(el);
     expect(toggle.type).toBe('button');
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
-    expect(toggle.parentElement!.matches('.fw-card-head > .fw-card-bar > h2.fw-card-heading')).toBe(true);
+    expect(toggle.parentElement!.matches('.fw-card-head > .fw-card-bar > [role="heading"].fw-card-heading')).toBe(true);
     expect(toggle.querySelector('.fw-dot')).not.toBeNull();
     expect(toggle.querySelector('.fw-card-title')!.textContent).toBe('Aggressive');
     expect(toggle.querySelector('.fw-card-chevron')).not.toBeNull();
@@ -665,7 +680,7 @@ describe('<fw-card> on the body wheel', () => {
     const rows = [...el.querySelectorAll<HTMLAnchorElement>('ul.fw-rows a')];
     expect(rows.map((r) => r.textContent)).toEqual(['Scared\u00A0›', 'Mad\u00A0›', 'Excited\u00A0›']);
     expect(rows.map((r) => r.style.getPropertyValue('--ink'))).toEqual(['#222222', '#333333', '#444444']);
-    expect(el.querySelector('h3')!.textContent).toBe('Could be feeling');
+    expect(el.querySelector('h2')!.textContent).toBe('Could be feeling');
   });
 });
 
@@ -730,7 +745,7 @@ describe('<fw-card> across wheels (final review #1)', () => {
     expect(titleOf(el)).not.toBe('Racing heart');
     el.model = cardModel(body, feelings, bOpened('chest/racing-heart'), jump);
     expect(titleOf(el)).toBe('Racing heart');
-    expect(el.querySelector('h3')!.textContent).toBe('Could be feeling');
+    expect(el.querySelector('h2')!.textContent).toBe('Could be feeling');
   });
 
   test('the same index on another wheel re-renders the card (selected → opened)', () => {

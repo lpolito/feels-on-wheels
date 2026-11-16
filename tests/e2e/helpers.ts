@@ -24,6 +24,12 @@ export const head = (page: Page) => page.locator('fw-card .fw-card-toggle');
 export const title = (page: Page) => page.locator('fw-card .fw-card-title');
 export const hint = (page: Page) => page.locator('fw-hint');
 
+/** The start message's instruction up to "explore", worded for this device (touch or mouse and keyboard). */
+export const exploreLead = async (page: Page): Promise<string> =>
+  (await page.evaluate(() => matchMedia('(pointer: coarse)').matches))
+    ? 'Tap, spin, or zoom to explore'
+    : 'Click, spin, zoom, or use the arrow keys to explore';
+
 export async function expectTitle(page: Page, text: string): Promise<void> {
   await expect(title(page)).toHaveText(text);
 }
@@ -45,3 +51,21 @@ export const focused = (page: Page) => page.evaluate(() => {
 
 /** The element's computed outline style: 'none' when its focus ring is hidden (keys and focus spec). */
 export const ring = (l: Locator) => l.evaluate((e) => getComputedStyle(e).outlineStyle);
+
+/**
+ * The focusable, rendered elements in document order with tabIndex >= 0, described like focused(). Tests Tab order
+ * without relying on each browser's Tab-to-links setting.
+ */
+export const tabStops = (page: Page) => page.evaluate(() => {
+  const sel = 'a[href], button, input, select, textarea, [tabindex]';
+  const found: string[] = [];
+  const visit = (root: Document | ShadowRoot | Element) => {
+    for (const el of root.querySelectorAll<HTMLElement>(sel)) {
+      if (el.tabIndex < 0 || el.closest('[hidden], [inert]') || !el.getClientRects().length) continue;
+      if (getComputedStyle(el).visibility === 'hidden') continue;
+      found.push(`${el.tagName}${el.classList.length ? `.${[...el.classList].join('.')}` : ''}`);
+    }
+  };
+  visit(document.body);
+  return found;
+});

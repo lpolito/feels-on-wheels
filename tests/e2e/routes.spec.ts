@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { aboutHeading, aboutLink, backToWheel, focused, hint, idle, open, selectedPath, settled, state, tapPath, title } from './helpers';
+import { exploreLead, aboutHeading, aboutLink, backToWheel, focused, hint, idle, open, selectedPath, settled, state, tapPath, title } from './helpers';
 
 // URL redesign spec §1, §2, §6, §7: real paths, titles that follow the route, and not found.
 
@@ -68,7 +68,7 @@ test('a misspelled word shows not found on the feelings wheel, and is announced'
   await expect(notFound(page)).toBeVisible();
   await expect(hintTitle(page)).toHaveText('Feeling not found!');
   await expect(hintText(page)).toHaveText(
-    'There\'s no “plaful” on the wheel. Tap or spin to explore, or start from body sensations instead.',
+    `There's no “plaful” on the wheel. ${await exploreLead(page)}, or start from body sensations instead.`,
   );
   await expect(page).toHaveTitle('Not found · Feels on Wheels');
   await expect(page.locator('#announcer')).toContainText('Feeling not found!');
@@ -82,14 +82,14 @@ test('a misspelled cell on the body wheel shows not found there', async ({ page 
   await expect(notFound(page)).toBeVisible();
   await expect(hintTitle(page)).toHaveText('Feeling not found!');
   await expect(hintText(page)).toHaveText(
-    'There\'s no “tight-chst” on the wheel. Tap or spin to explore, or start from feelings instead.',
+    `There's no “tight-chst” on the wheel. ${await exploreLead(page)}, or start from feelings instead.`,
   );
 });
 
 test('a typed {link} is shown as typed, with one link', async ({ page }) => {
   await open(page, '/%7Blink%7D');
   await expect(hintText(page)).toHaveText(
-    'There\'s no “{link}” on the wheel. Tap or spin to explore, or start from body sensations instead.',
+    `There's no “{link}” on the wheel. ${await exploreLead(page)}, or start from body sensations instead.`,
   );
   await expect(hintText(page).locator('a.fw-hint-link')).toHaveCount(1);
 });

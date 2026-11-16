@@ -173,11 +173,20 @@ describe('loadData and validateLocale: wheels', () => {
     }
   });
 
+  test('every wheel has both instruction lines, each with {link}', () => {
+    for (const id of ['core', 'body']) {
+      expect(locale.wheels[id]!.hintTouch, id).toBe('Tap, spin, or zoom to explore, or {link}.');
+      expect(locale.wheels[id]!.hintPointer, id).toBe('Click, spin, zoom, or use the arrow keys to explore, or {link}.');
+    }
+    const partial = structuredClone(locale);
+    const { hintTouch: _drop, ...rest } = partial.wheels['body']!;
+    partial.wheels['body'] = rest as typeof partial.wheels['body'];
+    expect(() => validateLocale(partial, feelings, wheels)).toThrow(/hintTouch/);
+  });
+
   test('each wheel\'s message has its question as hintTitle (spec v2.2 §5)', () => {
     expect(locale.wheels['core']!.hintTitle).toBe('How are you feeling?');
     expect(locale.wheels['body']!.hintTitle).toBe('What do you notice in your body?');
-    expect(locale.wheels['core']!.hint).toBe('Tap or spin to explore, or {link}.');
-    expect(locale.wheels['body']!.hint).toBe('Tap or spin to explore, or {link}.');
     const partial = structuredClone(locale);
     partial.wheels['body'] = { ...partial.wheels['body']!, hintTitle: '' };
     expect(() => validateLocale(partial, feelings, wheels)).toThrow(/hintTitle/);

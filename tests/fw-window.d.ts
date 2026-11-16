@@ -14,6 +14,8 @@ declare global {
       moving(): boolean;
       pathOf(i: number | null): string | null;
       offCenter(path: string): number;
+      /** The path of the core word at 3 o'clock where the wheel is headed. */
+      coreAtThree(): string;
       drawTimes(): number[];
       /** v2: the current wheel's id. */
       wheel(): string;
@@ -21,6 +23,9 @@ declare global {
       liveWheels(): number;
       /** v2.1: labels drawn per ring in the last frame. */
       labelsByRing(): number[];
+      /** Question-first spec §4: whether the focus ring was drawn in the last frame. */
+      focusRing(): boolean;
+      focusOutline(): boolean;
     };
     /** share.spec.ts: what the stubbed share sheet was given. */
     __shared?: { title: string; url: string };

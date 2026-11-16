@@ -606,14 +606,16 @@
       "switch": "Feelings",
       "name": "Feelings wheel",
       "hintTitle": "How are you feeling?",
-      "hint": "Tap or spin to explore, or {link}.",
+      "hintTouch": "Tap, spin, or zoom to explore, or {link}.",
+      "hintPointer": "Click, spin, zoom, or use the arrow keys to explore, or {link}.",
       "hintLink": "start from body sensations instead"
     },
     "body": {
       "switch": "Body",
       "name": "Body sensations wheel",
       "hintTitle": "What do you notice in your body?",
-      "hint": "Tap or spin to explore, or {link}.",
+      "hintTouch": "Tap, spin, or zoom to explore, or {link}.",
+      "hintPointer": "Click, spin, zoom, or use the arrow keys to explore, or {link}.",
       "hintLink": "start from feelings instead"
     }
   },

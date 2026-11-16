@@ -1,0 +1,16 @@
+# Question first: what shipped differently from the spec
+
+What shipped differs from the [spec](2026-11-15-feels-on-wheels-question-first-design.md) in these ways. The first two come from Lucas trying it on 2026-11-15, before the pull request; the rest were found in the build's reviews.
+
+## From Lucas trying it
+
+- **The selected word's outline turns blue while the wheel has keyboard focus.** The spec (§4, and its non-goals) kept the selection outline as the only mark once a word is selected, in its usual color. Trying it with the keyboard, Lucas found it unclear whether focus was still on the selected word. Now, while the wheel's tree has keyboard focus (the same rule as the ring: `:focus-visible` and no `data-quiet-focus`), the selected or opened word's outline is drawn in the focus color (`palette.focus`) instead of the outline color; it goes back to the usual color when focus moves elsewhere or came from a tap. The renderer's `Frame` has `keyboardFocus` in place of `focusRing`: with nothing selected it rings the wheel, with a selection it colors the outline. In forced colors both colors are Highlight, so there the outline doesn't change.
+- **The card shows a focus ring when its toggle has keyboard focus.** A bug from before this change, which Lucas had raised: the toggle fills the card's bar, so the card's own scroll box (`overflow: auto`) clipped the toggle's ring. Folded, it didn't show at all; open, only its bottom edge showed. Now the whole card gets the ring (`fw-card:has(.fw-card-toggle:focus-visible)`, 3 px in `--focus`, 2 px outside), and the toggle's own ring is off. It follows the same no-ring-after-a-tap rule.
+- **VoiceOver on iPhone can't reach the wheel's words.** Lucas tried it: swiping never got to a word. The known issue the spec asked to log (§10) is broader than the double-tap it predicted; the roadmap and ACCESSIBILITY.md say so. He didn't try a Bluetooth keyboard.
+
+## From the build's reviews
+
+- **The word Tab lands on also catches up after a spin stops early.** The spec (§3) moves the tabbable word to 3 o'clock when the wheel comes to rest. A spin can also end without coming to rest by itself: a tap that stops it, a resize mid-spin, and opening About mid-spin. Each of those now does the same catch-up (`tree.rest()`), with the same rule that focus moves only from the old tabbable word.
+- **The page updates the tree first.** `renderUi` runs `tree.update` before the card, message and toolbar, so when one of them hides with focus inside (a keyboard Start over, Escape from the card), focus moves once, to the word at 3 o'clock, not first to the old word and then again.
+- **Which instruction line shows is decided in `main.ts`,** not in the message element (§5 left where to the builder). Switching it when the pointer type changes has no unit test: the choice lives in the page's setup, and the end-to-end browsers can't change pointer type mid-test. The line for each device is tested end to end.
+- **The "nothing moves" test** compares the message's panel with the card's panel at the same spot: left and right edges, and the middle on computers (where the column centers its panel) or the bottom on phones (where it sits at the bottom). The two panels' heights differ, so their bottoms differ on computers by design, as before this change.

@@ -15,10 +15,14 @@ beforeAll(() => setLocale(locale));
 
 let root: HTMLElement;
 let dispatch: Mock<(a: Action) => void>;
+/** What the stub for the word at 3 o'clock returns. */
+let start: number;
+const startWord = (): number => start;
 beforeEach(() => {
   document.body.innerHTML = '<div id="tree"></div>';
   root = document.getElementById('tree')!;
   dispatch = vi.fn<(a: Action) => void>();
+  start = idx('sad');
 });
 
 const items = () => [...root.querySelectorAll<HTMLElement>('[role="treeitem"]')];
@@ -28,7 +32,7 @@ const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { 
 
 describe('a11y tree', () => {
   test('renders 130 treeitems with correct aria-level inside a labelled tree', () => {
-    const tree = createA11yTree(root, layout, dispatch);
+    const tree = createA11yTree(root, layout, dispatch, startWord);
     tree.update(initialState);
     expect(root.getAttribute('role')).toBe('tree');
     expect(root.getAttribute('aria-label')).toBe('Feelings wheel');
@@ -39,62 +43,124 @@ describe('a11y tree', () => {
     expect(item(idx('angry')).querySelector(':scope > [role="group"]')).not.toBeNull();
   });
 
-  test('exactly one tabindex=0, on the selection or else the first core', () => {
-    const tree = createA11yTree(root, layout, dispatch);
+  test('one tabindex=0: the selection, or else startWord()', () => {
+    const tree = createA11yTree(root, layout, dispatch, startWord);
+    const tabbable = () => items().filter((el) => el.tabIndex === 0);
     tree.update(initialState);
-    let tabbable = items().filter((el) => el.tabIndex === 0);
-    expect(tabbable).toEqual([item(layout.rings[0]!.segments[0]!)]);
+    expect(tabbable()).toEqual([item(idx('sad'))]);
     tree.update(sel('sad/lonely'));
-    tabbable = items().filter((el) => el.tabIndex === 0);
-    expect(tabbable).toEqual([item(idx('sad/lonely'))]);
+    expect(tabbable()).toEqual([item(idx('sad/lonely'))]);
+    start = idx('happy');
+    tree.update(initialState);
+    expect(tabbable()).toEqual([item(idx('happy'))]);
   });
 
   test('ArrowDown dispatches step +1 and prevents scrolling', () => {
-    createA11yTree(root, layout, dispatch).update(initialState);
+    createA11yTree(root, layout, dispatch, startWord).update(initialState);
     const ev = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true });
     item(idx('angry')).dispatchEvent(ev);
-    expect(dispatch).toHaveBeenCalledWith({ type: 'step', delta: 1 });
+    expect(dispatch).toHaveBeenCalledWith({ type: 'step', delta: 1, from: idx('angry') });
     expect(ev.defaultPrevented).toBe(true);
   });
 
   test('Enter and Space dispatch activate', () => {
-    const tree = createA11yTree(root, layout, dispatch);
+    const tree = createA11yTree(root, layout, dispatch, startWord);
     tree.update(sel('angry'));
     item(idx('angry')).dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
     item(idx('angry')).dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
-    expect(dispatch.mock.calls).toEqual([[{ type: 'activate' }], [{ type: 'activate' }]]);
+    const from = idx('angry');
+    expect(dispatch.mock.calls).toEqual([[{ type: 'activate', from }], [{ type: 'activate', from }]]);
   });
 
   test('tabbing into the tree keeps an existing selection', () => {
-    createA11yTree(root, layout, dispatch).update(sel('sad'));
+    createA11yTree(root, layout, dispatch, startWord).update(sel('sad'));
     item(idx('sad')).focus();
     expect(dispatch).not.toHaveBeenCalled();
   });
 
-  test('tabbing into the tree with nothing selected selects the first core word, so focus is visible', () => {
+  test('focusing the tree selects nothing', () => {
     document.body.insertAdjacentHTML('afterbegin', '<button id="before">x</button>');
-    createA11yTree(root, layout, dispatch).update(initialState);
+    createA11yTree(root, layout, dispatch, startWord).update(initialState);
     document.getElementById('before')!.focus();
-    item(layout.rings[0]!.segments[0]!).focus();
-    expect(dispatch.mock.calls).toEqual([[{ type: 'select', segment: layout.rings[0]!.segments[0]! }]]);
+    items().find((el) => el.tabIndex === 0)!.focus();
+    expect(document.activeElement).toBe(item(idx('sad')));
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  test('with nothing selected, update never moves focus between words', () => {
+    const tree = createA11yTree(root, layout, dispatch, startWord);
+    tree.update(initialState);
+    item(idx('angry/aggressive/hostile')).focus();
+    start = idx('happy');
+    tree.update(initialState);
+    expect(document.activeElement).toBe(item(idx('angry/aggressive/hostile')));
+    expect(items().filter((el) => el.tabIndex === 0)).toEqual([item(idx('sad'))]);
+  });
+
+  test("rest moves focus to the new word at 3 o'clock only from the old one", () => {
+    const tree = createA11yTree(root, layout, dispatch, startWord);
+    const tabbable = () => items().filter((el) => el.tabIndex === 0);
+    tree.update(initialState);
+    item(idx('sad')).focus();
+    start = idx('happy');
+    const spy = vi.spyOn(item(idx('happy')), 'focus');
+    tree.rest();
+    expect(document.activeElement).toBe(item(idx('happy')));
+    expect(spy).toHaveBeenCalledWith({ preventScroll: true });
+    expect(tabbable()).toEqual([item(idx('happy'))]);
+    item(idx('angry')).focus();
+    start = idx('sad');
+    tree.rest();
+    expect(document.activeElement).toBe(item(idx('angry')));
+    expect(tabbable()).toEqual([item(idx('sad'))]);
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  test('rest leaves a selection alone', () => {
+    const tree = createA11yTree(root, layout, dispatch, startWord);
+    tree.update(sel('angry'));
+    item(idx('angry')).focus();
+    start = idx('happy');
+    tree.rest();
+    expect(document.activeElement).toBe(item(idx('angry')));
+    expect(items().filter((el) => el.tabIndex === 0)).toEqual([item(idx('angry'))]);
+  });
+
+  test('clearing with focus in the tree moves focus to startWord()', () => {
+    const tree = createA11yTree(root, layout, dispatch, startWord);
+    tree.update(sel('angry'));
+    item(idx('angry')).focus();
+    start = idx('happy');
+    tree.update(initialState);
+    expect(document.activeElement).toBe(item(idx('happy')));
+    expect(items().filter((el) => el.tabIndex === 0)).toEqual([item(idx('happy'))]);
+  });
+
+  test('keys with nothing selected carry the focused word', () => {
+    createA11yTree(root, layout, dispatch, startWord).update(initialState);
+    const inner = item(idx('angry/aggressive/hostile'));
+    inner.focus();
+    inner.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }));
+    expect(dispatch.mock.calls).toEqual([[{ type: 'step', delta: 1, from: idx('angry/aggressive/hostile') }]]);
   });
 
   test('focusSelected with nothing selected does not select anything', () => {
-    const tree = createA11yTree(root, layout, dispatch);
+    const tree = createA11yTree(root, layout, dispatch, startWord);
     tree.update(initialState);
     tree.focusSelected();
-    expect(document.activeElement).toBe(item(layout.rings[0]!.segments[0]!));
+    expect(document.activeElement).toBe(item(idx('sad')));
     expect(dispatch).not.toHaveBeenCalled();
   });
 
   test("+, = and − work while the wheel's tree has focus", () => {
-    createA11yTree(root, layout, dispatch).update(sel('angry'));
+    createA11yTree(root, layout, dispatch, startWord).update(sel('angry'));
     for (const key of ['+', '=', '-']) item(idx('angry')).dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
-    expect(dispatch.mock.calls.map((c) => c[0])).toEqual([{ type: 'activate' }, { type: 'activate' }, { type: 'stepOut' }]);
+    const from = idx('angry');
+    expect(dispatch.mock.calls.map((c) => c[0])).toEqual([{ type: 'activate', from }, { type: 'activate', from }, { type: 'stepOut' }]);
   });
 
   test('modified keys (browser zoom, Back) are left to the browser', () => {
-    createA11yTree(root, layout, dispatch).update(sel('angry'));
+    createA11yTree(root, layout, dispatch, startWord).update(sel('angry'));
     for (const init of [{ key: '=', ctrlKey: true }, { key: '-', metaKey: true }, { key: 'ArrowLeft', altKey: true }, { key: 'ArrowLeft', metaKey: true }]) {
       const ev = new KeyboardEvent('keydown', { ...init, bubbles: true, cancelable: true });
       item(idx('angry')).dispatchEvent(ev);
@@ -104,16 +170,16 @@ describe('a11y tree', () => {
   });
 
   test('update moves DOM focus to the selected item when the tree has focus', () => {
-    const tree = createA11yTree(root, layout, dispatch);
+    const tree = createA11yTree(root, layout, dispatch, startWord);
     tree.update(initialState);
-    item(layout.rings[0]!.segments[0]!).focus();
-    tree.update(sel('sad'));
-    expect(document.activeElement).toBe(item(idx('sad')));
+    item(idx('sad')).focus();
+    tree.update(sel('happy'));
+    expect(document.activeElement).toBe(item(idx('happy')));
   });
 
   test('update does not steal focus when the tree is not focused', () => {
     document.body.insertAdjacentHTML('beforeend', '<button id="other">x</button>');
-    const tree = createA11yTree(root, layout, dispatch);
+    const tree = createA11yTree(root, layout, dispatch, startWord);
     tree.update(initialState);
     document.getElementById('other')!.focus();
     tree.update(sel('sad'));
@@ -121,7 +187,7 @@ describe('a11y tree', () => {
   });
 
   test('focusSelected moves DOM focus to the selection without scrolling', () => {
-    const tree = createA11yTree(root, layout, dispatch);
+    const tree = createA11yTree(root, layout, dispatch, startWord);
     tree.update(sel('happy'));
     const spy = vi.spyOn(item(idx('happy')), 'focus');
     tree.focusSelected();
@@ -131,7 +197,7 @@ describe('a11y tree', () => {
   });
 
   test('aria-selected only on selected; aria-current only when opened; aria-expanded on ancestors', () => {
-    const tree = createA11yTree(root, layout, dispatch);
+    const tree = createA11yTree(root, layout, dispatch, startWord);
     tree.update(sel('angry/aggressive/hostile'));
     expect(items().filter((el) => el.getAttribute('aria-selected') === 'true')).toEqual([item(idx('angry/aggressive/hostile'))]);
     expect(items().filter((el) => el.hasAttribute('aria-current'))).toEqual([]);
@@ -192,7 +258,7 @@ describe('body wheel (v2)', () => {
   });
 
   test('the tree is named after its wheel', () => {
-    createA11yTree(root, bodyLayout, dispatch);
+    createA11yTree(root, bodyLayout, dispatch, startWord);
     expect(root.getAttribute('aria-label')).toBe(locale.wheels['body']!.name);
   });
 });

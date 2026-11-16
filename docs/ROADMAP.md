@@ -25,6 +25,7 @@ Each change is used before the next one is designed. When Lucas picks an idea to
 | <a id="about-page-rework"></a><a id="the-about-page-1"></a>About page rework: why it exists with a sign-off, install steps, the GitHub icon and fixed credit links | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-design.md), [plan](superpowers/plans/2026-11-14-feels-on-wheels-about-rework.md), [changes](superpowers/specs/2026-11-14-feels-on-wheels-about-rework-changes.md) |
 | Keys turn the wheel, no focus ring after a tap, real links on the card, new tabs on About, and tap the opened word to close it | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md), [plan](superpowers/plans/2026-11-14-feels-on-wheels-keys-and-focus.md), [changes](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-changes.md) |
 | Share buttons, About in the start message, and per-feeling link previews | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-share-and-preview.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-changes.md) |
+| Question first in page order, Tab onto the wheel selects nothing, a ring around the focused wheel, and the instruction by device | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-question-first.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-question-first-changes.md) |
 
 ## Ideas
 
@@ -112,7 +113,6 @@ Polish to what's there; these could ship together as one change.
   - random on every visit, a gentler fixed start, or something in between (a different word each day);
   - whether the intro spin lands on it;
   - the end-to-end and viewport tests expect a fixed start, so they need a way to pin it.
-- **The first word Tab lands on sits at 3 o'clock** (Lucas, 2026-11-14). Tabbing into the wheel selects the first core word, Fearful, which on the whole wheel sits near 12 o'clock. Lucas wants it already at 3 o'clock, where the arrow keys put every word since the [keys and focus change](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md). Either the wheel starts with its first word there, or Tab selects whichever word is at 3 o'clock. Ties in with the [known issue](#navigation) about tabbing into the phone's half-wheel after a spin.
 
 #### Return to the word you jumped from
 
@@ -183,8 +183,16 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 ### Navigation
 
 - **Going back on phones.** Swiping back doesn't work at all on the wheel: it takes every touch, so the browser's Back button is the only way back. An app installed to the iPhone home screen has no Back at all. Lucas (2026-11-14): better history rules for phones wait on an in-app back button. History follows the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md): picking a word or a place adds an entry, moving by direction replaces it. Related: [return to the word you jumped from](#return-to-the-word-you-jumped-from).
-- **Tab selects a word on reaching the wheel, hiding About and Share.** Found in the [share change](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md)'s final review, 2026-11-15. Moving forward with Tab, reaching the wheel selects the first word (`src/a11y/tree.ts`, on focus), which hides the start message with its About link and swaps the toolbar's Share for Start over. So going forward, a keyboard user never reaches About or Share at rest, only by Escape or Shift+Tab from the end of the page. Before the share change, the toolbar's About stayed reachable by forward Tab on desktop. Likely fix: put `<fw-toolbar>` (and possibly `#float`, which holds the start message and the card) before the wheel in the page, so Tab reaches them before the wheel selects anything. That changes the reading order for screen readers too, so it's a design call. No fix chosen yet.
-- **Tabbing into the phone's half-wheel.** Since the [keys and focus change](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md), the arrow keys turn the wheel so the selection sits at 3 o'clock. Tabbing into the wheel with nothing selected still selects the first core word without turning it, so after a spin that word can be on the hidden left half until the first arrow key.
+- **With VoiceOver on iPhone, the wheel's words can't be reached.** Lucas tried it on 2026-11-15, after the [question-first change](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md): swiping through the page kept repeating the headings or whatever had focus, and never got to a word on the wheel, so he couldn't select one. He's new to VoiceOver, so it isn't yet known how much is the app and how much is how it was used; it needs someone who uses VoiceOver daily, or a careful walk-through. Likely causes, worth checking together:
+  - the tree is visually hidden (`.visually-hidden`: 1 px, clipped), and VoiceOver on iPhone moves by what it finds on screen, so it may skip a 1 px element or struggle to land in it;
+  - VoiceOver on iPhone and TalkBack barely support `role="tree"`;
+  - they act on an item by double-tapping it, which sends a click, and the tree's words listen only for keys (`src/a11y/tree.ts` has no click handling), so even a reached word likely can't be selected.
+
+  TalkBack hasn't been tried. No fix chosen yet.
+
+### Link previews
+
+- **A not-found address shows no link preview.** Found by Lucas 2026-11-15, after the [share change](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md): pasting `/aboutss` or `/angry/mads` into a chat shows no card. The page does have its preview tags: checked on the live site that day, it has `og:title` "Not found · Feels on Wheels", the home description and `og:image` `core-happy.png`. But the Worker answers with a 404 status (`src/worker/handler.ts`, URL redesign §7), and most link-preview fetchers (iMessage, Slack, Discord, Facebook) drop previews for error responses. To decide when designing: whether a mistyped link should preview at all; if so, whether not found keeps its 404 for search engines (it already says `noindex`) and how previews can still be shown, or whether the Worker returns 200 for not found. No fix chosen yet.
 
 ### Code and tests
 

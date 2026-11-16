@@ -1,6 +1,6 @@
 import { nodeLabel } from '../i18n';
 import type { Layout } from '../model/layout';
-import { inWindow, viewWindow, type Camera, type Viewport, type ViewWindow } from '../model/geometry';
+import { inWindow, TAU, viewWindow, type Camera, type Viewport, type ViewWindow } from '../model/geometry';
 import type { FillTable, Palette } from './colors';
 import { fitLabel, labelRotation, type Measure } from './labels';
 import { LIFT_RADIAL_PX, LIFT_SIDE_PX, OUTLINE_INNER_PX, OUTLINE_PX } from './selection';
@@ -24,13 +24,18 @@ export interface Frame {
   remPx: number;
   /** prefers-contrast: more → thicker gaps. */
   moreContrast?: boolean;
+  /**
+   * The tree has keyboard focus: with nothing selected, ring the wheel; with a selection, draw its outline in the focus
+   * color instead of the usual outline color.
+   */
+  keyboardFocus: boolean;
 }
 
 export interface WheelRenderer {
   resize(cssW: number, cssH: number, dpr: number): void;
   setColors(t: FillTable, p: Palette): void;
   draw(f: Frame): void;
-  stats: { segmentsDrawn: number; labelsDrawn: number; labelFits: number; /** Labels drawn per ring this frame. */ labelsByRing: number[] };
+  stats: { segmentsDrawn: number; labelsDrawn: number; labelFits: number; /** Labels drawn per ring this frame. */ labelsByRing: number[]; /** Whether the focus ring was drawn this frame. */ focusRing: boolean; /** Whether the selection's outline was drawn in the focus color this frame. */ focusOutline: boolean };
 }
 
 const FONT_STACK = 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
@@ -44,6 +49,9 @@ const GAP_PX_MORE = 2.5;
 /** Spec §4.2 selection treatments (sizes shared with the camera in ./selection). */
 const LIFT_LABEL = 1.15;
 const SHADOW = { blur: 12, color: 'rgba(0,0,0,.35)', offsetY: 3 } as const;
+/** The keyboard-focus ring around the wheel: width, and the gap between it and the outer edge. */
+const FOCUS_RING_PX = 3;
+const FOCUS_GAP_PX = 2;
 const PULSE_FROM = 0.96;
 /** Label fits are reused while the box stays within this many px (pinch frames). */
 const FIT_TOLERANCE = 1;
@@ -67,7 +75,7 @@ export function createWheelRenderer(
   let dpr = 1;
   let table: FillTable | null = null;
   let palette: Palette | null = null;
-  const stats = { segmentsDrawn: 0, labelsDrawn: 0, labelFits: 0, labelsByRing: layout.rings.map(() => 0) };
+  const stats = { segmentsDrawn: 0, labelsDrawn: 0, labelFits: 0, labelsByRing: layout.rings.map(() => 0), focusRing: false, focusOutline: false };
   const boldFonts = new Map<number, string>();
 
   const font = (px: number, bold = false): string => {
@@ -180,6 +188,8 @@ export function createWheelRenderer(
       stats.labelsDrawn = 0;
       stats.labelFits = 0;
       stats.labelsByRing.fill(0);
+      stats.focusRing = false;
+      stats.focusOutline = false;
       if (!table || !palette) return;
       const { cam, vp } = f;
       const R = vp.radius * cam.scale;
@@ -242,11 +252,22 @@ export function createWheelRenderer(
       }
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
 
+      if (f.keyboardFocus && f.selected === null) {
+        g.beginPath();
+        g.arc(cam.cx, cam.cy, R * layout.rings[layout.rings.length - 1]!.outer + FOCUS_GAP_PX + FOCUS_RING_PX / 2, 0, TAU);
+        g.lineWidth = FOCUS_RING_PX;
+        g.strokeStyle = palette.focus;
+        g.stroke();
+        stats.focusRing = true;
+      }
+
       if (f.selected === null) return;
       const s = layout.segments[f.selected]!;
       const ring = layout.rings[s.ring]!;
       if (!inWindow(s, ring, win)) return;
-      const ink = palette.outline;
+      // Keyboard focus on the selected word: its outline takes the focus color, as the app's other controls' rings do.
+      const ink = f.keyboardFocus ? palette.focus : palette.outline;
+      stats.focusOutline = f.keyboardFocus;
       const a0 = s.start + cam.rotation;
       const a1 = s.end + cam.rotation;
       const angle = s.mid + cam.rotation;

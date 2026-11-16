@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { hint, idle, open, ring, selectedPath, settled, state, tapPath, title } from './helpers';
+import { exploreLead, hint, idle, open, ring, selectedPath, settled, state, tapPath, title } from './helpers';
 
 const AREAS = /^(head|face|chest|breath|stomach|arms|whole-body|posture)$/;
 const wheelId = (page: Page) => page.evaluate(() => window.__fw.wheel());
@@ -20,7 +20,7 @@ test.describe('switching wheels (desktop)', () => {
     expect((await state(page)).selected).toBeNull();
     expect(new URL(page.url()).pathname).toBe('/body');
     await expect(hint(page).locator('.fw-hint-title')).toHaveText('What do you notice in your body?');
-    await expect(hint(page).locator('.fw-hint-text')).toHaveText('Tap or spin to explore, or start from feelings instead.');
+    await expect(hint(page).locator('.fw-hint-text')).toHaveText(`${await exploreLead(page)}, or start from feelings instead.`);
     await expect(switchButton(page, 'Body')).toBeFocused();
     await expect(switchButton(page, 'Body')).toHaveAttribute('aria-pressed', 'true');
     await expect(switchButton(page, 'Feelings')).toHaveAttribute('aria-pressed', 'false');
@@ -115,12 +115,17 @@ test.describe('switching wheels (desktop)', () => {
     expect(new URL(page.url()).pathname).toBe('/');
   });
 
-  test('Review Focus 3: Tab from the switch reaches the tree; arrows move through areas', async ({ page }) => {
+  test('Review Focus 3: Tab from the switch, past the toolbar, reaches the tree; arrows move through areas', async ({ page }) => {
     await open(page);
     await switchButton(page, 'Body').click();
     await idle(page);
+    // The toolbar (Share, theme) sits between the switch and the wheel.
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
     await expect(page.locator('#a11y-tree [role="treeitem"]:focus')).toHaveCount(1);
+    // Question-first spec §3: reaching the wheel selects nothing; the first arrow does.
+    expect((await state(page)).selected).toBeNull();
     await page.keyboard.press('ArrowDown');
     await idle(page);
     expect(await selectedPath(page)).toMatch(AREAS);
@@ -152,7 +157,7 @@ test.describe('switching wheels (desktop)', () => {
 
 test.describe('body wheel cards (desktop)', () => {
   test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'desktop flows'));
-  const headings = (page: Page) => page.locator('fw-card .fw-card-body h3');
+  const headings = (page: Page) => page.locator('fw-card .fw-card-body h2');
   const rowsText = (page: Page) => page.locator('fw-card ul.fw-rows a').allTextContents();
 
   test('Chest → Racing heart → Scared by taps shows the cards in spec §6.2', async ({ page }) => {
@@ -371,20 +376,20 @@ test.describe('v2.2: the message heading', () => {
 
   test('the message opens with its question as a heading', async ({ page }) => {
     await open(page, '/');
-    await expect(page.locator('fw-hint h2')).toHaveText('How are you feeling?');
+    await expect(page.locator('fw-hint h1')).toHaveText('How are you feeling?');
     await open(page, '/body');
-    await expect(page.locator('fw-hint h2')).toHaveText('What do you notice in your body?');
+    await expect(page.locator('fw-hint h1')).toHaveText('What do you notice in your body?');
   });
 
   test('320 px: the body heading wraps onto two lines inside the panel', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 });
     await open(page, '/body');
-    const { h, lh } = await page.locator('fw-hint h2').evaluate((e) => ({
+    const { h, lh } = await page.locator('fw-hint h1').evaluate((e) => ({
       h: e.getBoundingClientRect().height, lh: Number.parseFloat(getComputedStyle(e).lineHeight),
     }));
     expect(h).toBeGreaterThan(1.5 * lh);
     const panel = (await hint(page).boundingBox())!;
-    const head = (await page.locator('fw-hint h2').boundingBox())!;
+    const head = (await page.locator('fw-hint h1').boundingBox())!;
     expect(head.x >= panel.x && head.x + head.width <= panel.x + panel.width + 0.5).toBe(true);
   });
 

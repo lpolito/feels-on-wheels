@@ -18,6 +18,8 @@ export interface Controller {
   setOpenedY(y: number | null): void;
   /** Phone start (spec v1.2 §3.2, v2.1 §6.2): on the half-wheel or side view, spin in to the resting rotation. Dispatches nothing. */
   playIntro(): void;
+  /** The core word at 3 o'clock where the wheel is headed (the camera's target rotation), for a key pressed from nothing. */
+  coreAtThree(): number;
   readonly camera: CameraController;
 }
 
@@ -330,6 +332,7 @@ export function createController(
 
   return {
     camera,
+    coreAtThree: () => segmentAt(layout, 0, normAngle(-camera.target.rotation)),
     handle(intents) {
       for (const i of intents) handleOne(i);
     },

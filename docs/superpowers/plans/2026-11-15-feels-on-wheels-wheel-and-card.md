@@ -295,7 +295,7 @@ git commit -m "Back to the body wheel: a pill above the card after a jump"
 **Files:**
 - Modify: `docs/ROADMAP.md`, `ACCESSIBILITY.md`
 
-- [ ] **Step 1: Roadmap.** In the Shipped row for this change, set the status to `Shipped 2026-11-15` (or the merge date) and add `[plan](superpowers/plans/2026-11-15-feels-on-wheels-wheel-and-card.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-changes.md)` after the spec. In "Going back on phones", drop "(in progress)" from the Back to pill's link.
+- [ ] **Step 1: Roadmap.** In the Shipped row for this change, set the status to `Shipped 2026-11-15` (or the merge date); the plan and changes links are already there. Add to the changes file anything else that shipped differently from the spec. In "Going back on phones", drop "(in progress)" from the Back to pill's link.
 - [ ] **Step 2: `ACCESSIBILITY.md` known limitations.** In the swiping-back line, add that after a jump from the body wheel to the feelings wheel, "Back to the body wheel" above the card goes back without the browser's Back.
 - [ ] **Step 3: Run everything once more.**
 

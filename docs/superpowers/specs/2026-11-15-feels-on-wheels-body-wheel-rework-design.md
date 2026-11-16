@@ -27,6 +27,7 @@ Success: every area is a place you could point to, or Urges; every sensation is 
 | "You might notice" | Redone for all 126 feelings with the new sensations. Drafted to agree with the body wheel, but nothing enforces it. §5 |
 | Old addresses | Not forwarded. A link to a removed sensation shows not found. |
 | Colors | The 8 area hues stay; their tokens are renamed for the new areas. §6 |
+| Where the rules live | In a README next to the wheel files, with an `AGENTS.md` there pointing to it, so the rules stay with the data after this spec is frozen. §10 |
 
 ## 1. Two kinds of area
 
@@ -225,6 +226,20 @@ The new sensations with no old one (Mind goes blank, Tight throat, Dry mouth, Ga
 - **Credits:** the About page (`page.about`) credits the two new sources once the app uses them: Nummenmaa and others' bodily maps, and Frijda's action tendencies. The notes are already in [reference/](../../reference/README.md).
 - **Known issues:** if shorter labels fix the [long label spilling past its cell](../../ROADMAP.md#layout-and-labels) or the tiny windows with no labels at rest, remove them from the roadmap and `ACCESSIBILITY.md`; if not, update their examples, which name old labels.
 - **Tests:** the data test's area → sensations table, `AREA_HUES` in the colors test, the area regex in `tests/e2e/body.spec.ts`, the body palette in `wheel-render.test.ts`, and tests that use removed paths (`posture/shrinking/humiliated` in `card.test.ts`). Most body tests use `chest/racing-heart/scared`, which stays.
+
+## 10. The rules live with the data
+
+This spec is frozen once approved, but its rules have to hold for every later edit to the wheels. So they move next to the wheel files, where whoever edits them, a person or an agent, finds them.
+
+- **`src/data/wheels/README.md`**, the living rules for the wheels' content:
+  - **Both wheels:** the content rules now in the roadmap's [Content rules](../../ROADMAP.md#content-rules) (overlap with other wheels is fine, nothing copied wholesale, plain short definitions, every source credited). They move here, and the roadmap section links here instead.
+  - **The body wheel:** §1 and §2 of this spec, as rules rather than decisions: what an area is, the eyes-closed test for a sensation, what Urges hold and how they're worded, the label rules, the feelings rules, the area order, and that "You might notice" is drafted to agree with the body wheel without being enforced.
+  - **The feelings wheel:** a placeholder saying its rules come with the [opinionated feelings wheel](../../ROADMAP.md#an-opinionated-feelings-wheel) idea.
+  - **Which files it covers:** `src/data/wheels/*.json`, `src/data/feelings.json`, and the `feelings`, `areas`, and `sensations` in `src/data/locales/en.json`.
+  - How to check a change: every feeling on the body wheel is a word on the feelings wheel, each sensation has 2 or 3 feelings, and each core feeling stays reachable from several areas.
+- **`src/data/wheels/AGENTS.md`**, a few lines: read `README.md` before changing any file it covers, follow it, and update it in the same change when a rule changes.
+- **The root `AGENTS.md`** gains a short "Wheel content" section pointing to both, since the wheel files aren't the only ones the rules cover.
+- The README is the rule; specs record why a rule was chosen. When they disagree after this ships, the README wins.
 
 ## Research behind it
 

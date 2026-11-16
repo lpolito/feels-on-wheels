@@ -38,7 +38,8 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Emoji wheel](#emoji-wheel) | New ways to identify an emotion | Planned |
 | [Strength](#strength) | New ways to identify an emotion | Shelved (2026-11-08) |
 | [Wheels for kids](#wheels-for-kids) | New ways to identify an emotion | Idea |
-| [Rework the body wheel's areas and sensations](#rework-the-body-wheels-areas-and-sensations) | [The body wheel's content](#the-body-wheels-content) | Spec drafted, awaiting Lucas's review |
+| [Rework the body wheel's areas and sensations](#rework-the-body-wheels-areas-and-sensations) | [The wheels' content](#the-wheels-content) | Spec drafted, awaiting Lucas's review |
+| [An opinionated feelings wheel](#an-opinionated-feelings-wheel) | The wheels' content | Idea |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
@@ -88,7 +89,11 @@ What Lucas first asked for:
   - where the words come from, since any new source gets a [reference note](reference/README.md) and a credit.
 - Overlaps with the [emoji wheel](#emoji-wheel), which is also a simplified wheel; worth designing them together.
 
-### The body wheel's content
+<a id="the-body-wheels-content"></a>
+
+### The wheels' content
+
+What the wheels say: their words, definitions, and how feelings relate to sensations. Whatever is decided here gets written down as rules next to the wheel files (`src/data/wheels/README.md`, pointed to by an `AGENTS.md` there), not only in a spec.
 
 #### Rework the body wheel's areas and sensations
 
@@ -105,6 +110,19 @@ Lucas, 2026-11-14: the body wheel needs reworking to be more consistent.
   - Every feeling stays a word on the feelings wheel. "You might notice" is redone to agree with the body wheel, without a rule enforcing it.
   - 8 areas if they fit and the colors work, 7 if not; settled while building. Old addresses aren't forwarded.
   - Research: [bodily maps of emotions](reference/nummenmaa-bodily-maps.md) and [action tendencies](reference/frijda-action-tendencies.md).
+  - The rules it settles live in `src/data/wheels/README.md`, with an `AGENTS.md` there pointing to it (spec §10).
+
+#### An opinionated feelings wheel
+
+- Lucas, 2026-11-15: the feelings wheel should be opinionated about the words it uses, their definitions, and how feelings relate to sensations. Today it largely repeats other wheels (mostly [Roberts's seven-core wheel](reference/core-feelings-wheel.md)), which isn't necessary.
+- Its rules go in `src/data/wheels/README.md` next to the body wheel's, so every later edit follows them.
+- To decide when designing:
+  - what makes a word earn a place: common, plain, distinct from its neighbors, and useful for naming what you feel;
+  - whether the core feelings and their order stay, since the colors, link previews and URLs are built on them;
+  - what a good definition says, and how "You might notice" is chosen, likely drawing on the [bodily maps research](reference/nummenmaa-bodily-maps.md);
+  - what happens to links to words that are removed or moved;
+  - where the words come from, since any new source gets a [reference note](reference/README.md) and a credit.
+- Meets [Strength](#strength), [Wheels for kids](#wheels-for-kids), [Languages](#languages), and the [definitions and sensations review](#before-launching), which all depend on which words the wheel has. Worth doing after the [body wheel rework](#rework-the-body-wheels-areas-and-sensations), whose rules it builds on.
 
 ### URLs, routing and hosting
 
@@ -193,6 +211,8 @@ The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens
 - **Known issues and ideas:** decide which to finish before announcing it. Help adding it to the home screen and a dark home-screen icon were dropped (2026-11-15).
 
 ## Content rules
+
+These move to `src/data/wheels/README.md` when the [body wheel rework](#rework-the-body-wheels-areas-and-sensations) ships, and this section then links there.
 
 - There are only so many ways to describe a feeling or a body sensation, so overlap with existing wheels and word lists is unavoidable and fine.
 - Don't copy any source verbatim, and don't reproduce a source's full layout or word list wholesale.

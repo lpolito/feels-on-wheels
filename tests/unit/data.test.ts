@@ -62,6 +62,18 @@ describe('core wheel data', () => {
 });
 
 describe('validation', () => {
+  test('validateWheel needs start to name one of its center nodes', () => {
+    for (const start of [undefined, 42, 'nope', 'aggressive']) {
+      const bad = structuredClone(wheel) as unknown as Record<string, unknown>;
+      bad['start'] = start;
+      expect(() => validateWheel(bad, feelings, ids()), String(start)).toThrow(DataError);
+    }
+  });
+
+  test('the feelings wheel starts on Happy and the body wheel on Whole body', () => {
+    expect(wheels.map((w) => [w.id, w.start])).toEqual([['core', 'happy'], ['body', 'whole-body']]);
+  });
+
   test('validateWheel throws DataError on unknown feeling id', () => {
     const bad = structuredClone(wheel);
     bad.children[0]!.feeling = 'nope';
@@ -75,6 +87,16 @@ describe('validation', () => {
     const bad2 = structuredClone(wheel);
     bad2.rings = [{ inner: 0.32, outer: 0.12 }, { inner: 0.12, outer: 0.62 }, { inner: 0.62, outer: 1 }];
     expect(() => validateWheel(bad2, feelings, ids())).toThrow(DataError);
+  });
+
+  test('every wheel but the first needs backTo text (wheel and card spec §2)', () => {
+    expect(locale.wheels['body']!.backTo).toBe('Back to the body wheel');
+    const broken = structuredClone(locale);
+    delete broken.wheels['body']!.backTo;
+    expect(() => validateLocale(broken, feelings, wheels)).toThrow(DataError);
+    const first = structuredClone(locale);
+    delete first.wheels['core']!.backTo;
+    expect(() => validateLocale(first, feelings, wheels)).not.toThrow();
   });
 
   test('every feeling and every sensation id used has a locale label', () => {

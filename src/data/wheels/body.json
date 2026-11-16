@@ -1,5 +1,6 @@
 {
   "id": "body",
+  "start": "whole-body",
   "rings": [
     {
       "inner": 0.12,

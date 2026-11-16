@@ -236,6 +236,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
 test.describe('narrow phones (360 px)', () => {
   test.use({ viewport: { width: 360, height: 740 } });
 
+
   test('the switch never overlaps Start over or the theme toggle', async ({ page }) => {
     await open(page, '/body/chest');
     const sw = (await page.locator('fw-wheel-switch').boundingBox())!;
@@ -314,7 +315,7 @@ test.describe('v2.1: the wheel switch', () => {
   test('three options fit at 320 px', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 });
     await open(page);
-    await tapPath(page, 'fearful');
+    await tapPath(page, 'happy');
     await expect(page.locator('fw-toolbar .fw-start-over')).toBeVisible();
     await page.evaluate(() => {
       const sw = document.querySelector('fw-wheel-switch') as HTMLElement & { wheels: unknown; current: string };
@@ -480,5 +481,131 @@ test.describe('body wheel deep link (phone)', () => {
     const p = await page.evaluate(() => window.__fw.segmentScreenPoint('chest/racing-heart/scared'));
     const card = (await page.locator('fw-card').boundingBox())!;
     expect(p.y).toBeLessThan(card.y);
+  });
+});
+
+// Wheel and card spec §1: the body wheel rests with Whole body at 3 o'clock; only phones spin in.
+test.describe('body wheel start word', () => {
+  const offCenter = (page: Page, path: string) => page.evaluate((p) => window.__fw.offCenter(p), path);
+
+  test.describe('desktop', () => {
+    test.use({ viewport: { width: 1280, height: 800 } });
+    test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'desktop window'));
+
+    test("the whole wheel rests with Whole body at 3 o'clock", async ({ page }) => {
+      await open(page, '/body');
+      expect(await offCenter(page, 'whole-body')).toBeLessThan(1e-6);
+      expect(await page.evaluate(() => window.__fw.coreAtThree())).toBe('whole-body');
+    });
+  });
+
+  test.describe('phone', () => {
+    test.use({ viewport: { width: 390, height: 844 } });
+
+    test("the intro lands with Whole body at 3 o'clock", async ({ page }) => {
+      await open(page, '/body');
+      expect(await offCenter(page, 'whole-body')).toBeLessThan(1e-6);
+    });
+  });
+});
+
+test.describe('Back to the body wheel', () => {
+  // Wheel and card spec §2 (and its changes file): after a jump, "Back to the body wheel" above the card.
+  const pill = (page: Page) => page.locator('fw-back-to a');
+  const jumpFromScared = async (page: Page) => {
+    await open(page, '/body/chest/racing-heart/scared');
+    await page.locator('fw-card .fw-jump').focus();
+    await page.keyboard.press('Enter');
+    await idle(page);
+  };
+
+  test('the jump shows Back to the body wheel above the card', async ({ page }) => {
+    await jumpFromScared(page);
+    await expect(pill(page)).toBeVisible();
+    await expect(pill(page)).toHaveText('Back to the body wheel');
+    await expect(pill(page)).toHaveAttribute('href', '/body/chest/racing-heart/scared');
+    const p = (await pill(page).boundingBox())!;
+    const c = (await page.locator('fw-card').boundingBox())!;
+    expect(p.y + p.height).toBeLessThanOrEqual(c.y);
+    await expect(page.locator('fw-card .fw-card-toggle')).toBeFocused();
+  });
+
+  test('Back to the body wheel returns to the card you came from', async ({ page }) => {
+    await jumpFromScared(page);
+    await pill(page).focus();
+    await page.keyboard.press('Enter');
+    await idle(page);
+    expect(await wheelId(page)).toBe('body');
+    expect(await selectedPath(page)).toBe('chest/racing-heart/scared');
+    expect((await state(page)).opened).toBe(true);
+    expect(new URL(page.url()).pathname).toBe('/body/chest/racing-heart/scared');
+    await expect(pill(page)).toBeHidden();
+    await expect(page.locator('fw-card .fw-card-toggle')).toBeFocused();
+    // It was a Back: Forward goes to the feelings word again.
+    await page.goForward();
+    await idle(page);
+    expect(new URL(page.url()).pathname).toBe('/fearful/scared');
+  });
+
+  test('a double click goes back only once', async ({ page }) => {
+    await jumpFromScared(page);
+    await pill(page).dblclick();
+    await idle(page);
+    // One Back, to the body word. A second click that lands after the pill has gone may tap the wheel beneath it, so
+    // only the body wheel and the word's branch are certain; a second Back would have left the site.
+    expect(await wheelId(page)).toBe('body');
+    expect(new URL(page.url()).pathname.startsWith('/body/chest/racing-heart')).toBe(true);
+  });
+
+  test("a click on it focuses the reopened card's toggle", async ({ page }) => {
+    await jumpFromScared(page);
+    await pill(page).click();
+    await idle(page);
+    expect(new URL(page.url()).pathname).toBe('/body/chest/racing-heart/scared');
+    await expect(page.locator('fw-card .fw-card-toggle')).toBeFocused();
+  });
+
+  test('the core-feeling link shows it too', async ({ page }) => {
+    await open(page, '/body/chest/racing-heart/scared');
+    await page.locator('fw-card .fw-definition a').click();
+    await idle(page);
+    expect(await wheelId(page)).toBe('core');
+    expect(new URL(page.url()).pathname).toBe('/fearful');
+    await expect(pill(page)).toBeVisible();
+    await pill(page).click();
+    await idle(page);
+    expect(new URL(page.url()).pathname).toBe('/body/chest/racing-heart/scared');
+  });
+
+  test('moving on hides it', async ({ page }) => {
+    const moves: [string, (page: Page) => Promise<void>][] = [
+      ['a breadcrumb', (pg) => pg.locator('fw-card nav.fw-crumbs a').first().click()],
+      ['Escape', (pg) => pg.keyboard.press('Escape')],
+      ['the wheel switch', (pg) => switchButton(pg, 'Body').click()],
+      ['Start over', (pg) => pg.locator('fw-toolbar .fw-start-over').click()],
+    ];
+    for (const [name, move] of moves) {
+      await jumpFromScared(page);
+      await expect(pill(page), name).toBeVisible();
+      await move(page);
+      await idle(page);
+      await expect(pill(page), name).toBeHidden();
+    }
+  });
+
+  test('Back then Forward leaves it hidden', async ({ page }) => {
+    await jumpFromScared(page);
+    await page.goBack();
+    await idle(page);
+    await page.goForward();
+    await idle(page);
+    expect(new URL(page.url()).pathname).toBe('/fearful/scared');
+    await expect(pill(page)).toBeHidden();
+  });
+
+  test('the theme button leaves it', async ({ page }) => {
+    await jumpFromScared(page);
+    await page.locator('fw-toolbar .fw-theme-toggle').click();
+    await expect(pill(page)).toBeVisible();
   });
 });

@@ -292,6 +292,26 @@ fw-hint[data-variant="not-found"] {
   fw-hint, fw-card { transition: opacity 150ms ease-out; }
   @starting-style { fw-hint, fw-card { opacity: 0; } }
 }
+/* Wheel and card spec §2: the pill above the card after a jump, a link styled like the toolbar's buttons. */
+fw-back-to { align-self: flex-start; flex: none; }
+fw-back-to[hidden] { display: none; }
+.fw-back-to {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0 0.9rem 0 0.6rem;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--fg);
+  box-shadow: 0 0 0 1px var(--panel-edge), 0 6px 30px rgb(0 0 0 / 0.15);
+  font-size: 1rem;
+  text-decoration: none;
+}
+.fw-back-to-icon { width: 1rem; height: 1rem; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+@media (forced-colors: active) {
+  .fw-back-to { border: 1px solid ButtonText; color: ButtonText; background: ButtonFace; }
+}
 fw-card {
   display: block;
   flex: 0 1 auto;

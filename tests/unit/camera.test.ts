@@ -3,7 +3,7 @@ import { loadData } from '../../src/data/load';
 import { buildLayout } from '../../src/model/layout';
 import { TAU, normAngle, type Viewport } from '../../src/model/geometry';
 import {
-  createCameraController, halfRestRotation, openedHalfHeight, overviewCamera, ringFocusCamera,
+  createCameraController, restRotation, openedHalfHeight, overviewCamera, ringFocusCamera,
   isPortrait, restView, shouldStartZoomed, useHalfWheel, wheelCamera, type CameraController,
 } from '../../src/camera';
 
@@ -142,9 +142,15 @@ describe('resting cameras', () => {
     expect(wheelCamera(layout, phone, 0.5, { ...opts, portrait: true })).toEqual(overviewCamera(phone, 0.5));
   });
 
-  test("halfRestRotation centers Fearful at 3 o'clock", () => {
-    const fearful = layout.segments[layout.byPath.get('fearful')!]!;
-    const off = normAngle(fearful.mid + halfRestRotation(layout));
+  test("restRotation centers the start word (Happy) at 3 o'clock", () => {
+    const happy = layout.segments[layout.byPath.get('happy')!]!;
+    const off = normAngle(happy.mid + restRotation(layout));
+    expect(Math.min(off, TAU - off)).toBeLessThan(1e-12);
+  });
+
+  test("restRotation centers Whole body at 3 o'clock on the body wheel", () => {
+    const body = buildLayout(loadData().wheels.find((w) => w.id === 'body')!);
+    const off = normAngle(body.segments[body.byPath.get('whole-body')!]!.mid + restRotation(body));
     expect(Math.min(off, TAU - off)).toBeLessThan(1e-12);
   });
 
@@ -176,9 +182,9 @@ describe('resting cameras', () => {
     }
   });
 
-  test("the side view is the core ring view, Fearful at 3 o'clock", () => {
+  test("the side view is the core ring view, Happy at 3 o'clock", () => {
     const vp: Viewport = { width: 511, height: 393, radius: 393 / 2 - 8 };
-    const r = halfRestRotation(layout);
+    const r = restRotation(layout);
     expect(wheelCamera(layout, vp, r, { remPx: 16, portrait: false, rest: 'side', openedY: null }))
       .toEqual(ringFocusCamera(layout, 0, vp, r, { remPx: 16, portrait: false, rest: 'side', openedY: null }));
   });

@@ -26,6 +26,7 @@ Each change is used before the next one is designed. When Lucas picks an idea to
 | Keys turn the wheel, no focus ring after a tap, real links on the card, new tabs on About, and tap the opened word to close it | Shipped 2026-11-14 | [spec](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-design.md), [plan](superpowers/plans/2026-11-14-feels-on-wheels-keys-and-focus.md), [changes](superpowers/specs/2026-11-14-feels-on-wheels-keys-and-focus-changes.md) |
 | Share buttons, About in the start message, and per-feeling link previews | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-share-and-preview.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-changes.md) |
 | Question first in page order, Tab onto the wheel selects nothing, a ring around the focused wheel, and the instruction by device | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-question-first.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-question-first-changes.md) |
+| <a id="the-wheel-and-the-card"></a><a id="a-different-word-to-start-on"></a><a id="return-to-the-word-you-jumped-from"></a><a id="feeling-links-underlined-in-their-feelings-color"></a>Start on Happy and Whole body at 3 o'clock, Back to the word you jumped from, and breadcrumbs in their own color | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-wheel-and-card.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-changes.md) |
 
 ## Ideas
 
@@ -38,9 +39,6 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Strength](#strength) | New ways to identify an emotion | Shelved (2026-11-08) |
 | [Wheels for kids](#wheels-for-kids) | New ways to identify an emotion | Idea |
 | [Rework the body wheel's areas and sensations](#rework-the-body-wheels-areas-and-sensations) | [The body wheel's content](#the-body-wheels-content) | Idea |
-| [A different word to start on](#a-different-word-to-start-on) | [The wheel and the card](#the-wheel-and-the-card) | Idea |
-| [Return to the word you jumped from](#return-to-the-word-you-jumped-from) | The wheel and the card | Idea |
-| [Feeling links underlined in their feeling's color](#feeling-links-underlined-in-their-feelings-color) | The wheel and the card | Idea |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
@@ -62,7 +60,7 @@ Each of these is a big change of its own, not polish to what's there.
 - Very simplified: core feelings and a few middle-ring ones, because there are only so many emoji.
 - The data is ready: `Feeling.emoji` is already an optional field.
 - After v2, another wheel is a wheel file, an entry in the wheel list and its locale strings; the switch, URLs, colors and card handle it (v2 spec §7).
-- A third wheel is when [return to the word you jumped from](#return-to-the-word-you-jumped-from) has to work across more than two wheels, and the switch's third option meets the [wide fallback fonts](#layout-and-labels) known issue.
+- A third wheel is when the [Back to pill](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-design.md#2-back-to-the-word-you-jumped-from) has to work across more than two wheels, and the switch's third option meets the [wide fallback fonts](#layout-and-labels) known issue.
 
 #### Strength
 
@@ -101,37 +99,6 @@ Lucas, 2026-11-14: the body wheel needs reworking to be more consistent.
 - To decide when designing: one rule for what an area is and one for what a sensation is, what happens to the words that don't fit (dropped, reworded as a feeling, or a place of their own), and how URLs to moved or renamed sensations keep working.
 - Meets the [definitions and sensations review](#before-launching) in [content-review.md](content-review.md), so it's worth doing before or with it.
 
-### The wheel and the card
-
-Polish to what's there; these could ship together as one change.
-
-#### A different word to start on
-
-- Lucas's idea, 2026-11-12: the wheel always opens on Fearful, which is an unfortunate first word to see. Could it start somewhere random?
-- Why today: the wheel always starts at the same rotation (`DEFAULT_ROTATION` in `src/controller.ts`), with the first core feeling, Fearful, at 12 o'clock as on the reference wheel. So the phone's half-wheel always rests on the same words, and the body wheel on the same area.
-- To decide when designing:
-  - random on every visit, a gentler fixed start, or something in between (a different word each day);
-  - whether the intro spin lands on it;
-  - the end-to-end and viewport tests expect a fixed start, so they need a way to pin it.
-
-#### Return to the word you jumped from
-
-- After jumping from the body wheel to the feelings wheel (the "See … on the feelings wheel" link, or v2.2's core-feeling link in the definition), a "Return to …" control takes you back to the body wheel with the card you came from open again.
-- Lucas's idea, 2026-11-09. Where it goes is open: on the opened card, as a toolbar button like Start over, or something else. Since the [share change](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md), the toolbar's second slot is Share at rest and Start over while a word is selected, so a Return button in the toolbar would need another place.
-- Today the only way back is the browser's Back (the jump pushes history, v2 §4.2), which is the awkward gesture in the [going back on phones](#navigation) known issue. The jump still pushes history under the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md), so Back returns from it; this idea would add a way back that doesn't need the browser's Back.
-- To decide when designing: what the control says ("Back to Wide eyes"?), when it disappears (after moving on, switching wheels by hand, or Start over), and whether it also works the other way, or for the emoji wheel once there are three wheels.
-
-#### Feeling links underlined in their feeling's color
-
-- Every link to a feeling is underlined in that feeling's color, wherever it appears, for consistency: breadcrumbs, the "Narrow it down" and "Could be feeling" rows, the "Close to" and "Could also be feeling" words, v2.2's core-feeling link in the definition, and the jump to the feelings wheel.
-- Lucas's idea, 2026-11-09.
-- Today (v2.2.1): feeling links are underlined in a 45% tint of the text color, and take their feeling's ink (`--ink`, from `colors.ts` `inkFor`) only on hover or focus. The rows have no underline, only a gray divider below. Breadcrumbs don't carry their own feeling's ink: on hover they take the opened word's.
-- To decide when designing:
-  - the ink (contrast-checked against the card, so it shows in both themes) or the wheel's own fill (truer to the wheel, but some are too dark or light to see on the card);
-  - whether the rows' dividers take the color too, or they get underlines;
-  - what areas and sensations do, since they're links too but not feelings;
-  - forced colors, where links keep the system's link color.
-
 ### URLs, routing and hosting
 
 What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md), which settled the URL structure: [languages](#languages) fill the room it leaves for them, and ["Did you mean"](#did-you-mean-on-not-found) and [Start over](#start-over-on-not-found) build on its not-found message.
@@ -169,6 +136,9 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 
 ### Layout and labels
 
+- **The two wheels can rest in different views in the same window.** Found by Lucas 2026-11-15: in a window taller than it is wide, roughly 720 to 920 px wide, the feelings wheel rests whole and the body wheel on the half-wheel. Lucas wants the view to be the same on both wheels.
+  - Why: on an upright stage, `restView` (`src/camera.ts`) rests on the whole wheel only if a typical outer cell's label would be at least 12 px tall (`shouldStartZoomed`: the median outer cell's arc × 0.55 ≥ 12 px), and it decides per wheel. The feelings wheel has 82 outer cells and the body wheel 105, so the body wheel's cells are narrower. The whole wheel needs a radius of about 352 px on the feelings wheel and about 450 px on the body wheel, and windows in between split.
+  - To decide when designing: one rule for both wheels, such as deciding with the wheel that has the most outer cells (so the feelings wheel would also rest on the half-wheel in those windows), and what the viewport sweep (`tests/e2e/viewports.spec.ts`) should pin. The [emoji wheel](#emoji-wheel) and [wheels for kids](#wheels-for-kids) would join the same rule. No fix chosen yet.
 - **Wide fallback fonts don't fit the tightest layouts.** Found 2026-11-09 when the end-to-end tests first ran on GitHub's Ubuntu runners, whose `system-ui` font is DejaVu Sans, much wider than the system fonts on Apple, Android and Windows devices. With it:
   - the wheel switch and toolbar overlap on 280 px screens;
   - the switch's planned third option no longer fits at 320 px;
@@ -182,7 +152,7 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 
 ### Navigation
 
-- **Going back on phones.** Swiping back doesn't work at all on the wheel: it takes every touch, so the browser's Back button is the only way back. An app installed to the iPhone home screen has no Back at all. Lucas (2026-11-14): better history rules for phones wait on an in-app back button. History follows the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md): picking a word or a place adds an entry, moving by direction replaces it. Related: [return to the word you jumped from](#return-to-the-word-you-jumped-from).
+- **Going back on phones.** Swiping back doesn't work at all on the wheel: it takes every touch, so the browser's Back button is the only way back. An app installed to the iPhone home screen has no Back at all. Lucas (2026-11-14): better history rules for phones wait on an in-app back button. History follows the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md): picking a word or a place adds an entry, moving by direction replaces it. Related: the [Back to pill](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-design.md#2-back-to-the-word-you-jumped-from) is a way back without the browser's Back, for the jump between wheels only.
 - **With VoiceOver on iPhone, the wheel's words can't be reached.** Lucas tried it on 2026-11-15, after the [question-first change](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md): swiping through the page kept repeating the headings or whatever had focus, and never got to a word on the wheel, so he couldn't select one. He's new to VoiceOver, so it isn't yet known how much is the app and how much is how it was used; it needs someone who uses VoiceOver daily, or a careful walk-through. Likely causes, worth checking together:
   - the tree is visually hidden (`.visually-hidden`: 1 px, clipped), and VoiceOver on iPhone moves by what it finds on screen, so it may skip a 1 px element or struggle to land in it;
   - VoiceOver on iPhone and TalkBack barely support `role="tree"`;

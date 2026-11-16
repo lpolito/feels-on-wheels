@@ -609,7 +609,7 @@ test.describe('phone', () => {
     await open(page);
     const cam = await page.evaluate(() => window.__fw.camera());
     expect(Math.abs(cam.cx)).toBeLessThanOrEqual(2);
-    expect(await page.evaluate(() => window.__fw.offCenter('fearful'))).toBeLessThan(1e-6);
+    expect(await page.evaluate(() => window.__fw.offCenter('happy'))).toBeLessThan(1e-6);
   });
 
   test('phone: deep link then closing lands on the half-wheel with the word selected and no intro', async ({ page }) => {
@@ -631,7 +631,7 @@ test.describe('phone', () => {
   test('phone: turned sideways with a word selected, the half-wheel becomes the side view (spec v2.1 §6.2)', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await open(page);
-    await tapPath(page, 'angry');
+    await tapPath(page, 'sad');
     const rot = (await page.evaluate(() => window.__fw.camera())).rotation;
     await page.setViewportSize({ width: 667, height: 375 });
     await page.waitForTimeout(200);
@@ -642,7 +642,7 @@ test.describe('phone', () => {
     expect(cam.cx).toBeLessThan(vp.width / 2);
     expect(vp.width).toBeLessThan(667);
     expect(sameAngle(cam.rotation, rot)).toBeLessThan(1e-6);
-    expect(await selectedPath(page)).toBe('angry');
+    expect(await selectedPath(page)).toBe('sad');
     expect((await state(page)).opened).toBe(false);
   });
 
@@ -747,14 +747,14 @@ test.describe('phone', () => {
 
   test('phone: Back from an opened word returns to the whole wheel with it selected', async ({ page }) => {
     await open(page);
-    await tapPath(page, 'angry');
-    await tapPath(page, 'angry');
-    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
+    await tapPath(page, 'sad');
+    await tapPath(page, 'sad');
+    expect(await page.evaluate(() => location.pathname)).toBe('/sad');
     await page.goBack();
     await idle(page);
     expect(await page.evaluate(() => location.pathname)).toBe('/');
     const s = await state(page);
-    expect(await selectedPath(page)).toBe('angry');
+    expect(await selectedPath(page)).toBe('sad');
     expect(s.view).toEqual({ mode: 'wheel' });
     expect(s.opened).toBe(false);
   });
@@ -772,7 +772,7 @@ test('the message and the card never show together', async ({ page }) => {
   await open(page);
   await expect(hint(page)).toBeVisible();
   await expect(page.locator('fw-card')).toBeHidden();
-  await tapPath(page, 'angry');
+  await tapPath(page, 'sad');
   await expect(hint(page)).toBeHidden();
   await expect(page.locator('fw-card')).toBeVisible();
   await page.keyboard.press('Escape');
@@ -1065,5 +1065,38 @@ test.describe('v2.2: the wheel under the column', () => {
     await page.mouse.up();
     await idle(page);
     expect(sameAngle((await page.evaluate(() => window.__fw.camera())).rotation, before)).toBeGreaterThan(0.01);
+  });
+});
+
+// Wheel and card spec §1: every view rests with the wheel's start word (Happy) at 3 o'clock; only phones spin in.
+test.describe('start word', () => {
+  const offCenter = (page: Page, path: string) => page.evaluate((p) => window.__fw.offCenter(p), path);
+
+  test.describe('desktop', () => {
+    test.use({ viewport: { width: 1280, height: 800 } });
+    test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'desktop window'));
+
+    test("the whole wheel rests with Happy at 3 o'clock", async ({ page }) => {
+      await open(page);
+      expect(await offCenter(page, 'happy')).toBeLessThan(1e-6);
+      expect(await page.evaluate(() => window.__fw.coreAtThree())).toBe('happy');
+    });
+  });
+
+  test.describe('phone', () => {
+    test.use({ viewport: { width: 390, height: 844 } });
+
+    test("the intro lands with Happy at 3 o'clock", async ({ page }) => {
+      await open(page);
+      expect(await offCenter(page, 'happy')).toBeLessThan(1e-6);
+    });
+
+    test('reduced motion starts at rest, with no spin', async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      await page.goto('/');
+      await page.waitForFunction(() => window.__fw !== undefined);
+      expect(await page.evaluate(() => window.__fw.moving())).toBe(false);
+      expect(await offCenter(page, 'happy')).toBeLessThan(1e-6);
+    });
   });
 });

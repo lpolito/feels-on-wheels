@@ -1,4 +1,4 @@
-import { halfRestRotation, ringFocusCamera, wheelCamera, type CameraController, type CameraOpts } from './camera';
+import { restRotation, ringFocusCamera, wheelCamera, type CameraController, type CameraOpts } from './camera';
 import type { Intent } from './input/gestures';
 import type { Layout } from './model/layout';
 import {
@@ -23,8 +23,6 @@ export interface Controller {
   readonly camera: CameraController;
 }
 
-/** Default whole-wheel rotation: the first core segment starts at 12 o'clock, as in the reference wheel. */
-export const DEFAULT_ROTATION = -Math.PI / 2;
 const MIN_SCALE = 0.8;
 const MAX_SCALE_HEADROOM = 1.2;
 const WHEEL_SCROLL_RATE = 0.004;
@@ -319,7 +317,7 @@ export function createController(
     if (ringOf(store.get()) !== null || opts.rest === 'whole') return;
     const widths = layout.rings[0]!.segments.map((k) => seg(k).end - seg(k).start).sort((a, b) => a - b);
     const median = widths[Math.floor(widths.length / 2)]!;
-    const rest = halfRestRotation(layout);
+    const rest = restRotation(layout);
     // Only the rotation moves: scale and center are the resting view's throughout.
     camera.jump(wheelCamera(layout, vp, rest - INTRO_SEGMENTS * median, opts));
     userSpin = false;
@@ -327,7 +325,8 @@ export function createController(
   }
 
   // Initial resting state.
-  camera.jump(wheelCamera(layout, vp, opts.rest !== 'whole' ? halfRestRotation(layout) : DEFAULT_ROTATION, opts));
+  // Wheel and card spec §1: every view rests with the start word at 3 o'clock; only phones spin in to it.
+  camera.jump(wheelCamera(layout, vp, restRotation(layout), opts));
   camera.jump(restingCamera(store.get()));
 
   return {

@@ -25,18 +25,18 @@ test('deep links open their cells, with the cell in the title', async ({ page })
 test('the title follows the route: a word, another wheel, then Back', async ({ page }) => {
   await open(page);
   await expect(page).toHaveTitle('Feels on Wheels: find the word for what you feel');
-  await tapPath(page, 'angry');
-  await tapPath(page, 'angry');
-  await expect(page).toHaveTitle('Angry · Feels on Wheels');
+  await tapPath(page, 'sad');
+  await tapPath(page, 'sad');
+  await expect(page).toHaveTitle('Sad · Feels on Wheels');
   await page.locator('fw-wheel-switch button', { hasText: 'Body' }).click();
   await idle(page);
   expect(new URL(page.url()).pathname).toBe('/body');
   await expect(page).toHaveTitle('Body sensations wheel · Feels on Wheels');
   await page.goBack();
   await idle(page);
-  expect(new URL(page.url()).pathname).toBe('/angry');
-  expect(await selectedPath(page)).toBe('angry');
-  await expect(page).toHaveTitle('Angry · Feels on Wheels');
+  expect(new URL(page.url()).pathname).toBe('/sad');
+  expect(await selectedPath(page)).toBe('sad');
+  await expect(page).toHaveTitle('Sad · Feels on Wheels');
 });
 
 test('Review Focus 3: a query is ignored, and dropped on the first write', async ({ page }) => {
@@ -97,14 +97,14 @@ test('a typed {link} is shown as typed, with one link', async ({ page }) => {
 test('on not found, tapping a word opens it at its own path, and the message never comes back', async ({ page }) => {
   await open(page, '/happy/plaful');
   const entries = await page.evaluate(() => history.length);
-  await tapPath(page, 'angry');
-  await tapPath(page, 'angry');
+  await tapPath(page, 'sad');
+  await tapPath(page, 'sad');
   expect((await state(page)).opened).toBe(true);
-  expect(new URL(page.url()).pathname).toBe('/angry');
+  expect(new URL(page.url()).pathname).toBe('/sad');
   // History rule spec: the first tap only selects, and replaces the mistyped address with the wheel's; opening then
   // adds an entry. Back goes to the wheel, never to the mistyped address.
   expect(await page.evaluate(() => history.length)).toBe(entries + 1);
-  await expect(page).toHaveTitle('Angry · Feels on Wheels');
+  await expect(page).toHaveTitle('Sad · Feels on Wheels');
   await page.goBack();
   await idle(page);
   expect(new URL(page.url()).pathname).toBe('/');
@@ -149,9 +149,9 @@ test('no full reloads: wheel, word, body, About, Back, Back, Forward', async ({ 
     }
     expect(await marker(page)).toBe(1);
   };
-  await tapPath(page, 'angry');
-  await tapPath(page, 'angry');
-  await step('/angry', 'wheel', 'Angry · Feels on Wheels', 'core');
+  await tapPath(page, 'sad');
+  await tapPath(page, 'sad');
+  await step('/sad', 'wheel', 'Sad · Feels on Wheels', 'core');
   await page.locator('fw-wheel-switch button', { hasText: 'Body' }).click();
   await step('/body', 'wheel', 'Body sensations wheel · Feels on Wheels', 'body');
   await aboutLink(page).click();
@@ -159,8 +159,8 @@ test('no full reloads: wheel, word, body, About, Back, Back, Forward', async ({ 
   await page.goBack();
   await step('/body', 'wheel', 'Body sensations wheel · Feels on Wheels', 'body');
   await page.goBack();
-  await step('/angry', 'wheel', 'Angry · Feels on Wheels', 'core');
-  expect(await selectedPath(page)).toBe('angry');
+  await step('/sad', 'wheel', 'Sad · Feels on Wheels', 'core');
+  expect(await selectedPath(page)).toBe('sad');
   await page.goForward();
   await step('/body', 'wheel', 'Body sensations wheel · Feels on Wheels', 'body');
 });
@@ -296,11 +296,11 @@ test.describe('history: picking adds an entry, moving by direction replaces it',
     await open(page);
     const before = await entries(page);
     await page.waitForTimeout(320);
-    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('sad'));
     await page.mouse.dblclick(p.x, p.y);
     await idle(page);
     expect((await state(page)).opened).toBe(true);
-    expect(new URL(page.url()).pathname).toBe('/angry');
+    expect(new URL(page.url()).pathname).toBe('/sad');
     expect(await entries(page)).toBe(before + 1);
   });
 
@@ -318,8 +318,8 @@ test.describe('history: picking adds an entry, moving by direction replaces it',
 
   test('a word opened by a tap, Start over, About, then "Back to the wheel": the whole wheel, and Back again reopens the word', async ({ page }) => {
     await open(page);
-    await tapPath(page, 'angry');
-    await tapPath(page, 'angry');
+    await tapPath(page, 'sad');
+    await tapPath(page, 'sad');
     await page.locator('fw-toolbar .fw-start-over').click();
     await idle(page);
     await aboutLink(page).click();
@@ -329,10 +329,10 @@ test.describe('history: picking adds an entry, moving by direction replaces it',
     await idle(page);
     expect((await state(page)).selected).toBeNull();
     await page.goBack();
-    await expect(page).toHaveURL((u) => u.pathname === '/angry');
+    await expect(page).toHaveURL((u) => u.pathname === '/sad');
     await idle(page);
     expect((await state(page)).opened).toBe(true);
-    expect(await selectedPath(page)).toBe('angry');
+    expect(await selectedPath(page)).toBe('sad');
   });
 
   test("following the not-found message's own link replaces the mistyped address, so Back never shows it again", async ({ page }) => {
@@ -364,21 +364,21 @@ test.describe('history: picking adds an entry, moving by direction replaces it',
 
   test('Back, then tapping a new word, clears Forward', async ({ page }) => {
     await open(page);
-    await tapPath(page, 'angry');
-    await tapPath(page, 'angry');
+    await tapPath(page, 'sad');
+    await tapPath(page, 'sad');
     await page.goBack();
     await idle(page);
     expect(new URL(page.url()).pathname).toBe('/');
     const len = await entries(page);
-    // Disgusted sits next to Angry, so it's on screen on a phone's half-wheel too.
-    await tapPath(page, 'disgusted');
-    await tapPath(page, 'disgusted');
-    expect(new URL(page.url()).pathname).toBe('/disgusted');
-    // The push dropped Forward's /angry and added /disgusted in its place.
+    // Back leaves the wheel turned to Sad, and Happy sits beside it, so it's on screen on a phone's half-wheel too.
+    await tapPath(page, 'happy');
+    await tapPath(page, 'happy');
+    expect(new URL(page.url()).pathname).toBe('/happy');
+    // The push dropped Forward's /sad and added /happy in its place.
     expect(await entries(page)).toBe(len);
     await page.goForward();
     await idle(page);
-    expect(new URL(page.url()).pathname).toBe('/disgusted');
+    expect(new URL(page.url()).pathname).toBe('/happy');
   });
 
   test('a swipe to the parent word replaces the entry', async ({ page }) => {
@@ -400,7 +400,7 @@ test.describe('history: picking adds an entry, moving by direction replaces it',
     test.skip(browserName === 'webkit' && Boolean(isMobile), 'Playwright has no mouse wheel in mobile WebKit');
     await open(page);
     const before = await entries(page);
-    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('sad'));
     await page.mouse.move(p.x, p.y);
     await page.keyboard.down('Control');
     for (let i = 0; i < 4; i++) await page.mouse.wheel(0, -200);
@@ -408,7 +408,7 @@ test.describe('history: picking adds an entry, moving by direction replaces it',
     await page.waitForTimeout(400);
     await idle(page);
     expect((await state(page)).opened).toBe(true);
-    expect(new URL(page.url()).pathname).toBe('/angry');
+    expect(new URL(page.url()).pathname).toBe('/sad');
     expect(await entries(page)).toBe(before + 1);
   });
 });

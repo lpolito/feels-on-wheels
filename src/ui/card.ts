@@ -156,6 +156,11 @@ export class FwCard extends HTMLElement {
     else if (this.#toggle) moveFocus(this.#toggle);
   }
 
+  /** Moves focus to the toggle, if the card shows a word (wheel and card spec §2: after Back to the body wheel). */
+  focusToggle(): void {
+    if (this.#toggle) moveFocus(this.#toggle);
+  }
+
   /** Hue → hover ink (spec v1.2 §5.2), from colors.ts inkFor. */
   set inks(map: Record<string, string>) {
     this.#inks = map;
@@ -172,10 +177,16 @@ export class FwCard extends HTMLElement {
 
   /** A row link in its own feeling's ink (spec v2 §6.1); falls back to the card's ink. */
   #inkedLink(r: Row, trailing = ''): HTMLAnchorElement {
-    const b = this.#link(r, trailing);
-    const ink = this.#inks[r.hue];
-    if (ink) b.style.setProperty('--ink', ink);
-    return b;
+    return this.#inked(this.#link(r, trailing), r.hue);
+  }
+
+  /** Gives a link its hue's ink, and remembers the hue so a new theme's inks reach it (#applyInk). */
+  #inked(a: HTMLAnchorElement, hue: string): HTMLAnchorElement {
+    a.dataset['hue'] = hue;
+    const ink = this.#inks[hue];
+    if (ink) a.style.setProperty('--ink', ink);
+    else a.style.removeProperty('--ink');
+    return a;
   }
 
   #link(r: Row, trailing = ''): HTMLAnchorElement {
@@ -260,6 +271,8 @@ export class FwCard extends HTMLElement {
     const ink = m.kind === 'none' ? undefined : this.#inks[m.hue];
     if (ink) this.style.setProperty('--ink', ink);
     else this.style.removeProperty('--ink');
+    // A theme change sets new inks without rebuilding the card: each inked link takes its hue's new ink.
+    for (const a of this.querySelectorAll<HTMLAnchorElement>('a[data-hue]')) this.#inked(a, a.dataset['hue']!);
   }
 
   /** Same word, selected ↔ opened: fill (or keep) the crumbs and body, then flip the open state. */
@@ -320,7 +333,8 @@ export class FwCard extends HTMLElement {
   #crumbsNav(crumbs: Row[]): HTMLElement {
     // The padding lives on the row, not the clipped grid item, so the folded 0fr track really is 0 high.
     const row = h('div', { className: 'fw-crumbs-row' });
-    for (const c of crumbs) row.append(this.#link(c), h('span', { className: 'fw-sep' }, '›'));
+    // Each crumb in its own feeling's ink, as the rows below are (wheel and card spec §3).
+    for (const c of crumbs) row.append(this.#inkedLink(c), h('span', { className: 'fw-sep' }, '›'));
     const nav = h('nav', { className: 'fw-crumbs fw-crumbs-wrap' }, h('div', { className: 'fw-crumbs-inner' }, row));
     nav.setAttribute('aria-label', t('path'));
     return nav;
@@ -335,9 +349,7 @@ export class FwCard extends HTMLElement {
         if (s.core) {
           // Spec v2.2 §4.4: "… A happy feeling.", the core word opening that feeling on the first wheel.
           const { before, label, after, hue, wheel, path } = s.core;
-          const link = this.#anchor('fw-link', this.hrefFor(wheel, path), label, () => this.#toWheel(wheel, path));
-          const ink = this.#inks[hue];
-          if (ink) link.style.setProperty('--ink', ink);
+          const link = this.#inked(this.#anchor('fw-link', this.hrefFor(wheel, path), label, () => this.#toWheel(wheel, path)), hue);
           p.append(' ', before, link, after);
         }
         content.append(p);

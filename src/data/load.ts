@@ -49,6 +49,10 @@ export function validateWheel(
     }
   };
   visit(w.children as WheelNode[], 0);
+  // Wheel and card spec §1: the wheel rests on one of its center nodes.
+  if (typeof w.start !== 'string' || !(w.children as WheelNode[]).some((n) => nodeRef(n).id === w.start)) {
+    fail(`wheel ${w.id}: start must name one of its center nodes`);
+  }
   return w as unknown as Wheel;
 }
 
@@ -93,6 +97,7 @@ export function validateLocale(l: unknown, dict: FeelingsDict, wheels: Wheel[]):
       if (!text?.[key]) fail(`locale ${lang}: wheel "${w.id}" is missing "${key}"`);
     }
     if (text && 'switchName' in text && !text.switchName) fail(`locale ${lang}: wheel "${w.id}" has an empty "switchName"`);
+    if (w !== wheels[0] && !text?.backTo) fail(`locale ${lang}: wheel "${w.id}" is missing "backTo"`);
     for (const r of refsOf(w.children)) {
       if (r.kind === 'sensation' && !loc.sensations[r.id]) fail(`locale ${lang}: missing sensation "${r.id}"`);
       if (r.kind === 'area' && !loc.areas[r.id]) fail(`locale ${lang}: missing area "${r.id}"`);

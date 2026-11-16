@@ -616,7 +616,8 @@
       "hintTitle": "What do you notice in your body?",
       "hintTouch": "Tap, spin, or zoom to explore, or {link}.",
       "hintPointer": "Click, spin, zoom, or use the arrow keys to explore, or {link}.",
-      "hintLink": "start from feelings instead"
+      "hintLink": "start from feelings instead",
+    "backTo": "Back to the body wheel"
     }
   },
   "titles": {

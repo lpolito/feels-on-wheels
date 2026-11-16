@@ -1,5 +1,6 @@
 {
   "id": "core",
+  "start": "happy",
   "rings": [
     {
       "inner": 0.12,

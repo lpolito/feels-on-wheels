@@ -17,10 +17,11 @@ export interface NodeRef { kind: NodeKind; id: string }
 export interface RingSpec { inner: number; outer: number }
 /** Exactly one of feeling / sensation / area (checked by validateWheel). */
 export interface WheelNode { feeling?: FeelingId; sensation?: SensationId; area?: AreaId; hue?: string; children?: WheelNode[] }
-export interface Wheel { id: string; rings: RingSpec[]; children: WheelNode[] }
+/** `start`: the center node the wheel rests on at 3 o'clock (wheel and card spec §1). */
+export interface Wheel { id: string; start: string; rings: RingSpec[]; children: WheelNode[] }
 
 /** Per-wheel text (spec v2 §4.1). `hintTitle` heads the message (spec v2.2 §5); `hintTouch` (touch screens) and `hintPointer` (mouse or trackpad) each contain "{link}", where `hintLink` goes. */
-export interface WheelText { switch: string; name: string; hintTitle: string; hintTouch: string; hintPointer: string; hintLink: string; /** Spoken name when `switch` is short, e.g. one emoji (spec v2.1 §4.2). */ switchName?: string }
+export interface WheelText { switch: string; name: string; hintTitle: string; hintTouch: string; hintPointer: string; hintLink: string; /** Spoken name when `switch` is short, e.g. one emoji (spec v2.1 §4.2). */ switchName?: string; /** Every wheel but the first: the pill that returns to it after a jump (wheel and card spec §2). */ backTo?: string }
 
 /** Page titles and meta descriptions (spec 2026-11-13 §6). `route` and the two cell descriptions have `{name}`, `{sensation}`, `{area}`. */
 export interface Titles {

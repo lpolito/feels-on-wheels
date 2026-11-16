@@ -35,6 +35,8 @@ export interface Ring {
 
 export interface Layout {
   wheelId: string;
+  /** The segment the wheel rests on at 3 o'clock: its `start` (wheel and card spec §1). */
+  start: number;
   segments: Segment[];
   rings: Ring[];
   byPath: Map<Path, number>;
@@ -107,7 +109,8 @@ export function buildLayout(wheel: Wheel, home?: Map<FeelingId, Home>): Layout {
     };
   });
 
-  return { wheelId: wheel.id, segments, rings, byPath: new Map(segments.map((s) => [s.path, s.index])) };
+  const byPath = new Map(segments.map((s) => [s.path, s.index]));
+  return { wheelId: wheel.id, start: byPath.get(wheel.start)!, segments, rings, byPath };
 }
 
 /** 1 for segments that stay lit: the selection, its ancestors and its descendants. All 1 when nothing is selected. */

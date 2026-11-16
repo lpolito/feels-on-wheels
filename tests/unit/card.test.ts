@@ -682,6 +682,29 @@ describe('<fw-card> on the body wheel', () => {
     expect(rows.map((r) => r.style.getPropertyValue('--ink'))).toEqual(['#222222', '#333333', '#444444']);
     expect(el.querySelector('h2')!.textContent).toBe('Could be feeling');
   });
+
+  test('a new theme\'s inks reach the breadcrumbs and rows of an open card', () => {
+    document.body.innerHTML = '<fw-card></fw-card>';
+    const el = document.querySelector<FwCard>('fw-card')!;
+    el.inks = { chest: '#111111', fearful: '#222222', angry: '#333333', surprised: '#444444' };
+    el.model = cardModel(body, feelings, bOpened('chest/racing-heart'), jump);
+    el.inks = { chest: '#aaaaaa', fearful: '#bbbbbb', angry: '#cccccc', surprised: '#dddddd' };
+    const crumbs = [...el.querySelectorAll<HTMLAnchorElement>('nav.fw-crumbs a')];
+    expect(crumbs.map((a) => a.style.getPropertyValue('--ink'))).toEqual(['#aaaaaa']);
+    const rows = [...el.querySelectorAll<HTMLAnchorElement>('ul.fw-rows a')];
+    expect(rows.map((r) => r.style.getPropertyValue('--ink'))).toEqual(['#bbbbbb', '#cccccc', '#dddddd']);
+  });
+
+  test("breadcrumbs carry their own ink, not the opened word's", () => {
+    document.body.innerHTML = '<fw-card></fw-card>';
+    const el = document.querySelector<FwCard>('fw-card')!;
+    el.inks = { chest: '#111111', fearful: '#222222' };
+    el.model = cardModel(body, feelings, bOpened('chest/racing-heart/scared'), jump);
+    const crumbs = [...el.querySelectorAll<HTMLAnchorElement>('nav.fw-crumbs a')];
+    expect(crumbs.map((a) => a.textContent)).toEqual(['Chest', 'Racing heart']);
+    expect(crumbs.map((a) => a.style.getPropertyValue('--ink'))).toEqual(['#111111', '#111111']);
+    expect(el.style.getPropertyValue('--ink')).toBe('#222222');
+  });
 });
 
 describe('the core feeling on the body wheel (spec v2.2 §4.4)', () => {

@@ -89,6 +89,16 @@ describe('validation', () => {
     expect(() => validateWheel(bad2, feelings, ids())).toThrow(DataError);
   });
 
+  test('every wheel but the first needs backTo text (wheel and card spec §2)', () => {
+    expect(locale.wheels['body']!.backTo).toBe('Back to the body wheel');
+    const broken = structuredClone(locale);
+    delete broken.wheels['body']!.backTo;
+    expect(() => validateLocale(broken, feelings, wheels)).toThrow(DataError);
+    const first = structuredClone(locale);
+    delete first.wheels['core']!.backTo;
+    expect(() => validateLocale(first, feelings, wheels)).not.toThrow();
+  });
+
   test('every feeling and every sensation id used has a locale label', () => {
     for (const id of Object.keys(feelings)) {
       expect(locale.feelings[id]?.label, id).toBeTruthy();

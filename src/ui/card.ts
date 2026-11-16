@@ -156,6 +156,11 @@ export class FwCard extends HTMLElement {
     else if (this.#toggle) moveFocus(this.#toggle);
   }
 
+  /** Moves focus to the toggle, if the card shows a word (wheel and card spec §2: after Back to the body wheel). */
+  focusToggle(): void {
+    if (this.#toggle) moveFocus(this.#toggle);
+  }
+
   /** Hue → hover ink (spec v1.2 §5.2), from colors.ts inkFor. */
   set inks(map: Record<string, string>) {
     this.#inks = map;

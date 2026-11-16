@@ -17,12 +17,14 @@ import { createWheelRenderer, labelFont, type WheelRenderer } from './render/whe
 import { createStore, initialState, withFrom, type Action, type State, type Store } from './state/store';
 import { createHistoryWriter, historyOp } from './state/history';
 import { formatRoute, parsePath, pathOf, routeTable, stateFor, type Route } from './state/url';
+import type { FwBackTo } from './ui/back-to';
 import { cardModel, type FwCard, type JumpContext } from './ui/card';
 import type { FwHint, HintContent } from './ui/hint';
 import { shareLink } from './ui/share';
 import { applyPref, readPref, resolvedTheme, safeStorage, themeName, writePref, type ThemePref } from './ui/theme';
 import type { FwToolbar } from './ui/toolbar';
 import type { FwWheelSwitch } from './ui/wheel-switch';
+import './ui/back-to';
 import './ui/card';
 import './ui/hint';
 import './ui/toolbar';
@@ -60,6 +62,14 @@ const card = $<FwCard>('fw-card');
 card.hrefFor = (wheel, path) => formatRoute(table, { kind: 'wheel', wheel, path });
 const hint = $<FwHint>('fw-hint');
 const toolbar = $<FwToolbar>('fw-toolbar');
+/**
+ * Wheel and card spec §2: after a card's jump to another wheel, "Back to the body wheel" above the card. `origin` is
+ * the opened word jumped from, `at` the word the jump opened; anything but that word, opened, drops it.
+ */
+const backToEl = $<FwBackTo>('fw-back-to');
+let backTo: { origin: { wheel: string; path: Path }; at: { wheel: string; index: number } } | null = null;
+/** The jump's history entry says so, so the pill's plain click can be a Back (like About's IN_APP). */
+const JUMP = { fwJump: true };
 const wheelSwitch = $<FwWheelSwitch>('fw-wheel-switch');
 wheelSwitch.wheels = data.wheels.map((w) => ({ id: w.id, label: wheelText(w.id).switch, name: wheelText(w.id).switchName }));
 const themeMeta = $<HTMLMetaElement>('#theme-color');
@@ -305,6 +315,22 @@ function renderUi(s: State): void {
   hint.content = hintContent(s);
   toolbar.selected = s.selected !== null;
   app.dataset['mode'] = s.view.mode;
+  renderBackTo(s);
+}
+
+/** Wheel and card spec §2: the pill shows only while the word the jump opened is still the opened word. */
+function renderBackTo(s: State): void {
+  if (backTo && !(layout.wheelId === backTo.at.wheel && s.opened && s.selected === backTo.at.index)) backTo = null;
+  const hadFocus = backToEl.contains(document.activeElement);
+  backToEl.target = backTo === null ? null : {
+    href: formatRoute(table, { kind: 'wheel', wheel: backTo.origin.wheel, path: backTo.origin.path }),
+    label: wheelText(backTo.origin.wheel).backTo ?? '',
+  };
+  // Hidden with focus on it (its own Back, a key): focus goes to the card it sat above, or the wheel.
+  if (hadFocus && backTo === null) {
+    if (card.hidden) tree.focusSelected();
+    else card.focusToggle();
+  }
 }
 
 // ── URL & history (URL redesign spec §1, §6; history rule spec 2026-11-14) ──────────────────────────
@@ -316,8 +342,9 @@ const showTitle = (route: Route): void => {
 };
 
 /** Writes the mounted wheel's URL for `s` (dropping any query) and its title. */
-function writeUrl(how: 'push' | 'replace', s: State): void {
-  writer[how](urlFor(s));
+function writeUrl(how: 'push' | 'replace', s: State, entry?: unknown): void {
+  if (how === 'push') writer.push(urlFor(s), entry);
+  else writer.replace(urlFor(s));
   showTitle(routeOf(s));
 }
 
@@ -414,6 +441,9 @@ let opener: HTMLElement | null = null;
  */
 function showAbout(how: 'push' | 'replace' | 'none', from?: Element): void {
   const firstLoad = layout === undefined;
+  // Wheel and card spec §2: About is navigating, so the pill goes.
+  backTo = null;
+  backToEl.target = null;
   const entering = !onAbout;
   if (entering && !firstLoad) {
     // From Back or Forward the address is already About's, so the landing must not write over its entry.
@@ -444,7 +474,7 @@ function showAbout(how: 'push' | 'replace' | 'none', from?: Element): void {
  * switch to a wheel at rest), else restores the state on this wheel; then writes the URL (`how`) and the title.
  * Not found is its wheel at rest with the not-found message, at the path as typed (`link.path` for a link).
  */
-function applyRoute(route: Route, how: 'push' | 'replace' | 'none', link?: { path: string; from: Element }): void {
+function applyRoute(route: Route, how: 'push' | 'replace' | 'none', link?: { path: string; from: Element }, entry?: unknown): void {
   if (route.kind === 'about') {
     showAbout(how, link?.from);
     return;
@@ -482,7 +512,7 @@ function applyRoute(route: Route, how: 'push' | 'replace' | 'none', link?: { pat
     announce(`${t('notFoundTitle')} ${t('notFoundText', { word: notFound.word })} ${hintFor(text).replace('{link}', text.hintLink)}`);
   }
   if (how === 'none') showTitle(route);
-  else if (route.kind === 'wheel') writeUrl(how, store.get());
+  else if (route.kind === 'wheel') writeUrl(how, store.get(), entry);
   else {
     writer[how](link?.path ?? location.pathname);
     showTitle(route);
@@ -518,8 +548,16 @@ app.addEventListener('fw-wheel', (e) => {
   if (!wheelIds.includes(id) || (id === layout.wheelId && path === undefined)) return;
   const from = e.target;
   const opened = path !== undefined && table.wheels.get(id)!.has(path);
+  // Wheel and card spec §2: a jump from an opened word on the card can be gone back from.
+  const origin = from === card && opened ? pathOf(layout, store.get()) : null;
+  const originWheel = layout.wheelId;
   // History rule spec: on not found, the message's own link replaces the mistyped address, so Back never returns to it.
-  applyRoute({ kind: 'wheel', wheel: id, path: opened ? path! : null }, notFound !== null ? 'replace' : 'push');
+  applyRoute({ kind: 'wheel', wheel: id, path: opened ? path! : null }, notFound !== null ? 'replace' : 'push', undefined, origin !== null ? JUMP : undefined);
+  const at = store.get().selected;
+  if (origin !== null && at !== null) {
+    backTo = { origin: { wheel: originWheel, path: origin }, at: { wheel: layout.wheelId, index: at } };
+    renderBackTo(store.get());
+  }
   // Focus: the switch keeps its own button; the message's link and the card's jump are rebuilt, so focus follows.
   if (from === hint) hint.focusLink();
   else if (from === card && !opened) tree.focusSelected();
@@ -545,7 +583,21 @@ app.addEventListener('fw-share', (e) => {
   });
 });
 
+/**
+ * Wheel and card spec §2: the pill goes back to the word jumped from. The jump marked its entry, so that's a Back;
+ * without the mark (a replaced entry), it opens the word as a new entry.
+ */
+app.addEventListener('fw-back', () => {
+  const b = backTo;
+  if (b === null) return;
+  if ((history.state as { fwJump?: unknown } | null)?.fwJump) history.back();
+  else applyRoute({ kind: 'wheel', wheel: b.origin.wheel, path: b.origin.path }, 'push');
+});
+
 addEventListener('popstate', () => {
+  // Wheel and card spec §2: Back or Forward is navigating, so the pill goes; focus on it moves to the card first.
+  backTo = null;
+  renderBackTo(store.get());
   // A rebuilt tree drops focus to <body> (WCAG 2.4.3); put it back on the new tree.
   const treeHadFocus = $<HTMLElement>('#a11y-tree').contains(document.activeElement);
   applyRoute(parsePath(table, location.pathname).route, 'none');

@@ -97,6 +97,7 @@ export function validateLocale(l: unknown, dict: FeelingsDict, wheels: Wheel[]):
       if (!text?.[key]) fail(`locale ${lang}: wheel "${w.id}" is missing "${key}"`);
     }
     if (text && 'switchName' in text && !text.switchName) fail(`locale ${lang}: wheel "${w.id}" has an empty "switchName"`);
+    if (w !== wheels[0] && !text?.backTo) fail(`locale ${lang}: wheel "${w.id}" is missing "backTo"`);
     for (const r of refsOf(w.children)) {
       if (r.kind === 'sensation' && !loc.sensations[r.id]) fail(`locale ${lang}: missing sensation "${r.id}"`);
       if (r.kind === 'area' && !loc.areas[r.id]) fail(`locale ${lang}: missing area "${r.id}"`);

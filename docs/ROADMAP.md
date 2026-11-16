@@ -136,6 +136,9 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 
 ### Layout and labels
 
+- **The two wheels can rest in different views in the same window.** Found by Lucas 2026-11-15: in a window taller than it is wide, roughly 720 to 920 px wide, the feelings wheel rests whole and the body wheel on the half-wheel. Lucas wants the view to be the same on both wheels.
+  - Why: on an upright stage, `restView` (`src/camera.ts`) rests on the whole wheel only if a typical outer cell's label would be at least 12 px tall (`shouldStartZoomed`: the median outer cell's arc × 0.55 ≥ 12 px), and it decides per wheel. The feelings wheel has 82 outer cells and the body wheel 105, so the body wheel's cells are narrower. The whole wheel needs a radius of about 352 px on the feelings wheel and about 450 px on the body wheel, and windows in between split.
+  - To decide when designing: one rule for both wheels, such as deciding with the wheel that has the most outer cells (so the feelings wheel would also rest on the half-wheel in those windows), and what the viewport sweep (`tests/e2e/viewports.spec.ts`) should pin. The [emoji wheel](#emoji-wheel) and [wheels for kids](#wheels-for-kids) would join the same rule. No fix chosen yet.
 - **Wide fallback fonts don't fit the tightest layouts.** Found 2026-11-09 when the end-to-end tests first ran on GitHub's Ubuntu runners, whose `system-ui` font is DejaVu Sans, much wider than the system fonts on Apple, Android and Windows devices. With it:
   - the wheel switch and toolbar overlap on 280 px screens;
   - the switch's planned third option no longer fits at 320 px;

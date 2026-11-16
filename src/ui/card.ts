@@ -320,7 +320,8 @@ export class FwCard extends HTMLElement {
   #crumbsNav(crumbs: Row[]): HTMLElement {
     // The padding lives on the row, not the clipped grid item, so the folded 0fr track really is 0 high.
     const row = h('div', { className: 'fw-crumbs-row' });
-    for (const c of crumbs) row.append(this.#link(c), h('span', { className: 'fw-sep' }, '›'));
+    // Each crumb in its own feeling's ink, as the rows below are (wheel and card spec §3).
+    for (const c of crumbs) row.append(this.#inkedLink(c), h('span', { className: 'fw-sep' }, '›'));
     const nav = h('nav', { className: 'fw-crumbs fw-crumbs-wrap' }, h('div', { className: 'fw-crumbs-inner' }, row));
     nav.setAttribute('aria-label', t('path'));
     return nav;

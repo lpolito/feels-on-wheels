@@ -23,6 +23,9 @@ export class FwBackTo extends HTMLElement {
   #target: { href: string; label: string } | null = null;
 
   set target(t: { href: string; label: string } | null) {
+    // The same target again keeps the link, so focus on it stays (main.ts sets it on every render).
+    const was = this.#target;
+    if (was === t || (was && t && was.href === t.href && was.label === t.label)) return;
     this.#target = t;
     this.#render();
   }

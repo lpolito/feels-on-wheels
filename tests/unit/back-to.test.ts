@@ -33,6 +33,16 @@ describe('<fw-back-to> (wheel and card spec §2)', () => {
     expect(links[0]!.querySelector('svg')!.getAttribute('aria-hidden')).toBe('true');
   });
 
+  test('the same target again keeps the link, and its focus', () => {
+    const { el } = mount();
+    el.target = target;
+    const a = el.querySelector('a')!;
+    a.focus();
+    el.target = { ...target };
+    expect(el.querySelector('a')).toBe(a);
+    expect(document.activeElement).toBe(a);
+  });
+
   test('a plain click emits fw-back', () => {
     const { el, backs } = mount();
     el.target = target;

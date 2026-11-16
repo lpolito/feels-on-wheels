@@ -547,6 +547,24 @@ test.describe('Back to the body wheel', () => {
     expect(new URL(page.url()).pathname).toBe('/fearful/scared');
   });
 
+  test('a double click goes back only once', async ({ page }) => {
+    await jumpFromScared(page);
+    await pill(page).dblclick();
+    await idle(page);
+    // One Back, to the body word. A second click that lands after the pill has gone may tap the wheel beneath it, so
+    // only the body wheel and the word's branch are certain; a second Back would have left the site.
+    expect(await wheelId(page)).toBe('body');
+    expect(new URL(page.url()).pathname.startsWith('/body/chest/racing-heart')).toBe(true);
+  });
+
+  test("a click on it focuses the reopened card's toggle", async ({ page }) => {
+    await jumpFromScared(page);
+    await pill(page).click();
+    await idle(page);
+    expect(new URL(page.url()).pathname).toBe('/body/chest/racing-heart/scared');
+    await expect(page.locator('fw-card .fw-card-toggle')).toBeFocused();
+  });
+
   test('the core-feeling link shows it too', async ({ page }) => {
     await open(page, '/body/chest/racing-heart/scared');
     await page.locator('fw-card .fw-definition a').click();

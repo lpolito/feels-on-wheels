@@ -70,6 +70,8 @@ const backToEl = $<FwBackTo>('fw-back-to');
 let backTo: { origin: { wheel: string; path: Path }; at: { wheel: string; index: number } } | null = null;
 /** The jump's history entry says so, so the pill's plain click can be a Back (like About's IN_APP). */
 const JUMP = { fwJump: true };
+/** The pill's Back is on its way (until popstate). */
+let backGoing = false;
 const wheelSwitch = $<FwWheelSwitch>('fw-wheel-switch');
 wheelSwitch.wheels = data.wheels.map((w) => ({ id: w.id, label: wheelText(w.id).switch, name: wheelText(w.id).switchName }));
 const themeMeta = $<HTMLMetaElement>('#theme-color');
@@ -589,14 +591,24 @@ app.addEventListener('fw-share', (e) => {
  */
 app.addEventListener('fw-back', () => {
   const b = backTo;
-  if (b === null) return;
-  if ((history.state as { fwJump?: unknown } | null)?.fwJump) history.back();
-  else applyRoute({ kind: 'wheel', wheel: b.origin.wheel, path: b.origin.path }, 'push');
+  if (b === null || backGoing) return;
+  // Focus goes to the card's toggle, which keeps it as the card rebuilds for the word it returns to (a click doesn't
+  // focus a link in Safari).
+  card.focusToggle();
+  if ((history.state as { fwJump?: unknown } | null)?.fwJump) {
+    // The pill stays until the Back lands (popstate), taking a double click's second click so it can't go back twice
+    // or fall through to the wheel.
+    backGoing = true;
+    history.back();
+  } else {
+    applyRoute({ kind: 'wheel', wheel: b.origin.wheel, path: b.origin.path }, 'push');
+  }
 });
 
 addEventListener('popstate', () => {
   // Wheel and card spec §2: Back or Forward is navigating, so the pill goes; focus on it moves to the card first.
   backTo = null;
+  backGoing = false;
   renderBackTo(store.get());
   // A rebuilt tree drops focus to <body> (WCAG 2.4.3); put it back on the new tree.
   const treeHadFocus = $<HTMLElement>('#a11y-tree').contains(document.activeElement);

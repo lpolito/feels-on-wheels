@@ -4,7 +4,7 @@ The research behind the body wheel's **Want to cry** in the [body wheel rework](
 
 ## What it is
 
-- Ad Vingerhoets, a psychologist at Tilburg University who has studied crying for decades. *Why Only Humans Weep: Unravelling the Mysteries of Tears*, Oxford University Press, 2013.
+- Ad Vingerhoets, a psychologist at Tilburg University who has studied crying for decades. *Why Only Humans Weep: Unravelling the Mysteries of Tears*, Oxford University Press, 2013 ([WorldCat](https://search.worldcat.org/search?q=bn:9780198570240)).
 - Also: Asmir Gračanin, Lauren M. Bylsma and Ad J. J. M. Vingerhoets, "Why only humans shed emotional tears", *Human Nature*, 2018.
 - **The idea:** helplessness is at the core of crying. People cry when they can't do anything about a situation, out of sadness but also frustration, being overwhelmed, and being moved by something good.
 - Taken from interviews and secondary coverage, including a [Donders Institute blog post](https://blog.donders.ru.nl/a-sob-story-why-do-humans-cry/?lang=en), read 2026-11-16; neither the book nor the paper was read.

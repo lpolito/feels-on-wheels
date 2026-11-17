@@ -4,7 +4,7 @@ The research behind **Insecure** under the body wheel's **Want to be close** in 
 
 ## What it is
 
-- Mario Mikulincer and Phillip R. Shaver, *Attachment in Adulthood: Structure, Dynamics, and Change*, Guilford Press, 2007; 2nd ed., 2016. Many papers by the same authors are at [UC Davis's adult attachment lab](https://adultattachment.faculty.ucdavis.edu/).
+- Mario Mikulincer and Phillip R. Shaver, *Attachment in Adulthood: Structure, Dynamics, and Change*, Guilford Press, 2007; 2nd ed., 2016 ([publisher](https://www.guilford.com/books/Attachment-in-Adulthood/Mikulincer-Shaver/9781462533817)). Many papers by the same authors are at [UC Davis's adult attachment lab](https://adultattachment.faculty.ucdavis.edu/).
 - **The idea:** under threat, people seek closeness to someone who makes them feel safe. People high in attachment anxiety use "hyperactivating" strategies: they keep seeking closeness, support, and reassurance, without trusting they'll get it.
 - Taken from the authors' papers and secondary summaries, read 2026-11-16; the book wasn't read.
 

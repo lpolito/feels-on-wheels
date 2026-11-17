@@ -748,13 +748,32 @@
           "id": "credits",
           "heading": "Credits",
           "body": [
-            "Feelings wheels have a long history. This one draws on the work below. Its definitions and sensations are written in its own words."
+            "Feelings wheels have a long history. This one draws on the work below. Its definitions and sensations are written in its own words.",
+            "The body sensations wheel also draws on research into where people feel emotions in their body, and what feelings pull them to do. Every sensation and urge on it says what it rests on, and a few rest on common speech or one person's experience rather than research. It was put together by someone without formal training in psychology, and it's not a clinical or diagnostic tool. If a word seems wrong or missing, [open an issue]({issues}). [How the body wheel was made]({research})."
           ],
           "items": [
             "Gloria Willcox, “[The Feeling Wheel](https://doi.org/10.1177/036215378201200411)”, Transactional Analysis Journal, 1982: the original feelings wheel.",
             "Geoffrey Roberts, “[The Feel Wheel](https://web.archive.org/web/20180505024944/https://imgur.com/tCWChf6)”, 2015: the seven core feelings and the words this feelings wheel is based on.",
             "Lindsay Braman, “[Emotion-Sensation Wheel](https://lindsaybraman.com/emotion-sensation-feeling-wheel/)”, 2020: the idea of a feelings wheel that includes body sensations. This one turns hers inside out, starting from the body.",
-            "[feelingswheel.com](https://feelingswheel.com/): the interactive feelings wheel whose tap-to-trace idea inspired this one."
+            "[feelingswheel.com](https://feelingswheel.com/): the interactive feelings wheel whose tap-to-trace idea inspired this one.",
+            "Lauri Nummenmaa and others, “[Bodily maps of emotions](https://doi.org/10.1073/pnas.1321664111)”, PNAS, 2014, and “[Maps of subjective feelings](https://doi.org/10.1073/pnas.1807390115)”, PNAS, 2018: where in the body people feel emotions.",
+            "Nico Frijda, “[The Emotions](https://dare.uva.nl/id/5f546954-f260-493c-914c-957751d8dc52)”, Cambridge University Press, 1986: emotions as a readiness to act, behind the body wheel's urges.",
+            "A. D. Craig, “[How do you feel?](https://doi.org/10.1038/nrn894)”, Nature Reviews Neuroscience, 2002: a sensation as the body felt from inside.",
+            "Marsha Linehan, “[DBT Skills Training Handouts and Worksheets](https://www.guilford.com/books/DBT-Skills-Training-Handouts-and-Worksheets/Marsha-Linehan/9781572307810)”, 2nd ed., 2015: body sensations and urges as parts of an emotion, and accepting what is.",
+            "Steven Hayes, Kelly Wilson, Elizabeth Gifford, Victoria Follette, and Kirk Strosahl, “[Experiential avoidance and behavioral disorders](https://doi.org/10.1037/0022-006X.64.6.1152)”, Journal of Consulting and Clinical Psychology, 1996: urges to get away from a feeling.",
+            "Sarah Bowen and Alan Marlatt, “[Surfing the urge](https://doi.org/10.1037/a0017127)”, Psychology of Addictive Behaviors, 2009: noticing an urge without acting on it.",
+            "Paul Rozin and April Fallon, “[A perspective on disgust](https://doi.org/10.1037/0033-295X.94.1.23)”, Psychological Review, 1987: disgust in the mouth, throat, and stomach.",
+            "Zoltán Kövecses, “[Metaphor and Emotion](https://search.worldcat.org/search?q=bn:9780521641630)”, Cambridge University Press, 2000: idioms for feelings that grow out of the body.",
+            "American Psychiatric Association, “[DSM-5](https://doi.org/10.1176/appi.books.9780890425596)”, 2013: the body symptoms of panic, anxiety, and depression.",
+            "Steven Maier and Martin Seligman, “[Learned helplessness at fifty](https://doi.org/10.1037/rev0000033)”, Psychological Review, 2016: giving up after what you can't control.",
+            "Ad Vingerhoets, “[Why Only Humans Weep](https://search.worldcat.org/search?q=bn:9780198570240)”, Oxford University Press, 2013: why people cry.",
+            "Naomi Eisenberger, Matthew Lieberman, and Kipling Williams, “[Does rejection hurt?](https://pubmed.ncbi.nlm.nih.gov/14551436/)”, Science, 2003: rejection felt as pain.",
+            "Michelle Duguid and Jack Goncalo, “[Living large](https://doi.org/10.1177/0956797611422915)”, Psychological Science, 2012: feeling powerful makes you feel taller.",
+            "Jennifer Goetz, Dacher Keltner, and Emiliana Simon-Thomas, “[Compassion](https://doi.org/10.1037/a0018807)”, Psychological Bulletin, 2010: the urge to help someone you care about.",
+            "Mario Mikulincer and Phillip Shaver, “[Attachment in Adulthood](https://www.guilford.com/books/Attachment-in-Adulthood/Mikulincer-Shaver/9781462533817)”, Guilford Press, 2007: insecurity and wanting closeness.",
+            "Leslie Greenberg, “[Emotion-Focused Therapy](https://www.apa.org/pubs/books/emotion-focused-therapy-second-edition)”, American Psychological Association, 2002: anger that covers hurt.",
+            "James Russell, “[A circumplex model of affect](https://doi.org/10.1037/h0077714)”, Journal of Personality and Social Psychology, 1980: calm and numb as two low-energy feelings.",
+            "Gaëlle Desbordes and others, “[Moving beyond mindfulness](https://doi.org/10.1007/s12671-013-0269-8)”, Mindfulness, 2015: calm acceptance isn't the same as numbness."
           ]
         },
         {

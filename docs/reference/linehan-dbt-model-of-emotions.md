@@ -4,7 +4,7 @@ The research behind the kinds of urge in the body wheel's **Urges** area in the 
 
 ## What it is
 
-- Marsha M. Linehan, *DBT Skills Training Handouts and Worksheets*, 2nd ed., Guilford Press, 2015. Emotion Regulation Handout 5, "A model for describing emotions", with Worksheet 4.
+- Marsha M. Linehan, *DBT Skills Training Handouts and Worksheets*, 2nd ed., Guilford Press, 2015 ([publisher](https://www.guilford.com/books/DBT-Skills-Training-Handouts-and-Worksheets/Marsha-Linehan/9781572307810)). Emotion Regulation Handout 5, "A model for describing emotions", with Worksheet 4.
 - **The model:** an emotion is a chain from a prompting event and how you interpret it, through **body changes and sensations** and **action urges**, to what you show and do, and its aftereffects. Changing any link can change the rest. A later handout lists the usual sensations and urges for each of several emotions.
 - **Opposite action**, a DBT skill, starts from naming the urge and, when the emotion doesn't fit the facts, doing the opposite.
 - **Radical acceptance**, a DBT distress tolerance skill, is accepting reality as it is, completely and without fighting it. It isn't approval, passivity, or resignation. Taken from secondary sources that quote Linehan's handouts, such as [Skyland Trail's](https://skylandtrail.org/?p=2629), read 2026-11-16.

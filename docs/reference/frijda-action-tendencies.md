@@ -5,7 +5,7 @@ The research behind the body wheel's **Urges** area in the [body wheel rework](.
 ## What it is
 
 - Nico H. Frijda (1927–2015), a Dutch psychologist at the University of Amsterdam.
-- *The Emotions*, Cambridge University Press, 1986: the book that sets out emotions as states of **action readiness**, a readiness to act in a certain way toward what's going on.
+- *The Emotions*, Cambridge University Press, 1986 ([catalog record](https://dare.uva.nl/id/5f546954-f260-493c-914c-957751d8dc52)): the book that sets out emotions as states of **action readiness**, a readiness to act in a certain way toward what's going on.
 - Tested in: Nico H. Frijda, Peter Kuipers and Elisabeth ter Schure, "Relations among emotion, appraisal, and emotional action readiness", *Journal of Personality and Social Psychology* 57(2), 212–228, 1989.
 - Later built on by the GRID study of emotion words across languages (Fontaine, Scherer and Soriano, eds., *Components of Emotional Meaning*, Oxford University Press, 2013), whose chapter on action tendencies is summarized at <https://www.unige.ch/cisa/research/current-specific-research-projects/language-and-culture/grid-book/chapter-11-emotion-doing-action-tendency-component>.
 

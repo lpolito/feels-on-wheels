@@ -4,7 +4,7 @@ The research behind the body wheel's rule on idioms in the [body wheel rework](.
 
 ## What it is
 
-- Zoltán Kövecses, *Metaphor and Emotion: Language, Culture, and Body in Human Feeling*, Cambridge University Press, 2000. A linguist at Eötvös Loránd University in Budapest, building on work with George Lakoff.
+- Zoltán Kövecses, *Metaphor and Emotion: Language, Culture, and Body in Human Feeling*, Cambridge University Press, 2000 ([WorldCat](https://search.worldcat.org/search?q=bn:9780521641630)). A linguist at Eötvös Loránd University in Budapest, building on work with George Lakoff.
 - **The idea:** many emotion idioms grow out of what the body actually does in that emotion. Anger as heat and pressure in a container ("boiling", "about to burst") is found in many unrelated languages, which Kövecses links to anger's real body heat and pressure. Other idioms are shaped by one culture and don't carry over.
 - **Contested in part:** some work finds heat-based anger much less common in some languages (Ning Yu, "Metaphorical expressions of anger and happiness in English and Chinese", *Metaphor and Symbolic Activity* 10(2), 1995).
 - Taken from secondary sources and later papers citing the book, read 2026-11-16; the book itself wasn't read.

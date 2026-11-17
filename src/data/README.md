@@ -2,7 +2,7 @@
 
 The living rules for what the wheels say: their words, the body wheel's areas and sensations, and how feelings and sensations relate. Whoever edits the wheels, a person or an agent, follows these. When a rule changes, change it here in the same change.
 
-The rules came out of specs, which record why they were chosen: the [body wheel rework](../../../docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) and its [changes](../../../docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md). Specs are frozen; when a spec and this file disagree, this file wins. Anyone can question a word through a [Wheel content issue](https://github.com/lpolito/feels-on-wheels/issues/new?template=wheel-content.yml).
+The rules came out of specs, which record why they were chosen: the [body wheel rework](../../docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) and its [changes](../../docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md). Specs are frozen; when a spec and this file disagree, this file wins. Anyone can question a word through a [Wheel content issue](https://github.com/lpolito/feels-on-wheels/issues/new?template=wheel-content.yml).
 
 ## Which files these rules cover
 
@@ -15,11 +15,11 @@ The rules came out of specs, which record why they were chosen: the [body wheel 
 - There are only so many ways to describe a feeling or a body sensation, so overlap with existing wheels and word lists is unavoidable and fine.
 - Don't copy any source verbatim, and don't reproduce a source's full layout or word list wholesale.
 - Definitions are short, plain-language prose.
-- Credit every source we draw on, with a note in [docs/reference/](../../../docs/reference/README.md) and on the app's About page, whether or not a license requires it.
+- Credit every source we draw on, with a note in [docs/reference/](../../docs/reference/README.md) and in the root README's [Credits](../../README.md#credits), whether or not a license requires it. The app's About page names only the main ones.
 
 ## The feelings wheel
 
-Its rules come with the [opinionated feelings wheel](../../../docs/ROADMAP.md#an-opinionated-feelings-wheel) idea. Until then, its words are the ones it has.
+Its rules come with the [opinionated feelings wheel](../../docs/ROADMAP.md#an-opinionated-feelings-wheel) idea. Until then, its words are the ones it has.
 
 ## The body wheel
 
@@ -36,7 +36,7 @@ Someone asking "I have this sensation, or this urge: what could it be?" Use the 
 
 ### What counts as a sensation
 
-**You'd notice it with your eyes closed and nobody watching.** That's what research calls [interoception](../../../docs/reference/craig-interoception.md), sensing your body from inside, plus proprioception, sensing how your body is held.
+**You'd notice it with your eyes closed and nobody watching.** That's what research calls [interoception](../../docs/reference/craig-interoception.md), sensing your body from inside, plus proprioception, sensing how your body is held.
 
 - What others see (smiling, raised eyebrows, a scrunched-up face) isn't a sensation; use the felt version or leave it out.
 - What you're pulled to do (turning away, shrinking) goes under Urges.
@@ -44,8 +44,8 @@ Someone asking "I have this sensation, or this urge: what could it be?" Use the 
 
 ### Urges
 
-- Urges hold what you feel pulled to do. In the end, every urge is a pull to get away from something, whether or not you realize it: a threat, a person, a mistake, or the feeling itself ([experiential avoidance](../../../docs/reference/hayes-experiential-avoidance.md)). The area is there to help people catch those moments ([urge surfing](../../../docs/reference/marlatt-urge-surfing.md)).
-- Each core feeling's typical urges are on the wheel, checked against [Frijda's](../../../docs/reference/frijda-action-tendencies.md) and [DBT's](../../../docs/reference/linehan-dbt-model-of-emotions.md) pairings of emotions with urges. Two are left out on purpose: Surprised's urge to look closer and Happy's urge to laugh.
+- Urges hold what you feel pulled to do. In the end, every urge is a pull to get away from something, whether or not you realize it: a threat, a person, a mistake, or the feeling itself ([experiential avoidance](../../docs/reference/hayes-experiential-avoidance.md)). The area is there to help people catch those moments ([urge surfing](../../docs/reference/marlatt-urge-surfing.md)).
+- Each core feeling's typical urges are on the wheel, checked against [Frijda's](../../docs/reference/frijda-action-tendencies.md) and [DBT's](../../docs/reference/linehan-dbt-model-of-emotions.md) pairings of emotions with urges. Two are left out on purpose: Surprised's urge to look closer and Happy's urge to laugh.
 - Urges are bare verbs on the wheel ("Hide", "Fix things"), since the area gives the context. Avoid labels that read as a noun ("Control things", not "Control").
 
 ### Labels: two strings per sensation
@@ -57,7 +57,7 @@ Every sensation has one id and two strings, one for each place it appears:
 
 Don't reuse one string where the grammar differs; give each context its own.
 
-**Idioms** are fine when they name something you actually feel: butterflies, a lump in your throat, your heart in your throat, a weight on your shoulders. Idioms like these tend to grow out of what the body really does ([Kövecses](../../../docs/reference/kovecses-emotion-metaphors.md)). An idiom that only stands for a feeling doesn't come in: "cold feet" means hesitating, not cold feet.
+**Idioms** are fine when they name something you actually feel: butterflies, a lump in your throat, your heart in your throat, a weight on your shoulders. Idioms like these tend to grow out of what the body really does ([Kövecses](../../docs/reference/kovecses-emotion-metaphors.md)). An idiom that only stands for a feeling doesn't come in: "cold feet" means hesitating, not cold feet.
 
 ### Feelings under a sensation
 
@@ -72,7 +72,7 @@ Don't reuse one string where the grammar differs; give each context its own.
 
 ### Every word says what backs it
 
-Each sensation and urge rests on a source with a note in [docs/reference/](../../../docs/reference/README.md), on physiology (what the body measurably does), on an idiom that names something people actually feel, or on someone's own experience. Experience and common speech are fine, but say so. The current record of what backs each word is the rework spec's §3 **Backed by** column, with the changes file for words added or changed since.
+Each sensation and urge rests on a source with a note in [docs/reference/](../../docs/reference/README.md), on physiology (what the body measurably does), on an idiom that names something people actually feel, or on someone's own experience. Experience and common speech are fine, but say so. The current record of what backs each word is the rework spec's §3 **Backed by** column, with the changes file for words added or changed since.
 
 ### Ids
 

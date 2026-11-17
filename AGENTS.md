@@ -12,7 +12,7 @@
 
 ## Wheel content
 
-The rules for what the wheels say live in `src/data/wheels/README.md`, with an `AGENTS.md` there pointing to it. They cover files outside that folder too: `src/data/feelings.json`, and the `feelings`, `sensations`, `sensationPhrases`, `areas`, and `areaWheelLabels` in `src/data/locales/en.json`. Read the README before changing any of them. When a spec and the README disagree, the README wins.
+The rules for what the wheels say live in `src/data/README.md`. They cover `src/data/wheels/*.json`, `src/data/feelings.json`, and the `feelings`, `sensations`, `sensationPhrases`, `areas`, and `areaWheelLabels` in `src/data/locales/*.json`. `src/data/AGENTS.md` lists the steps to follow when you change any of them, and imports the README so Claude Code loads it whenever a file under `src/data/` is read. When a spec and the README disagree, the README wins.
 
 ## Accessibility
 
@@ -25,9 +25,10 @@ The rules for what the wheels say live in `src/data/wheels/README.md`, with an `
 
 ## Sources and credits
 
-`docs/reference/` has a note for every outside source the project draws on (wheels, word lists, research), plus the text of the app's credits.
+`docs/reference/` has a note for every outside source the project draws on (wheels, word lists, research), plus the full Credits list.
 
-- When a spec, the roadmap or the content uses a new source, add a note there, add it to the Credits list in `docs/reference/README.md`, and credit it on the About page (`page.about` in `src/data/locales/en.json`).
+- When a spec, the roadmap or the content uses a new source, add a note there, add it to the Credits list in `docs/reference/README.md`, and credit it in the Credits section of the root `README.md`.
+- The app's About page (`page.about` in `src/data/locales/en.json`) stays brief: it names only the main sources and links to the README's Credits for the rest.
 - Never name a source without linking its note.
 - Never transcribe a source's word list or layout into the repo, not even in notes. Quote a few words as examples at most.
 

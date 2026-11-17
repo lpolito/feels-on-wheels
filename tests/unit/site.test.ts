@@ -140,13 +140,13 @@ describe('About page', () => {
   const about = (en as unknown as { page: PageStrings }).page.about;
   const html = renderAbout(about, site);
 
-  test('the link map points at the repo, accessibility notes, contributing guide, issues, research, author and the wheel', () => {
+  test('the link map points at the repo, accessibility notes, contributing guide, issues, credits, author and the wheel', () => {
     expect(links).toEqual({
       github: 'https://github.com/lpolito/feels-on-wheels',
       accessibility: 'https://github.com/lpolito/feels-on-wheels/blob/main/ACCESSIBILITY.md',
       contributing: 'https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md',
       issues: 'https://github.com/lpolito/feels-on-wheels/issues/new?template=wheel-content.yml',
-      research: 'https://github.com/lpolito/feels-on-wheels#research-behind-the-body-wheel',
+      credits: 'https://github.com/lpolito/feels-on-wheels#credits',
       author: 'https://lucaspolito.dev/',
       home: '/',
       about: '/about',
@@ -216,16 +216,6 @@ describe('About page', () => {
     expect(html).not.toMatch(/Claude|Superpowers|\bAI\b/);
   });
 
-  test('credits link each work by its title, and Roberts by the archive.org copy', () => {
-    const items = section('credits').match(/<li>[\s\S]*?<\/li>/g) ?? [];
-    for (const li of items) {
-      if (li.startsWith('<li><a ')) expect(li).toContain('feelingswheel.com');
-      else expect(li).toContain('“<a href="https://');
-    }
-    expect(html).not.toContain('href="https://imgur.com');
-    expect(html).toContain('href="https://web.archive.org/web/20180505024944/https://imgur.com/tCWChf6"');
-  });
-
   test('why it exists ends with the dedication, in its own paragraph', () => {
     const why = section('why');
     expect(why.match(/<p>[\s\S]*?<\/p>/g)!.at(-1)).toBe('<p>For A, E, and M.</p>');
@@ -245,30 +235,22 @@ describe('About page', () => {
     expect(how).not.toContain('with a screen reader.');
   });
 
-  test('aboutLinks has issues and research', () => {
+  test('aboutLinks has issues and credits', () => {
     expect(aboutLinks(site).issues).toBe(`${site.repo}/issues/new?template=wheel-content.yml`);
-    expect(aboutLinks(site).research).toBe(`${site.repo}#research-behind-the-body-wheel`);
+    expect(aboutLinks(site).credits).toBe(`${site.repo}#credits`);
   });
 
-  test('credits invite corrections and link the research, without mentioning AI', () => {
+  test('credits are brief: the main sources by name, a link to the full credits, and a way to say a word is wrong', () => {
     const credits = section('credits');
+    for (const name of ['Gloria Willcox', 'Geoffrey Roberts', 'Lindsay Braman', 'feelingswheel.com']) expect(credits).toContain(name);
+    expect(credits).not.toContain('<li>');
+    expect(credits).toContain('href="https://github.com/lpolito/feels-on-wheels#credits"');
+    expect(credits).toContain('>Read the full credits and the research behind the body wheel<');
     expect(credits).toContain('href="https://github.com/lpolito/feels-on-wheels/issues/new?template=wheel-content.yml"');
-    expect(credits).toContain('href="https://github.com/lpolito/feels-on-wheels#research-behind-the-body-wheel"');
-    expect(credits).toContain('not a clinical');
-    expect(credits).not.toMatch(/\bAI\b|Claude/);
+    expect(credits).toContain('>Think a word or definition is wrong? Tell us<');
+    expect(credits).toContain('isn&#39;t a clinical tool');
+    expect(credits).not.toMatch(/\bAI\b|Claude|GitHub/);
   });
-
-  test('credits list the body wheel\'s research', () => {
-    expect((section('credits').match(/<li>[\s\S]*?<\/li>/g) ?? []).length).toBeGreaterThanOrEqual(22);
-  });
-
-  test('every credit links to its source', () => {
-    const credits = /<section id="credits">([\s\S]*?)<\/section>/.exec(html)![1]!;
-    const items = credits.match(/<li>[\s\S]*?<\/li>/g) ?? [];
-    expect(items.length).toBeGreaterThanOrEqual(4);
-    for (const li of items) expect(li).toContain('<a href="https://');
-  });
-
   test('no placeholders or empty elements are left', () => {
     expect(html).not.toMatch(/[{}]/);
     expect(html).not.toMatch(/<(p|li)>\s*<\/\1>/);

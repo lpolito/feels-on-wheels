@@ -72,7 +72,7 @@ That leaves 47 sensations on the body wheel (51 in the vocabulary, counting the 
 
 ## Distinct feelings: a rule to read, not a test
 
-Lucas, 2026-11-16: the feelings wheel's nesting doesn't always fit ("Some of the narrow words on the feelings wheel just don't quite fit being nested under their parent"), so a strict rule built on it would carry its oddities into the body wheel. He chose a rule judged on meaning, written for whoever edits the wheel, with no test or script ("writing scripts for things that aren't checked constantly feels silly"). For `src/data/wheels/README.md`:
+Lucas, 2026-11-16: the feelings wheel's nesting doesn't always fit ("Some of the narrow words on the feelings wheel just don't quite fit being nested under their parent"), so a strict rule built on it would carry its oddities into the body wheel. He chose a rule judged on meaning, written for whoever edits the wheel, with no test or script ("writing scripts for things that aren't checked constantly feels silly"). For the wheels' README:
 
 > **Feelings under one sensation must be different enough that someone would choose between them.** A word and its own parent or child on the feelings wheel often aren't (Stressed and Overwhelmed, Repelled and Horrified), so look at those pairs first. Keep both only when each says something the other doesn't, and never fill a sensation with one word and the words nested under it (Repelled with Horrified and Hesitant). Feelings that all come from one core feeling are fine when each is a real choice (a lump in your throat: Hurt, Grief, Guilty).
 
@@ -99,3 +99,21 @@ Lucas, 2026-11-16, after seeing three versions side by side: the body wheel's fe
 ## Link previews: the rings line up
 
 Lucas, 2026-11-16: on the body wheel's link previews, the outer ring's cells never lined up with the middle ring's. The [share and preview spec](2026-11-15-feels-on-wheels-share-and-preview-design.md) §5 splits each ring into roughly equal cells, one ring at a time, so the boundaries fell in different places. Now every middle cell splits into exactly two outer cells, so the lines run straight through on both wheels, and the preview stays as chunky as before.
+
+## The rules live in `src/data/`, not `src/data/wheels/`
+
+Lucas, 2026-11-17: spec §10 put the README and its `AGENTS.md` in `src/data/wheels/`, but the rules also cover `src/data/feelings.json` and `src/data/locales/*.json`. In Claude Code, a folder's `AGENTS.md` loads when a file under that folder is read, so the old place missed two of the three. Both files moved up to `src/data/`. The `AGENTS.md` now imports the README with `@README.md`, so Claude Code loads it automatically, and lists concrete steps for a content change instead of "read it, follow it".
+
+## Brief credits on the About page
+
+Lucas, 2026-11-17: the About page's credits, with 18 research citations added, were "incredibly verbose", and the app's credits should be brief in general. He changed the rule in the root `AGENTS.md`: every source is credited in the root README's Credits (and in `docs/reference/README.md`), and the About page names only the main ones and links there. This replaces §9's "the About page credits the new sources".
+
+The About page's Credits section is now four short paragraphs, with no list:
+
+- **Who it builds on:** Willcox, Roberts, Braman, feelingswheel.com, and research for the body wheel.
+- **Who put it together:** someone without formal training, and it isn't a clinical tool.
+- **"Read the full credits and the research behind the body wheel"**, which links to the README's Credits.
+- **"Think a word or definition is wrong? Tell us"**, which opens the Wheel content issue form. It doesn't mention GitHub.
+
+Lucas chose both links' wording, since "Every source, with links" and "Question a word" didn't say where they went or what you'd do there. The first visit's download goes back down to about 39 KB gzipped.
+

@@ -12,7 +12,7 @@ It's meant to have everything you'd want from a modern web app, with accessibili
 
 - **Accessible.** The wheel is drawn on a canvas, but every word is also in a real tree that works with a keyboard and screen readers. It follows your light or dark mode, and respects reduced motion and forced colors (high contrast). Automated accessibility checks (axe) run in the tests.
 - **Fast.** Spinning stays smooth: in performance tests, 95% of frames come less than 20 ms apart, in Chromium and Firefox.
-- **Small.** No frameworks and no runtime dependencies. Everything a first visit downloads, including every word and definition, is about 41 KB gzipped, against a 60 KB budget that every pull request checks.
+- **Small.** No frameworks and no runtime dependencies. Everything a first visit downloads, including every word and definition, is about 39 KB gzipped, against a 60 KB budget that every pull request checks.
 - **Offline and installable.** After one visit it works with no connection. To keep it handy, install it from your browser's menu, or use Add to Home Screen on an iPhone or iPad.
 - **Any screen.** Layouts are tested from 280 px phones to 2560 px monitors, in Chromium, Firefox and WebKit, and on Android and iPhone.
 - **Private.** No accounts, no tracking, no analytics. Nothing you choose leaves your device.
@@ -59,7 +59,7 @@ What backs each word is in the [design spec](docs/superpowers/specs/2026-11-15-f
 - **Lucas made every call:** he reviewed every word over several rounds, rewrote and cut freely, and decided each one. AI suggestions that didn't hold up were dropped.
 - **A second, separate AI review** checked each claim against its source. The [notes](docs/reference/README.md) say which sources were read in full and which only through abstracts or summaries.
 - **Lucas isn't a clinician or a researcher,** and doesn't claim to be.
-- **The rules** that keep the wheel this way are in [src/data/wheels/README.md](src/data/wheels/README.md).
+- **The rules** that keep the wheel this way are in [src/data/README.md](src/data/README.md).
 
 **If a word seems wrong or missing,** or you know research that says otherwise, please [open a Wheel content issue](https://github.com/lpolito/feels-on-wheels/issues/new?template=wheel-content.yml). Corrections from therapists and researchers are especially welcome.
 
@@ -109,7 +109,30 @@ What's built, what's next and what's still an idea are all in [docs/ROADMAP.md](
 
 ## Credits
 
-Feels on Wheels draws on feelings wheels by Gloria Willcox, Geoffrey Roberts and Lindsay Braman, on feelingswheel.com, and, for the body wheel, on the [research above](#research-behind-the-body-wheel). The app's About page credits each one, and [docs/reference/](docs/reference/README.md) has notes on every source.
+Everything Feels on Wheels draws on, whether or not a license asks for credit. Each name links to a note on the source, and [docs/reference/](docs/reference/README.md) has the full citations.
+
+- **Feelings wheels:** [Gloria Willcox's Feeling Wheel](docs/reference/core-feelings-wheel.md) (1982), [Geoffrey Roberts's Feel Wheel](docs/reference/core-feelings-wheel.md) (2015), the source of the feelings wheel's words, [Lindsay Braman's Emotion-Sensation Wheel](docs/reference/braman-emotion-sensation-wheel.md) (2020), and [feelingswheel.com](docs/reference/core-feelings-wheel.md#the-reference-site), whose tap-to-trace idea inspired this one.
+- **Research behind the body wheel** ([what each found](#research-behind-the-body-wheel)):
+  - [Nummenmaa and others](docs/reference/nummenmaa-bodily-maps.md)
+  - [A. D. Craig](docs/reference/craig-interoception.md)
+  - [Nico Frijda](docs/reference/frijda-action-tendencies.md)
+  - [Marsha Linehan](docs/reference/linehan-dbt-model-of-emotions.md)
+  - [Hayes and others](docs/reference/hayes-experiential-avoidance.md)
+  - [Bowen and Marlatt](docs/reference/marlatt-urge-surfing.md)
+  - [Rozin and Fallon](docs/reference/rozin-disgust.md)
+  - [Zoltán Kövecses](docs/reference/kovecses-emotion-metaphors.md)
+  - [the American Psychiatric Association's DSM-5](docs/reference/dsm-5-symptoms.md)
+  - [Maier and Seligman](docs/reference/maier-seligman-learned-helplessness.md)
+  - [Ad Vingerhoets](docs/reference/vingerhoets-crying.md)
+  - [Eisenberger and others](docs/reference/eisenberger-social-pain.md)
+  - [Duguid and Goncalo](docs/reference/duguid-goncalo-power-height.md)
+  - [Goetz and others](docs/reference/goetz-compassion.md)
+  - [Mikulincer and Shaver](docs/reference/mikulincer-shaver-attachment.md)
+  - [Leslie Greenberg](docs/reference/greenberg-emotion-focused-therapy.md)
+  - [James Russell](docs/reference/russell-circumplex.md)
+  - [Desbordes and others](docs/reference/desbordes-equanimity.md)
+
+The app's About page names the main ones and links here.
 
 Made by [Lucas Polito](https://lucaspolito.dev/).
 

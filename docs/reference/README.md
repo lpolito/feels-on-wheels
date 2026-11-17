@@ -30,11 +30,11 @@ Notes on the outside sources this project draws on: what each one is, who made i
 
 - Add one file per source: what it is, author, date, link, usage terms if stated, what we take from it, and anything unverified marked as such.
 - Add it to the table above and to [Credits](#credits) below.
-- These are research notes, not app content; the [content rules](../../src/data/wheels/README.md) decide what ships. Notes describe a source and may quote a few words as examples. They never transcribe its word list or layout.
+- These are research notes, not app content; the [content rules](../../src/data/README.md) decide what ships. Notes describe a source and may quote a few words as examples. They never transcribe its word list or layout.
 
 ## Credits
 
-What the app's About page credits (its text lives in `src/data/locales/en.json`, `page.about`). Credit everything the app's content draws on, even where no license requires it. Attributions were confirmed on 2026-11-09; see each note.
+Every source the app's content draws on, credited here and in the root README's [Credits](../../README.md#credits), even where no license requires it. The app's About page (`page.about` in `src/data/locales/en.json`) names only the main ones and links to the README's Credits. Attributions were confirmed on 2026-11-09; see each note.
 
 - **Gloria Willcox**, "The Feeling Wheel", *Transactional Analysis Journal* 12(4), 1982: the original feelings wheel.
 - **Geoffrey Roberts**, "I Feel – Emotional Word Wheel – The Feel Wheel", imgur, 2015: the seven-core wheel our core wheel's words are based on.

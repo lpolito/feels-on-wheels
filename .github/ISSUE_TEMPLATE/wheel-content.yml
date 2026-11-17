@@ -4,7 +4,7 @@ labels: [content]
 body:
   - type: markdown
     attributes:
-      value: Thanks for questioning it. Disagreement is welcome here. The rules the wheels follow are in the [wheels' README](https://github.com/lpolito/feels-on-wheels/blob/main/src/data/wheels/README.md), and what the body wheel rests on is in [Research behind the body wheel](https://github.com/lpolito/feels-on-wheels#research-behind-the-body-wheel).
+      value: Thanks for questioning it. Disagreement is welcome here. The rules the wheels follow are in the [wheels' README](https://github.com/lpolito/feels-on-wheels/blob/main/src/data/README.md), and what the body wheel rests on is in [Research behind the body wheel](https://github.com/lpolito/feels-on-wheels#research-behind-the-body-wheel).
   - type: dropdown
     id: wheel
     attributes:

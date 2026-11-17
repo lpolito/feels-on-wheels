@@ -19,7 +19,7 @@ Every word the app shows lives in one file per language. English is `src/data/lo
    - `page`: the page title, description and the About page.
 3. Keep `{placeholders}` such as `{label}` exactly as they are, and keep `[link text](target)` links' targets.
 4. Write plain, everyday language. A definition should read naturally in your language rather than follow the English word for word.
-5. Follow the [content rules](src/data/wheels/README.md): don't copy another feelings wheel or word list, and credit any source you draw on.
+5. Follow the [content rules](src/data/README.md): don't copy another feelings wheel or word list, and credit any source you draw on.
 
 The app doesn't have a language switcher yet: it's [planned](docs/ROADMAP.md#languages). A finished translation is still worth sending; it'll ship with the switcher.
 

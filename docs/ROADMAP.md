@@ -94,12 +94,12 @@ What Lucas first asked for:
 
 ### The wheels' content
 
-What the wheels say: their words, definitions, and how feelings relate to sensations. Whatever is decided here gets written down as rules next to the wheel files (`src/data/wheels/README.md`, pointed to by an `AGENTS.md` there), not only in a spec.
+What the wheels say: their words, definitions, and how feelings relate to sensations. Whatever is decided here gets written down as rules beside the data (`src/data/README.md`, with an `AGENTS.md` there that loads it), not only in a spec.
 
 #### An opinionated feelings wheel
 
 - Lucas, 2026-11-15: the feelings wheel should be opinionated about the words it uses, their definitions, and how feelings relate to sensations. Today it largely repeats other wheels (mostly [Roberts's seven-core wheel](reference/core-feelings-wheel.md)), which isn't necessary.
-- Its rules go in `src/data/wheels/README.md` next to the body wheel's, so every later edit follows them.
+- Its rules go in `src/data/README.md` next to the body wheel's, so every later edit follows them.
 - **A word for accepting your situation.** Lucas, 2026-11-16: not fighting reality, going with the flow. The wheel's Accepted means being welcomed by others, so the body wheel's Flat uses Content and Peaceful for now (rework [changes](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md#flat); [radical acceptance](reference/linehan-dbt-model-of-emotions.md), [equanimity](reference/desbordes-equanimity.md)).
 - **Words that sit oddly under their parent,** such as Hesitant under Repelled, Embarrassed under Disapproving, and Inferior under Depressed (Lucas, 2026-11-16). The body wheel's rule about a word and its parent depends on this nesting.
 - To decide when designing:
@@ -108,7 +108,7 @@ What the wheels say: their words, definitions, and how feelings relate to sensat
   - what a good definition says, and how "You might notice" is chosen, likely drawing on the [bodily maps research](reference/nummenmaa-bodily-maps.md);
   - what happens to links to words that are removed or moved;
   - where the words come from, since any new source gets a [reference note](reference/README.md) and a credit.
-- Meets [Strength](#strength), [Wheels for kids](#wheels-for-kids), [Languages](#languages), and the [definitions and sensations review](#before-launching), which all depend on which words the wheel has. Builds on the rules the [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) set in [src/data/wheels/README.md](../src/data/wheels/README.md).
+- Meets [Strength](#strength), [Wheels for kids](#wheels-for-kids), [Languages](#languages), and the [definitions and sensations review](#before-launching), which all depend on which words the wheel has. Builds on the rules the [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) set in [src/data/README.md](../src/data/README.md).
 
 ### URLs, routing and hosting
 
@@ -207,4 +207,4 @@ The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens
 
 ## Content rules
 
-The rules for what the wheels say, for both wheels and in detail for the body wheel, live next to the wheel files in [src/data/wheels/README.md](../src/data/wheels/README.md).
+The rules for what the wheels say, for both wheels and in detail for the body wheel, live beside the data in [src/data/README.md](../src/data/README.md).

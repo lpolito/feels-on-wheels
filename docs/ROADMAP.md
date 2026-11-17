@@ -43,6 +43,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
+| [Check every test is worth keeping](#check-every-test-is-worth-keeping) | [Tests](#tests) | Idea |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
 
@@ -147,6 +148,14 @@ What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheel
 - Adding a language means adding one locale file; no text is hard-coded.
 - To decide when designing: stable English slugs in every language (`/es/happy/…`) or translated ones (`/es/feliz/…`). The URL shape (a `/es/` prefix, English unprefixed) is set by the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) §9.
 - The link preview's alt text lowercases the wheel's name in code (`src/og.ts`: "the feelings wheel"), which is wrong for languages that capitalize nouns, such as German. To decide when designing: a separate lowercase name per wheel in the locale, or alt text written whole per wheel.
+
+### Tests
+
+#### Check every test is worth keeping
+
+- Lucas, 2026-11-16: the test suites are huge and keep growing, about 9,000 lines across 45 unit and end-to-end files. Go through them and keep only the tests that earn their place.
+- Found during the body wheel rework: some tests just restate the content (the body wheel's full list of sensations, exact cell counts, the exact feelings under one sensation). They duplicate `body.json` word for word and have to be edited with every content change, without catching anything. Tests that check rules (every feeling is on the feelings wheel, 2 or 3 feelings per sensation) or behavior (with any valid path) are worth more.
+- To decide when designing: what a test has to protect to stay, whether a single snapshot replaces the content tests, how much end-to-end coverage each of the five browsers needs, and whether to write the bar down for future changes, since the plans' test-first steps add tests with every change.
 
 ## Known issues
 

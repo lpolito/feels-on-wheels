@@ -67,7 +67,8 @@ These are known and tracked in the [roadmap's known issues](docs/ROADMAP.md#know
 - **Small windows**, which can include a computer's browser zoomed in a long way, may show the body sensations wheel without labels until you open something. The card's words are still there.
 - **On some phones, turning the phone sideways and back** can leave the card's text much larger than it should be, and after several turns, taps can land on the wrong word. Closing the word, or reloading the page, may set it right.
 - **Double-tapping a label under the toolbar's buttons**, such as the one that shows the theme choice or "Link copied", or the card's "Link copied", zooms the page on phones, and pinching out doesn't undo it. Double-tap the label again while it's still showing to zoom back out.
-- **Long body sensation words**, such as "Hollow feeling in your chest", can run past the edges of their cell when opened. The card shows them in full.
+- **Long body sensation words**, such as "Weight on shoulders", can run past the edges of their cell when opened. The card shows them in full.
+- **On an iPhone held sideways**, opening a word on the body sensations wheel can put part of its ring under the card. The card shows the word, and the wheel can be spun to see the rest.
 - **On very short phones**, the opened word can sit under the toolbar.
 - **Linux computers with a wide default font** may show the wheel switch overlapping the toolbar on very narrow windows.
 

@@ -27,7 +27,7 @@ From the handout page (paraphrased):
 
 - In a reply on the handout page (June 13, 2021): "Republishing my art without permission to do so is copyright infringement, regardless of the attribution offered."
 - The page links a "Social Media Repost Policy" and a "Custom Republishing License"; their terms weren't checked.
-- What this means for us is in the [content rules](../ROADMAP.md#content-rules): use her wheel as a model and credit it, but don't reproduce her artwork, its exact layout, or its full word list.
+- What this means for us is in the [content rules](../../src/data/wheels/README.md#both-wheels): use her wheel as a model and credit it, but don't reproduce her artwork, its exact layout, or its full word list.
 
 ## Structure
 

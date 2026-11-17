@@ -30,7 +30,7 @@ Notes on the outside sources this project draws on: what each one is, who made i
 
 - Add one file per source: what it is, author, date, link, usage terms if stated, what we take from it, and anything unverified marked as such.
 - Add it to the table above and to [Credits](#credits) below.
-- These are research notes, not app content; the [content rules](../ROADMAP.md#content-rules) decide what ships. Notes describe a source and may quote a few words as examples. They never transcribe its word list or layout.
+- These are research notes, not app content; the [content rules](../../src/data/wheels/README.md) decide what ships. Notes describe a source and may quote a few words as examples. They never transcribe its word list or layout.
 
 ## Credits
 

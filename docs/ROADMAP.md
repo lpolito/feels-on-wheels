@@ -225,9 +225,4 @@ The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens
 
 ## Content rules
 
-These move to `src/data/wheels/README.md` when the [body wheel rework](#rework-the-body-wheels-areas-and-sensations) ships, and this section then links there.
-
-- There are only so many ways to describe a feeling or a body sensation, so overlap with existing wheels and word lists is unavoidable and fine.
-- Don't copy any source verbatim, and don't reproduce a source's full layout or word list wholesale.
-- Definitions are short, plain-language prose (see v1 spec §3.4).
-- Credit every source we draw on, in [reference/](reference/README.md) and on the app's credits page, whether or not a license requires it.
+The rules for what the wheels say, for both wheels and in detail for the body wheel, live next to the wheel files in [src/data/wheels/README.md](../src/data/wheels/README.md).

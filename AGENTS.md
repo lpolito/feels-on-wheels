@@ -10,6 +10,10 @@
 - Specs (`docs/superpowers/specs/`) are frozen once approved. Link to them from the roadmap instead of copying the list of shipped changes into each spec.
 - When what shipped differs from its spec, write the differences in `<spec name>-changes.md` next to the spec (the spec's file name with `-changes` in place of `-design`), and link it from the roadmap's Shipped row as *changes*, after the spec and plan.
 
+## Wheel content
+
+The rules for what the wheels say live in `src/data/wheels/README.md`, with an `AGENTS.md` there pointing to it. They cover files outside that folder too: `src/data/feelings.json`, and the `feelings`, `sensations`, `sensationPhrases`, `areas`, and `areaWheelLabels` in `src/data/locales/en.json`. Read the README before changing any of them. When a spec and the README disagree, the README wins.
+
 ## Accessibility
 
 - Changes to what people see or do follow the contributor expectations in `ACCESSIBILITY.md`. In the PR's "What and why", say how the change was checked: the tests, the keyboard in a browser, and which hand checks (a screen reader, a real phone) weren't done.

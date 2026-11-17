@@ -46,11 +46,21 @@ export function sensationLabel(id: SensationId): string {
   return active?.sensations[id] ?? missing(`sensations.${id}`);
 }
 
+/** How a feeling's card lists a sensation ("Wanting to hide"), where the wheel says "Hide". */
+export function sensationPhrase(id: SensationId): string {
+  return active?.sensationPhrases[id] ?? missing(`sensationPhrases.${id}`);
+}
+
 /** The label of any wheel cell (spec v2 §7.2). */
 export function nodeLabel(n: NodeRef): string {
   if (n.kind === 'feeling') return label(n.id);
   if (n.kind === 'sensation') return sensationLabel(n.id);
   return active?.areas[n.id] ?? missing(`areas.${n.id}`);
+}
+
+/** What the drawn wheel writes in a cell: its label, except where an area has a wheel-only one ("The urge to…"). */
+export function wheelCellLabel(n: NodeRef): string {
+  return (n.kind === 'area' ? active?.areaWheelLabels[n.id] : undefined) ?? nodeLabel(n);
 }
 
 /** A wheel's switch label, name and start message (spec v2 §4.1). */

@@ -78,7 +78,7 @@ describe('label floors by ring (spec v2.1 §5)', () => {
   const body = buildLayout(bodyWheel);
   const bodyPalette: Palette = {
     ...palette,
-    hues: { ...palette.hues, head: '#7a243b', face: '#5c4221', chest: '#7d7413', breath: '#387078', stomach: '#0179a3', arms: '#546286', 'whole-body': '#7d3b75', posture: '#775064' },
+    hues: { ...palette.hues, head: '#7a243b', throat: '#387078', shoulders: '#5c4221', hands: '#546286', chest: '#7d7413', stomach: '#0179a3', 'whole-body': '#7d3b75', urges: '#775064' },
   };
   const bodyTable = buildFillTable(bodyPalette, 3, 'light');
   const phone: Viewport = { width: 393, height: 851, radius: 188.5 };
@@ -111,7 +111,7 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     expect(Math.min(...sizes(2))).toBeGreaterThanOrEqual(12.5);
   });
 
-  test('a body outer cell is filled with the ring-0 shade of its hue (spec v2.1 §7.1)', () => {
+  test('a body outer cell is filled with its own ring\'s shade, like the feelings wheel (rework changes)', () => {
     const homed = buildLayout(bodyWheel, homes(layout));
     const { canvas, ctx, rec } = fakeCanvas();
     const r = createWheelRenderer(canvas, homed, ctx);
@@ -120,8 +120,19 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     r.draw(frame(desk));
     // Fills follow segment order, one per drawn segment, in overview every segment is drawn.
     const outer = homed.segments.find((s) => s.ring === 2)!;
-    expect(rec.fills[outer.index]).toBe(bodyTable.fill(outer.hue, 0, true));
-    expect(rec.fills[outer.index]).not.toBe(bodyTable.fill(outer.hue, 2, true));
+    expect(rec.fills[outer.index]).toBe(bodyTable.fill(outer.hue, 2, true));
+    expect(rec.fills[outer.index]).not.toBe(bodyTable.fill(outer.hue, 0, true));
+  });
+
+  test('the drawn wheel says "The urge to…" where everything else says "Urges"', () => {
+    const { canvas, ctx, rec } = fakeCanvas();
+    const r = createWheelRenderer(canvas, body, ctx);
+    r.setColors(bodyTable, bodyPalette);
+    r.resize(1000, 1000, 1);
+    r.draw(frame(desk));
+    expect(rec.texts).toContain('The urge to…');
+    expect(rec.texts).not.toContain('Urges');
+    expect(nodeLabel({ kind: 'area', id: 'urges' })).toBe('Urges');
   });
 
   test('whole-wheel view keeps 8 px for every ring, and labelsByRing adds up', () => {

@@ -115,6 +115,8 @@ export function aboutLinks(site: SiteConfig): Record<string, string> {
     github: site.repo,
     accessibility: `${site.repo}/blob/main/ACCESSIBILITY.md`,
     contributing: `${site.repo}/blob/main/CONTRIBUTING.md`,
+    issues: `${site.repo}/issues/new?template=wheel-content.yml`,
+    credits: `${site.repo}#credits`,
     author: site.author.url,
     home: '/',
     about: '/about',

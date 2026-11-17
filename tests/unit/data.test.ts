@@ -108,26 +108,47 @@ describe('validation', () => {
     delete broken.feelings['angry'];
     expect(() => validateLocale(broken, feelings, wheels)).toThrow(DataError);
   });
+
+  test('every sensation a card lists has its card phrase, and a missing one is caught', () => {
+    for (const id of Object.keys(feelings)) {
+      for (const s of feelings[id]!.sensations) expect(locale.sensationPhrases[s], s).toBeTruthy();
+    }
+    const broken = structuredClone(locale);
+    delete broken.sensationPhrases['racing-heart'];
+    expect(() => validateLocale(broken, feelings, wheels)).toThrow(/missing card phrase "racing-heart"/);
+  });
 });
 
 const AREAS: [string, string[]][] = [
-  ['head', ['headache', 'foggy-head', 'tired-eyes', 'wide-eyes', 'raised-eyebrows', 'tearful']],
-  ['face', ['hot-face', 'blushing', 'scrunched-face', 'clenched-jaw', 'smiling']],
-  ['chest', ['racing-heart', 'tight-chest', 'hollow-chest', 'warm-chest']],
-  ['breath', ['shallow-breath', 'deep-breath', 'gasp', 'lump-in-throat']],
-  ['stomach', ['knot-in-stomach', 'nausea', 'butterflies']],
-  ['arms', ['tense-shoulders', 'heavy-limbs', 'clenched-fists', 'sweaty-palms', 'cold-hands', 'trembling']],
-  ['whole-body', ['restless', 'fidgety', 'frozen', 'low-energy', 'numbness', 'light-body', 'buzzing', 'relaxed-muscles']],
-  ['posture', ['slumped', 'open-posture', 'turning-away', 'shrinking']],
+  ['head', ['headache', 'foggy-head', 'lightheaded', 'hot-face']],
+  ['throat', ['lump-in-throat', 'heart-in-throat', 'tight-throat', 'dry-mouth', 'clenched-teeth']],
+  ['shoulders', ['tense-shoulders', 'weight-on-shoulders']],
+  ['hands', ['tight-fists', 'shaky-hands', 'sweaty-palms', 'cold-hands']],
+  ['chest', ['racing-heart', 'tight-chest', 'short-breath', 'hollow-chest', 'heavy-heart']],
+  ['stomach', ['knot-in-stomach', 'sinking-feeling', 'butterflies', 'queasy']],
+  ['whole-body', ['restless', 'buzzing', 'chills', 'frozen', 'skin-crawling', 'heaviness', 'drained', 'numb-empty', 'nothing-much', 'weak-knees']],
+  ['urges', ['run', 'hide', 'lash-out', 'back-away', 'fix-things', 'be-close', 'be-alone', 'give-up', 'numb-out', 'sleep', 'cry', 'control-things']],
 ];
 
 describe('body wheel data', () => {
-  test('body wheel has 8 areas and 40 sensations, in spec §3.2 order', () => {
+  test('body wheel has 8 areas and 46 sensations, in spec §3 order (less the changes file)', () => {
     expect(body.children.map((n) => nodeRef(n))).toEqual(AREAS.map(([id]) => ({ kind: 'area', id })));
     body.children.forEach((a, i) => {
       expect((a.children ?? []).map((n) => nodeRef(n)), AREAS[i]![0]).toEqual(AREAS[i]![1].map((id) => ({ kind: 'sensation', id })));
     });
-    expect(body.children.flatMap((a) => a.children ?? []).length).toBe(40);
+    expect(body.children.flatMap((a) => a.children ?? []).length).toBe(46);
+  });
+
+  test('body wheel has 126 feeling cells', () => {
+    expect(body.children.flatMap((a) => a.children ?? []).reduce((n, s) => n + (s.children ?? []).length, 0)).toBe(126);
+  });
+
+  test('area labels', () => {
+    expect(locale.areas).toEqual({ head: 'Head / face', throat: 'Throat / mouth', shoulders: 'Shoulders', hands: 'Hands', chest: 'Chest', stomach: 'Stomach', 'whole-body': 'Whole body', urges: 'Urges' });
+  });
+
+  test('the body wheel still starts on Whole body', () => {
+    expect(body.start).toBe('whole-body');
   });
 
   test('body wheel: every sensation has 2 or 3 feeling children, each a known feeling', () => {

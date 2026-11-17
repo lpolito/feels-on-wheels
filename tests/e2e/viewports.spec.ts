@@ -24,7 +24,7 @@ const SIZES: [number, number][] = [
 
 /**
  * Known before v2.1 (roadmap Known issues): on tiny, short windows the body wheel's whole-wheel view is too small for
- * any area label ("Breath and throat" needs a bigger cell), so it rests unlabelled. The feelings wheel's short words fit.
+ * any area label ("Throat / mouth" needs a bigger cell), so it rests unlabelled. The feelings wheel's short words fit.
  */
 const BODY_UNLABELLED = new Set(['500×300', '559×320', '360×340']);
 

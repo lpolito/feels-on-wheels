@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { OG_SIZE, ogImage, ogImagePath, ogWedge } from '../../src/og';
@@ -10,12 +10,22 @@ const route = (p: string) => parsePath(table, p).route;
 const ALT = 'The {wheel} with its {wedge} wedges in front, beside the words "Feels on Wheels: Find the word for what you feel".';
 
 describe('preview image per route (share and preview spec §5)', () => {
+  test('every body area has its image on disk, and no other body image is left', () => {
+    const body = wheels.find((w) => w.id === 'body')!;
+    const want = body.children.map((a) => `body-${a.area}.png`).sort();
+    for (const f of want) expect(existsSync(`public/og/${f}`), f).toBe(true);
+    expect(readdirSync('public/og').filter((f) => f.startsWith('body-')).sort()).toEqual(want);
+  });
+
   test.each([
     ['/', 'og/core-happy.png'],
     ['/happy/playful/aroused', 'og/core-happy.png'],
     ['/sad/lonely', 'og/core-sad.png'],
     ['/body', 'og/body-whole-body.png'],
     ['/body/chest/racing-heart', 'og/body-chest.png'],
+    ['/body/urges', 'og/body-urges.png'],
+    ['/body/hands/sweaty-palms', 'og/body-hands.png'],
+    ['/body/throat/lump-in-throat/grief', 'og/body-throat.png'],
     ['/about', 'og/core-happy.png'],
     ['/nope', 'og/core-happy.png'],
     ['/body/nope', 'og/core-happy.png'],

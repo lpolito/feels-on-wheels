@@ -1,7 +1,7 @@
 import type { FeelingId, FeelingsDict } from '../data/types';
 import { shareIcon } from './icons';
 import { moveFocus } from '../a11y/focus';
-import { coreKind, definition, nodeLabel, sensationLabel, t } from '../i18n';
+import { coreKind, definition, nodeLabel, sensationPhrase, t } from '../i18n';
 import { siblings, type Home, type Layout, type Path } from '../model/layout';
 import { isPlainClick } from '../router';
 import type { Action, State } from '../state/store';
@@ -62,7 +62,7 @@ export function cardModel(layout: Layout, feelings: FeelingsDict, s: State, jump
     sections.push(jump && home && coreId
       ? { kind: 'text', text: definition(id), core: { ...coreKind(coreId), hue: home.hue, wheel: jump.wheel, path: coreId } }
       : { kind: 'text', text: definition(id) });
-    const notice = (feelings[id]?.sensations ?? []).map(sensationLabel);
+    const notice = (feelings[id]?.sensations ?? []).map(sensationPhrase);
     if (notice.length > 0) sections.push({ kind: 'list', heading: t('youMightNotice'), items: notice });
     if (children.length > 0) {
       sections.push({ kind: 'links', heading: t('narrowDown'), inline: false, rows: children });

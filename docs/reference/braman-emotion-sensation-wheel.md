@@ -21,13 +21,13 @@ From the handout page (paraphrased):
   - emotions often register in the body before we're aware of them (Columbia University, [PMC2858766](https://pmc.ncbi.nlm.nih.gov/articles/PMC2858766/));
   - the bodily feel of a given emotion is fairly consistent across people (researchers in Finland, [PMC3896150](https://pmc.ncbi.nlm.nih.gov/articles/PMC3896150/)).
 
-  Neither link could be opened to confirm the title. The Finnish study is very likely Nummenmaa, Glerean, Hari and Hietanen, "Bodily maps of emotions", *PNAS* 111(2), 2014, [doi:10.1073/pnas.1321664111](https://doi.org/10.1073/pnas.1321664111). It's worth reading directly for the sensations wheel: 701 people colored body maps for different emotions, and the patterns held across Finnish, Swedish and Taiwanese samples.
+  Neither link could be opened to confirm the title. The Finnish study is very likely Nummenmaa, Glerean, Hari and Hietanen, "Bodily maps of emotions", *PNAS* 111(2), 2014, [doi:10.1073/pnas.1321664111](https://doi.org/10.1073/pnas.1321664111). Now read for the body wheel rework; see [its note](nummenmaa-bodily-maps.md). It's worth reading directly for the sensations wheel: 701 people colored body maps for different emotions, and the patterns held across Finnish, Swedish and Taiwanese samples.
 
 ## Her usage terms
 
 - In a reply on the handout page (June 13, 2021): "Republishing my art without permission to do so is copyright infringement, regardless of the attribution offered."
 - The page links a "Social Media Repost Policy" and a "Custom Republishing License"; their terms weren't checked.
-- What this means for us is in the [content rules](../ROADMAP.md#content-rules): use her wheel as a model and credit it, but don't reproduce her artwork, its exact layout, or its full word list.
+- What this means for us is in the [content rules](../../src/data/README.md#both-wheels): use her wheel as a model and credit it, but don't reproduce her artwork, its exact layout, or its full word list.
 
 ## Structure
 

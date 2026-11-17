@@ -951,7 +951,7 @@ test.describe('v2.2: the wheel under the column', () => {
     test(`${w}×${h}${inset ? ` ${inset} inset` : ''}: the opened word ends 1.5rem before the card`, async ({ page }) => {
       if (inset) await withInset(page, inset);
       await page.setViewportSize({ width: w, height: h });
-      for (const url of ['/happy/content/joyful', '/happy/content', '/body/head/wide-eyes']) {
+      for (const url of ['/happy/content/joyful', '/happy/content', '/body/shoulders/weight-on-shoulders']) {
         await open(page, url);
         await settled(page);
         await expectClearOfCard(page, url);
@@ -975,7 +975,7 @@ test.describe('v2.2: the wheel under the column', () => {
     await withInset(page, 'left');
     await withInset(page, 'right');
     await page.setViewportSize({ width: 852, height: 393 });
-    for (const url of ['/happy', '/happy/content', '/happy/content/joyful', '/body/arms/sweaty-palms', '/body/head/wide-eyes']) {
+    for (const url of ['/happy', '/happy/content', '/happy/content/joyful', '/body/hands/sweaty-palms', '/body/shoulders/weight-on-shoulders']) {
       await open(page, url);
       await settled(page);
       const { cam, vp, ring } = await opened(page);
@@ -1042,7 +1042,7 @@ test.describe('v2.2: the wheel under the column', () => {
 
   test('a tap in the column on the wheel opens that word', async ({ page }) => {
     await page.setViewportSize({ width: 895, height: 470 });
-    await open(page, '/body/head/wide-eyes');
+    await open(page, '/body/shoulders/weight-on-shoulders');
     await settled(page);
     const p = await columnPointOnWheel(page);
     await page.waitForTimeout(320);
@@ -1055,7 +1055,7 @@ test.describe('v2.2: the wheel under the column', () => {
 
   test('a drag starting in the column spins the wheel', async ({ page }) => {
     await page.setViewportSize({ width: 895, height: 470 });
-    await open(page, '/body/head/wide-eyes');
+    await open(page, '/body/shoulders/weight-on-shoulders');
     await settled(page);
     const p = await columnPointOnWheel(page);
     const before = (await page.evaluate(() => window.__fw.camera())).rotation;

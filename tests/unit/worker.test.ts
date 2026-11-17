@@ -108,7 +108,7 @@ describe('real paths', () => {
   test.each([
     ['/body', 'Body sensations wheel · Feels on Wheels', titles.wheelDescriptions.body],
     ['/body/chest/tight-chest', 'Tight chest · Feels on Wheels', 'Tight chest: the feelings it can come with, on the body sensations wheel.'],
-    ['/body/chest', 'Chest · Feels on Wheels', 'Chest: what you might notice there, and the feelings it can come with.'],
+    ['/body/chest', 'Chest · Feels on Wheels', 'Chest: what you might notice, and the feelings it can come with.'],
   ])('%s has the §6 title and description', async (path, title, description) => {
     const { res, html } = await get(path);
     expect(res.status).toBe(200);

@@ -12,10 +12,56 @@ It's meant to have everything you'd want from a modern web app, with accessibili
 
 - **Accessible.** The wheel is drawn on a canvas, but every word is also in a real tree that works with a keyboard and screen readers. It follows your light or dark mode, and respects reduced motion and forced colors (high contrast). Automated accessibility checks (axe) run in the tests.
 - **Fast.** Spinning stays smooth: in performance tests, 95% of frames come less than 20 ms apart, in Chromium and Firefox.
-- **Small.** No frameworks and no runtime dependencies. Everything a first visit downloads, including every word and definition, is about 34 KB gzipped, against a 60 KB budget that every pull request checks.
+- **Small.** No frameworks and no runtime dependencies. Everything a first visit downloads, including every word and definition, is about 39 KB gzipped, against a 60 KB budget that every pull request checks.
 - **Offline and installable.** After one visit it works with no connection. To keep it handy, install it from your browser's menu, or use Add to Home Screen on an iPhone or iPad.
 - **Any screen.** Layouts are tested from 280 px phones to 2560 px monitors, in Chromium, Firefox and WebKit, and on Android and iPhone.
 - **Private.** No accounts, no tracking, no analytics. Nothing you choose leaves your device.
+
+## Research behind the body wheel
+
+The body sensations wheel starts from what you notice in your body and leads to the feelings that often come with it. It isn't made up on a whim: every sensation and urge on it rests on something you can check, and the few that rest on common speech or one person's experience say so. It's for finding words, not a clinical or diagnostic tool.
+
+### How it's built
+
+- **Places you could point to, plus Urges.** The areas run head to toe in a body scan's order (Head / face, Throat / mouth, Shoulders, Hands, Chest, Stomach), then Whole body for what you feel all over. The last area, Urges, holds what you feel pulled to do: run, hide, lash out, numb out. Many people notice the pull before they can name the feeling.
+- **A sensation is something you'd notice with your eyes closed and nobody watching.** What others see, like a smile or raised eyebrows, isn't on the wheel.
+- **One sensation, several feelings.** The same body signal can mean different things: a racing heart can be scared or excited, and not feeling much can be content or apathetic. The wheel offers both readings where they're real, and offers happy feelings only as the other reading of a sensation, since few people need help knowing they're happy.
+
+### What the research found
+
+- **Where people feel emotions.** Over 700 people painted where they felt each emotion grow or fade. Most basic emotions showed up in the upper chest; anger in the arms and hands; disgust in the throat and gut; sadness drained the limbs; happiness filled the whole body. The maps matched across cultures. ([Nummenmaa and others](docs/reference/nummenmaa-bodily-maps.md))
+- **Sensing your body from inside** is called interoception, and it's what the eyes-closed test describes. ([Craig](docs/reference/craig-interoception.md))
+- **What fear, anxiety, and low mood feel like** is spelled out in the standard clinical lists: a pounding heart, a tight throat, lightheadedness, feeling empty, fatigue. ([DSM-5](docs/reference/dsm-5-symptoms.md))
+- **Urges are part of an emotion,** separate from its sensations: fear pulls you to escape, anger to fight, disgust to reject, guilt to make it right. ([Frijda](docs/reference/frijda-action-tendencies.md), [DBT](docs/reference/linehan-dbt-model-of-emotions.md))
+- **Many urges are a way to stop feeling something,** like numbing out, and noticing the pull without acting on it is a skill taught in recovery. ([Hayes and others](docs/reference/hayes-experiential-avoidance.md), [Marlatt](docs/reference/marlatt-urge-surfing.md))
+- **Particular paths:**
+  - disgust is felt as nausea ([Rozin](docs/reference/rozin-disgust.md));
+  - giving up follows what you can't control ([Maier and Seligman](docs/reference/maier-seligman-learned-helplessness.md));
+  - people cry from frustration and being moved, not just sadness ([Vingerhoets](docs/reference/vingerhoets-crying.md));
+  - rejection registers like pain ([Eisenberger and others](docs/reference/eisenberger-social-pain.md));
+  - the urge to help comes with caring ([Goetz and others](docs/reference/goetz-compassion.md));
+  - insecurity can pull you toward closeness ([Mikulincer and Shaver](docs/reference/mikulincer-shaver-attachment.md));
+  - anger often covers hurt ([Greenberg](docs/reference/greenberg-emotion-focused-therapy.md)).
+- **Calm and numb can feel alike.** Low-energy feelings can be pleasant or unpleasant ([Russell](docs/reference/russell-circumplex.md)), and calm acceptance is easily confused with numbness; whether you still care is the difference ([Desbordes and others](docs/reference/desbordes-equanimity.md)).
+- **Body idioms** like butterflies or a lump in your throat often grow out of what the body really does, which is why idioms that name a real sensation are allowed. ([Kövecses](docs/reference/kovecses-emotion-metaphors.md))
+
+### What isn't research
+
+- **Common speech:** some words rest mainly on common speech for something people feel, such as Butterflies, Buzzing, Sinking feeling, Heavy heart, and Skin crawling.
+- **Lucas's own experience:** a few also rest on Lucas's experience: Heart in throat, Weight on shoulders, Numb / empty, and Nothing much.
+
+What backs each word is in the [design spec](docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md#3-the-wheel) and its [changes](docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md).
+
+### How it was decided
+
+- **Lucas set the frame and the rules:** places plus Urges, the eyes-closed test, and every common path on the wheel.
+- **Claude did the research and drafting:** it found and summarized the research, and drafted the words and what backs each one.
+- **Lucas made every call:** he reviewed every word over several rounds, rewrote and cut freely, and decided each one. AI suggestions that didn't hold up were dropped.
+- **A second, separate AI review** checked each claim against its source. The [notes](docs/reference/README.md) say which sources were read in full and which only through abstracts or summaries.
+- **Lucas isn't a clinician or a researcher,** and doesn't claim to be.
+- **The rules** that keep the wheel this way are in [src/data/README.md](src/data/README.md).
+
+**If a word seems wrong or missing,** or you know research that says otherwise, please [open a Wheel content issue](https://github.com/lpolito/feels-on-wheels/issues/new?template=wheel-content.yml). Corrections from therapists and researchers are especially welcome.
 
 ## Made with AI, with love
 
@@ -63,7 +109,30 @@ What's built, what's next and what's still an idea are all in [docs/ROADMAP.md](
 
 ## Credits
 
-Feels on Wheels draws on feelings wheels by Gloria Willcox, Geoffrey Roberts and Lindsay Braman, and on feelingswheel.com. The app's About page credits each one, and [docs/reference/](docs/reference/README.md) has notes on every source.
+Everything Feels on Wheels draws on, whether or not a license asks for credit. Each name links to a note on the source, and [docs/reference/](docs/reference/README.md) has the full citations.
+
+- **Feelings wheels:** [Gloria Willcox's Feeling Wheel](docs/reference/core-feelings-wheel.md) (1982), [Geoffrey Roberts's Feel Wheel](docs/reference/core-feelings-wheel.md) (2015), the source of the feelings wheel's words, [Lindsay Braman's Emotion-Sensation Wheel](docs/reference/braman-emotion-sensation-wheel.md) (2020), and [feelingswheel.com](docs/reference/core-feelings-wheel.md#the-reference-site), whose tap-to-trace idea inspired this one.
+- **Research behind the body wheel** ([what each found](#research-behind-the-body-wheel)):
+  - [Nummenmaa and others](docs/reference/nummenmaa-bodily-maps.md)
+  - [A. D. Craig](docs/reference/craig-interoception.md)
+  - [Nico Frijda](docs/reference/frijda-action-tendencies.md)
+  - [Marsha Linehan](docs/reference/linehan-dbt-model-of-emotions.md)
+  - [Hayes and others](docs/reference/hayes-experiential-avoidance.md)
+  - [Bowen and Marlatt](docs/reference/marlatt-urge-surfing.md)
+  - [Rozin and Fallon](docs/reference/rozin-disgust.md)
+  - [Zoltán Kövecses](docs/reference/kovecses-emotion-metaphors.md)
+  - [the American Psychiatric Association's DSM-5](docs/reference/dsm-5-symptoms.md)
+  - [Maier and Seligman](docs/reference/maier-seligman-learned-helplessness.md)
+  - [Ad Vingerhoets](docs/reference/vingerhoets-crying.md)
+  - [Eisenberger and others](docs/reference/eisenberger-social-pain.md)
+  - [Duguid and Goncalo](docs/reference/duguid-goncalo-power-height.md)
+  - [Goetz and others](docs/reference/goetz-compassion.md)
+  - [Mikulincer and Shaver](docs/reference/mikulincer-shaver-attachment.md)
+  - [Leslie Greenberg](docs/reference/greenberg-emotion-focused-therapy.md)
+  - [James Russell](docs/reference/russell-circumplex.md)
+  - [Desbordes and others](docs/reference/desbordes-equanimity.md)
+
+The app's About page names the main ones and links here.
 
 Made by [Lucas Polito](https://lucaspolito.dev/).
 

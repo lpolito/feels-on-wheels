@@ -27,6 +27,7 @@ Each change is used before the next one is designed. When Lucas picks an idea to
 | Share buttons, About in the start message, and per-feeling link previews | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-share-and-preview.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-changes.md) |
 | Question first in page order, Tab onto the wheel selects nothing, a ring around the focused wheel, and the instruction by device | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-question-first.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-question-first-changes.md) |
 | <a id="the-wheel-and-the-card"></a><a id="a-different-word-to-start-on"></a><a id="return-to-the-word-you-jumped-from"></a><a id="feeling-links-underlined-in-their-feelings-color"></a>Start on Happy and Whole body at 3 o'clock, Back to the word you jumped from, and breadcrumbs in their own color | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-wheel-and-card.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-changes.md) |
+| <a id="rework-the-body-wheels-areas-and-sensations"></a>Body wheel rework: places head to toe, Urges, two strings per sensation, and its research in public | Shipped 2026-11-16 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md), [plan](superpowers/plans/2026-11-16-feels-on-wheels-body-wheel-rework.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md) |
 
 ## Ideas
 
@@ -38,10 +39,11 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Emoji wheel](#emoji-wheel) | New ways to identify an emotion | Planned |
 | [Strength](#strength) | New ways to identify an emotion | Shelved (2026-11-08) |
 | [Wheels for kids](#wheels-for-kids) | New ways to identify an emotion | Idea |
-| [Rework the body wheel's areas and sensations](#rework-the-body-wheels-areas-and-sensations) | [The body wheel's content](#the-body-wheels-content) | Idea |
+| [An opinionated feelings wheel](#an-opinionated-feelings-wheel) | [The wheels' content](#the-wheels-content) | Idea |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
+| [Check every test is worth keeping](#check-every-test-is-worth-keeping) | [Tests](#tests) | Idea |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
 
@@ -88,16 +90,25 @@ What Lucas first asked for:
   - where the words come from, since any new source gets a [reference note](reference/README.md) and a credit.
 - Overlaps with the [emoji wheel](#emoji-wheel), which is also a simplified wheel; worth designing them together.
 
-### The body wheel's content
+<a id="the-body-wheels-content"></a>
 
-#### Rework the body wheel's areas and sensations
+### The wheels' content
 
-Lucas, 2026-11-14: the body wheel needs reworking to be more consistent.
+What the wheels say: their words, definitions, and how feelings relate to sensations. Whatever is decided here gets written down as rules beside the data (`src/data/README.md`, with an `AGENTS.md` there that loads it), not only in a spec.
 
-- **The areas mix two kinds of thing.** Some are specific body parts (head, face, chest, stomach, arms) and some are general areas or ways of holding yourself (breath, whole body, posture). Should they be one or the other?
-- **Some sensations aren't sensations, but actions,** such as smiling, a gasp, clenched fists, turning away and shrinking, next to felt ones like a racing heart or a knot in your stomach. Some also sit oddly under their area (tense shoulders under arms, a lump in your throat under breath).
-- To decide when designing: one rule for what an area is and one for what a sensation is, what happens to the words that don't fit (dropped, reworded as a feeling, or a place of their own), and how URLs to moved or renamed sensations keep working.
-- Meets the [definitions and sensations review](#before-launching) in [content-review.md](content-review.md), so it's worth doing before or with it.
+#### An opinionated feelings wheel
+
+- Lucas, 2026-11-15: the feelings wheel should be opinionated about the words it uses, their definitions, and how feelings relate to sensations. Today it largely repeats other wheels (mostly [Roberts's seven-core wheel](reference/core-feelings-wheel.md)), which isn't necessary.
+- Its rules go in `src/data/README.md` next to the body wheel's, so every later edit follows them.
+- **A word for accepting your situation.** Lucas, 2026-11-16: not fighting reality, going with the flow. The wheel's Accepted means being welcomed by others, so the body wheel's Nothing much uses Content and Peaceful for now (rework [changes](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md#flat); [radical acceptance](reference/linehan-dbt-model-of-emotions.md), [equanimity](reference/desbordes-equanimity.md)).
+- **Words that sit oddly under their parent,** such as Hesitant under Repelled, Embarrassed under Disapproving, and Inferior under Depressed (Lucas, 2026-11-16). The body wheel's rule about a word and its parent depends on this nesting.
+- To decide when designing:
+  - what makes a word earn a place: common, plain, distinct from its neighbors, and useful for naming what you feel;
+  - whether the core feelings and their order stay, since the colors, link previews and URLs are built on them;
+  - what a good definition says, and how "You might notice" is chosen, likely drawing on the [bodily maps research](reference/nummenmaa-bodily-maps.md);
+  - what happens to links to words that are removed or moved;
+  - where the words come from, since any new source gets a [reference note](reference/README.md) and a credit.
+- Meets [Strength](#strength), [Wheels for kids](#wheels-for-kids), [Languages](#languages), and the [definitions and sensations review](#before-launching), which all depend on which words the wheel has. Builds on the rules the [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) set in [src/data/README.md](../src/data/README.md).
 
 ### URLs, routing and hosting
 
@@ -122,6 +133,14 @@ What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheel
 - To decide when designing: stable English slugs in every language (`/es/happy/…`) or translated ones (`/es/feliz/…`). The URL shape (a `/es/` prefix, English unprefixed) is set by the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) §9.
 - The link preview's alt text lowercases the wheel's name in code (`src/og.ts`: "the feelings wheel"), which is wrong for languages that capitalize nouns, such as German. To decide when designing: a separate lowercase name per wheel in the locale, or alt text written whole per wheel.
 
+### Tests
+
+#### Check every test is worth keeping
+
+- Lucas, 2026-11-16: the test suites are huge and keep growing, about 9,000 lines across 45 unit and end-to-end files. Go through them and keep only the tests that earn their place.
+- Found during the body wheel rework: some tests just restate the content (the body wheel's full list of sensations, exact cell counts, the exact feelings under one sensation). They duplicate `body.json` word for word and have to be edited with every content change, without catching anything. Tests that check rules (every feeling is on the feelings wheel, 2 or 3 feelings per sensation) or behavior (with any valid path) are worth more.
+- To decide when designing: what a test has to protect to stay, whether a single snapshot replaces the content tests, how much end-to-end coverage each of the five browsers needs, and whether to write the bar down for future changes, since the plans' test-first steps add tests with every change.
+
 ## Known issues
 
 Still open. None blocks the next change. The ones that get in someone's way are also listed, in plain words, under known limitations in [ACCESSIBILITY.md](../ACCESSIBILITY.md#known-limitations); keep the two in step.
@@ -136,18 +155,19 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 
 ### Layout and labels
 
-- **The two wheels can rest in different views in the same window.** Found by Lucas 2026-11-15: in a window taller than it is wide, roughly 720 to 920 px wide, the feelings wheel rests whole and the body wheel on the half-wheel. Lucas wants the view to be the same on both wheels.
-  - Why: on an upright stage, `restView` (`src/camera.ts`) rests on the whole wheel only if a typical outer cell's label would be at least 12 px tall (`shouldStartZoomed`: the median outer cell's arc × 0.55 ≥ 12 px), and it decides per wheel. The feelings wheel has 82 outer cells and the body wheel 105, so the body wheel's cells are narrower. The whole wheel needs a radius of about 352 px on the feelings wheel and about 450 px on the body wheel, and windows in between split.
-  - To decide when designing: one rule for both wheels, such as deciding with the wheel that has the most outer cells (so the feelings wheel would also rest on the half-wheel in those windows), and what the viewport sweep (`tests/e2e/viewports.spec.ts`) should pin. The [emoji wheel](#emoji-wheel) and [wheels for kids](#wheels-for-kids) would join the same rule. No fix chosen yet.
+- **The two wheels can rest, and zoom, differently in the same window.** Found by Lucas 2026-11-15: in a window taller than it is wide, roughly 720 to 920 px wide, the feelings wheel rests whole and the body wheel on the half-wheel. Lucas wants the view to be the same on both wheels.
+  - **Opening a word does the same** (Lucas, 2026-11-16, on an iPhone 15 sideways): at each level, the body wheel zooms in further than the feelings wheel. `ringFocusCamera` (`src/camera.ts`) zooms until a typical cell in the opened ring is readable, also per wheel, and the body wheel's cells are thinner. With the [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md)'s 126 outer cells, on a sideways iPhone with its 59 px insets the opened ring can no longer clear the notch and stay left of the card, so it runs under the card. The unit test "the opened cell starts 1rem after the inset and ends before the aim width" (`tests/unit/camera.test.ts`) pins the body wheel's outer ring as a known overflow (`OVERFLOWS`), and fails once the overflow is fixed so the pin can be removed. The ring fits at 114 outer cells or fewer.
+  - Why: on an upright stage, `restView` (`src/camera.ts`) rests on the whole wheel only if a typical outer cell's label would be at least 12 px tall (`shouldStartZoomed`: the median outer cell's arc × 0.55 ≥ 12 px), and it decides per wheel. The feelings wheel has 82 outer cells and the body wheel 126 (105 before the [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md)), so the body wheel's cells are narrower. The whole wheel needs a radius of about 352 px on the feelings wheel and about 545 px on the body wheel (450 px before the rework), and windows in between split.
+  - To decide when designing: one rule for both wheels, at rest and when a word is opened, such as deciding with the wheel that has the most outer cells (so the feelings wheel would also rest on the half-wheel in those windows, and zoom as far), whether the opened ring's zoom should give way to the card in tight layouts, and what the viewport sweep (`tests/e2e/viewports.spec.ts`) should pin. The [emoji wheel](#emoji-wheel) and [wheels for kids](#wheels-for-kids) would join the same rule. No fix chosen yet.
 - **Wide fallback fonts don't fit the tightest layouts.** Found 2026-11-09 when the end-to-end tests first ran on GitHub's Ubuntu runners, whose `system-ui` font is DejaVu Sans, much wider than the system fonts on Apple, Android and Windows devices. With it:
   - the wheel switch and toolbar overlap on 280 px screens;
   - the switch's planned third option no longer fits at 320 px;
   - the feelings wheel rests with no core labels in 500 × 300 and 400 × 350 windows.
 
   This only affects Linux desktops with a wide default font, at window sizes few people use. The tests now run on macOS runners. A likely fix is measuring the switch's and labels' real widths rather than assuming a font. No fix chosen yet.
-- **An opened word's long label spills past its cell.** Found 2026-11-09 using v2.2.1, on the body wheel's long words (Chest › Hollow feeling in your chest, Warmth in your chest): when opened, the label runs past both ends of the lifted cell. The renderer fits the label to the cell's normal box at the regular weight (600), then draws it 1.15× larger (`LIFT_LABEL`) and bold (800), while the lifted cell only grows 10 px at each end (`LIFT_RADIAL_PX`). Short words have room to spare; a label that already fills its box grows by about 15% plus bold's extra width, far more than 20 px. Likely fix: fit the opened label in the lifted box at its bold weight and capped at 1.15×, so it grows only as much as it fits. No fix chosen yet.
+- **An opened word's long label spills past its cell.** Found 2026-11-09 using v2.2.1, on the body wheel's long words (Chest › Hollow feeling in your chest, Warmth in your chest; since the rework, Shoulders › Weight on shoulders): when opened, the label runs past both ends of the lifted cell. The renderer fits the label to the cell's normal box at the regular weight (600), then draws it 1.15× larger (`LIFT_LABEL`) and bold (800), while the lifted cell only grows 10 px at each end (`LIFT_RADIAL_PX`). Short words have room to spare; a label that already fills its box grows by about 15% plus bold's extra width, far more than 20 px. Likely fix: fit the opened label in the lifted box at its bold weight and capped at 1.15×, so it grows only as much as it fits. No fix chosen yet.
 - **Portrait phones, inner tier opened: the outer ring runs off the right edge.** v2.1 made its labels draw (10 px floor on context rings) but left the camera alone, so some outer labels are cut off at the screen's edge. Lucas wanted to try that first (v2.1 spec §1, out of scope); moving the wheel left is the fix if it bothers him.
-- **Tiny, short windows show the body wheel unlabeled at rest.** At about 560 × 320 and smaller (split screen, 500 × 300), the whole-wheel view is too small for any area label ("Breath and throat"), so the body wheel rests without labels until you open something. The feelings wheel's short words still fit. It was like this before v2.1; the viewport sweep (`tests/e2e/viewports.spec.ts`) pins it so a fix shows up there.
+- **Tiny, short windows show the body wheel unlabeled at rest.** At about 560 × 320 and smaller (split screen, 500 × 300), the whole-wheel view is too small for any area label ("Throat / mouth"), so the body wheel rests without labels until you open something. The feelings wheel's short words still fit. It was like this before v2.1; the viewport sweep (`tests/e2e/viewports.spec.ts`) pins it so a fix shows up there.
 - **Very short phones.** When the card cap's safeguard is active, the opened word can sit under the toolbar: v1.3 spec §4.2 measures the gap from the stage's top, not the toolbar's bottom. (v1.3 review)
 
 ### Navigation
@@ -177,7 +197,7 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 
 The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens in two steps: first shareable, then launched. Step 1 [shipped](#shipped) on 2026-11-09. Step 2 is what's left before announcing it and letting search engines index it. The host and the domain (2026-11-13) and the URL structure (2026-11-14) are done; the rest isn't started.
 
-- **Lucas reviews the definitions and sensations** in [content-review.md](content-review.md). This was moved out of v1.1.
+- **Lucas reviews the definitions and sensations** in [content-review.md](content-review.md). This was moved out of v1.1. Since the body wheel rework, it also shows each card's "You might notice" phrases and the body wheel as it is, all rebuilt from the data, so the phrases drafted in the rework get reviewed here too.
 - **Draft text for Lucas to edit:** the body wheel's preview description ("Start from what you notice in your body to find the word for what you feel.") is a draft, and it's shorter than the 100 to 160 characters the home description uses.
 - **Let search engines in:** set `indexable: true` in `site.config.ts` (removes `noindex`), deploy, and re-check the link previews.
   - Decide first whether the `workers.dev` address and the preview links should say `noindex` once the domain is indexable, since they serve the same pages.
@@ -187,7 +207,4 @@ The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens
 
 ## Content rules
 
-- There are only so many ways to describe a feeling or a body sensation, so overlap with existing wheels and word lists is unavoidable and fine.
-- Don't copy any source verbatim, and don't reproduce a source's full layout or word list wholesale.
-- Definitions are short, plain-language prose (see v1 spec §3.4).
-- Credit every source we draw on, in [reference/](reference/README.md) and on the app's credits page, whether or not a license requires it.
+The rules for what the wheels say, for both wheels and in detail for the body wheel, live beside the data in [src/data/README.md](../src/data/README.md).

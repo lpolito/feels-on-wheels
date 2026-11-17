@@ -86,14 +86,16 @@ function wheelSvg(wheel, layout, featured) {
   const turn = -featured.mid;
   const radii = wheel.rings.map((r) => [r.inner * R, r.outer * R]);
   const cell = (ring, a0, a1, seg) =>
-    `<path d="${cellPath(radii[ring][0], radii[ring][1], a0 + turn, a1 + turn)}" fill="${fills.fill(seg.hue, seg.shadeRing, true)}"/>`;
+    `<path d="${cellPath(radii[ring][0], radii[ring][1], a0 + turn, a1 + turn)}" fill="${fills.fill(seg.hue, ring, true)}"/>`;
   let out = '';
   for (const i of layout.rings[0].segments) {
     const wedge = layout.segments[i];
     out += cell(0, wedge.start, wedge.end, wedge);
     const width = wedge.end - wedge.start;
+    // Each outer ring splits every cell of the ring inside it evenly, so the cells line up from ring to ring.
+    const middle = Math.max(1, Math.round(width / (TAU / PER_TURN[1])));
     for (let ring = 1; ring < layout.rings.length; ring++) {
-      const n = Math.max(1, Math.round(width / (TAU / PER_TURN[ring])));
+      const n = middle * (PER_TURN[ring] / PER_TURN[1]);
       for (let j = 0; j < n; j++) {
         const a0 = wedge.start + (width * j) / n;
         const a1 = wedge.start + (width * (j + 1)) / n;

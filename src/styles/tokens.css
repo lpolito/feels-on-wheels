@@ -19,13 +19,13 @@
 
   /* v2 body areas (spec v2 §5.2). v2.1: the v2 values at 1.2x OKLab chroma, same L and hue (spec v2.1 §7.2); stomach (light) was already at the sRGB edge. */
   --hue-head: #821538;
-  --hue-face: #604016;
+  --hue-shoulders: #604016;
   --hue-chest: #7E7406;
-  --hue-breath: #29727C;
+  --hue-throat: #29727C;
   --hue-stomach: #0179A3;
-  --hue-arms: #51618D;
+  --hue-hands: #51618D;
   --hue-whole-body: #83327B;
-  --hue-posture: #7B4D65;
+  --hue-urges: #7B4D65;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -50,13 +50,13 @@
 
     /* v2 body areas. v2.1: the v2 values at 1.2x OKLab chroma, same L and hue (spec v2.1 §7.2); stomach (light) was already at the sRGB edge. */
     --hue-head: #B0435E;
-    --hue-face: #89683E;
+    --hue-shoulders: #89683E;
     --hue-chest: #AA9F2A;
-    --hue-breath: #569CA6;
+    --hue-throat: #569CA6;
     --hue-stomach: #1FA6DB;
-    --hue-arms: #798BB8;
+    --hue-hands: #798BB8;
     --hue-whole-body: #B05BA6;
-    --hue-posture: #A7758E;
+    --hue-urges: #A7758E;
   }
 }
 
@@ -81,11 +81,11 @@
 
   /* v2 body areas. v2.1: the v2 values at 1.2x OKLab chroma, same L and hue (spec v2.1 §7.2); stomach (light) was already at the sRGB edge. */
   --hue-head: #B0435E;
-  --hue-face: #89683E;
+  --hue-shoulders: #89683E;
   --hue-chest: #AA9F2A;
-  --hue-breath: #569CA6;
+  --hue-throat: #569CA6;
   --hue-stomach: #1FA6DB;
-  --hue-arms: #798BB8;
+  --hue-hands: #798BB8;
   --hue-whole-body: #B05BA6;
-  --hue-posture: #A7758E;
+  --hue-urges: #A7758E;
 }

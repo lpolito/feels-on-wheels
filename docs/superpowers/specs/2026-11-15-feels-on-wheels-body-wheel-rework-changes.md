@@ -74,7 +74,7 @@ That leaves 47 sensations on the body wheel (51 in the vocabulary, counting the 
 
 Lucas, 2026-11-16: the feelings wheel's nesting doesn't always fit ("Some of the narrow words on the feelings wheel just don't quite fit being nested under their parent"), so a strict rule built on it would carry its oddities into the body wheel. He chose a rule judged on meaning, written for whoever edits the wheel, with no test or script ("writing scripts for things that aren't checked constantly feels silly"). For `src/data/wheels/README.md`:
 
-> **Feelings under one sensation must be different enough that someone would choose between them.** A word and its own parent or child on the feelings wheel often aren't (Stressed and Overwhelmed, Repelled and Horrified), so look at those pairs first. Keep both only when each says something the other doesn't, and never fill a sensation from one branch alone.
+> **Feelings under one sensation must be different enough that someone would choose between them.** A word and its own parent or child on the feelings wheel often aren't (Stressed and Overwhelmed, Repelled and Horrified), so look at those pairs first. Keep both only when each says something the other doesn't, and never fill a sensation with one word and the words nested under it (Repelled with Horrified and Hesitant). Feelings that all come from one core feeling are fine when each is a real choice (a lump in your throat: Hurt, Grief, Guilty).
 
 
 ## Two strings per sensation: one for the wheel, one for cards

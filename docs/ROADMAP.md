@@ -38,7 +38,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Emoji wheel](#emoji-wheel) | New ways to identify an emotion | Planned |
 | [Strength](#strength) | New ways to identify an emotion | Shelved (2026-11-08) |
 | [Wheels for kids](#wheels-for-kids) | New ways to identify an emotion | Idea |
-| [Rework the body wheel's areas and sensations](#rework-the-body-wheels-areas-and-sensations) | [The wheels' content](#the-wheels-content) | Spec drafted, awaiting Lucas's review |
+| [Rework the body wheel's areas and sensations](#rework-the-body-wheels-areas-and-sensations) | [The wheels' content](#the-wheels-content) | Spec approved; plan next |
 | [An opinionated feelings wheel](#an-opinionated-feelings-wheel) | The wheels' content | Idea |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
@@ -103,14 +103,15 @@ Lucas, 2026-11-14: the body wheel needs reworking to be more consistent.
 - **Some sensations aren't sensations, but actions,** such as smiling, a gasp, clenched fists, turning away and shrinking, next to felt ones like a racing heart or a knot in your stomach. Some also sit oddly under their area (tense shoulders under arms, a lump in your throat under breath).
 - To decide when designing: one rule for what an area is and one for what a sensation is, what happens to the words that don't fit (dropped, reworded as a feeling, or a place of their own), and how URLs to moved or renamed sensations keep working.
 - Meets the [definitions and sensations review](#before-launching) in [content-review.md](content-review.md), so it's worth doing before or with it.
-- **Draft spec (2026-11-15), not yet reviewed:** [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md). Decided in the brainstorm:
+- **Spec (2026-11-15), approved 2026-11-16:** [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md). Decided in the brainstorm:
   - Areas are places you could point to, head to toe, plus Whole body and one area that isn't a place, **Urges** (want to run, hide, cry…), because Lucas identifies heavily with urges.
   - A sensation is something you'd notice with your eyes closed and nobody watching; what others see goes, what you're pulled to do moves to Urges.
   - Short labels: "Head / face" style for neighboring places, never a place with a process ("Breath and throat"); sensations short enough to read on their own in "You might notice".
   - Every feeling stays a word on the feelings wheel. "You might notice" is redone to agree with the body wheel, without a rule enforcing it.
-  - 8 areas if they fit and the colors work, 7 if not; settled while building. Old addresses aren't forwarded.
-  - Research: [bodily maps of emotions](reference/nummenmaa-bodily-maps.md) and [action tendencies](reference/frijda-action-tendencies.md).
+  - 8 areas if they fit and the colors work. If they don't, Lucas decides after seeing the wheel built, with 7 areas as one option. Old addresses aren't forwarded.
+  - Research: [bodily maps of emotions](reference/nummenmaa-bodily-maps.md), [action tendencies](reference/frijda-action-tendencies.md), [interoception](reference/craig-interoception.md), [DBT's model of emotions](reference/linehan-dbt-model-of-emotions.md), [experiential avoidance](reference/hayes-experiential-avoidance.md), [urge surfing](reference/marlatt-urge-surfing.md), [disgust](reference/rozin-disgust.md), [emotion metaphors](reference/kovecses-emotion-metaphors.md), [panic, anxiety and depression symptoms](reference/dsm-5-symptoms.md), [crying](reference/vingerhoets-crying.md), [rejection](reference/eisenberger-social-pain.md), [power and felt height](reference/duguid-goncalo-power-height.md), [compassion](reference/goetz-compassion.md), [attachment](reference/mikulincer-shaver-attachment.md), and [learned helplessness](reference/maier-seligman-learned-helplessness.md).
   - The rules it settles live in `src/data/wheels/README.md`, with an `AGENTS.md` there pointing to it (spec §10).
+  - The research and how the words were decided go public in plain words: a README section and a paragraph on the About page, saying it was made with AI and reviewed by Lucas, who has no formal training, and inviting issues from anyone who disagrees (spec §9).
 
 #### An opinionated feelings wheel
 

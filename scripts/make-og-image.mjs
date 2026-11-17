@@ -86,7 +86,7 @@ function wheelSvg(wheel, layout, featured) {
   const turn = -featured.mid;
   const radii = wheel.rings.map((r) => [r.inner * R, r.outer * R]);
   const cell = (ring, a0, a1, seg) =>
-    `<path d="${cellPath(radii[ring][0], radii[ring][1], a0 + turn, a1 + turn)}" fill="${fills.fill(seg.hue, seg.shadeRing, true)}"/>`;
+    `<path d="${cellPath(radii[ring][0], radii[ring][1], a0 + turn, a1 + turn)}" fill="${fills.fill(seg.hue, ring, true)}"/>`;
   let out = '';
   for (const i of layout.rings[0].segments) {
     const wedge = layout.segments[i];

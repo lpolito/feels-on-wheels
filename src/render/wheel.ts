@@ -219,13 +219,13 @@ export function createWheelRenderer(
         const now = f.lit[s.index] === 1;
         const before = f.prevLit[s.index] === 1;
         if (now === before || f.fadeT >= 1) {
-          g.fillStyle = table.fill(s.hue, s.shadeRing, now);
+          g.fillStyle = table.fill(s.hue, s.ring, now);
           g.fill();
         } else {
-          g.fillStyle = table.fill(s.hue, s.shadeRing, before);
+          g.fillStyle = table.fill(s.hue, s.ring, before);
           g.fill();
           g.globalAlpha = f.fadeT;
-          g.fillStyle = table.fill(s.hue, s.shadeRing, now);
+          g.fillStyle = table.fill(s.hue, s.ring, now);
           g.fill();
           g.globalAlpha = 1;
         }
@@ -247,7 +247,7 @@ export function createWheelRenderer(
         const fit = fitted(s.index, boxLen, (s.end - s.start) * rMid, floor(s.ring), maxPx);
         if (!fit) continue;
         const lit = f.fadeT >= 0.5 ? f.lit[s.index] === 1 : f.prevLit[s.index] === 1;
-        drawLabel(fit.lines, fit.px, false, x, y, angle, 1, table.label(s.hue, s.shadeRing, lit));
+        drawLabel(fit.lines, fit.px, false, x, y, angle, 1, table.label(s.hue, s.ring, lit));
         stats.labelsByRing[s.ring]!++;
       }
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -291,7 +291,7 @@ export function createWheelRenderer(
       g.shadowColor = SHADOW.color;
       g.shadowBlur = SHADOW.blur;
       g.shadowOffsetY = SHADOW.offsetY;
-      g.fillStyle = table.fill(s.hue, s.shadeRing, true);
+      g.fillStyle = table.fill(s.hue, s.ring, true);
       g.fill();
       g.shadowBlur = 0;
       g.shadowOffsetY = 0;
@@ -299,7 +299,7 @@ export function createWheelRenderer(
       outline(cam.cx, cam.cy, r0, r1, a0 - side, a1 + side, ink, palette.gap);
       const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, floor(s.ring), maxPx);
       if (fit) {
-        drawLabel(fit.lines, fit.px * LIFT_LABEL, true, x, y, angle, p, table.label(s.hue, s.shadeRing, true));
+        drawLabel(fit.lines, fit.px * LIFT_LABEL, true, x, y, angle, p, table.label(s.hue, s.ring, true));
         stats.labelsByRing[s.ring]!++;
       }
       g.setTransform(dpr, 0, 0, dpr, 0, 0);

@@ -15,14 +15,6 @@ const idx = (path: string): number => {
 const lit = (m: Uint8Array): string[] =>
   layout.segments.filter((s) => m[s.index] === 1).map((s) => s.path).sort();
 
-describe('shadeRing (spec v2.1 §7.1)', () => {
-  test('shadeRing: body outer feelings shade as the core ring; feelings wheel cells shade as their own ring', () => {
-    for (const s of layout.segments) expect(s.shadeRing, s.path).toBe(s.ring);
-    for (const s of bodyLayout.segments) expect(s.shadeRing, s.path).toBe(s.node.kind === 'feeling' ? 0 : s.ring);
-    expect(bodyLayout.segments.some((s) => s.node.kind === 'feeling')).toBe(true);
-  });
-});
-
 describe('buildLayout', () => {
   test("layout.start is the wheel's start segment, on ring 0", () => {
     const s = layout.segments[layout.start]!;

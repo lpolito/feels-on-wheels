@@ -90,3 +90,7 @@ Page titles and link previews still use the wheel's label ("Hide · Feels on Whe
 ## The wheel says "The urge to…"
 
 Lucas, 2026-11-16: the drawn wheel names the Urges area "The urge to…" (with a real ellipsis character, which takes less room), so the ring reads "The urge to… run, hide, cry". It fits the area's cell on a phone and on desktop. Everywhere else keeps "Urges": breadcrumbs, cards, page titles, link previews, and the tree a screen reader reads. The locale's `areaWheelLabels` holds the wheel-only label; most areas have none.
+
+## The outer ring is lighter, like the feelings wheel's
+
+Lucas, 2026-11-16, after seeing three versions side by side: the body wheel's feeling cells take their own ring's shade, the lightest, instead of their core feeling's darkest shade (spec v2.1 §7.1). The darkest shade felt "way too bold". Each feeling's color as it sits on the feelings wheel varied by where a word happened to sit, so some areas looked heavy and nothing was consistent. Now both wheels go from darker in the center to lighter at the edge. The color tests already keep every area color distinct from every feeling color at every shade, so nothing else changes. The layout's `shadeRing` field, which only existed for the old rule, is gone.

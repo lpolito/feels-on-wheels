@@ -111,7 +111,7 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     expect(Math.min(...sizes(2))).toBeGreaterThanOrEqual(12.5);
   });
 
-  test('a body outer cell is filled with the ring-0 shade of its hue (spec v2.1 §7.1)', () => {
+  test('a body outer cell is filled with its own ring\'s shade, like the feelings wheel (rework changes)', () => {
     const homed = buildLayout(bodyWheel, homes(layout));
     const { canvas, ctx, rec } = fakeCanvas();
     const r = createWheelRenderer(canvas, homed, ctx);
@@ -120,8 +120,8 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     r.draw(frame(desk));
     // Fills follow segment order, one per drawn segment, in overview every segment is drawn.
     const outer = homed.segments.find((s) => s.ring === 2)!;
-    expect(rec.fills[outer.index]).toBe(bodyTable.fill(outer.hue, 0, true));
-    expect(rec.fills[outer.index]).not.toBe(bodyTable.fill(outer.hue, 2, true));
+    expect(rec.fills[outer.index]).toBe(bodyTable.fill(outer.hue, 2, true));
+    expect(rec.fills[outer.index]).not.toBe(bodyTable.fill(outer.hue, 0, true));
   });
 
   test('the drawn wheel says "The urge to…" where everything else says "Urges"', () => {

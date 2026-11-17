@@ -22,7 +22,7 @@ beforeAll(() => setLocale(locale));
 
 describe('cardModel', () => {
   const row = (p: string, label: string, hue = 'angry') => ({ index: idx(p), label, hue, path: p });
-  const sens = (id: string) => (feelings[id]?.sensations ?? []).map((s) => locale.sensations[s]);
+  const sens = (id: string) => (feelings[id]?.sensations ?? []).map((s) => locale.sensationPhrases[s]);
 
   test('cardModel: none / selected / opened', () => {
     expect(cardModel(layout, feelings, initialState)).toEqual({ kind: 'none' });

@@ -75,3 +75,14 @@ Lucas, 2026-11-16: the feelings wheel's nesting doesn't always fit ("Some of the
 
 > **Feelings under one sensation must be different enough that someone would choose between them.** A word and its own parent or child on the feelings wheel often aren't (Stressed and Overwhelmed, Repelled and Horrified), so look at those pairs first. Keep both only when each says something the other doesn't, and never fill a sensation from one branch alone.
 
+
+## Two strings per sensation: one for the wheel, one for cards
+
+Lucas, 2026-11-16: "Want to" read oddly on the wheel, and "You might notice: frozen" or "queasy" "makes zero sense." One string was doing two grammatical jobs. The fix is one id with two strings, so each context gets its own string to translate:
+
+- **`sensations`:** the wheel's label, short and bare. Urges lose "Want to" ("Hide", "Fix things", "Control things"), since the area gives the context ("Urges › Hide").
+- **`sensationPhrases`:** how a feeling's card lists the sensation under "You might notice" ("Wanting to hide", "Feeling queasy", "A racing heart"). The loader requires one for every sensation a card lists.
+
+This replaces §1's and §2's "Want to …" labels; spec For review question 8 left the form open until now. Urge ids follow the new labels: `run`, `hide`, `lash-out`, `back-away`, `fix-things`, `be-close`, `be-alone`, `give-up`, `numb-out`, `sleep`, `cry`, `control-things`. Lucas chose shared ids over separate card text because they keep each string written once, and keep it possible to see whether cards and the wheel agree.
+
+Page titles and link previews still use the wheel's label ("Hide · Feels on Wheels").

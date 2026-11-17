@@ -108,6 +108,15 @@ describe('validation', () => {
     delete broken.feelings['angry'];
     expect(() => validateLocale(broken, feelings, wheels)).toThrow(DataError);
   });
+
+  test('every sensation a card lists has its card phrase, and a missing one is caught', () => {
+    for (const id of Object.keys(feelings)) {
+      for (const s of feelings[id]!.sensations) expect(locale.sensationPhrases[s], s).toBeTruthy();
+    }
+    const broken = structuredClone(locale);
+    delete broken.sensationPhrases['racing-heart'];
+    expect(() => validateLocale(broken, feelings, wheels)).toThrow(/missing card phrase "racing-heart"/);
+  });
 });
 
 const AREAS: [string, string[]][] = [
@@ -118,7 +127,7 @@ const AREAS: [string, string[]][] = [
   ['chest', ['racing-heart', 'tight-chest', 'short-breath', 'hollow-chest', 'heavy-heart']],
   ['stomach', ['knot-in-stomach', 'sinking-feeling', 'butterflies', 'queasy']],
   ['whole-body', ['restless', 'buzzing', 'chills', 'frozen', 'skin-crawling', 'heaviness', 'drained', 'numb-empty', 'flat', 'weak-knees']],
-  ['urges', ['want-to-run', 'want-to-hide', 'want-to-lash-out', 'want-to-back-away', 'want-to-fix-it', 'want-to-be-close', 'want-to-be-alone', 'want-to-give-up', 'want-to-numb-out', 'want-to-sleep', 'want-to-cry', 'want-to-control-it']],
+  ['urges', ['run', 'hide', 'lash-out', 'back-away', 'fix-things', 'be-close', 'be-alone', 'give-up', 'numb-out', 'sleep', 'cry', 'control-things']],
 ];
 
 describe('body wheel data', () => {

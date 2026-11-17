@@ -258,7 +258,7 @@ describe('body wheel (v2)', () => {
   });
 
   test('describe reads an urge\'s path', () => {
-    expect(describeSeg(bodyLayout, bodyLayout.byPath.get('urges/want-to-run/scared')!)).toBe('Scared. In Urges, Want to run.');
+    expect(describeSeg(bodyLayout, bodyLayout.byPath.get('urges/run/scared')!)).toBe('Scared. In Urges, Run.');
   });
 
   test('the body tree has 182 treeitems', () => {

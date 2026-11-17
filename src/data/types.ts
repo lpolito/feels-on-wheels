@@ -39,7 +39,10 @@ export interface Locale {
    * {link} feeling.", "happy"): spec v2.2 §4.4.
    */
   feelings: Record<FeelingId, { label: string; definition: string; kind?: string; kindLink?: string }>;
+  /** A sensation's label on the body wheel, short and bare ("Hide"). */
   sensations: Record<SensationId, string>;
+  /** How a feeling's card lists a sensation under "You might notice" ("Wanting to hide"): body wheel rework changes. */
+  sensationPhrases: Record<SensationId, string>;
   areas: Record<AreaId, string>;
   wheels: Record<string, WheelText>;
   titles: Titles;

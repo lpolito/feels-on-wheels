@@ -41,29 +41,29 @@
   "worried": {
     "sensations": [
       "sinking-feeling",
-      "want-to-fix-it",
+      "fix-things",
       "knot-in-stomach",
       "tense-shoulders"
     ]
   },
   "insecure": {
     "sensations": [
-      "want-to-be-close",
-      "want-to-hide",
+      "be-close",
+      "hide",
       "knot-in-stomach",
       "restless"
     ]
   },
   "inadequate": {
     "sensations": [
-      "want-to-give-up",
-      "want-to-hide",
+      "give-up",
+      "hide",
       "heaviness"
     ]
   },
   "inferior": {
     "sensations": [
-      "want-to-hide",
+      "hide",
       "hot-face"
     ]
   },
@@ -78,13 +78,13 @@
   "worthless": {
     "sensations": [
       "hollow-chest",
-      "want-to-hide",
+      "hide",
       "heaviness"
     ]
   },
   "insignificant": {
     "sensations": [
-      "want-to-hide",
+      "hide",
       "hollow-chest"
     ]
   },
@@ -92,14 +92,14 @@
     "sensations": [
       "hollow-chest",
       "lump-in-throat",
-      "want-to-back-away"
+      "back-away"
     ]
   },
   "excluded": {
     "sensations": [
       "hollow-chest",
       "lump-in-throat",
-      "want-to-hide"
+      "hide"
     ]
   },
   "persecuted": {
@@ -111,7 +111,7 @@
   },
   "threatened": {
     "sensations": [
-      "want-to-run",
+      "run",
       "racing-heart",
       "tense-shoulders",
       "heart-in-throat"
@@ -127,7 +127,7 @@
   },
   "exposed": {
     "sensations": [
-      "want-to-hide",
+      "hide",
       "hot-face"
     ]
   },
@@ -143,13 +143,13 @@
       "heavy-heart",
       "heaviness",
       "hollow-chest",
-      "want-to-hide"
+      "hide"
     ]
   },
   "betrayed": {
     "sensations": [
       "knot-in-stomach",
-      "want-to-lash-out",
+      "lash-out",
       "hollow-chest",
       "lump-in-throat"
     ]
@@ -158,14 +158,14 @@
     "sensations": [
       "tight-jaw",
       "tight-chest",
-      "want-to-lash-out",
+      "lash-out",
       "tense-shoulders"
     ]
   },
   "humiliated": {
     "sensations": [
       "hot-face",
-      "want-to-hide"
+      "hide"
     ]
   },
   "disrespected": {
@@ -178,12 +178,12 @@
   "ridiculed": {
     "sensations": [
       "hot-face",
-      "want-to-back-away"
+      "back-away"
     ]
   },
   "bitter": {
     "sensations": [
-      "want-to-lash-out",
+      "lash-out",
       "tight-jaw",
       "tight-chest",
       "knot-in-stomach"
@@ -215,14 +215,14 @@
   "furious": {
     "sensations": [
       "shaky-hands",
-      "want-to-lash-out",
+      "lash-out",
       "hot-face",
       "tight-fists"
     ]
   },
   "jealous": {
     "sensations": [
-      "want-to-control-it",
+      "control-things",
       "knot-in-stomach",
       "tight-chest",
       "hot-face"
@@ -237,7 +237,7 @@
   },
   "provoked": {
     "sensations": [
-      "want-to-lash-out",
+      "lash-out",
       "hot-face",
       "tight-jaw",
       "racing-heart"
@@ -245,7 +245,7 @@
   },
   "hostile": {
     "sensations": [
-      "want-to-lash-out",
+      "lash-out",
       "tight-jaw",
       "tense-shoulders",
       "tight-fists"
@@ -256,7 +256,7 @@
       "headache",
       "tense-shoulders",
       "tight-fists",
-      "want-to-cry"
+      "cry"
     ]
   },
   "infuriated": {
@@ -276,14 +276,14 @@
   "distant": {
     "sensations": [
       "numb-empty",
-      "want-to-back-away",
+      "back-away",
       "drained"
     ]
   },
   "withdrawn": {
     "sensations": [
-      "want-to-be-alone",
-      "want-to-hide",
+      "be-alone",
+      "hide",
       "drained"
     ]
   },
@@ -310,7 +310,7 @@
   },
   "dismissive": {
     "sensations": [
-      "want-to-back-away",
+      "back-away",
       "heart-in-throat"
     ]
   },
@@ -326,7 +326,7 @@
     "sensations": [
       "gagging",
       "tense-shoulders",
-      "want-to-back-away"
+      "back-away"
     ]
   },
   "judgmental": {
@@ -339,14 +339,14 @@
   "embarrassed": {
     "sensations": [
       "hot-face",
-      "want-to-hide"
+      "hide"
     ]
   },
   "disappointed": {
     "sensations": [
       "sinking-feeling",
       "heaviness",
-      "want-to-hide",
+      "hide",
       "hollow-chest"
     ]
   },
@@ -360,7 +360,7 @@
     "sensations": [
       "gagging",
       "queasy",
-      "want-to-back-away"
+      "back-away"
     ]
   },
   "awful": {
@@ -380,7 +380,7 @@
   "detestable": {
     "sensations": [
       "queasy",
-      "want-to-back-away",
+      "back-away",
       "knot-in-stomach"
     ]
   },
@@ -395,14 +395,14 @@
   "horrified": {
     "sensations": [
       "skin-crawling",
-      "want-to-back-away",
+      "back-away",
       "heart-in-throat",
       "frozen"
     ]
   },
   "hesitant": {
     "sensations": [
-      "want-to-back-away",
+      "back-away",
       "frozen",
       "restless",
       "short-breath"
@@ -412,13 +412,13 @@
     "sensations": [
       "queasy",
       "gagging",
-      "want-to-back-away"
+      "back-away"
     ]
   },
   "hurt": {
     "sensations": [
       "lump-in-throat",
-      "want-to-cry",
+      "cry",
       "hollow-chest"
     ]
   },
@@ -427,7 +427,7 @@
       "foggy-head",
       "heavy-heart",
       "heaviness",
-      "want-to-sleep"
+      "sleep"
     ]
   },
   "empty": {
@@ -442,74 +442,74 @@
       "lump-in-throat",
       "heavy-heart",
       "knot-in-stomach",
-      "want-to-fix-it"
+      "fix-things"
     ]
   },
   "remorseful": {
     "sensations": [
       "lump-in-throat",
-      "want-to-hide",
-      "want-to-cry"
+      "hide",
+      "cry"
     ]
   },
   "ashamed": {
     "sensations": [
       "hot-face",
-      "want-to-hide",
-      "want-to-numb-out"
+      "hide",
+      "numb-out"
     ]
   },
   "despair": {
     "sensations": [
-      "want-to-give-up",
+      "give-up",
       "heaviness",
-      "want-to-cry",
-      "want-to-hide"
+      "cry",
+      "hide"
     ]
   },
   "powerless": {
     "sensations": [
       "weight-on-shoulders",
       "frozen",
-      "want-to-give-up",
+      "give-up",
       "heaviness"
     ]
   },
   "grief": {
     "sensations": [
       "lump-in-throat",
-      "want-to-cry",
+      "cry",
       "hollow-chest",
       "drained"
     ]
   },
   "vulnerable": {
     "sensations": [
-      "want-to-hide",
+      "hide",
       "tight-chest",
       "shaky-hands"
     ]
   },
   "fragile": {
     "sensations": [
-      "want-to-be-alone",
+      "be-alone",
       "shaky-hands",
-      "want-to-cry",
+      "cry",
       "short-breath"
     ]
   },
   "victimized": {
     "sensations": [
       "tight-chest",
-      "want-to-hide",
+      "hide",
       "knot-in-stomach"
     ]
   },
   "lonely": {
     "sensations": [
       "hollow-chest",
-      "want-to-be-close",
-      "want-to-numb-out",
+      "be-close",
+      "numb-out",
       "heaviness"
     ]
   },
@@ -517,22 +517,22 @@
     "sensations": [
       "hollow-chest",
       "lump-in-throat",
-      "want-to-cry"
+      "cry"
     ]
   },
   "isolated": {
     "sensations": [
       "hollow-chest",
       "drained",
-      "want-to-hide"
+      "hide"
     ]
   },
   "sad": {
     "sensations": [
       "heaviness",
-      "want-to-cry",
+      "cry",
       "lump-in-throat",
-      "want-to-hide"
+      "hide"
     ]
   },
   "optimistic": {
@@ -572,7 +572,7 @@
   "sensitive": {
     "sensations": [
       "warm-chest",
-      "want-to-cry",
+      "cry",
       "hot-face"
     ]
   },
@@ -586,15 +586,15 @@
   "thankful": {
     "sensations": [
       "warm-chest",
-      "want-to-cry",
+      "cry",
       "relaxed"
     ]
   },
   "loving": {
     "sensations": [
       "warm-chest",
-      "want-to-fix-it",
-      "want-to-be-close",
+      "fix-things",
+      "be-close",
       "relaxed"
     ]
   },
@@ -782,7 +782,7 @@
   "disillusioned": {
     "sensations": [
       "heaviness",
-      "want-to-hide",
+      "hide",
       "hollow-chest"
     ]
   },
@@ -797,7 +797,7 @@
       "sinking-feeling",
       "heart-in-throat",
       "knot-in-stomach",
-      "want-to-hide"
+      "hide"
     ]
   },
   "shocked": {
@@ -818,7 +818,7 @@
     "sensations": [
       "foggy-head",
       "drained",
-      "want-to-sleep",
+      "sleep",
       "heaviness"
     ]
   },
@@ -845,7 +845,7 @@
   },
   "out-of-control": {
     "sensations": [
-      "want-to-control-it",
+      "control-things",
       "racing-heart",
       "short-breath",
       "restless"
@@ -876,16 +876,16 @@
   "bored": {
     "sensations": [
       "restless",
-      "want-to-sleep",
+      "sleep",
       "drained",
-      "want-to-hide"
+      "hide"
     ]
   },
   "apathetic": {
     "sensations": [
       "drained",
       "numb-empty",
-      "want-to-hide"
+      "hide"
     ]
   },
   "indifferent": {

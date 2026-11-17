@@ -43,12 +43,19 @@ describe('body wheel content', () => {
     expect(feelingsUnder('racing-heart')).toEqual(['scared', 'mad', 'excited']);
   });
 
+  test('urges are bare verbs on the wheel and read as wanting on cards', () => {
+    expect(locale.sensations['hide']).toBe('Hide');
+    expect(locale.sensationPhrases['hide']).toBe('Wanting to hide');
+    expect(locale.sensations['fix-things']).toBe('Fix things');
+    expect(locale.sensationPhrases['queasy']).toBe('Feeling queasy');
+  });
+
   test('want to lash out offers hurt, which anger often covers', () => {
-    expect(feelingsUnder('want-to-lash-out')).toEqual(['furious', 'provoked', 'hurt']);
+    expect(feelingsUnder('lash-out')).toEqual(['furious', 'provoked', 'hurt']);
   });
 
   test('want to cry leaves out sad', () => {
-    expect(feelingsUnder('want-to-cry')).toEqual(['frustrated', 'overwhelmed', 'thankful']);
+    expect(feelingsUnder('cry')).toEqual(['frustrated', 'overwhelmed', 'thankful']);
   });
 
   test('flat could be content, peaceful, or numb', () => {

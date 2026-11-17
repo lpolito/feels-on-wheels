@@ -517,7 +517,7 @@
       "hue": "urges",
       "children": [
         {
-          "sensation": "want-to-run",
+          "sensation": "run",
           "children": [
             {
               "feeling": "scared"
@@ -531,7 +531,7 @@
           ]
         },
         {
-          "sensation": "want-to-hide",
+          "sensation": "hide",
           "children": [
             {
               "feeling": "ashamed"
@@ -545,7 +545,7 @@
           ]
         },
         {
-          "sensation": "want-to-lash-out",
+          "sensation": "lash-out",
           "children": [
             {
               "feeling": "furious"
@@ -559,7 +559,7 @@
           ]
         },
         {
-          "sensation": "want-to-back-away",
+          "sensation": "back-away",
           "children": [
             {
               "feeling": "repelled"
@@ -570,7 +570,7 @@
           ]
         },
         {
-          "sensation": "want-to-fix-it",
+          "sensation": "fix-things",
           "children": [
             {
               "feeling": "guilty"
@@ -584,7 +584,7 @@
           ]
         },
         {
-          "sensation": "want-to-be-close",
+          "sensation": "be-close",
           "children": [
             {
               "feeling": "loving"
@@ -598,7 +598,7 @@
           ]
         },
         {
-          "sensation": "want-to-be-alone",
+          "sensation": "be-alone",
           "children": [
             {
               "feeling": "withdrawn"
@@ -612,7 +612,7 @@
           ]
         },
         {
-          "sensation": "want-to-give-up",
+          "sensation": "give-up",
           "children": [
             {
               "feeling": "despair"
@@ -623,7 +623,7 @@
           ]
         },
         {
-          "sensation": "want-to-numb-out",
+          "sensation": "numb-out",
           "children": [
             {
               "feeling": "overwhelmed"
@@ -637,7 +637,7 @@
           ]
         },
         {
-          "sensation": "want-to-sleep",
+          "sensation": "sleep",
           "children": [
             {
               "feeling": "tired"
@@ -651,7 +651,7 @@
           ]
         },
         {
-          "sensation": "want-to-cry",
+          "sensation": "cry",
           "children": [
             {
               "feeling": "frustrated"
@@ -665,7 +665,7 @@
           ]
         },
         {
-          "sensation": "want-to-control-it",
+          "sensation": "control-things",
           "children": [
             {
               "feeling": "out-of-control"

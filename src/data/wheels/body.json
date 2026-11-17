@@ -49,108 +49,35 @@
           ]
         },
         {
-          "sensation": "tired-eyes",
+          "sensation": "lightheaded",
           "children": [
             {
-              "feeling": "tired"
+              "feeling": "shocked"
             },
             {
-              "feeling": "depressed"
+              "feeling": "overwhelmed"
+            },
+            {
+              "feeling": "nervous"
             }
           ]
         },
-        {
-          "sensation": "wide-eyes",
-          "children": [
-            {
-              "feeling": "scared"
-            },
-            {
-              "feeling": "amazed"
-            },
-            {
-              "feeling": "interested"
-            }
-          ]
-        },
-        {
-          "sensation": "raised-eyebrows",
-          "children": [
-            {
-              "feeling": "startled"
-            },
-            {
-              "feeling": "skeptical"
-            },
-            {
-              "feeling": "curious"
-            }
-          ]
-        },
-        {
-          "sensation": "tearful",
-          "children": [
-            {
-              "feeling": "sad"
-            },
-            {
-              "feeling": "hurt"
-            },
-            {
-              "feeling": "thankful"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "area": "face",
-      "hue": "face",
-      "children": [
         {
           "sensation": "hot-face",
           "children": [
-            {
-              "feeling": "mad"
-            },
             {
               "feeling": "embarrassed"
             },
             {
               "feeling": "ashamed"
+            },
+            {
+              "feeling": "humiliated"
             }
           ]
         },
         {
-          "sensation": "blushing",
-          "children": [
-            {
-              "feeling": "embarrassed"
-            },
-            {
-              "feeling": "exposed"
-            },
-            {
-              "feeling": "aroused"
-            }
-          ]
-        },
-        {
-          "sensation": "scrunched-face",
-          "children": [
-            {
-              "feeling": "repelled"
-            },
-            {
-              "feeling": "annoyed"
-            },
-            {
-              "feeling": "confused"
-            }
-          ]
-        },
-        {
-          "sensation": "clenched-jaw",
+          "sensation": "tight-jaw",
           "children": [
             {
               "feeling": "mad"
@@ -162,18 +89,161 @@
               "feeling": "stressed"
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "area": "throat",
+      "hue": "throat",
+      "children": [
         {
-          "sensation": "smiling",
+          "sensation": "lump-in-throat",
           "children": [
             {
-              "feeling": "happy"
+              "feeling": "hurt"
             },
             {
-              "feeling": "playful"
+              "feeling": "grief"
             },
             {
-              "feeling": "proud"
+              "feeling": "guilty"
+            }
+          ]
+        },
+        {
+          "sensation": "heart-in-throat",
+          "children": [
+            {
+              "feeling": "scared"
+            },
+            {
+              "feeling": "nervous"
+            },
+            {
+              "feeling": "startled"
+            }
+          ]
+        },
+        {
+          "sensation": "tight-throat",
+          "children": [
+            {
+              "feeling": "anxious"
+            },
+            {
+              "feeling": "frightened"
+            },
+            {
+              "feeling": "repelled"
+            }
+          ]
+        },
+        {
+          "sensation": "dry-mouth",
+          "children": [
+            {
+              "feeling": "nervous"
+            },
+            {
+              "feeling": "scared"
+            }
+          ]
+        },
+        {
+          "sensation": "gagging",
+          "children": [
+            {
+              "feeling": "revolted"
+            },
+            {
+              "feeling": "repelled"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "area": "shoulders",
+      "hue": "shoulders",
+      "children": [
+        {
+          "sensation": "tense-shoulders",
+          "children": [
+            {
+              "feeling": "stressed"
+            },
+            {
+              "feeling": "anxious"
+            },
+            {
+              "feeling": "frustrated"
+            }
+          ]
+        },
+        {
+          "sensation": "weight-on-shoulders",
+          "children": [
+            {
+              "feeling": "pressured"
+            },
+            {
+              "feeling": "overwhelmed"
+            },
+            {
+              "feeling": "powerless"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "area": "hands",
+      "hue": "hands",
+      "children": [
+        {
+          "sensation": "tight-fists",
+          "children": [
+            {
+              "feeling": "mad"
+            },
+            {
+              "feeling": "frustrated"
+            }
+          ]
+        },
+        {
+          "sensation": "shaky-hands",
+          "children": [
+            {
+              "feeling": "scared"
+            },
+            {
+              "feeling": "furious"
+            },
+            {
+              "feeling": "excited"
+            }
+          ]
+        },
+        {
+          "sensation": "sweaty-palms",
+          "children": [
+            {
+              "feeling": "nervous"
+            },
+            {
+              "feeling": "excited"
+            }
+          ]
+        },
+        {
+          "sensation": "cold-hands",
+          "children": [
+            {
+              "feeling": "scared"
+            },
+            {
+              "feeling": "nervous"
             }
           ]
         }
@@ -212,16 +282,41 @@
           ]
         },
         {
+          "sensation": "short-breath",
+          "children": [
+            {
+              "feeling": "anxious"
+            },
+            {
+              "feeling": "stressed"
+            }
+          ]
+        },
+        {
           "sensation": "hollow-chest",
           "children": [
             {
               "feeling": "lonely"
             },
             {
-              "feeling": "hurt"
+              "feeling": "rejected"
             },
             {
               "feeling": "empty"
+            }
+          ]
+        },
+        {
+          "sensation": "heavy-heart",
+          "children": [
+            {
+              "feeling": "guilty"
+            },
+            {
+              "feeling": "let-down"
+            },
+            {
+              "feeling": "depressed"
             }
           ]
         },
@@ -235,60 +330,7 @@
               "feeling": "thankful"
             },
             {
-              "feeling": "content"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "area": "breath",
-      "hue": "breath",
-      "children": [
-        {
-          "sensation": "shallow-breath",
-          "children": [
-            {
-              "feeling": "anxious"
-            },
-            {
-              "feeling": "stressed"
-            }
-          ]
-        },
-        {
-          "sensation": "deep-breath",
-          "children": [
-            {
-              "feeling": "peaceful"
-            },
-            {
-              "feeling": "content"
-            }
-          ]
-        },
-        {
-          "sensation": "gasp",
-          "children": [
-            {
-              "feeling": "startled"
-            },
-            {
-              "feeling": "scared"
-            }
-          ]
-        },
-        {
-          "sensation": "lump-in-throat",
-          "children": [
-            {
-              "feeling": "hurt"
-            },
-            {
-              "feeling": "grief"
-            },
-            {
-              "feeling": "thankful"
+              "feeling": "proud"
             }
           ]
         }
@@ -313,13 +355,16 @@
           ]
         },
         {
-          "sensation": "nausea",
+          "sensation": "sinking-feeling",
           "children": [
             {
-              "feeling": "repelled"
+              "feeling": "disappointed"
             },
             {
-              "feeling": "anxious"
+              "feeling": "dismayed"
+            },
+            {
+              "feeling": "worried"
             }
           ]
         },
@@ -333,82 +378,15 @@
               "feeling": "excited"
             }
           ]
-        }
-      ]
-    },
-    {
-      "area": "arms",
-      "hue": "arms",
-      "children": [
+        },
         {
-          "sensation": "tense-shoulders",
+          "sensation": "queasy",
           "children": [
             {
-              "feeling": "stressed"
+              "feeling": "repelled"
             },
             {
               "feeling": "anxious"
-            },
-            {
-              "feeling": "frustrated"
-            }
-          ]
-        },
-        {
-          "sensation": "heavy-limbs",
-          "children": [
-            {
-              "feeling": "tired"
-            },
-            {
-              "feeling": "depressed"
-            }
-          ]
-        },
-        {
-          "sensation": "clenched-fists",
-          "children": [
-            {
-              "feeling": "mad"
-            },
-            {
-              "feeling": "frustrated"
-            }
-          ]
-        },
-        {
-          "sensation": "sweaty-palms",
-          "children": [
-            {
-              "feeling": "nervous"
-            },
-            {
-              "feeling": "excited"
-            }
-          ]
-        },
-        {
-          "sensation": "cold-hands",
-          "children": [
-            {
-              "feeling": "scared"
-            },
-            {
-              "feeling": "nervous"
-            }
-          ]
-        },
-        {
-          "sensation": "trembling",
-          "children": [
-            {
-              "feeling": "scared"
-            },
-            {
-              "feeling": "furious"
-            },
-            {
-              "feeling": "excited"
             }
           ]
         }
@@ -433,13 +411,30 @@
           ]
         },
         {
-          "sensation": "fidgety",
+          "sensation": "buzzing",
           "children": [
             {
-              "feeling": "nervous"
+              "feeling": "excited"
             },
             {
-              "feeling": "bored"
+              "feeling": "inspired"
+            },
+            {
+              "feeling": "anxious"
+            }
+          ]
+        },
+        {
+          "sensation": "chills",
+          "children": [
+            {
+              "feeling": "frightened"
+            },
+            {
+              "feeling": "awe"
+            },
+            {
+              "feeling": "inspired"
             }
           ]
         },
@@ -458,10 +453,38 @@
           ]
         },
         {
-          "sensation": "low-energy",
+          "sensation": "skin-crawling",
+          "children": [
+            {
+              "feeling": "repelled"
+            },
+            {
+              "feeling": "horrified"
+            },
+            {
+              "feeling": "violated"
+            }
+          ]
+        },
+        {
+          "sensation": "heaviness",
           "children": [
             {
               "feeling": "depressed"
+            },
+            {
+              "feeling": "weak"
+            },
+            {
+              "feeling": "helpless"
+            }
+          ]
+        },
+        {
+          "sensation": "drained",
+          "children": [
+            {
+              "feeling": "tired"
             },
             {
               "feeling": "apathetic"
@@ -469,7 +492,7 @@
           ]
         },
         {
-          "sensation": "numbness",
+          "sensation": "numb-empty",
           "children": [
             {
               "feeling": "numb"
@@ -490,90 +513,239 @@
             },
             {
               "feeling": "joyful"
+            },
+            {
+              "feeling": "hopeful"
             }
           ]
         },
         {
-          "sensation": "buzzing",
-          "children": [
-            {
-              "feeling": "excited"
-            },
-            {
-              "feeling": "inspired"
-            },
-            {
-              "feeling": "anxious"
-            }
-          ]
-        },
-        {
-          "sensation": "relaxed-muscles",
+          "sensation": "relaxed",
           "children": [
             {
               "feeling": "peaceful"
             },
             {
               "feeling": "trusting"
+            },
+            {
+              "feeling": "content"
+            }
+          ]
+        },
+        {
+          "sensation": "feeling-tall",
+          "children": [
+            {
+              "feeling": "powerful"
+            },
+            {
+              "feeling": "confident"
+            },
+            {
+              "feeling": "courageous"
+            }
+          ]
+        },
+        {
+          "sensation": "weak-knees",
+          "children": [
+            {
+              "feeling": "scared"
+            },
+            {
+              "feeling": "weak"
+            },
+            {
+              "feeling": "aroused"
             }
           ]
         }
       ]
     },
     {
-      "area": "posture",
-      "hue": "posture",
+      "area": "urges",
+      "hue": "urges",
       "children": [
         {
-          "sensation": "slumped",
+          "sensation": "want-to-run",
           "children": [
             {
-              "feeling": "depressed"
+              "feeling": "scared"
             },
             {
-              "feeling": "inadequate"
+              "feeling": "threatened"
             },
             {
-              "feeling": "tired"
+              "feeling": "overwhelmed"
             }
           ]
         },
         {
-          "sensation": "open-posture",
+          "sensation": "want-to-hide",
           "children": [
             {
-              "feeling": "confident"
+              "feeling": "ashamed"
             },
             {
-              "feeling": "accepted"
+              "feeling": "exposed"
+            },
+            {
+              "feeling": "vulnerable"
             }
           ]
         },
         {
-          "sensation": "turning-away",
+          "sensation": "want-to-lash-out",
+          "children": [
+            {
+              "feeling": "furious"
+            },
+            {
+              "feeling": "hostile"
+            },
+            {
+              "feeling": "provoked"
+            }
+          ]
+        },
+        {
+          "sensation": "want-to-back-away",
           "children": [
             {
               "feeling": "repelled"
             },
             {
-              "feeling": "withdrawn"
+              "feeling": "horrified"
             },
             {
-              "feeling": "ashamed"
+              "feeling": "hesitant"
             }
           ]
         },
         {
-          "sensation": "shrinking",
+          "sensation": "want-to-fix-it",
           "children": [
             {
+              "feeling": "guilty"
+            },
+            {
+              "feeling": "worried"
+            },
+            {
+              "feeling": "loving"
+            }
+          ]
+        },
+        {
+          "sensation": "want-to-be-close",
+          "children": [
+            {
+              "feeling": "loving"
+            },
+            {
+              "feeling": "lonely"
+            },
+            {
               "feeling": "insecure"
+            }
+          ]
+        },
+        {
+          "sensation": "want-to-be-alone",
+          "children": [
+            {
+              "feeling": "withdrawn"
+            },
+            {
+              "feeling": "fragile"
+            },
+            {
+              "feeling": "overwhelmed"
+            }
+          ]
+        },
+        {
+          "sensation": "want-to-give-up",
+          "children": [
+            {
+              "feeling": "despair"
+            },
+            {
+              "feeling": "powerless"
+            },
+            {
+              "feeling": "inadequate"
+            }
+          ]
+        },
+        {
+          "sensation": "want-to-numb-out",
+          "children": [
+            {
+              "feeling": "overwhelmed"
             },
             {
               "feeling": "ashamed"
             },
             {
-              "feeling": "humiliated"
+              "feeling": "lonely"
+            }
+          ]
+        },
+        {
+          "sensation": "want-to-sleep",
+          "children": [
+            {
+              "feeling": "tired"
+            },
+            {
+              "feeling": "bored"
+            },
+            {
+              "feeling": "depressed"
+            }
+          ]
+        },
+        {
+          "sensation": "want-to-cry",
+          "children": [
+            {
+              "feeling": "frustrated"
+            },
+            {
+              "feeling": "overwhelmed"
+            },
+            {
+              "feeling": "thankful"
+            }
+          ]
+        },
+        {
+          "sensation": "want-to-get-even",
+          "children": [
+            {
+              "feeling": "bitter"
+            },
+            {
+              "feeling": "resentful"
+            },
+            {
+              "feeling": "betrayed"
+            }
+          ]
+        },
+        {
+          "sensation": "want-to-control-it",
+          "children": [
+            {
+              "feeling": "out-of-control"
+            },
+            {
+              "feeling": "anxious"
+            },
+            {
+              "feeling": "jealous"
             }
           ]
         }

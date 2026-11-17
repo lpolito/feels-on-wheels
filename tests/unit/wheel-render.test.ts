@@ -78,7 +78,7 @@ describe('label floors by ring (spec v2.1 §5)', () => {
   const body = buildLayout(bodyWheel);
   const bodyPalette: Palette = {
     ...palette,
-    hues: { ...palette.hues, head: '#7a243b', face: '#5c4221', chest: '#7d7413', breath: '#387078', stomach: '#0179a3', arms: '#546286', 'whole-body': '#7d3b75', posture: '#775064' },
+    hues: { ...palette.hues, head: '#7a243b', throat: '#387078', shoulders: '#5c4221', hands: '#546286', chest: '#7d7413', stomach: '#0179a3', 'whole-body': '#7d3b75', urges: '#775064' },
   };
   const bodyTable = buildFillTable(bodyPalette, 3, 'light');
   const phone: Viewport = { width: 393, height: 851, radius: 188.5 };

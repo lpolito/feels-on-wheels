@@ -111,23 +111,35 @@ describe('validation', () => {
 });
 
 const AREAS: [string, string[]][] = [
-  ['head', ['headache', 'foggy-head', 'tired-eyes', 'wide-eyes', 'raised-eyebrows', 'tearful']],
-  ['face', ['hot-face', 'blushing', 'scrunched-face', 'clenched-jaw', 'smiling']],
-  ['chest', ['racing-heart', 'tight-chest', 'hollow-chest', 'warm-chest']],
-  ['breath', ['shallow-breath', 'deep-breath', 'gasp', 'lump-in-throat']],
-  ['stomach', ['knot-in-stomach', 'nausea', 'butterflies']],
-  ['arms', ['tense-shoulders', 'heavy-limbs', 'clenched-fists', 'sweaty-palms', 'cold-hands', 'trembling']],
-  ['whole-body', ['restless', 'fidgety', 'frozen', 'low-energy', 'numbness', 'light-body', 'buzzing', 'relaxed-muscles']],
-  ['posture', ['slumped', 'open-posture', 'turning-away', 'shrinking']],
+  ['head', ['headache', 'foggy-head', 'lightheaded', 'hot-face', 'tight-jaw']],
+  ['throat', ['lump-in-throat', 'heart-in-throat', 'tight-throat', 'dry-mouth', 'gagging']],
+  ['shoulders', ['tense-shoulders', 'weight-on-shoulders']],
+  ['hands', ['tight-fists', 'shaky-hands', 'sweaty-palms', 'cold-hands']],
+  ['chest', ['racing-heart', 'tight-chest', 'short-breath', 'hollow-chest', 'heavy-heart', 'warm-chest']],
+  ['stomach', ['knot-in-stomach', 'sinking-feeling', 'butterflies', 'queasy']],
+  ['whole-body', ['restless', 'buzzing', 'chills', 'frozen', 'skin-crawling', 'heaviness', 'drained', 'numb-empty', 'light-body', 'relaxed', 'feeling-tall', 'weak-knees']],
+  ['urges', ['want-to-run', 'want-to-hide', 'want-to-lash-out', 'want-to-back-away', 'want-to-fix-it', 'want-to-be-close', 'want-to-be-alone', 'want-to-give-up', 'want-to-numb-out', 'want-to-sleep', 'want-to-cry', 'want-to-get-even', 'want-to-control-it']],
 ];
 
 describe('body wheel data', () => {
-  test('body wheel has 8 areas and 40 sensations, in spec §3.2 order', () => {
+  test('body wheel has 8 areas and 51 sensations, in spec §3 order', () => {
     expect(body.children.map((n) => nodeRef(n))).toEqual(AREAS.map(([id]) => ({ kind: 'area', id })));
     body.children.forEach((a, i) => {
       expect((a.children ?? []).map((n) => nodeRef(n)), AREAS[i]![0]).toEqual(AREAS[i]![1].map((id) => ({ kind: 'sensation', id })));
     });
-    expect(body.children.flatMap((a) => a.children ?? []).length).toBe(40);
+    expect(body.children.flatMap((a) => a.children ?? []).length).toBe(51);
+  });
+
+  test('body wheel has 144 feeling cells', () => {
+    expect(body.children.flatMap((a) => a.children ?? []).reduce((n, s) => n + (s.children ?? []).length, 0)).toBe(144);
+  });
+
+  test('area labels', () => {
+    expect(locale.areas).toEqual({ head: 'Head / face', throat: 'Throat / mouth', shoulders: 'Shoulders', hands: 'Hands', chest: 'Chest', stomach: 'Stomach', 'whole-body': 'Whole body', urges: 'Urges' });
+  });
+
+  test('the body wheel still starts on Whole body', () => {
+    expect(body.start).toBe('whole-body');
   });
 
   test('body wheel: every sensation has 2 or 3 feeling children, each a known feeling', () => {

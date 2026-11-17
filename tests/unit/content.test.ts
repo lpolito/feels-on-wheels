@@ -29,10 +29,10 @@ describe('v1 content', () => {
     }
   });
 
-  test('sensation vocabulary is 30–50 ids and every id is used at least once', () => {
+  test('sensation vocabulary is 40–60 ids and every id is used at least once', () => {
     const vocab = Object.keys(locale.sensations);
-    expect(vocab.length).toBeGreaterThanOrEqual(30);
-    expect(vocab.length).toBeLessThanOrEqual(50);
+    expect(vocab.length).toBeGreaterThanOrEqual(40);
+    expect(vocab.length).toBeLessThanOrEqual(60);
     const used = new Set(Object.values(feelings).flatMap((f) => f.sensations));
     for (const s of vocab) expect(used.has(s), `unused sensation ${s}`).toBe(true);
   });
@@ -43,8 +43,13 @@ describe('body wheel content', () => {
     expect(feelingsUnder('racing-heart')).toEqual(['scared', 'mad', 'excited']);
   });
 
-  test('smiling includes happy', () => {
-    expect(feelingsUnder('smiling')).toContain('happy');
+  test('want to cry leaves out sad', () => {
+    expect(feelingsUnder('want-to-cry')).toEqual(['frustrated', 'overwhelmed', 'thankful']);
+  });
+
+  test('warm / full chest keeps its id', () => {
+    expect(feelingsUnder('warm-chest')).toEqual(['loving', 'thankful', 'proud']);
+    expect(locale.sensations['warm-chest']).toBe('Warm / full chest');
   });
 });
 

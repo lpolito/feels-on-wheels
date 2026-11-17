@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { exploreLead, hint, idle, open, ring, selectedPath, settled, state, tapPath, title } from './helpers';
 
-const AREAS = /^(head|face|chest|breath|stomach|arms|whole-body|posture)$/;
+const AREAS = /^(head|throat|shoulders|hands|chest|stomach|whole-body|urges)$/;
 const wheelId = (page: Page) => page.evaluate(() => window.__fw.wheel());
 const switchButton = (page: Page, label: string) => page.locator('fw-wheel-switch button', { hasText: label });
 const hintLink = (page: Page) => page.locator('fw-hint .fw-hint-link');
@@ -166,7 +166,7 @@ test.describe('body wheel cards (desktop)', () => {
     await tapPath(page, 'chest');
     await expect(title(page)).toHaveText('Chest');
     await expect(headings(page)).toHaveText(['Narrow it down']);
-    expect(await rowsText(page)).toEqual(['Racing heart\u00A0›', 'Tight chest\u00A0›', 'Hollow feeling in your chest\u00A0›', 'Warmth in your chest\u00A0›']);
+    expect(await rowsText(page)).toEqual(['Racing heart\u00A0›', 'Tight chest\u00A0›', 'Short breath\u00A0›', 'Hollow chest\u00A0›', 'Heavy heart\u00A0›', 'Warm / full chest\u00A0›']);
 
     await tapPath(page, 'chest/racing-heart');
     await expect(title(page)).toHaveText('Racing heart');
@@ -406,7 +406,7 @@ test.describe('v2.2: the core feeling in the definition', () => {
   const coreLink = (page: Page) => page.locator('fw-card .fw-definition .fw-link');
 
   test('the core feeling link opens Happy on the feelings wheel; Enter works too', async ({ page }) => {
-    await open(page, '/body/head/wide-eyes/interested');
+    await open(page, '/body/whole-body/light-body/joyful');
     await expect(page.locator('fw-card .fw-definition')).toContainText('A happy feeling.');
     await coreLink(page).click();
     await idle(page);
@@ -426,7 +426,7 @@ test.describe('v2.2: the core feeling in the definition', () => {
   });
 
   test('axe: a body wheel definition with its core feeling link', async ({ page }) => {
-    await open(page, '/body/head/wide-eyes/interested');
+    await open(page, '/body/whole-body/light-body/joyful');
     await settled(page);
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });
@@ -435,18 +435,19 @@ test.describe('v2.2: the core feeling in the definition', () => {
 test.describe('v2.2: the card at 320 px', () => {
   test.beforeEach(({ isMobile }) => test.skip(Boolean(isMobile), 'sets its own viewport'));
   test.use({ viewport: { width: 320, height: 568 } });
-  const LONGEST = '/body/posture/shrinking/insecure';
+  const LONGEST = '/body/shoulders/weight-on-shoulders/overwhelmed';
 
-  test('crumbs stay on one line; only the parent shortens, and stays a focusable link', async ({ page }) => {
+  // Rework: the longest crumb now fits at 320 px, so nothing shortens; the crumbs still sit on one line and stay links.
+  test('crumbs stay on one line, fit, and stay focusable links', async ({ page }) => {
     await open(page, LONGEST);
     await settled(page);
     const links = page.locator('fw-card nav.fw-crumbs .fw-link');
     const middles = await page.locator('fw-card nav.fw-crumbs :is(.fw-link, .fw-sep)').evaluateAll((els) =>
       els.map((e) => { const r = e.getBoundingClientRect(); return r.top + r.height / 2; }));
     for (const m of middles) expect(Math.abs(m - middles[0]!)).toBeLessThanOrEqual(2);
-    expect(await links.evaluateAll((els) => els.map((e) => e.scrollWidth <= e.clientWidth + 1))).toEqual([true, false]);
-    await expect(links.last()).toHaveText('Urge to shrink or hide');
-    // Review Focus 4: the shortened crumb keeps its focus ring and still opens the parent.
+    expect(await links.evaluateAll((els) => els.map((e) => e.scrollWidth <= e.clientWidth + 1))).toEqual([true, true]);
+    await expect(links.last()).toHaveText('Weight on shoulders');
+    // Review Focus 4: the parent crumb keeps its focus ring and still opens the parent.
     // A key press first, so focusing it counts as keyboard focus (WebKit's Tab skips buttons).
     await page.keyboard.press('Shift');
     await links.last().focus();
@@ -454,7 +455,7 @@ test.describe('v2.2: the card at 320 px', () => {
     expect(await links.last().evaluate((e) => getComputedStyle(e).outlineStyle)).toBe('solid');
     await links.last().click();
     await idle(page);
-    await expect(title(page)).toHaveText('Urge to shrink or hide');
+    await expect(title(page)).toHaveText('Weight on shoulders');
   });
 
   test('"›" never sits alone on a line', async ({ page }) => {

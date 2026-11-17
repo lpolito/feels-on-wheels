@@ -59,7 +59,7 @@ describe('cardModel', () => {
     expect(m.hue).toBe('chest');
     expect(m.sections).toEqual([{
       kind: 'links', heading: 'Narrow it down', inline: false,
-      rows: ['racing-heart', 'tight-chest', 'hollow-chest', 'warm-chest'].map((s) => ({ index: bIdx(`chest/${s}`), label: locale.sensations[s], hue: 'chest', path: `chest/${s}` })),
+      rows: ['racing-heart', 'tight-chest', 'short-breath', 'hollow-chest', 'heavy-heart', 'warm-chest'].map((s) => ({ index: bIdx(`chest/${s}`), label: locale.sensations[s], hue: 'chest', path: `chest/${s}` })),
     }]);
   });
 
@@ -714,25 +714,23 @@ describe('the core feeling on the body wheel (spec v2.2 §4.4)', () => {
     if (s.kind !== 'text') throw new Error('expected text first');
     return s;
   };
-  const firstBodyPath = (id: string) =>
-    body.segments.find((s) => s.node.kind === 'feeling' && s.node.id === id)!.path;
 
   test('a body wheel feeling names its core feeling after the definition', () => {
-    expect(textSection(cardModel(body, feelings, bOpened('head/wide-eyes/interested'), jump))).toEqual({
-      kind: 'text', text: locale.feelings['interested']!.definition,
+    expect(textSection(cardModel(body, feelings, bOpened('whole-body/light-body/joyful'), jump))).toEqual({
+      kind: 'text', text: locale.feelings['joyful']!.definition,
       core: { before: 'A ', label: 'happy', after: ' feeling.', hue: 'happy', wheel: 'core', path: 'happy' },
     });
   });
 
   test('the article comes from the locale', () => {
-    const s = textSection(cardModel(body, feelings, bOpened('posture/shrinking/humiliated'), jump));
+    const s = textSection(cardModel(body, feelings, bOpened('head/hot-face/humiliated'), jump));
     expect(s.core).toMatchObject({ before: 'An ', label: 'angry', path: 'angry' });
   });
 
-  test('no core sentence on a core feeling, a feeling with no home, or the feelings wheel', () => {
-    expect(textSection(cardModel(body, feelings, bOpened(firstBodyPath('sad')), jump)).core).toBeUndefined();
+  // No core feeling is on the body wheel any more (rework spec §3), so there's no body wheel case for one.
+  test('no core sentence on a feeling with no home, or the feelings wheel', () => {
     const homeless = { wheel: 'core', home: new Map() };
-    expect(textSection(cardModel(body, feelings, bOpened('head/wide-eyes/interested'), homeless)).core).toBeUndefined();
+    expect(textSection(cardModel(body, feelings, bOpened('whole-body/light-body/joyful'), homeless)).core).toBeUndefined();
     expect(textSection(cardModel(layout, feelings, opened('happy/interested'))).core).toBeUndefined();
   });
 
@@ -743,9 +741,9 @@ describe('the core feeling on the body wheel (spec v2.2 §4.4)', () => {
     el.hrefFor = (w, p) => `/${w}/${p}`;
     const got: unknown[] = [];
     document.body.addEventListener('fw-wheel', (e) => got.push((e as CustomEvent).detail));
-    el.model = cardModel(body, feelings, bOpened('head/wide-eyes/interested'), jump);
+    el.model = cardModel(body, feelings, bOpened('whole-body/light-body/joyful'), jump);
     const p = el.querySelector('.fw-definition')!;
-    expect(p.textContent).toBe(`${locale.feelings['interested']!.definition} A happy feeling.`);
+    expect(p.textContent).toBe(`${locale.feelings['joyful']!.definition} A happy feeling.`);
     const link = p.querySelector<HTMLAnchorElement>('a.fw-link')!;
     expect(link.textContent).toBe('happy');
     expect(link.style.getPropertyValue('--ink')).toBe('#123456');

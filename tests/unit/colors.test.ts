@@ -21,7 +21,7 @@ const themes = [
 ] as const;
 
 const FEELING_HUES = ['angry', 'bad', 'disgusted', 'fearful', 'happy', 'sad', 'surprised'];
-const AREA_HUES = ['head', 'face', 'chest', 'breath', 'stomach', 'arms', 'whole-body', 'posture'];
+const AREA_HUES = ['head', 'throat', 'shoulders', 'hands', 'chest', 'stomach', 'whole-body', 'urges'];
 
 type Lab = [number, number, number];
 /** sRGB hex → OKLab (Björn Ottosson's matrices, as in colors.ts shade()). */

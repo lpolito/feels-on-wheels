@@ -30,6 +30,12 @@ describe('paths', () => {
   test('not found, with the word as typed (§7)', () => {
     expect(parsePath(table, '/happy/plaful').route).toEqual({ kind: 'notFound', wheel: 'core', word: 'plaful' });
     expect(parsePath(table, '/body/chest/tight-chst').route).toEqual({ kind: 'notFound', wheel: 'body', word: 'tight-chst' });
+  });
+
+  test('old body addresses are not found', () => {
+    for (const p of ['/body/posture', '/body/posture/shrinking/insecure', '/body/face/smiling', '/body/head/wide-eyes']) {
+      expect(parsePath(table, p).route, p).toMatchObject({ kind: 'notFound', wheel: 'body' });
+    }
     for (const p of ['/Happy', '/core/happy', '/en/happy', '/about/x', '/happy/', '//happy', '/happy//playful', '/happy%2Fplayful', '/%E0%A4%A', '/index.html'])
       expect(parsePath(table, p).route.kind, p).toBe('notFound');
     expect((parsePath(table, '/%E0%A4%A').route as { word: string }).word).toBe('%E0%A4%A');

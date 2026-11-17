@@ -14,7 +14,7 @@ describe('route meta (§6)', () => {
     expect(m('/body/chest/tight-chest/anxious').title).toBe('Anxious · Feels on Wheels');
     expect(m('/body')).toEqual({ title: 'Body sensations wheel · Feels on Wheels', description: locale.titles.wheelDescriptions['body'] });
     expect(m('/body/chest/tight-chest')).toEqual({ title: 'Tight chest · Feels on Wheels', description: 'Tight chest: the feelings it can come with, on the body sensations wheel.' });
-    expect(m('/body/chest').description).toBe(`${locale.areas['chest']}: what you might notice there, and the feelings it can come with.`);
+    expect(m('/body/chest').description).toBe(`${locale.areas['chest']}: what you might notice, and the feelings it can come with.`);
     expect(m('/about').title).toBe('About Feels on Wheels');
     expect(m('/nope')).toEqual({ title: 'Not found · Feels on Wheels', description: locale.titles.homeDescription });
   });

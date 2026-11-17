@@ -1,6 +1,6 @@
 # Goetz, Keltner and Simon-Thomas: compassion
 
-The research behind the body wheel's **Want to fix it** covering wanting to help someone you care about, in the [body wheel rework](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md).
+The research behind the body wheel's **Fix things** covering wanting to help someone you care about, in the [body wheel rework](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md).
 
 ## What it is
 

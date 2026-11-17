@@ -1,6 +1,6 @@
 # Mikulincer and Shaver: adult attachment
 
-The research behind **Insecure** under the body wheel's **Want to be close** in the [body wheel rework](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md).
+The research behind **Insecure** under the body wheel's **Be close** in the [body wheel rework](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md).
 
 ## What it is
 
@@ -14,4 +14,4 @@ Published research. We use the idea, not its text.
 
 ## Takeaways for this project
 
-1. **Wanting to be close isn't only love.** Attachment anxiety, one kind of insecurity, pulls people toward closeness and reassurance, which is why Want to be close offers Insecure as well as Loving and Lonely. The other kind, avoidance, pulls away instead.
+1. **Wanting to be close isn't only love.** Attachment anxiety, one kind of insecurity, pulls people toward closeness and reassurance, which is why Be close offers Insecure as well as Loving and Lonely. The other kind, avoidance, pulls away instead.

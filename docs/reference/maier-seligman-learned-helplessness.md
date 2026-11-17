@@ -1,6 +1,6 @@
 # Maier and Seligman: learned helplessness
 
-The research behind the body wheel's **Want to give up** in the [body wheel rework](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md).
+The research behind the body wheel's **Give up** in the [body wheel rework](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md).
 
 ## What it is
 

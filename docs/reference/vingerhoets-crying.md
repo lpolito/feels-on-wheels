@@ -1,6 +1,6 @@
 # Ad Vingerhoets: why people cry
 
-The research behind the body wheel's **Want to cry** in the [body wheel rework](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md): people cry from much more than sadness.
+The research behind the body wheel's **Cry** in the [body wheel rework](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md): people cry from much more than sadness.
 
 ## What it is
 

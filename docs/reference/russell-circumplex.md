@@ -14,4 +14,4 @@ Published research. We use the idea, not its text or figure.
 
 ## Takeaways for this project
 
-1. **Low arousal doesn't say how it feels.** A quiet body with not much going on can be contentment or numbness. Valence, not the body, tells them apart, which is why Flat offers Content and Accepted as well as Numb.
+1. **Low arousal doesn't say how it feels.** A quiet body with not much going on can be contentment or numbness. Valence, not the body, tells them apart, which is why Flat offers Content and Peaceful as well as Numb.

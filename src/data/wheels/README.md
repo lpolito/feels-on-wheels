@@ -86,7 +86,7 @@ An id follows the wheel's label (`hollow-chest`, `hide`). A sensation that stays
 ## How to check a change
 
 - Every feeling on the body wheel is a word on the feelings wheel, and each sensation has 2 or 3 feelings. The data tests check both.
-- Each core feeling stays reachable from several areas.
+- Each core feeling stays reachable from at least 2 areas, and the hard-to-tell ones from several. Happy has the fewest on purpose.
 - Every new or changed word says what backs it.
 - `docs/content-review.md` is rebuilt to match: each feeling's card line and the Body wheel section.
 

@@ -16,13 +16,13 @@ Notes on the outside sources this project draws on: what each one is, who made i
 | Paul Rozin, disgust | Body wheel rework: disgust in the mouth and throat | [rozin-disgust.md](rozin-disgust.md) |
 | Zoltán Kövecses, emotion metaphors | Body wheel rework: which idioms are sensations | [kovecses-emotion-metaphors.md](kovecses-emotion-metaphors.md) |
 | DSM-5, the body symptoms of panic, anxiety and depression | Body wheel rework: many of its sensations | [dsm-5-symptoms.md](dsm-5-symptoms.md) |
-| Ad Vingerhoets, why people cry | Body wheel rework: Want to cry | [vingerhoets-crying.md](vingerhoets-crying.md) |
+| Ad Vingerhoets, why people cry | Body wheel rework: Cry | [vingerhoets-crying.md](vingerhoets-crying.md) |
 | Eisenberger and others, rejection hurts | Body wheel rework: a sensation for rejection | [eisenberger-social-pain.md](eisenberger-social-pain.md) |
 | Duguid and Goncalo, power and felt height | Body wheel rework: Feeling tall | [duguid-goncalo-power-height.md](duguid-goncalo-power-height.md) |
-| Goetz, Keltner and Simon-Thomas, compassion | Body wheel rework: Want to fix it | [goetz-compassion.md](goetz-compassion.md) |
-| Mikulincer and Shaver, adult attachment | Body wheel rework: Want to be close | [mikulincer-shaver-attachment.md](mikulincer-shaver-attachment.md) |
-| Maier and Seligman, learned helplessness | Body wheel rework: Want to give up | [maier-seligman-learned-helplessness.md](maier-seligman-learned-helplessness.md) |
-| Leslie Greenberg, emotion-focused therapy | Body wheel rework: Hurt under Want to lash out | [greenberg-emotion-focused-therapy.md](greenberg-emotion-focused-therapy.md) |
+| Goetz, Keltner and Simon-Thomas, compassion | Body wheel rework: Fix things | [goetz-compassion.md](goetz-compassion.md) |
+| Mikulincer and Shaver, adult attachment | Body wheel rework: Be close | [mikulincer-shaver-attachment.md](mikulincer-shaver-attachment.md) |
+| Maier and Seligman, learned helplessness | Body wheel rework: Give up | [maier-seligman-learned-helplessness.md](maier-seligman-learned-helplessness.md) |
+| Leslie Greenberg, emotion-focused therapy | Body wheel rework: Hurt under Lash out | [greenberg-emotion-focused-therapy.md](greenberg-emotion-focused-therapy.md) |
 | James Russell, the circumplex model of affect | Body wheel rework: Flat | [russell-circumplex.md](russell-circumplex.md) |
 | Desbordes and others, equanimity | Body wheel rework: Flat | [desbordes-equanimity.md](desbordes-equanimity.md) |
 

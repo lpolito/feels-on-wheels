@@ -53,6 +53,7 @@ Lucas, 2026-11-16: happy feelings are "a lot of what people don't need help with
 - **Off the body wheel:** Light body, Relaxed, Feeling tall, and Warm / full chest.
 - **Still in "You might notice":** all four stay as sensations, with their labels, so Joyful, Proud, Peaceful, and the other happy feelings still have a real answer to what they feel like. The two lists don't have to match ("There's no reason to make this a hard and fast rule"). They don't link into the body wheel, as the spec already says.
 - **A test** checks that no sensation on the body wheel has only happy feelings.
+- **Happy is now reachable from 2 areas, not 3:** Whole body (Flat, Chills, Weak knees) and Urges (Fix things, Be close, Cry). Warm / full chest was its only path from Chest. The other core feelings are unchanged: Fearful 8, Angry 7, Sad 7, Surprised 6, Bad 5, Disgusted 5.
 
 ## Flat
 

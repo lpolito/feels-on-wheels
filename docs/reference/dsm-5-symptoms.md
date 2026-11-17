@@ -18,5 +18,5 @@ A copyrighted clinical manual. We use it to check that a sensation is a recogniz
 
 1. **Fear's sensations are well documented.** A racing heart, shaky hands, a tight throat, short breath, lightheadedness, and chills are all recognized body signs of fear, not just figures of speech.
 2. **Numbness in a panic attack is physical** (numbness or tingling, often in the hands), not the emotional numbness of Numb / empty, which is backed by depression's "empty" instead.
-3. **Depression's symptoms back the low-energy sensations:** Drained, Foggy head, and Want to sleep.
+3. **Depression's symptoms back the low-energy sensations:** Drained, Foggy head, and Sleep.
 4. **The same list covers many feelings.** These are signs of strong arousal, which is why the body wheel offers more than fear for several of them.

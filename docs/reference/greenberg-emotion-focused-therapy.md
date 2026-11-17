@@ -1,6 +1,6 @@
 # Leslie Greenberg: emotion-focused therapy
 
-The research behind **Hurt** under the body wheel's **Want to lash out**, a change made after the [body wheel rework spec](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) was approved (see its [changes](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md)).
+The research behind **Hurt** under the body wheel's **Lash out**, a change made after the [body wheel rework spec](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) was approved (see its [changes](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md)).
 
 ## What it is
 
@@ -15,5 +15,5 @@ Published research. We use the idea, not its text.
 
 ## Takeaways for this project
 
-1. **The pull to lash out can come from hurt.** Offering Hurt next to Furious and Provoked under Want to lash out gives a path to what's often under anger, without claiming it's what's under anyone's anger in particular.
+1. **The pull to lash out can come from hurt.** Offering Hurt next to Furious and Provoked under Lash out gives a path to what's often under anger, without claiming it's what's under anyone's anger in particular.
 2. **Anger isn't always covering something,** so the angry feelings stay on the same urge.

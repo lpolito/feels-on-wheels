@@ -124,6 +124,17 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     expect(rec.fills[outer.index]).not.toBe(bodyTable.fill(outer.hue, 2, true));
   });
 
+  test('the drawn wheel says "The urge to…" where everything else says "Urges"', () => {
+    const { canvas, ctx, rec } = fakeCanvas();
+    const r = createWheelRenderer(canvas, body, ctx);
+    r.setColors(bodyTable, bodyPalette);
+    r.resize(1000, 1000, 1);
+    r.draw(frame(desk));
+    expect(rec.texts).toContain('The urge to…');
+    expect(rec.texts).not.toContain('Urges');
+    expect(nodeLabel({ kind: 'area', id: 'urges' })).toBe('Urges');
+  });
+
   test('whole-wheel view keeps 8 px for every ring, and labelsByRing adds up', () => {
     const tiny: Viewport = { width: 300, height: 300, radius: 142 };
     const { canvas, ctx, rec } = fakeCanvas();

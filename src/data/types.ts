@@ -44,6 +44,8 @@ export interface Locale {
   /** How a feeling's card lists a sensation under "You might notice" ("Wanting to hide"): body wheel rework changes. */
   sensationPhrases: Record<SensationId, string>;
   areas: Record<AreaId, string>;
+  /** Where the drawn wheel names an area differently from everywhere else ("The urge to…" for Urges); most areas have none. */
+  areaWheelLabels: Record<AreaId, string>;
   wheels: Record<string, WheelText>;
   titles: Titles;
 }

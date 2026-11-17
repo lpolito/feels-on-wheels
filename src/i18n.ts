@@ -58,6 +58,11 @@ export function nodeLabel(n: NodeRef): string {
   return active?.areas[n.id] ?? missing(`areas.${n.id}`);
 }
 
+/** What the drawn wheel writes in a cell: its label, except where an area has a wheel-only one ("The urge to…"). */
+export function wheelCellLabel(n: NodeRef): string {
+  return (n.kind === 'area' ? active?.areaWheelLabels[n.id] : undefined) ?? nodeLabel(n);
+}
+
 /** A wheel's switch label, name and start message (spec v2 §4.1). */
 export function wheelText(id: string): WheelText {
   const w = active?.wheels[id];

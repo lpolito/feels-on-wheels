@@ -86,3 +86,7 @@ Lucas, 2026-11-16: "Want to" read oddly on the wheel, and "You might notice: fro
 This replaces §1's and §2's "Want to …" labels; spec For review question 8 left the form open until now. Urge ids follow the new labels: `run`, `hide`, `lash-out`, `back-away`, `fix-things`, `be-close`, `be-alone`, `give-up`, `numb-out`, `sleep`, `cry`, `control-things`. Lucas chose shared ids over separate card text because they keep each string written once, and keep it possible to see whether cards and the wheel agree.
 
 Page titles and link previews still use the wheel's label ("Hide · Feels on Wheels").
+
+## The wheel says "The urge to…"
+
+Lucas, 2026-11-16: the drawn wheel names the Urges area "The urge to…" (with a real ellipsis character, which takes less room), so the ring reads "The urge to… run, hide, cry". It fits the area's cell on a phone and on desktop. Everywhere else keeps "Urges": breadcrumbs, cards, page titles, link previews, and the tree a screen reader reads. The locale's `areaWheelLabels` holds the wheel-only label; most areas have none.

@@ -1,13 +1,13 @@
 import feelingsJson from './feelings.json';
 // Named imports only, so en.json's `page` strings (for the HTML pages, built at build time) stay out of the app's JS.
-import { meta, ui, feelings as feelingStrings, sensations, sensationPhrases, areas, wheels as wheelStrings, titles } from './locales/en.json';
+import { meta, ui, feelings as feelingStrings, sensations, sensationPhrases, areas, areaWheelLabels, wheels as wheelStrings, titles } from './locales/en.json';
 import { wheelSources } from './wheels/index';
 import { KINDS, nodeRef } from './node';
 import type { FeelingsDict, Locale, NodeRef, Wheel, WheelNode } from './types';
 
 export { nodeRef };
 
-const en = { meta, ui, feelings: feelingStrings, sensations, sensationPhrases, areas, wheels: wheelStrings, titles };
+const en = { meta, ui, feelings: feelingStrings, sensations, sensationPhrases, areas, areaWheelLabels, wheels: wheelStrings, titles };
 
 export class DataError extends Error {
   override name = 'DataError';
@@ -65,11 +65,14 @@ function refsOf(nodes: WheelNode[], out: NodeRef[] = []): NodeRef[] {
 }
 
 export function validateLocale(l: unknown, dict: FeelingsDict, wheels: Wheel[]): Locale {
-  if (!isObj(l) || !isObj(l.meta) || !isObj(l.ui) || !isObj(l.feelings) || !isObj(l.sensations) || !isObj(l.sensationPhrases) || !isObj(l.areas) || !isObj(l.wheels) || !isObj(l.titles)) {
-    fail('locale: expected { meta, ui, feelings, sensations, sensationPhrases, areas, wheels, titles }');
+  if (!isObj(l) || !isObj(l.meta) || !isObj(l.ui) || !isObj(l.feelings) || !isObj(l.sensations) || !isObj(l.sensationPhrases) || !isObj(l.areas) || !isObj(l.areaWheelLabels) || !isObj(l.wheels) || !isObj(l.titles)) {
+    fail('locale: expected { meta, ui, feelings, sensations, sensationPhrases, areas, areaWheelLabels, wheels, titles }');
   }
   const loc = l as unknown as Locale;
   const lang = loc.meta.lang;
+  for (const a of Object.keys(loc.areaWheelLabels)) {
+    if (!loc.areas[a]) fail(`locale ${lang}: wheel label for unknown area "${a}"`);
+  }
   for (const [id, f] of Object.entries(dict)) {
     if (!loc.feelings[id]?.label) fail(`locale ${lang}: missing label for "${id}"`);
     for (const s of f.sensations) {

@@ -665,6 +665,9 @@
     "whole-body": "Whole body",
     "urges": "Urges"
   },
+  "areaWheelLabels": {
+    "urges": "The urge to…"
+  },
   "wheels": {
     "core": {
       "switch": "Feelings",

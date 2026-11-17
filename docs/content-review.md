@@ -35,7 +35,7 @@ One entry per word. A word in two places on the wheel is listed once, where it f
     - **Excluded**: Feeling left out, as if you are on the outside of a group.  
       _A hollow feeling in your chest · A lump in your throat · Wanting to be close_
     - **Persecuted**: Feeling that you are being targeted or treated badly on purpose.  
-      _A racing heart · Tense shoulders · A tight jaw · Wanting to run_
+      _A racing heart · Tense shoulders · Clenched teeth · Wanting to run_
   - **Threatened**: Sensing that someone or something might harm you or what you care about.  
     _Wanting to run · A racing heart · Tense shoulders · Your heart in your throat_
     - **Nervous**: Jittery and on edge about something coming up.  
@@ -46,27 +46,27 @@ One entry per word. A word in two places on the wheel is listed once, where it f
 ## Angry
 
 - **Angry**: A strong feeling that something is wrong or unfair, with an urge to push back.  
-  _A hot face · A tight jaw · Tight fists · A racing heart_
+  _A hot face · Clenched teeth · Tight fists · A racing heart_
   - **Let Down**: Disappointed because someone didn't do what you hoped or expected.  
     _A sinking feeling · A heavy heart · A hollow feeling in your chest_
     - **Betrayed**: Hurt and angry because someone you trusted broke that trust.  
       _A knot in your stomach · Wanting to lash out · A hollow feeling in your chest · A lump in your throat_
     - **Resentful**: Holding on to anger about being treated unfairly in the past.  
-      _A tight jaw · A tight chest · Wanting to lash out · Tense shoulders_
+      _Clenched teeth · A tight chest · Wanting to lash out · Tense shoulders_
   - **Humiliated**: Deeply embarrassed and made to feel small, often in front of others.  
     _A hot face · Wanting to hide · A sinking feeling_
     - **Disrespected**: Feeling that someone treated you as if you didn't matter.  
-      _A hot face · A tight jaw · A tight chest_
+      _A hot face · Clenched teeth · A tight chest_
     - **Ridiculed**: Feeling mocked or laughed at.  
       _A hot face · Wanting to hide_
   - **Bitter**: Lasting anger and hurt about something that felt unfair.  
-    _Wanting to lash out · A tight jaw · A tight chest · A knot in your stomach_
+    _Wanting to lash out · Clenched teeth · A tight chest · A knot in your stomach_
     - **Indignant**: Angry about something you see as unjust or insulting.  
-      _A hot face · Tense shoulders · A tight jaw_
+      _A hot face · Tense shoulders · Clenched teeth_
     - **Violated**: Feeling that a boundary was crossed or something of yours was taken without permission.  
       _Your skin crawling · A knot in your stomach · Feeling queasy · Feeling frozen_
   - **Mad**: Plainly angry and fired up.  
-    _A tight jaw · Tight fists · A racing heart · A hot face_
+    _Clenched teeth · Tight fists · A racing heart · A hot face_
     - **Furious**: Extremely angry, close to losing control.  
       _Shaky hands · Wanting to lash out · A hot face · Tight fists_
     - **Jealous**: Afraid of losing someone or something to another person, or wanting what they have.  
@@ -74,36 +74,36 @@ One entry per word. A word in two places on the wheel is listed once, where it f
   - **Aggressive**: Ready to attack or confront, in words or actions.  
     _Tight fists · Tense shoulders · Wanting to lash out_
     - **Provoked**: Stirred up to anger by something someone said or did.  
-      _Wanting to lash out · A hot face · A tight jaw · A racing heart_
+      _Wanting to lash out · A hot face · Clenched teeth · A racing heart_
     - **Hostile**: Unfriendly and ready to fight or oppose.  
-      _Wanting to lash out · A tight jaw · Tense shoulders · Tight fists_
+      _Wanting to lash out · Clenched teeth · Tense shoulders · Tight fists_
   - **Frustrated**: Upset because something keeps getting in your way.  
     _A headache · Tense shoulders · Tight fists · Wanting to cry_
     - **Infuriated**: Made extremely angry, usually by something that keeps happening.  
       _A hot face · Tight fists · A racing heart_
     - **Annoyed**: Mildly irritated by something that bothers you.  
-      _Tense shoulders · Feeling restless · A tight jaw_
+      _Tense shoulders · Feeling restless · Clenched teeth_
   - **Distant**: Pulled back from others, keeping feelings at arm's length.  
     _Feeling numb or empty · Feeling drained · Wanting to be alone_
     - **Withdrawn**: Pulling into yourself and avoiding contact with others.  
       _Wanting to be alone · Wanting to hide · Feeling drained_
     - **Numb**: Feeling very little, as if your emotions have been switched off.  
-      _Feeling flat · Feeling numb or empty · Heaviness · A foggy head_
+      _Not feeling much · Feeling numb or empty · Heaviness · A foggy head_
   - **Critical**: Quick to notice faults and judge them.  
-    _A tight jaw · Tense shoulders_
+    _Clenched teeth · Tense shoulders_
     - **Skeptical**: Doubting whether something is true or can be trusted.  
       _Tense shoulders · Wanting to back away_
     - **Dismissive**: Brushing something off as not worth your attention.  
-      _Wanting to back away · Feeling flat_
+      _Wanting to back away · Not feeling much_
 
 ## Disgusted
 
 - **Disgusted**: Strong dislike of something that feels gross, wrong, or offensive.  
-  _Feeling queasy · Gagging · Wanting to back away_
+  _Feeling queasy · Wanting to back away_
   - **Disapproving**: Feeling that something is wrong or not okay.  
-    _A tight jaw · Wanting to back away · Tense shoulders_
+    _Clenched teeth · Wanting to back away · Tense shoulders_
     - **Judgmental**: Forming harsh opinions about someone or something.  
-      _A tight jaw · Tense shoulders · Wanting to back away_
+      _Clenched teeth · Tense shoulders · Wanting to back away_
     - **Embarrassed**: Self-conscious and uncomfortable after something awkward or revealing.  
       _A hot face · Wanting to hide_
   - **Disappointed**: Sad that something didn't turn out the way you hoped.  
@@ -111,15 +111,15 @@ One entry per word. A word in two places on the wheel is listed once, where it f
     - **Appalled**: Shocked and disgusted by something you think is very wrong.  
       _Feeling queasy · Wanting to back away · Feeling frozen_
     - **Revolted**: Strongly repelled, with an urge to get away.  
-      _Gagging · Feeling queasy · Wanting to back away_
+      _Feeling queasy · Wanting to back away_
   - **Awful**: Feeling very bad, sick, or unpleasant inside.  
     _Feeling queasy · A knot in your stomach · Heaviness_
     - **Nauseated**: Sick to your stomach, as if you might throw up.  
-      _Feeling queasy · Gagging · Cold hands_
+      _Feeling queasy · Cold hands_
     - **Detestable**: Feeling that something, or you yourself, is hateful or deeply unpleasant.  
       _Feeling queasy · Wanting to back away · A knot in your stomach_
   - **Repelled**: Pushed away by something you find unpleasant.  
-    _Feeling queasy · Your skin crawling · Gagging · Wanting to back away_
+    _Feeling queasy · Your skin crawling · Wanting to back away_
     - **Horrified**: Filled with shock and fear at something terrible.  
       _Your skin crawling · Wanting to back away · Your heart in your throat · Feeling frozen_
     - **Hesitant**: Holding back because you are unsure or uneasy.  
@@ -180,7 +180,7 @@ One entry per word. A word in two places on the wheel is listed once, where it f
     - **Sensitive**: Easily moved, and keenly aware of your own feelings and other people's.  
       _Warmth or fullness in your chest · Wanting to cry · A hot face_
   - **Peaceful**: Calm and settled, without inner conflict.  
-    _Feeling flat · Feeling relaxed · Feeling light_
+    _Not feeling much · Feeling relaxed · Feeling light_
     - **Thankful**: Glad and appreciative for something you received.  
       _Warmth or fullness in your chest · Wanting to cry · Feeling relaxed_
     - **Loving**: Feeling deep care and affection for someone.  
@@ -210,7 +210,7 @@ One entry per word. A word in two places on the wheel is listed once, where it f
     - **Curious**: Drawn to explore something new or unknown.  
       _A buzzing feeling · Feeling restless_
   - **Content**: Satisfied with how things are right now.  
-    _Feeling flat · Feeling relaxed · Feeling light_
+    _Not feeling much · Feeling relaxed · Feeling light_
     - **Joyful**: Full of great happiness and delight.  
       _Feeling light · A buzzing feeling · Warmth or fullness in your chest_
     - **Free**: Unburdened and able to be yourself.  
@@ -262,7 +262,7 @@ One entry per word. A word in two places on the wheel is listed once, where it f
     - **Sleepy**: Ready for sleep, with heavy eyes and a slow body.  
       _Feeling drained · Heaviness · Wanting to sleep_
   - **Stressed**: Under pressure and stretched thin.  
-    _A headache · A tight jaw · Tense shoulders · Short, shallow breaths_
+    _A headache · Clenched teeth · Tense shoulders · Short, shallow breaths_
     - **Out of Control**: Feeling that things are happening faster than you can manage.  
       _Wanting to control things · A racing heart · Short, shallow breaths · Feeling restless_
     - **Overwhelmed**: see above
@@ -275,9 +275,9 @@ One entry per word. A word in two places on the wheel is listed once, where it f
   - **Bored**: Uninterested and wanting something to happen.  
     _Feeling restless · Feeling drained · Wanting to sleep_
     - **Apathetic**: Not caring or feeling much about anything.  
-      _Feeling drained · Feeling numb or empty · Feeling flat_
+      _Feeling drained · Feeling numb or empty · Not feeling much_
     - **Indifferent**: Neither for nor against something, without strong feelings either way.  
-      _Feeling numb or empty · Feeling flat · Feeling drained_
+      _Feeling numb or empty · Not feeling much · Feeling drained_
 
 
 ## Body wheel
@@ -290,7 +290,6 @@ The body sensations wheel after the [body wheel rework](superpowers/specs/2026-1
 - **Foggy head**: Confused, Tired, Depressed
 - **Lightheaded**: Shocked, Overwhelmed, Nervous
 - **Hot face**: Embarrassed, Ashamed, Humiliated
-- **Tight jaw**: Mad, Resentful, Stressed
 
 ### Throat / mouth
 
@@ -298,7 +297,7 @@ The body sensations wheel after the [body wheel rework](superpowers/specs/2026-1
 - **Heart in throat**: Scared, Nervous, Startled
 - **Tight throat**: Anxious, Frightened, Repelled
 - **Dry mouth**: Nervous, Scared
-- **Gagging**: Revolted, Repelled
+- **Clenched teeth**: Mad, Resentful, Stressed
 
 ### Shoulders
 
@@ -337,7 +336,7 @@ The body sensations wheel after the [body wheel rework](superpowers/specs/2026-1
 - **Heaviness**: Depressed, Weak, Helpless
 - **Drained**: Tired, Apathetic
 - **Numb / empty**: Numb, Empty, Shocked
-- **Flat**: Content, Peaceful, Numb
+- **Nothing much**: Content, Peaceful, Apathetic
 - **Weak knees**: Scared, Weak, Aroused
 
 ### Urges (on the wheel: "The urge to…")
@@ -345,11 +344,11 @@ The body sensations wheel after the [body wheel rework](superpowers/specs/2026-1
 - **Run**: Scared, Threatened, Overwhelmed
 - **Hide**: Ashamed, Exposed, Vulnerable
 - **Lash out**: Furious, Provoked, Hurt
-- **Back away**: Repelled, Disapproving
+- **Back away**: Revolted, Disapproving
 - **Fix things**: Guilty, Worried, Loving
 - **Be close**: Loving, Lonely, Insecure
 - **Be alone**: Withdrawn, Fragile, Overwhelmed
-- **Give up**: Despair, Inadequate
+- **Give up**: Despair, Inadequate, Helpless
 - **Numb out**: Overwhelmed, Ashamed, Lonely
 - **Sleep**: Tired, Bored, Depressed
 - **Cry**: Frustrated, Overwhelmed, Thankful

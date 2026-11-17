@@ -16,4 +16,4 @@ Published research. We use the idea, not its text or figures.
 ## Takeaways for this project
 
 1. **A sensation is sensed from inside.** Interoception (and proprioception, the sense of where your body is and how it's held) is what you'd still notice with your eyes closed and nobody watching. That's where the body wheel's test comes from; the wording of the test is ours.
-2. **What others see isn't interoception.** A smile or raised eyebrows is an expression seen from outside, so it fails the test, while the felt side of it (a hot face, a tight jaw) passes.
+2. **What others see isn't interoception.** A smile or raised eyebrows is an expression seen from outside, so it fails the test, while the felt side of it (a hot face, clenched teeth) passes.

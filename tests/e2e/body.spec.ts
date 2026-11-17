@@ -406,7 +406,7 @@ test.describe('v2.2: the core feeling in the definition', () => {
   const coreLink = (page: Page) => page.locator('fw-card .fw-definition .fw-link');
 
   test('the core feeling link opens Happy on the feelings wheel; Enter works too', async ({ page }) => {
-    await open(page, '/body/whole-body/flat/content');
+    await open(page, '/body/whole-body/nothing-much/content');
     await expect(page.locator('fw-card .fw-definition')).toContainText('A happy feeling.');
     await coreLink(page).click();
     await idle(page);
@@ -426,7 +426,7 @@ test.describe('v2.2: the core feeling in the definition', () => {
   });
 
   test('axe: a body wheel definition with its core feeling link', async ({ page }) => {
-    await open(page, '/body/whole-body/flat/content');
+    await open(page, '/body/whole-body/nothing-much/content');
     await settled(page);
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });

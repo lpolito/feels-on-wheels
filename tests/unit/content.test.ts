@@ -58,9 +58,10 @@ describe('body wheel content', () => {
     expect(feelingsUnder('cry')).toEqual(['frustrated', 'overwhelmed', 'thankful']);
   });
 
-  test('flat could be content, peaceful, or numb', () => {
-    expect(feelingsUnder('flat')).toEqual(['content', 'peaceful', 'numb']);
-    expect(locale.sensations['flat']).toBe('Flat');
+  test('nothing much could be content, peaceful, or apathetic', () => {
+    expect(feelingsUnder('nothing-much')).toEqual(['content', 'peaceful', 'apathetic']);
+    expect(locale.sensations['nothing-much']).toBe('Nothing much');
+    expect(locale.sensationPhrases['nothing-much']).toBe('Not feeling much');
   });
 
   test('the happy-only sensations stay for You might notice, off the body wheel', () => {

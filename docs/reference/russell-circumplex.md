@@ -1,6 +1,6 @@
 # James Russell: the circumplex model of affect
 
-The research behind the body wheel's **Flat**, a change made after the [body wheel rework spec](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) was approved (see its [changes](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md)): a quiet, low-energy feeling can be pleasant or unpleasant.
+The research behind the body wheel's **Nothing much**, a change made after the [body wheel rework spec](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) was approved (see its [changes](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md)): a quiet, low-energy feeling can be pleasant or unpleasant.
 
 ## What it is
 
@@ -14,4 +14,4 @@ Published research. We use the idea, not its text or figure.
 
 ## Takeaways for this project
 
-1. **Low arousal doesn't say how it feels.** A quiet body with not much going on can be contentment or numbness. Valence, not the body, tells them apart, which is why Flat offers Content and Peaceful as well as Numb.
+1. **Low arousal doesn't say how it feels.** A quiet body with not much going on can be contentment or not caring. Valence, not the body, tells them apart, which is why Nothing much offers Content and Peaceful as well as Apathetic.

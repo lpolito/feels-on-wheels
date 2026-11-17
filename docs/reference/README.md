@@ -23,8 +23,8 @@ Notes on the outside sources this project draws on: what each one is, who made i
 | Mikulincer and Shaver, adult attachment | Body wheel rework: Be close | [mikulincer-shaver-attachment.md](mikulincer-shaver-attachment.md) |
 | Maier and Seligman, learned helplessness | Body wheel rework: Give up | [maier-seligman-learned-helplessness.md](maier-seligman-learned-helplessness.md) |
 | Leslie Greenberg, emotion-focused therapy | Body wheel rework: Hurt under Lash out | [greenberg-emotion-focused-therapy.md](greenberg-emotion-focused-therapy.md) |
-| James Russell, the circumplex model of affect | Body wheel rework: Flat | [russell-circumplex.md](russell-circumplex.md) |
-| Desbordes and others, equanimity | Body wheel rework: Flat | [desbordes-equanimity.md](desbordes-equanimity.md) |
+| James Russell, the circumplex model of affect | Body wheel rework: Nothing much | [russell-circumplex.md](russell-circumplex.md) |
+| Desbordes and others, equanimity | Body wheel rework: Nothing much | [desbordes-equanimity.md](desbordes-equanimity.md) |
 
 ## Adding a source
 

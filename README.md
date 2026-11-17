@@ -25,7 +25,7 @@ The body sensations wheel starts from what you notice in your body and leads to 
 
 - **Places you could point to, plus Urges.** The areas run head to toe in a body scan's order (Head / face, Throat / mouth, Shoulders, Hands, Chest, Stomach), then Whole body for what you feel all over. The last area, Urges, holds what you feel pulled to do: run, hide, lash out, numb out. Many people notice the pull before they can name the feeling.
 - **A sensation is something you'd notice with your eyes closed and nobody watching.** What others see, like a smile or raised eyebrows, isn't on the wheel.
-- **One sensation, several feelings.** The same body signal can mean different things: a racing heart can be scared or excited, and feeling flat can be numb or content. The wheel offers both readings where they're real, and offers happy feelings only as the other reading of a sensation, since few people need help knowing they're happy.
+- **One sensation, several feelings.** The same body signal can mean different things: a racing heart can be scared or excited, and not feeling much can be content or apathetic. The wheel offers both readings where they're real, and offers happy feelings only as the other reading of a sensation, since few people need help knowing they're happy.
 
 ### What the research found
 
@@ -35,7 +35,7 @@ The body sensations wheel starts from what you notice in your body and leads to 
 - **Urges are part of an emotion,** separate from its sensations: fear pulls you to escape, anger to fight, disgust to reject, guilt to make it right. ([Frijda](docs/reference/frijda-action-tendencies.md), [DBT](docs/reference/linehan-dbt-model-of-emotions.md))
 - **Many urges are a way to stop feeling something,** like numbing out, and noticing the pull without acting on it is a skill taught in recovery. ([Hayes and others](docs/reference/hayes-experiential-avoidance.md), [Marlatt](docs/reference/marlatt-urge-surfing.md))
 - **Particular paths:**
-  - disgust is felt as nausea and gagging ([Rozin](docs/reference/rozin-disgust.md));
+  - disgust is felt as nausea ([Rozin](docs/reference/rozin-disgust.md));
   - giving up follows what you can't control ([Maier and Seligman](docs/reference/maier-seligman-learned-helplessness.md));
   - people cry from frustration and being moved, not just sadness ([Vingerhoets](docs/reference/vingerhoets-crying.md));
   - rejection registers like pain ([Eisenberger and others](docs/reference/eisenberger-social-pain.md));
@@ -48,7 +48,7 @@ The body sensations wheel starts from what you notice in your body and leads to 
 ### What isn't research
 
 - **Common speech:** some words rest mainly on common speech for something people feel, such as Butterflies, Buzzing, Sinking feeling, Heavy heart, and Skin crawling.
-- **Lucas's own experience:** a few also rest on Lucas's experience: Heart in throat, Weight on shoulders, Numb / empty, and Flat.
+- **Lucas's own experience:** a few also rest on Lucas's experience: Heart in throat, Weight on shoulders, Numb / empty, and Nothing much.
 
 What backs each word is in the [design spec](docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md#3-the-wheel) and its [changes](docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md).
 

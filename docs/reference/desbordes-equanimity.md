@@ -1,6 +1,6 @@
 # Desbordes and others: equanimity isn't indifference
 
-The research behind the body wheel's **Flat**, a change made after the [body wheel rework spec](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) was approved (see its [changes](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md)): calm acceptance and numbness can be hard to tell apart.
+The research behind the body wheel's **Nothing much**, a change made after the [body wheel rework spec](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) was approved (see its [changes](../superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md)): calm acceptance and numbness can be hard to tell apart.
 
 ## What it is
 
@@ -14,5 +14,5 @@ Published research. We use the idea, not its text.
 
 ## Takeaways for this project
 
-1. **Numb and content can feel alike from the inside,** which is exactly what Flat offers: one sensation, two readings.
-2. **Whether you still care is the tell.** A definition or a card for these words could someday say so; that's for the opinionated feelings wheel.
+1. **Not caring and being content can feel alike from the inside,** which is exactly what Nothing much offers: one sensation, two readings (Content and Peaceful, or Apathetic).
+2. **Whether you still care is the tell,** and it's how the wheel defines Apathetic ("Not caring or feeling much about anything"). A definition or a card for these words could someday say so; that's for the opinionated feelings wheel.

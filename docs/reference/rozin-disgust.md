@@ -16,4 +16,4 @@ Published research. We use the idea, not its text.
 ## Takeaways for this project
 
 1. **Disgust is felt in the mouth, throat and stomach,** which agrees with [Nummenmaa's bodily maps](nummenmaa-bodily-maps.md) and puts disgust's sensations in Throat / mouth and Stomach.
-2. **Gagging and nausea are disgust's own sensations,** felt from inside, which is why the body wheel offers Gagging and Queasy for it.
+2. **Nausea is disgust's own sensation,** felt from inside, which is why the body wheel offers Queasy for it. Gagging is closer to the act of rejecting something than to a feeling you'd notice, and someone gagging usually knows why, so the body wheel leaves it out.

@@ -120,27 +120,27 @@ describe('validation', () => {
 });
 
 const AREAS: [string, string[]][] = [
-  ['head', ['headache', 'foggy-head', 'lightheaded', 'hot-face', 'tight-jaw']],
-  ['throat', ['lump-in-throat', 'heart-in-throat', 'tight-throat', 'dry-mouth', 'gagging']],
+  ['head', ['headache', 'foggy-head', 'lightheaded', 'hot-face']],
+  ['throat', ['lump-in-throat', 'heart-in-throat', 'tight-throat', 'dry-mouth', 'clenched-teeth']],
   ['shoulders', ['tense-shoulders', 'weight-on-shoulders']],
   ['hands', ['tight-fists', 'shaky-hands', 'sweaty-palms', 'cold-hands']],
   ['chest', ['racing-heart', 'tight-chest', 'short-breath', 'hollow-chest', 'heavy-heart']],
   ['stomach', ['knot-in-stomach', 'sinking-feeling', 'butterflies', 'queasy']],
-  ['whole-body', ['restless', 'buzzing', 'chills', 'frozen', 'skin-crawling', 'heaviness', 'drained', 'numb-empty', 'flat', 'weak-knees']],
+  ['whole-body', ['restless', 'buzzing', 'chills', 'frozen', 'skin-crawling', 'heaviness', 'drained', 'numb-empty', 'nothing-much', 'weak-knees']],
   ['urges', ['run', 'hide', 'lash-out', 'back-away', 'fix-things', 'be-close', 'be-alone', 'give-up', 'numb-out', 'sleep', 'cry', 'control-things']],
 ];
 
 describe('body wheel data', () => {
-  test('body wheel has 8 areas and 47 sensations, in spec §3 order (less the changes file)', () => {
+  test('body wheel has 8 areas and 46 sensations, in spec §3 order (less the changes file)', () => {
     expect(body.children.map((n) => nodeRef(n))).toEqual(AREAS.map(([id]) => ({ kind: 'area', id })));
     body.children.forEach((a, i) => {
       expect((a.children ?? []).map((n) => nodeRef(n)), AREAS[i]![0]).toEqual(AREAS[i]![1].map((id) => ({ kind: 'sensation', id })));
     });
-    expect(body.children.flatMap((a) => a.children ?? []).length).toBe(47);
+    expect(body.children.flatMap((a) => a.children ?? []).length).toBe(46);
   });
 
-  test('body wheel has 127 feeling cells', () => {
-    expect(body.children.flatMap((a) => a.children ?? []).reduce((n, s) => n + (s.children ?? []).length, 0)).toBe(127);
+  test('body wheel has 126 feeling cells', () => {
+    expect(body.children.flatMap((a) => a.children ?? []).reduce((n, s) => n + (s.children ?? []).length, 0)).toBe(126);
   });
 
   test('area labels', () => {

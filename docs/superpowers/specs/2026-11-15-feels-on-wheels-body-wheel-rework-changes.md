@@ -117,3 +117,19 @@ The About page's Credits section is now four short paragraphs, with no list:
 
 Lucas chose both links' wording, since "Every source, with links" and "Question a word" didn't say where they went or what you'd do there. The first visit's download goes back down to about 39 KB gzipped.
 
+
+## After review: four words checked against the research
+
+Lucas, 2026-11-17, from his notes on the pull request and a review of each word against its notes. These replace what the sections above say about the same words.
+
+| Was | Now | Why |
+|---|---|---|
+| Gagging (Throat / mouth): Revolted, Repelled | Gone | Revolted means "strongly repelled", so the two weren't different enough to choose between. Gagging is closer to the act of rejecting something than to a feeling you'd notice ([Rozin](../../reference/rozin-disgust.md)), and someone gagging usually knows why. Queasy and Tight throat already hold disgust. |
+| Tight jaw (Head / face) | **Clenched teeth** (Throat / mouth), id `clenched-teeth` | It's what people catch themselves doing, and it passes the eyes-closed test. Teeth are in the mouth, so it moves to Throat / mouth. Same feelings: Mad, Resentful, Stressed. |
+| Flat: Content, Peaceful, Numb | **Nothing much**: Content, Peaceful, Apathetic, id `nothing-much` | "Flat affect" is what a clinician sees in someone, not what they feel, and "feeling flat" leans toward low, which answers the question the sensation is there to leave open. [Desbordes and others](../../reference/desbordes-equanimity.md) name apathy as what calm acceptance gets mistaken for, and whether you still care as the tell, which is how the wheel defines Apathetic. Numb stays under Numb / empty, so the two sensations next to each other no longer lead to the same word. Its card phrase is "Not feeling much". |
+| Back away: Repelled, Disapproving | Revolted, Disapproving | Revolted keeps a path now that Gagging is gone, and its definition ends "with an urge to get away". Repelled stays under Tight throat, Queasy, and Skin crawling. |
+| Give up: Despair, Inadequate | Despair, Inadequate, Helpless | [Learned helplessness](../../reference/maier-seligman-learned-helplessness.md) is named for it. Powerless was left out as Despair's own child; Helpless, under Scared, isn't nested with either. |
+
+Throat / mouth keeps its name and holds Lump in throat, Heart in throat, Tight throat, Dry mouth, and Clenched teeth; Head / face is down to four. Lucas weighed moving the mouth to Head / face and folding the throat into a "Shoulders / neck" area, and kept the mouth with the throat: people point to the front of the throat for a lump in it, not to the neck.
+
+That leaves 46 sensations on the body wheel and 126 cells. The About page's example "a tight jaw" becomes "clenched teeth".

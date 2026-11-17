@@ -25,7 +25,7 @@ describe('v2.2.1: the left safe-area inset', () => {
   const wheels = loadData().wheels.map((w, i) => (i === 0 ? layout : buildLayout(w)));
 
   /**
-   * Known issue (roadmap: "The two wheels can rest, and zoom, differently"): with the body wheel rework's 127 outer
+   * Known issue (roadmap: "The two wheels can rest, and zoom, differently"): with the body wheel rework's 126 outer
    * cells, the body wheel's outer ring zooms in too far to clear the notch and stay left of the card. When that's
    * fixed, this expectation fails; remove the entry.
    */

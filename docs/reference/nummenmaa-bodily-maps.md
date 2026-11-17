@@ -31,5 +31,5 @@ Published research. We use its findings, not its figures: no body maps are repro
 
 1. **Places are a sound way in.** Emotions have distinct, fairly consistent body maps, which supports a body wheel organized by where you feel something.
 2. **Whole body is a real place.** Happiness filled the whole body and sadness drained the limbs, so feelings that aren't in one spot need a home.
-3. **Throat and gut for disgust, chest for most emotions, arms for anger,** which shaped where the rework puts gagging, the chest's many sensations, and tight fists.
+3. **Throat and gut for disgust, chest for most emotions, arms for anger,** which shaped where the rework puts a tight throat and a queasy stomach, the chest's many sensations, and tight fists.
 4. **Some feelings look alike in the body** (fear and sadness, anxiety and depression), which supports offering two or three feelings per sensation rather than one.

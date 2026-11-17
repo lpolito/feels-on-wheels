@@ -16,5 +16,5 @@ Published research. We use the idea, not its text.
 ## Takeaways for this project
 
 1. **Urges are often a way to get away from something, the feeling itself included.** Running from a threat gets away from what's happening; numbing out, bingeing or sleeping it off gets away from the feeling. Both are urges a person might not recognize for what they are.
-2. **Acceptance is its opposite.** In acceptance and commitment therapy, acceptance means being willing to have your feelings and your situation as they are instead of fighting them ([ACBS](https://contextualscience.org/book/export/html/10), read 2026-11-16). That's the "not fighting reality" reading of Flat.
+2. **Acceptance is its opposite.** In acceptance and commitment therapy, acceptance means being willing to have your feelings and your situation as they are instead of fighting them ([ACBS](https://contextualscience.org/book/export/html/10), read 2026-11-16). That's the "not fighting reality" reading of Nothing much.
 3. **These urges often come with hard feelings that are hard to name,** which is when someone reaches for the body wheel.

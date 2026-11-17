@@ -15,4 +15,4 @@ Published research. We use the idea, not its text.
 
 ## Takeaways for this project
 
-1. **Giving up is a real response,** not just a turn of phrase, to what you can't control. Pairing it with Powerless, Despair, and Inadequate is the body wheel's choice, not the review's finding.
+1. **Giving up is a real response,** not just a turn of phrase, to what you can't control. Pairing it with Despair, Inadequate, and Helpless, the feeling the research is named for, is the body wheel's choice, not the review's finding.

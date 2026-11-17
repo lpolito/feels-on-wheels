@@ -289,6 +289,7 @@
   },
   "numb": {
     "sensations": [
+      "flat",
       "numb-empty",
       "heaviness",
       "foggy-head"
@@ -577,6 +578,7 @@
   },
   "peaceful": {
     "sensations": [
+      "flat",
       "relaxed",
       "light-body"
     ]
@@ -674,6 +676,7 @@
   },
   "content": {
     "sensations": [
+      "flat",
       "relaxed",
       "light-body"
     ]

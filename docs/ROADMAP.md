@@ -118,6 +118,8 @@ Lucas, 2026-11-14: the body wheel needs reworking to be more consistent.
 
 - Lucas, 2026-11-15: the feelings wheel should be opinionated about the words it uses, their definitions, and how feelings relate to sensations. Today it largely repeats other wheels (mostly [Roberts's seven-core wheel](reference/core-feelings-wheel.md)), which isn't necessary.
 - Its rules go in `src/data/wheels/README.md` next to the body wheel's, so every later edit follows them.
+- **A word for accepting your situation.** Lucas, 2026-11-16: not fighting reality, going with the flow. The wheel's Accepted means being welcomed by others, so the body wheel's Flat uses Content and Peaceful for now (rework [changes](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md#flat); [radical acceptance](reference/linehan-dbt-model-of-emotions.md), [equanimity](reference/desbordes-equanimity.md)).
+- **Words that sit oddly under their parent,** such as Hesitant under Repelled, Embarrassed under Disapproving, and Inferior under Depressed (Lucas, 2026-11-16). The body wheel's rule about a word and its parent depends on this nesting.
 - To decide when designing:
   - what makes a word earn a place: common, plain, distinct from its neighbors, and useful for naming what you feel;
   - whether the core feelings and their order stay, since the colors, link previews and URLs are built on them;

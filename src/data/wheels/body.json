@@ -313,20 +313,6 @@
               "feeling": "depressed"
             }
           ]
-        },
-        {
-          "sensation": "warm-chest",
-          "children": [
-            {
-              "feeling": "loving"
-            },
-            {
-              "feeling": "thankful"
-            },
-            {
-              "feeling": "proud"
-            }
-          ]
         }
       ]
     },
@@ -497,44 +483,16 @@
           ]
         },
         {
-          "sensation": "light-body",
+          "sensation": "flat",
           "children": [
             {
-              "feeling": "free"
+              "feeling": "content"
             },
-            {
-              "feeling": "joyful"
-            },
-            {
-              "feeling": "hopeful"
-            }
-          ]
-        },
-        {
-          "sensation": "relaxed",
-          "children": [
             {
               "feeling": "peaceful"
             },
             {
-              "feeling": "trusting"
-            },
-            {
-              "feeling": "content"
-            }
-          ]
-        },
-        {
-          "sensation": "feeling-tall",
-          "children": [
-            {
-              "feeling": "powerful"
-            },
-            {
-              "feeling": "confident"
-            },
-            {
-              "feeling": "courageous"
+              "feeling": "numb"
             }
           ]
         },

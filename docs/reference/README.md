@@ -23,6 +23,8 @@ Notes on the outside sources this project draws on: what each one is, who made i
 | Mikulincer and Shaver, adult attachment | Body wheel rework: Want to be close | [mikulincer-shaver-attachment.md](mikulincer-shaver-attachment.md) |
 | Maier and Seligman, learned helplessness | Body wheel rework: Want to give up | [maier-seligman-learned-helplessness.md](maier-seligman-learned-helplessness.md) |
 | Leslie Greenberg, emotion-focused therapy | Body wheel rework: Hurt under Want to lash out | [greenberg-emotion-focused-therapy.md](greenberg-emotion-focused-therapy.md) |
+| James Russell, the circumplex model of affect | Body wheel rework: Flat | [russell-circumplex.md](russell-circumplex.md) |
+| Desbordes and others, equanimity | Body wheel rework: Flat | [desbordes-equanimity.md](desbordes-equanimity.md) |
 
 ## Adding a source
 
@@ -58,3 +60,5 @@ Not credited until the app uses them:
 - **Mikulincer and Shaver**, *Attachment in Adulthood*, 2007 ([note](mikulincer-shaver-attachment.md)): insecurity and wanting closeness, once the rework ships.
 - **Maier and Seligman**, "Learned helplessness at fifty", *Psychological Review*, 2016 ([note](maier-seligman-learned-helplessness.md)): giving up after what you can't control, once the rework ships.
 - **Leslie Greenberg**, *Emotion-Focused Therapy*, 2002 ([note](greenberg-emotion-focused-therapy.md)): anger that covers hurt or fear, once the rework ships.
+- **James Russell**, "A circumplex model of affect", *Journal of Personality and Social Psychology*, 1980 ([note](russell-circumplex.md)): pleasant and unpleasant low-energy feelings, once the rework ships.
+- **Desbordes and others**, "Moving beyond mindfulness", *Mindfulness*, 2015 ([note](desbordes-equanimity.md)): equanimity isn't indifference, once the rework ships.

@@ -51,9 +51,30 @@ describe('body wheel content', () => {
     expect(feelingsUnder('want-to-cry')).toEqual(['frustrated', 'overwhelmed', 'thankful']);
   });
 
-  test('warm / full chest keeps its id', () => {
-    expect(feelingsUnder('warm-chest')).toEqual(['loving', 'thankful', 'proud']);
-    expect(locale.sensations['warm-chest']).toBe('Warm / full chest');
+  test('flat could be content, peaceful, or numb', () => {
+    expect(feelingsUnder('flat')).toEqual(['content', 'peaceful', 'numb']);
+    expect(locale.sensations['flat']).toBe('Flat');
+  });
+
+  test('the happy-only sensations stay for You might notice, off the body wheel', () => {
+    const onWheel = new Set(wheels.find((w) => w.id === 'body')!.children.flatMap((a) => a.children ?? []).map((s) => s.sensation));
+    for (const s of ['warm-chest', 'light-body', 'relaxed', 'feeling-tall']) {
+      expect(locale.sensations[s], s).toBeTruthy();
+      expect(onWheel.has(s), s).toBe(false);
+    }
+    expect(feelings['joyful']!.sensations).toContain('light-body');
+  });
+
+  test('no sensation is happy and nothing else', () => {
+    const happy = new Set<string>();
+    const walk = (n: { feeling?: string; children?: { feeling?: string; children?: unknown[] }[] }, inHappy: boolean) => {
+      for (const c of n.children ?? []) { const h = inHappy || c.feeling === 'happy'; if (h) happy.add(c.feeling!); walk(c as never, h); }
+    };
+    walk(wheels.find((w) => w.id === 'core')! as never, false);
+    for (const s of wheels.find((w) => w.id === 'body')!.children.flatMap((a) => a.children ?? [])) {
+      const fs = (s.children ?? []).map((f) => f.feeling!);
+      expect(fs.every((f) => happy.has(f)), `${s.sensation}: ${fs.join(', ')}`).toBe(false);
+    }
   });
 });
 

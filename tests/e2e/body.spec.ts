@@ -166,7 +166,7 @@ test.describe('body wheel cards (desktop)', () => {
     await tapPath(page, 'chest');
     await expect(title(page)).toHaveText('Chest');
     await expect(headings(page)).toHaveText(['Narrow it down']);
-    expect(await rowsText(page)).toEqual(['Racing heart\u00A0›', 'Tight chest\u00A0›', 'Short breath\u00A0›', 'Hollow chest\u00A0›', 'Heavy heart\u00A0›', 'Warm / full chest\u00A0›']);
+    expect(await rowsText(page)).toEqual(['Racing heart\u00A0›', 'Tight chest\u00A0›', 'Short breath\u00A0›', 'Hollow chest\u00A0›', 'Heavy heart\u00A0›']);
 
     await tapPath(page, 'chest/racing-heart');
     await expect(title(page)).toHaveText('Racing heart');
@@ -406,7 +406,7 @@ test.describe('v2.2: the core feeling in the definition', () => {
   const coreLink = (page: Page) => page.locator('fw-card .fw-definition .fw-link');
 
   test('the core feeling link opens Happy on the feelings wheel; Enter works too', async ({ page }) => {
-    await open(page, '/body/whole-body/light-body/joyful');
+    await open(page, '/body/whole-body/flat/content');
     await expect(page.locator('fw-card .fw-definition')).toContainText('A happy feeling.');
     await coreLink(page).click();
     await idle(page);
@@ -426,7 +426,7 @@ test.describe('v2.2: the core feeling in the definition', () => {
   });
 
   test('axe: a body wheel definition with its core feeling link', async ({ page }) => {
-    await open(page, '/body/whole-body/light-body/joyful');
+    await open(page, '/body/whole-body/flat/content');
     await settled(page);
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   });

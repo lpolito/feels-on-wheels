@@ -571,7 +571,6 @@
     "short-breath": "Short breath",
     "hollow-chest": "Hollow chest",
     "heavy-heart": "Heavy heart",
-    "warm-chest": "Warm / full chest",
     "knot-in-stomach": "Knot in stomach",
     "sinking-feeling": "Sinking feeling",
     "butterflies": "Butterflies",
@@ -584,9 +583,7 @@
     "heaviness": "Heaviness",
     "drained": "Drained",
     "numb-empty": "Numb / empty",
-    "light-body": "Light body",
-    "relaxed": "Relaxed",
-    "feeling-tall": "Feeling tall",
+    "flat": "Flat",
     "weak-knees": "Weak knees",
     "want-to-run": "Want to run",
     "want-to-hide": "Want to hide",
@@ -599,7 +596,11 @@
     "want-to-numb-out": "Want to numb out",
     "want-to-sleep": "Want to sleep",
     "want-to-cry": "Want to cry",
-    "want-to-control-it": "Want to control it"
+    "want-to-control-it": "Want to control it",
+    "warm-chest": "Warm / full chest",
+    "light-body": "Light body",
+    "relaxed": "Relaxed",
+    "feeling-tall": "Feeling tall"
   },
   "areas": {
     "head": "Head / face",

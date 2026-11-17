@@ -45,3 +45,27 @@ Lucas, 2026-11-16, after seeing the wheel built with 144 cells: "This is too tig
 - **Want to get even merges into Want to lash out.** Lucas found them "way too similar", which breaks §2's rule that two sensations in one area must feel different or lead to different feelings. Want to lash out becomes Furious, Provoked, Hurt. Hurt is there because anger often covers hurt ([emotion-focused therapy](../../reference/greenberg-emotion-focused-therapy.md)). Hostile goes, since it shares a parent with Provoked. In "You might notice", Bitter, Resentful, and Betrayed list Want to lash out instead.
 
 That leaves 50 sensations and 136 cells. With 140 cells or fewer, the phone shows the outer ring's words again.
+
+## Happy feelings come in as the other reading of a sensation
+
+Lucas, 2026-11-16: happy feelings are "a lot of what people don't need help with". He agreed a rule for the body wheel. Happy feelings come in as the other reading of a sensation, where the same body signal could be a hard feeling (a racing heart could be scared or excited). A sensation whose only reading is happy doesn't earn a place.
+
+- **Off the body wheel:** Light body, Relaxed, Feeling tall, and Warm / full chest.
+- **Still in "You might notice":** all four stay as sensations, with their labels, so Joyful, Proud, Peaceful, and the other happy feelings still have a real answer to what they feel like. The two lists don't have to match ("There's no reason to make this a hard and fast rule"). They don't link into the body wheel, as the spec already says.
+- **A test** checks that no sensation on the body wheel has only happy feelings.
+
+## Flat
+
+Lucas, 2026-11-16: "sometimes I'm not sure if I feel numb, or if I just don't have a strong emotional response to something." He finds himself torn between numb and content or accepting, where accepting means "not wanting to fight reality, and going with the flow."
+
+**Flat** goes under Whole body, after Numb / empty: Content, Peaceful, Numb. Backed by:
+
+- [Russell's circumplex model](../../reference/russell-circumplex.md): a low-energy feeling can be pleasant or unpleasant, and the body alone doesn't say which.
+- [Desbordes and others](../../reference/desbordes-equanimity.md): equanimity is easily confused with indifference or numbness; whether you still care is the tell.
+- Accepting your situation, as [DBT's radical acceptance](../../reference/linehan-dbt-model-of-emotions.md) and [acceptance in ACT](../../reference/hayes-experiential-avoidance.md) describe it.
+- Lucas's own experience.
+
+The feelings wheel has no word for that kind of acceptance. Its Accepted means being welcomed by others. So Flat uses the two closest words, Content ("satisfied with how things are right now") and Peaceful ("calm and settled, without inner conflict"). The missing word is noted under the opinionated feelings wheel idea in the roadmap.
+
+That leaves 47 sensations on the body wheel (51 in the vocabulary, counting the four kept for cards) and 127 cells. The parent-or-child rule and its test stand for now; Lucas is still weighing a looser version.
+

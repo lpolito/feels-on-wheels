@@ -115,23 +115,23 @@ const AREAS: [string, string[]][] = [
   ['throat', ['lump-in-throat', 'heart-in-throat', 'tight-throat', 'dry-mouth', 'gagging']],
   ['shoulders', ['tense-shoulders', 'weight-on-shoulders']],
   ['hands', ['tight-fists', 'shaky-hands', 'sweaty-palms', 'cold-hands']],
-  ['chest', ['racing-heart', 'tight-chest', 'short-breath', 'hollow-chest', 'heavy-heart', 'warm-chest']],
+  ['chest', ['racing-heart', 'tight-chest', 'short-breath', 'hollow-chest', 'heavy-heart']],
   ['stomach', ['knot-in-stomach', 'sinking-feeling', 'butterflies', 'queasy']],
-  ['whole-body', ['restless', 'buzzing', 'chills', 'frozen', 'skin-crawling', 'heaviness', 'drained', 'numb-empty', 'light-body', 'relaxed', 'feeling-tall', 'weak-knees']],
+  ['whole-body', ['restless', 'buzzing', 'chills', 'frozen', 'skin-crawling', 'heaviness', 'drained', 'numb-empty', 'flat', 'weak-knees']],
   ['urges', ['want-to-run', 'want-to-hide', 'want-to-lash-out', 'want-to-back-away', 'want-to-fix-it', 'want-to-be-close', 'want-to-be-alone', 'want-to-give-up', 'want-to-numb-out', 'want-to-sleep', 'want-to-cry', 'want-to-control-it']],
 ];
 
 describe('body wheel data', () => {
-  test('body wheel has 8 areas and 50 sensations, in spec §3 order (less the changes file)', () => {
+  test('body wheel has 8 areas and 47 sensations, in spec §3 order (less the changes file)', () => {
     expect(body.children.map((n) => nodeRef(n))).toEqual(AREAS.map(([id]) => ({ kind: 'area', id })));
     body.children.forEach((a, i) => {
       expect((a.children ?? []).map((n) => nodeRef(n)), AREAS[i]![0]).toEqual(AREAS[i]![1].map((id) => ({ kind: 'sensation', id })));
     });
-    expect(body.children.flatMap((a) => a.children ?? []).length).toBe(50);
+    expect(body.children.flatMap((a) => a.children ?? []).length).toBe(47);
   });
 
-  test('body wheel has 136 feeling cells', () => {
-    expect(body.children.flatMap((a) => a.children ?? []).reduce((n, s) => n + (s.children ?? []).length, 0)).toBe(136);
+  test('body wheel has 127 feeling cells', () => {
+    expect(body.children.flatMap((a) => a.children ?? []).reduce((n, s) => n + (s.children ?? []).length, 0)).toBe(127);
   });
 
   test('no sensation offers a feeling with its own parent or child', () => {

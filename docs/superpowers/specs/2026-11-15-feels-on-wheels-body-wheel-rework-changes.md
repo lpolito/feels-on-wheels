@@ -32,7 +32,7 @@ The longest sensation is now "Weight on shoulders", which fits beside its area a
 
 Lucas, 2026-11-16, after seeing the wheel built with 144 cells: "This is too tight." On a phone with an area opened, the outer ring showed no feeling words, and the body wheel needed a radius of about 618 px to rest whole. He agreed these changes:
 
-- **No sensation offers a word with its own parent or child.** Offering a word next to its own broader or narrower word adds nothing, so each keeps the one that fits. A data test now checks it.
+- **No sensation offers a word with its own parent or child here.** Each of these pairs added nothing, so each sensation keeps the one that fits.
 
   | Sensation | Spec | Now |
   |---|---|---|
@@ -67,5 +67,11 @@ Lucas, 2026-11-16: "sometimes I'm not sure if I feel numb, or if I just don't ha
 
 The feelings wheel has no word for that kind of acceptance. Its Accepted means being welcomed by others. So Flat uses the two closest words, Content ("satisfied with how things are right now") and Peaceful ("calm and settled, without inner conflict"). The missing word is noted under the opinionated feelings wheel idea in the roadmap.
 
-That leaves 47 sensations on the body wheel (51 in the vocabulary, counting the four kept for cards) and 127 cells. The parent-or-child rule and its test stand for now; Lucas is still weighing a looser version.
+That leaves 47 sensations on the body wheel (51 in the vocabulary, counting the four kept for cards) and 127 cells.
+
+## Distinct feelings: a rule to read, not a test
+
+Lucas, 2026-11-16: the feelings wheel's nesting doesn't always fit ("Some of the narrow words on the feelings wheel just don't quite fit being nested under their parent"), so a strict rule built on it would carry its oddities into the body wheel. He chose a rule judged on meaning, written for whoever edits the wheel, with no test or script ("writing scripts for things that aren't checked constantly feels silly"). For `src/data/wheels/README.md`:
+
+> **Feelings under one sensation must be different enough that someone would choose between them.** A word and its own parent or child on the feelings wheel often aren't (Stressed and Overwhelmed, Repelled and Horrified), so look at those pairs first. Keep both only when each says something the other doesn't, and never fill a sensation from one branch alone.
 

@@ -134,23 +134,6 @@ describe('body wheel data', () => {
     expect(body.children.flatMap((a) => a.children ?? []).reduce((n, s) => n + (s.children ?? []).length, 0)).toBe(127);
   });
 
-  test('no sensation offers a feeling with its own parent or child', () => {
-    const parentOf = new Map<string, string[]>();
-    const walk = (n: { feeling?: string; children?: typeof wheel.children }, parent?: string) => {
-      for (const c of n.children ?? []) {
-        if (parent) parentOf.set(c.feeling!, [...(parentOf.get(c.feeling!) ?? []), parent]);
-        walk(c, c.feeling);
-      }
-    };
-    walk(wheel);
-    for (const s of body.children.flatMap((a) => a.children ?? [])) {
-      const ids = (s.children ?? []).map((f) => f.feeling!);
-      for (const f of ids) {
-        for (const p of parentOf.get(f) ?? []) expect(ids, `${s.sensation}: ${f} with its parent ${p}`).not.toContain(p);
-      }
-    }
-  });
-
   test('area labels', () => {
     expect(locale.areas).toEqual({ head: 'Head / face', throat: 'Throat / mouth', shoulders: 'Shoulders', hands: 'Hands', chest: 'Chest', stomach: 'Stomach', 'whole-body': 'Whole body', urges: 'Urges' });
   });

@@ -94,3 +94,7 @@ Lucas, 2026-11-16: the drawn wheel names the Urges area "The urge to…" (with a
 ## The outer ring is lighter, like the feelings wheel's
 
 Lucas, 2026-11-16, after seeing three versions side by side: the body wheel's feeling cells take their own ring's shade, the lightest, instead of their core feeling's darkest shade (spec v2.1 §7.1). The darkest shade felt "way too bold". Each feeling's color as it sits on the feelings wheel varied by where a word happened to sit, so some areas looked heavy and nothing was consistent. Now both wheels go from darker in the center to lighter at the edge. The color tests already keep every area color distinct from every feeling color at every shade, so nothing else changes. The layout's `shadeRing` field, which only existed for the old rule, is gone.
+
+## Link previews: the rings line up
+
+Lucas, 2026-11-16: on the body wheel's link previews, the outer ring's cells never lined up with the middle ring's. The [share and preview spec](2026-11-15-feels-on-wheels-share-and-preview-design.md) §5 splits each ring into roughly equal cells, one ring at a time, so the boundaries fell in different places. Now every middle cell splits into exactly two outer cells, so the lines run straight through on both wheels, and the preview stays as chunky as before.

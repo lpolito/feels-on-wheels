@@ -92,8 +92,10 @@ function wheelSvg(wheel, layout, featured) {
     const wedge = layout.segments[i];
     out += cell(0, wedge.start, wedge.end, wedge);
     const width = wedge.end - wedge.start;
+    // Each outer ring splits every cell of the ring inside it evenly, so the cells line up from ring to ring.
+    const middle = Math.max(1, Math.round(width / (TAU / PER_TURN[1])));
     for (let ring = 1; ring < layout.rings.length; ring++) {
-      const n = Math.max(1, Math.round(width / (TAU / PER_TURN[ring])));
+      const n = middle * (PER_TURN[ring] / PER_TURN[1]);
       for (let j = 0; j < n; j++) {
         const a0 = wedge.start + (width * j) / n;
         const a1 = wedge.start + (width * (j + 1)) / n;

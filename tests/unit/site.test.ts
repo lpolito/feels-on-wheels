@@ -145,7 +145,7 @@ describe('About page', () => {
       github: 'https://github.com/lpolito/feels-on-wheels',
       accessibility: 'https://github.com/lpolito/feels-on-wheels/blob/main/ACCESSIBILITY.md',
       contributing: 'https://github.com/lpolito/feels-on-wheels/blob/main/CONTRIBUTING.md',
-      issues: 'https://github.com/lpolito/feels-on-wheels/issues',
+      issues: 'https://github.com/lpolito/feels-on-wheels/issues/new?template=wheel-content.yml',
       research: 'https://github.com/lpolito/feels-on-wheels#research-behind-the-body-wheel',
       author: 'https://lucaspolito.dev/',
       home: '/',
@@ -246,13 +246,13 @@ describe('About page', () => {
   });
 
   test('aboutLinks has issues and research', () => {
-    expect(aboutLinks(site).issues).toBe(`${site.repo}/issues`);
+    expect(aboutLinks(site).issues).toBe(`${site.repo}/issues/new?template=wheel-content.yml`);
     expect(aboutLinks(site).research).toBe(`${site.repo}#research-behind-the-body-wheel`);
   });
 
   test('credits invite corrections and link the research, without mentioning AI', () => {
     const credits = section('credits');
-    expect(credits).toContain('href="https://github.com/lpolito/feels-on-wheels/issues"');
+    expect(credits).toContain('href="https://github.com/lpolito/feels-on-wheels/issues/new?template=wheel-content.yml"');
     expect(credits).toContain('href="https://github.com/lpolito/feels-on-wheels#research-behind-the-body-wheel"');
     expect(credits).toContain('not a clinical');
     expect(credits).not.toMatch(/\bAI\b|Claude/);

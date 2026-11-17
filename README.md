@@ -61,7 +61,7 @@ What backs each word is in the [design spec](docs/superpowers/specs/2026-11-15-f
 - **Lucas isn't a clinician or a researcher,** and doesn't claim to be.
 - **The rules** that keep the wheel this way are in [src/data/wheels/README.md](src/data/wheels/README.md).
 
-**If a word seems wrong or missing,** or you know research that says otherwise, please [open an issue](https://github.com/lpolito/feels-on-wheels/issues). Corrections from therapists and researchers are especially welcome.
+**If a word seems wrong or missing,** or you know research that says otherwise, please [open a Wheel content issue](https://github.com/lpolito/feels-on-wheels/issues/new?template=wheel-content.yml). Corrections from therapists and researchers are especially welcome.
 
 ## Made with AI, with love
 

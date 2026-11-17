@@ -4,7 +4,7 @@ Thanks for wanting to help. Ideas and new languages are especially welcome. Ever
 
 ## Ideas
 
-[Open an Idea issue](https://github.com/lpolito/feels-on-wheels/issues/new?template=idea.yml) describing what you'd like and why. Lucas decides what goes on the [roadmap](docs/ROADMAP.md); ideas he picks are designed there before anything is built.
+[Open an Idea issue](https://github.com/lpolito/feels-on-wheels/issues/new?template=idea.yml) describing what you'd like and why. To question a word, a definition, or a sensation already on a wheel, [open a Wheel content issue](https://github.com/lpolito/feels-on-wheels/issues/new?template=wheel-content.yml) instead. Lucas decides what goes on the [roadmap](docs/ROADMAP.md); ideas he picks are designed there before anything is built.
 
 ## Languages
 

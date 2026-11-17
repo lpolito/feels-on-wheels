@@ -1,0 +1,50 @@
+name: Wheel content
+description: Question a word, a definition, a sensation, or how the wheel connects them.
+labels: [content]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for questioning it. Disagreement is welcome here. The rules the wheels follow are in the [wheels' README](https://github.com/lpolito/feels-on-wheels/blob/main/src/data/wheels/README.md), and what the body wheel rests on is in [Research behind the body wheel](https://github.com/lpolito/feels-on-wheels#research-behind-the-body-wheel).
+  - type: dropdown
+    id: wheel
+    attributes:
+      label: Which wheel?
+      options:
+        - The feelings wheel
+        - The body sensations wheel
+        - Both, or not sure
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Which word?
+      description: The link from your browser with the word open is best. A name works too.
+      placeholder: https://feelsonwheels.app/body/chest/racing-heart, or "Racing heart → Excited"
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What's it about?
+      options:
+        - A definition
+        - A word or label
+        - A sensation or urge
+        - Which feelings a sensation leads to
+        - What a card lists under "You might notice"
+        - Something missing
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What seems wrong, and what would you change?
+    validations:
+      required: true
+  - type: textarea
+    id: backing
+    attributes:
+      label: What backs it?
+      description: Optional. Research, clinical practice, and your own experience all count. Say which, and add links if you have them.

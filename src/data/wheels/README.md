@@ -2,7 +2,7 @@
 
 The living rules for what the wheels say: their words, the body wheel's areas and sensations, and how feelings and sensations relate. Whoever edits the wheels, a person or an agent, follows these. When a rule changes, change it here in the same change.
 
-The rules came out of specs, which record why they were chosen: the [body wheel rework](../../../docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) and its [changes](../../../docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md). Specs are frozen; when a spec and this file disagree, this file wins.
+The rules came out of specs, which record why they were chosen: the [body wheel rework](../../../docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) and its [changes](../../../docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md). Specs are frozen; when a spec and this file disagree, this file wins. Anyone can question a word through a [Wheel content issue](https://github.com/lpolito/feels-on-wheels/issues/new?template=wheel-content.yml).
 
 ## Which files these rules cover
 

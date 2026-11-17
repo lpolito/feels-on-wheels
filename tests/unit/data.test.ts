@@ -118,20 +118,37 @@ const AREAS: [string, string[]][] = [
   ['chest', ['racing-heart', 'tight-chest', 'short-breath', 'hollow-chest', 'heavy-heart', 'warm-chest']],
   ['stomach', ['knot-in-stomach', 'sinking-feeling', 'butterflies', 'queasy']],
   ['whole-body', ['restless', 'buzzing', 'chills', 'frozen', 'skin-crawling', 'heaviness', 'drained', 'numb-empty', 'light-body', 'relaxed', 'feeling-tall', 'weak-knees']],
-  ['urges', ['want-to-run', 'want-to-hide', 'want-to-lash-out', 'want-to-back-away', 'want-to-fix-it', 'want-to-be-close', 'want-to-be-alone', 'want-to-give-up', 'want-to-numb-out', 'want-to-sleep', 'want-to-cry', 'want-to-get-even', 'want-to-control-it']],
+  ['urges', ['want-to-run', 'want-to-hide', 'want-to-lash-out', 'want-to-back-away', 'want-to-fix-it', 'want-to-be-close', 'want-to-be-alone', 'want-to-give-up', 'want-to-numb-out', 'want-to-sleep', 'want-to-cry', 'want-to-control-it']],
 ];
 
 describe('body wheel data', () => {
-  test('body wheel has 8 areas and 51 sensations, in spec §3 order', () => {
+  test('body wheel has 8 areas and 50 sensations, in spec §3 order (less the changes file)', () => {
     expect(body.children.map((n) => nodeRef(n))).toEqual(AREAS.map(([id]) => ({ kind: 'area', id })));
     body.children.forEach((a, i) => {
       expect((a.children ?? []).map((n) => nodeRef(n)), AREAS[i]![0]).toEqual(AREAS[i]![1].map((id) => ({ kind: 'sensation', id })));
     });
-    expect(body.children.flatMap((a) => a.children ?? []).length).toBe(51);
+    expect(body.children.flatMap((a) => a.children ?? []).length).toBe(50);
   });
 
-  test('body wheel has 144 feeling cells', () => {
-    expect(body.children.flatMap((a) => a.children ?? []).reduce((n, s) => n + (s.children ?? []).length, 0)).toBe(144);
+  test('body wheel has 136 feeling cells', () => {
+    expect(body.children.flatMap((a) => a.children ?? []).reduce((n, s) => n + (s.children ?? []).length, 0)).toBe(136);
+  });
+
+  test('no sensation offers a feeling with its own parent or child', () => {
+    const parentOf = new Map<string, string[]>();
+    const walk = (n: { feeling?: string; children?: typeof wheel.children }, parent?: string) => {
+      for (const c of n.children ?? []) {
+        if (parent) parentOf.set(c.feeling!, [...(parentOf.get(c.feeling!) ?? []), parent]);
+        walk(c, c.feeling);
+      }
+    };
+    walk(wheel);
+    for (const s of body.children.flatMap((a) => a.children ?? [])) {
+      const ids = (s.children ?? []).map((f) => f.feeling!);
+      for (const f of ids) {
+        for (const p of parentOf.get(f) ?? []) expect(ids, `${s.sensation}: ${f} with its parent ${p}`).not.toContain(p);
+      }
+    }
   });
 
   test('area labels', () => {

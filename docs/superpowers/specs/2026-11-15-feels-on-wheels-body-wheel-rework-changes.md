@@ -27,3 +27,21 @@ Want to cry leaves out Sad (§3), so no core feeling is left on the body wheel. 
 ## The longest breadcrumb fits at 320 px
 
 The longest sensation is now "Weight on shoulders", which fits beside its area at 320 px, so no breadcrumb shortens on the body wheel any more. The end-to-end test checks that the crumbs fit, sit on one line, and stay focusable links.
+
+## After seeing it built: fewer cells, and no word beside its own parent
+
+Lucas, 2026-11-16, after seeing the wheel built with 144 cells: "This is too tight." On a phone with an area opened, the outer ring showed no feeling words, and the body wheel needed a radius of about 618 px to rest whole. He agreed these changes:
+
+- **No sensation offers a word with its own parent or child.** Offering a word next to its own broader or narrower word adds nothing, so each keeps the one that fits. A data test now checks it.
+
+  | Sensation | Spec | Now |
+  |---|---|---|
+  | Want to back away | Repelled, Horrified, Hesitant | Repelled, Disapproving |
+  | Skin crawling | Repelled, Horrified, Violated | Repelled, Violated |
+  | Headache | Stressed, Frustrated, Overwhelmed | Stressed, Frustrated |
+  | Tight chest | Anxious, Overwhelmed, Resentful | Anxious, Resentful |
+  | Want to give up | Despair, Powerless, Inadequate | Despair, Inadequate |
+
+- **Want to get even merges into Want to lash out.** Lucas found them "way too similar", which breaks §2's rule that two sensations in one area must feel different or lead to different feelings. Want to lash out becomes Furious, Provoked, Hurt. Hurt is there because anger often covers hurt ([emotion-focused therapy](../../reference/greenberg-emotion-focused-therapy.md)). Hostile goes, since it shares a parent with Provoked. In "You might notice", Bitter, Resentful, and Betrayed list Want to lash out instead.
+
+That leaves 50 sensations and 136 cells. With 140 cells or fewer, the phone shows the outer ring's words again.

@@ -28,9 +28,6 @@
             },
             {
               "feeling": "frustrated"
-            },
-            {
-              "feeling": "overwhelmed"
             }
           ]
         },
@@ -274,9 +271,6 @@
               "feeling": "anxious"
             },
             {
-              "feeling": "overwhelmed"
-            },
-            {
               "feeling": "resentful"
             }
           ]
@@ -459,9 +453,6 @@
               "feeling": "repelled"
             },
             {
-              "feeling": "horrified"
-            },
-            {
               "feeling": "violated"
             }
           ]
@@ -602,10 +593,10 @@
               "feeling": "furious"
             },
             {
-              "feeling": "hostile"
+              "feeling": "provoked"
             },
             {
-              "feeling": "provoked"
+              "feeling": "hurt"
             }
           ]
         },
@@ -616,10 +607,7 @@
               "feeling": "repelled"
             },
             {
-              "feeling": "horrified"
-            },
-            {
-              "feeling": "hesitant"
+              "feeling": "disapproving"
             }
           ]
         },
@@ -672,9 +660,6 @@
               "feeling": "despair"
             },
             {
-              "feeling": "powerless"
-            },
-            {
               "feeling": "inadequate"
             }
           ]
@@ -718,20 +703,6 @@
             },
             {
               "feeling": "thankful"
-            }
-          ]
-        },
-        {
-          "sensation": "want-to-get-even",
-          "children": [
-            {
-              "feeling": "bitter"
-            },
-            {
-              "feeling": "resentful"
-            },
-            {
-              "feeling": "betrayed"
             }
           ]
         },

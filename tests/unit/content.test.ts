@@ -43,6 +43,10 @@ describe('body wheel content', () => {
     expect(feelingsUnder('racing-heart')).toEqual(['scared', 'mad', 'excited']);
   });
 
+  test('want to lash out offers hurt, which anger often covers', () => {
+    expect(feelingsUnder('want-to-lash-out')).toEqual(['furious', 'provoked', 'hurt']);
+  });
+
   test('want to cry leaves out sad', () => {
     expect(feelingsUnder('want-to-cry')).toEqual(['frustrated', 'overwhelmed', 'thankful']);
   });

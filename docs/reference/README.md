@@ -22,6 +22,7 @@ Notes on the outside sources this project draws on: what each one is, who made i
 | Goetz, Keltner and Simon-Thomas, compassion | Body wheel rework: Want to fix it | [goetz-compassion.md](goetz-compassion.md) |
 | Mikulincer and Shaver, adult attachment | Body wheel rework: Want to be close | [mikulincer-shaver-attachment.md](mikulincer-shaver-attachment.md) |
 | Maier and Seligman, learned helplessness | Body wheel rework: Want to give up | [maier-seligman-learned-helplessness.md](maier-seligman-learned-helplessness.md) |
+| Leslie Greenberg, emotion-focused therapy | Body wheel rework: Hurt under Want to lash out | [greenberg-emotion-focused-therapy.md](greenberg-emotion-focused-therapy.md) |
 
 ## Adding a source
 
@@ -56,3 +57,4 @@ Not credited until the app uses them:
 - **Goetz, Keltner and Simon-Thomas**, "Compassion", *Psychological Bulletin*, 2010 ([note](goetz-compassion.md)): the urge to help, once the rework ships.
 - **Mikulincer and Shaver**, *Attachment in Adulthood*, 2007 ([note](mikulincer-shaver-attachment.md)): insecurity and wanting closeness, once the rework ships.
 - **Maier and Seligman**, "Learned helplessness at fifty", *Psychological Review*, 2016 ([note](maier-seligman-learned-helplessness.md)): giving up after what you can't control, once the rework ships.
+- **Leslie Greenberg**, *Emotion-Focused Therapy*, 2002 ([note](greenberg-emotion-focused-therapy.md)): anger that covers hurt or fear, once the rework ships.

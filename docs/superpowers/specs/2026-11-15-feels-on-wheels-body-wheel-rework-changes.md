@@ -8,7 +8,7 @@ Lucas, 2026-11-16, while the plan was written: the About paragraph doesn't say t
 
 ## "You might notice" is capped at 4
 
-The content tests allow 2 to 4 sensations per feeling, so a feeling the body wheel offers under more than 4 sensations lists the 4 most typical, not all of them: Anxious, Scared, Overwhelmed, Nervous, Excited, and Repelled.
+The content tests allow 2 to 4 sensations per feeling, so a feeling the body wheel offers under more than 4 sensations lists the 4 most typical, not all of them. After the hand pass, the wheel offers these that their cards leave out: Overwhelmed (Lightheaded, Run, Be alone, Cry), Nervous (Lightheaded, Cold hands), Scared (Dry mouth, Shaky hands, Cold hands, Weak knees), Anxious (Tight throat, Tense shoulders, Short breath, Queasy, Buzzing), Repelled (Tight throat), and Excited (Sweaty palms).
 
 Five feelings had only one sensation left after the old ones were mapped (§4), so each got a second by hand:
 

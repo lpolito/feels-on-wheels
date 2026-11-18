@@ -49,6 +49,8 @@ const TARGET_SEGMENT_REM = 4.5;
 const MAX_BAND_FRACTION = 0.6;
 const MIN_TARGET_PX = 44;
 const MIN_RING_SCALE = 1.25;
+/** Known-issues spec §4: WCAG 2.2 AA's target size (2.5.8). An opened ring's cells never go under it, even to fit. */
+const MIN_CELL_PX = 24;
 const START_ZOOMED_BELOW_PX = 12;
 const LABEL_HEIGHT_RATIO = 0.55;
 /** Spring stiffness (spec v1.2 §3.5): about 90% of a move done in 270ms. */
@@ -119,11 +121,19 @@ export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rota
   const width = ring === 0 && o.rest === 'side' ? o.sideCoreWidth : typicalWidth(layout, ring);
   const arcAtScale1 = width * rMid * vp.radius;
   const bandClamp = (MAX_BAND_FRACTION * vp.width) / ((r.outer - r.inner) * vp.radius);
-  const scale = Math.max(
+  const want = Math.max(
     Math.min((TARGET_SEGMENT_REM * o.remPx) / arcAtScale1, bandClamp),
     MIN_TARGET_PX / arcAtScale1,
     MIN_RING_SCALE,
   );
+  // Known-issues spec §4: the opened ring, with the opened cell's lift and outline, fits on screen: upright, across the
+  // stage with 1rem clear on each side; sideways, from 1rem after the notch to the aim width (left of the card). The
+  // 24 px floor beats the fit.
+  const band = (r.outer - r.inner) * vp.radius;
+  const fit = o.portrait
+    ? (vp.width - 2 * o.remPx - 2 * (LIFT_RADIAL_PX + OUTLINE_OUTSIDE_PX)) / band
+    : (vp.width - (o.insetLeft ?? 0) - o.remPx - 2 * LIFT_RADIAL_PX - OUTLINE_OUTSIDE_PX) / band;
+  const scale = Math.max(Math.min(want, fit), MIN_CELL_PX / arcAtScale1, MIN_RING_SCALE);
   const R = vp.radius * scale;
   // Spec v1.2 §4.1–§4.2: phones center the ring's middle; elsewhere the wheel meets the stage's right edge (the
   // card's column) — its outer edge plus the opened cell's lift and outline, so an opened outer word isn't clipped —

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
-import { buildLayout } from '../../src/model/layout';
+import { buildLayout, type Layout } from '../../src/model/layout';
 import { TAU, normAngle, type Viewport } from '../../src/model/geometry';
 import {
   createCameraController, restRotation, openedHalfHeight, overviewCamera, ringFocusCamera,
@@ -13,9 +13,9 @@ const phone: Viewport = { width: 375, height: 667, radius: 375 / 2 - 8 };
 const desk: Viewport = { width: 1440, height: 900, radius: 900 / 2 - 8 };
 const opts = { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
 
-function segHeight(ring: number, vp: Viewport, scale: number): number {
-  const r = layout.rings[ring]!;
-  const widths = r.segments.map((i) => layout.segments[i]!.end - layout.segments[i]!.start).sort((a, b) => a - b);
+function segHeight(l: Layout, ring: number, vp: Viewport, scale: number): number {
+  const r = l.rings[ring]!;
+  const widths = r.segments.map((i) => l.segments[i]!.end - l.segments[i]!.start).sort((a, b) => a - b);
   const typical = widths[Math.floor(widths.length / 2)]!;
   return typical * ((r.inner + r.outer) / 2) * vp.radius * scale;
 }
@@ -25,13 +25,6 @@ describe('v2.2.1: the left safe-area inset', () => {
   const notched: Viewport = { width: 476, height: 393, radius: 188.5 };
   const wheels = loadData().wheels.map((w, i) => (i === 0 ? layout : buildLayout(w)));
 
-  /**
-   * Known issue (roadmap: "The two wheels can rest, and zoom, differently"): with the body wheel rework's 126 outer
-   * cells, the body wheel's outer ring zooms in too far to clear the notch and stay left of the card. When that's
-   * fixed, this expectation fails; remove the entry.
-   */
-  const OVERFLOWS = new Set(['body ring 2']);
-
   test('the opened cell starts 1rem after the inset and ends before the aim width, on every ring of both wheels', () => {
     for (const l of wheels) {
       for (const ring of [0, 1, 2]) {
@@ -40,11 +33,35 @@ describe('v2.2.1: the left safe-area inset', () => {
         const R = notched.radius * cam.scale;
         const name = `${l.wheelId} ring ${ring}`;
         expect(cam.cx + r.inner * R - 10, `${name} left`).toBeGreaterThanOrEqual(59 + 16 - 1e-9);
-        if (OVERFLOWS.has(name)) {
-          expect(cam.cx + r.outer * R + 12, `${name} right: still overflows; if not, drop it from OVERFLOWS`).toBeGreaterThan(notched.width);
-        } else {
-          expect(cam.cx + r.outer * R + 12, `${name} right`).toBeLessThanOrEqual(notched.width + 1e-9);
+        expect(cam.cx + r.outer * R + 12, `${name} right`).toBeLessThanOrEqual(notched.width + 1e-9);
+      }
+    }
+  });
+
+  test('upright, the opened ring fits across the stage with 1rem clear, on every ring of both wheels', () => {
+    const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    for (const [w, h] of [[320, 568], [360, 640], [375, 667], [390, 844], [430, 932]] as const) {
+      const vp: Viewport = { width: w, height: h, radius: w / 2 - 8 };
+      for (const l of wheels) {
+        for (const ring of [0, 1, 2]) {
+          const r = l.rings[ring]!;
+          const cam = ringFocusCamera(l, ring, vp, 0, o);
+          const R = vp.radius * cam.scale;
+          const name = `${l.wheelId} ring ${ring} at ${w}×${h}`;
+          // The opened cell's 10 px lift and 2 px outline at both ends.
+          expect(cam.cx + r.inner * R - 10 - 2, `${name} left`).toBeGreaterThanOrEqual(16 - 1e-9);
+          expect(cam.cx + r.outer * R + 10 + 2, `${name} right`).toBeLessThanOrEqual(w - 16 + 1e-9);
         }
+      }
+    }
+  });
+
+  test('an opened cell is never under 24 px tall, even where the ring cannot fit (a folded Galaxy Fold)', () => {
+    const vp: Viewport = { width: 280, height: 653, radius: 132 };
+    const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    for (const l of wheels) {
+      for (const ring of [0, 1, 2]) {
+        expect(segHeight(l, ring, vp, ringFocusCamera(l, ring, vp, 0, o).scale), `${l.wheelId} ring ${ring}`).toBeGreaterThanOrEqual(24 - 1e-9);
       }
     }
   });
@@ -127,19 +144,19 @@ describe('resting cameras', () => {
 
   test('ringFocusCamera typical segment ≈ 4.5rem tall on a roomy viewport', () => {
     const cam = ringFocusCamera(layout, 2, desk, 0, opts);
-    expect(segHeight(2, desk, cam.scale)).toBeCloseTo(72, 6);
+    expect(segHeight(layout, 2, desk, cam.scale)).toBeCloseTo(72, 6);
   });
 
   test('ringFocusCamera is clamped by the 60% band rule on a narrow viewport', () => {
     const narrow: Viewport = { width: 400, height: 1000, radius: 192 };
     const cam = ringFocusCamera(layout, 1, narrow, 0, opts);
     expect((0.62 - 0.32) * narrow.radius * cam.scale).toBeLessThanOrEqual(0.6 * narrow.width + 1e-9);
-    expect(segHeight(1, narrow, cam.scale)).toBeLessThan(72);
+    expect(segHeight(layout, 1, narrow, cam.scale)).toBeLessThan(72);
   });
 
   test('outer ring focus on a 375×667 viewport gives focused-ring segments ≥ 44px tall', () => {
     const cam = ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
-    expect(segHeight(2, phone, cam.scale)).toBeGreaterThanOrEqual(44 - 1e-9);
+    expect(segHeight(layout, 2, phone, cam.scale)).toBeGreaterThanOrEqual(44 - 1e-9);
   });
 
   test('half wheelCamera puts the center on the left edge, halfway down, outer edge at 95% width', () => {

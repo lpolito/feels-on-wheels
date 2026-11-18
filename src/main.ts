@@ -2,7 +2,7 @@ import { data } from './boot';
 import { createAnnouncer } from './a11y/announce';
 import { installFocusTracking, moveFocus } from './a11y/focus';
 import { announceFor, createA11yTree, type A11yTree } from './a11y/tree';
-import { createCameraController, isPortrait, openedHalfHeight, restView, type CameraController, type CameraOpts } from './camera';
+import { createCameraController, isPortrait, openedHalfHeight, restView, sharedSizes, type CameraController, type CameraOpts } from './camera';
 import { createController, type Controller } from './controller';
 import { t, wheelText } from './i18n';
 import { attachGestures } from './input/gestures';
@@ -41,6 +41,8 @@ const media = (q: string): MediaQueryList => matchMedia(q);
 // ── Wheels (spec v2 §7) ──────────────────────────────────────────────────
 const { feelings } = data;
 const wheelIds = data.wheels.map((w) => w.id);
+/** Known-issues spec §3: worked out once from the wheel list, so every wheel rests in the same view. */
+const shared = sharedSizes(data.wheels);
 const firstId = wheelIds[0]!;
 /** Each feeling's first place on the first wheel: its color and jump target on other wheels (spec v2 §5.1, §6.2). */
 const home = homes(buildLayout(data.wheels[0]!));
@@ -128,7 +130,7 @@ function measure(): { vp: Viewport; opts: CameraOpts } {
   const vp = { width, height, radius: Math.max(Math.min(width, height) / 2 - 8, 1), drawWidth: box.width };
   // v2.2.1: the app's left padding is env(safe-area-inset-left), a sideways phone's notch; the camera keeps clear of it.
   const insetLeft = Number.parseFloat(getComputedStyle(app).paddingLeft) || 0;
-  return { vp, opts: { remPx, portrait, rest: restView(layout, vp, whole), openedY: null, insetLeft } };
+  return { vp, opts: { remPx, portrait, rest: restView(shared.outerArc, vp, whole), openedY: null, insetLeft, sideCoreWidth: shared.coreWidth } };
 }
 
 let vp!: Viewport;

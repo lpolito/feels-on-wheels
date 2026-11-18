@@ -2,14 +2,15 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { buildLayout } from '../../src/model/layout';
 import { TAU, hitTest, normAngle, rotationToCenter, segmentAt, type Camera, type Viewport } from '../../src/model/geometry';
-import { createCameraController, restRotation, ringFocusCamera, type CameraController } from '../../src/camera';
+import { createCameraController, restRotation, ringFocusCamera, sharedSizes, type CameraController } from '../../src/camera';
 import { createStore, initialState, type Action, type State, type Store } from '../../src/state/store';
 import { createController, type Controller } from '../../src/controller';
 
 const layout = buildLayout(loadData().wheel);
+const SHARED = sharedSizes(loadData().wheels);
 const idx = (p: string): number => layout.byPath.get(p)!;
 const desk: Viewport = { width: 1200, height: 900, radius: 442 };
-const opts = { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null };
+const opts = { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
 
 let now = 0;
 let queue: Map<number, FrameRequestCallback>;
@@ -56,7 +57,7 @@ function setup(initial = initialState): void {
 beforeEach(() => setup());
 
 const phoneVp: Viewport = { width: 390, height: 844, radius: 187 };
-const phoneOpts = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null };
+const phoneOpts = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
 const halfScale = (0.95 * phoneVp.width) / phoneVp.radius;
 
 /** A phone (spec v1.2 §3.2): the whole-wheel view is the half-wheel. */
@@ -601,7 +602,7 @@ describe('intro and restore', () => {
 
 describe('side view (sideways phone, spec v2.1 §6.2)', () => {
   const sideVp: Viewport = { width: 511, height: 393, radius: 393 / 2 - 8 };
-  const sideOpts = { remPx: 16, portrait: false, rest: 'side' as const, openedY: null };
+  const sideOpts = { remPx: 16, portrait: false, rest: 'side' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
   const sideCam = (rotation: number) => ringFocusCamera(layout, 0, sideVp, rotation, sideOpts);
 
   function setupSide(initial = initialState): void {
@@ -631,6 +632,16 @@ describe('side view (sideways phone, spec v2.1 §6.2)', () => {
     if (rotation !== undefined) expect(sameAngle(camera.current.rotation, rotation)).toBeLessThan(1e-6);
   };
 
+  test('the feelings wheel rests and opens a core word at the shared side zoom, so opening never zooms out', () => {
+    const body = buildLayout(loadData().wheels.find((w) => w.id === 'body')!);
+    const shared = ringFocusCamera(body, 0, sideVp, 0, sideOpts).scale;
+    setupSide();
+    expect(camera.current.scale).toBeCloseTo(shared, 9);
+    setupSide(opened('happy'));
+    step(2000);
+    expect(camera.current.scale).toBeCloseTo(shared, 9);
+  });
+
   test("starts on the side view with Happy at 3 o'clock", () => {
     setupSide();
     expectSide();
@@ -651,9 +662,10 @@ describe('side view (sideways phone, spec v2.1 §6.2)', () => {
   test('a tap selects without moving the camera', () => {
     setupSide();
     const before = { ...camera.current };
-    ctl.handle([{ type: 'tap', ...sideScreenOf(idx('fearful')) }]);
+    // Surprised sits beside Happy: at the shared side zoom (known-issues spec §3), Fearful is off-screen.
+    ctl.handle([{ type: 'tap', ...sideScreenOf(idx('surprised')) }]);
     step(1000);
-    expect(store.get()).toMatchObject({ selected: idx('fearful'), opened: false, view: { mode: 'wheel' } });
+    expect(store.get()).toMatchObject({ selected: idx('surprised'), opened: false, view: { mode: 'wheel' } });
     expect(camera.current).toEqual(before);
   });
 
@@ -759,7 +771,7 @@ describe('half-wheel (phone)', () => {
     const rot = camera.current.rotation;
     const before = store.get();
     const land: Viewport = { width: 844, height: 390, radius: 187 };
-    ctl.setViewport(land, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null });
+    ctl.setViewport(land, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     step(2000);
     expect(store.get()).toBe(before);
     expect(before).toMatchObject({ selected: idx('surprised'), opened: false, view: { mode: 'wheel' } });
@@ -849,7 +861,7 @@ describe('viewport', () => {
   test('setViewport while opened keeps the same word centered at angle 0', () => {
     setup(opened('angry/aggressive/hostile'));
     step(1000);
-    ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true, rest: 'whole' as const, openedY: null });
+    ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     step(1000);
     expect(offCenter(idx('angry/aggressive/hostile'))).toBeLessThan(1e-9);
     expect(camera.current.cx + 0.81 * 342 * camera.current.scale).toBeCloseTo(350, 6);

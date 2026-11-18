@@ -2,12 +2,13 @@ import { beforeAll, describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { label, nodeLabel, setLocale } from '../../src/i18n';
 import { buildLayout, homes, litMask } from '../../src/model/layout';
-import { overviewCamera, ringFocusCamera } from '../../src/camera';
+import { overviewCamera, ringFocusCamera, sharedSizes } from '../../src/camera';
 import { buildFillTable, type Palette } from '../../src/render/colors';
 import { createWheelRenderer, type Frame } from '../../src/render/wheel';
 import { drawWidthOf, type Viewport } from '../../src/model/geometry';
 
 const { wheel, locale } = loadData();
+const SHARED = sharedSizes(loadData().wheels);
 const layout = buildLayout(wheel);
 beforeAll(() => setLocale(locale));
 
@@ -91,7 +92,7 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     r.setColors(bodyTable, bodyPalette);
     r.resize(phone.width, phone.height, 1);
     const all = litMask(body, null);
-    const cam = ringFocusCamera(body, 0, phone, 0, { remPx, portrait: true, rest: 'whole' as const, openedY: null });
+    const cam = ringFocusCamera(body, 0, phone, 0, { remPx, portrait: true, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     r.draw({ cam, vp: phone, lit: all, prevLit: all, fadeT: 1, selected: null, opened: false, pulseT: 1, mode: 'ring', ring: 0, remPx, keyboardFocus: false });
     const sizes = (ring: number) => rec.texts.flatMap((t, k) => (labelsOn(ring).has(t) ? [pxOf(rec.fonts[k]!)] : []));
     return { r, sizes };
@@ -164,7 +165,7 @@ describe('wheel renderer', () => {
     const r = createWheelRenderer(canvas, layout, ctx);
     r.setColors(table, palette);
     r.resize(375, 667, 3);
-    r.draw(frame(phone, { cam: ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, rest: 'whole' as const, openedY: null }), mode: 'ring' }));
+    r.draw(frame(phone, { cam: ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth }), mode: 'ring' }));
     expect(r.stats.segmentsDrawn).toBeGreaterThan(0);
     expect(r.stats.segmentsDrawn).toBeLessThan(40);
   });
@@ -272,7 +273,7 @@ describe('wheel renderer', () => {
   test('opened: shadowBlur set exactly once per frame', () => {
     const hostile = layout.byPath.get('angry/aggressive/hostile')!;
     const sel = layout.segments[hostile]!;
-    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null });
+    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     const lit = litMask(layout, hostile);
     const { rec } = draw(desk, { cam, mode: 'ring', selected: hostile, opened: true, lit, prevLit: lit, pulseT: 0.5 });
     expect(rec.shadowSets).toBe(1);
@@ -282,7 +283,7 @@ describe('wheel renderer', () => {
   test('opened label uses weight 800 and a larger px than its neighbours', () => {
     const hostile = layout.byPath.get('angry/aggressive/hostile')!;
     const sel = layout.segments[hostile]!;
-    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null });
+    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     const lit = litMask(layout, hostile);
     const { rec } = draw(desk, { cam, mode: 'ring', selected: hostile, opened: true, lit, prevLit: lit });
     const at = (t: string) => rec.fonts[rec.texts.lastIndexOf(t)]!;
@@ -320,7 +321,7 @@ describe('wheel renderer', () => {
 
   test('inner outline line is a parallel 3px inset on an opened (lifted) core cell', () => {
     const angry = layout.byPath.get('angry')!;
-    const cam = ringFocusCamera(layout, 0, desk, -layout.segments[angry]!.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null });
+    const cam = ringFocusCamera(layout, 0, desk, -layout.segments[angry]!.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     const lit = litMask(layout, angry);
     const { rec } = draw(desk, { cam, mode: 'ring', selected: angry, opened: true, lit, prevLit: lit });
     for (const { start, end } of insets(rec)) {
@@ -391,7 +392,7 @@ describe('wheel renderer', () => {
   test('with a sprite cache, labels are blitted from it except the opened (pulsing) one', () => {
     const hostile = layout.byPath.get('angry/aggressive/hostile')!;
     const sel = layout.segments[hostile]!;
-    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null });
+    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     const lit = litMask(layout, hostile);
     const sprited: string[] = [];
     const scales: number[] = [];

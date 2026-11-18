@@ -42,7 +42,8 @@ export interface Layout {
 
 const TAU = Math.PI * 2;
 
-function leaves(n: WheelNode): number {
+/** The number of leaves under a node (1 for a leaf). Every leaf is in the wheel's outer ring. */
+export function leaves(n: WheelNode): number {
   return n.children ? n.children.reduce((sum, c) => sum + leaves(c), 0) : 1;
 }
 

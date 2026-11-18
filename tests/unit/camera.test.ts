@@ -101,8 +101,9 @@ describe('resting cameras', () => {
     expect(innerX(1, mid)).toBeCloseTo(16, 6);
   });
 
-  test('portrait ring camera centers the ring middle horizontally and the word vertically', () => {
-    for (const ring of [0, 1, 2]) {
+  test('portrait ring camera centers the middle and outer rings horizontally, and the word vertically', () => {
+    // The core ring keeps the rest view's horizontal position (known issues, round two).
+    for (const ring of [1, 2]) {
       const cam = ringFocusCamera(layout, ring, phone, 0, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
       const r = layout.rings[ring]!;
       expect(cam.cx + ((r.inner + r.outer) / 2) * phone.radius * cam.scale).toBeCloseTo(0.5 * phone.width, 6);
@@ -217,6 +218,20 @@ describe('resting cameras', () => {
     expect(wheelCamera(layout, vp, r, sideOpts)).toEqual(ringFocusCamera(layout, 0, vp, r, sideOpts));
     const body = buildLayout(loadData().wheels.find((w) => w.id === 'body')!);
     expect(wheelCamera(body, vp, 0, sideOpts).scale, 'same side zoom on both wheels').toBe(wheelCamera(layout, vp, 0, sideOpts).scale);
+  });
+
+  test("portrait, a core word keeps the rest view's horizontal position; deeper words stay centered", () => {
+    const vp: Viewport = { width: 402, height: 600, radius: 193 };
+    const half = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    for (const l of [layout, buildLayout(loadData().wheels.find((w) => w.id === 'body')!)]) {
+      expect(ringFocusCamera(l, 0, vp, 0, half).cx, `${l.wheelId} half`).toBe(wheelCamera(l, vp, 0, half).cx);
+      expect(ringFocusCamera(l, 0, vp, 0, { ...half, rest: 'whole' }).cx, `${l.wheelId} whole`).toBe(vp.width / 2);
+      for (const ring of [1, 2]) {
+        const cam = ringFocusCamera(l, ring, vp, 0, half);
+        const mid = ((l.rings[ring]!.inner + l.rings[ring]!.outer) / 2) * vp.radius * cam.scale;
+        expect(cam.cx + mid, `${l.wheelId} ring ${ring} centered`).toBeCloseTo(vp.width / 2, 6);
+      }
+    }
   });
 
   test('both wheels rest on the half-wheel on an upright iPad (820 × 1180)', () => {

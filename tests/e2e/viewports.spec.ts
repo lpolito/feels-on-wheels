@@ -22,12 +22,6 @@ const SIZES: [number, number][] = [
   [400, 350], [470, 460], [360, 340], [559, 320], [560, 320],
 ];
 
-/**
- * Known before v2.1 (roadmap Known issues): on tiny, short windows the body wheel's whole-wheel view is too small for
- * any area label ("Throat / mouth" needs a bigger cell), so it rests unlabelled. The feelings wheel's short words fit.
- */
-const BODY_UNLABELLED = new Set(['500×300', '559×320', '360×340']);
-
 /** Spec v2.1 §6.1, as camera.ts isPortrait (the app fills the viewport). */
 const portrait = (w: number, h: number) => h >= w || (w < 720 && h >= 480) || w < 560;
 
@@ -55,13 +49,9 @@ test.describe('viewport sweep', () => {
         await open(page, url);
         await controls(page, w, h);
         expect(inside(await box(hint(page)), w, h), 'message inside viewport').toBe(true);
-        const core = (await page.evaluate(() => window.__fw.labelsByRing()))[0]!;
-        if (url === '/body' && BODY_UNLABELLED.has(`${w}×${h}`)) {
-          test.info().annotations.push({ type: 'known issue', description: 'body wheel too small for area labels at rest' });
-          expect(core, 'still unlabelled; if this now draws labels, drop the size from BODY_UNLABELLED').toBe(0);
-        } else {
-          expect(core, 'core labels').toBeGreaterThan(0);
-        }
+        // Known issues, round two: labels never disappear, so every ring in view draws its labels at any size.
+        const labels = await page.evaluate(() => window.__fw.labelsByRing());
+        expect(labels.every((n) => n > 0), `labels on every ring: ${JSON.stringify(labels)}`).toBe(true);
         expect((await state(page)).view.mode).toBe('wheel');
         const app = await box(page.locator('#app'));
         const stage = await box(page.locator('#stage'));

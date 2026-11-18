@@ -214,9 +214,10 @@ export function createWheelRenderer(
       const { cam, vp } = f;
       const R = vp.radius * cam.scale;
       const k = f.remPx / 16;
-      // Spec v2.1 §5: 8 px in the whole-wheel view; in a ring view 12 px on the view ring and inside it, 10 px outside.
-      const floor = (ring: number): number =>
-        (f.mode !== 'ring' ? 8 : f.ring !== null && ring > f.ring ? 10 : 12) * k;
+      // Known issues, round two (Lucas, 2026-11-18): labels are the look of the wheel, so they never disappear. A label
+      // shrinks as far as its cell needs; the 1 px floor only lets the fitting loop end. (Spec v2.1 §5's 8 / 10 / 12 px
+      // floors were readability choices, not accessibility ones: the canvas is hidden from screen readers.)
+      const floor = (_ring: number): number => 1 * k;
       // Quantised so pinch frames keep reusing label fits.
       const maxPx = Math.floor(Math.min(Math.max(16 * k * cam.scale, 16 * k), 24 * k) * 2) / 2;
       const lifted = f.opened ? f.selected : null;

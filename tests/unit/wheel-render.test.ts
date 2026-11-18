@@ -85,20 +85,7 @@ describe('label floors by ring (spec v2.1 §5)', () => {
   };
   const bodyTable = buildFillTable(bodyPalette, 3, 'light');
   const phone: Viewport = { width: 393, height: 851, radius: 188.5 };
-  const labelsOn = (ring: number) => new Set(body.rings[ring]!.segments.map((i) => nodeLabel(body.segments[i]!.node)));
   const pxOf = (font: string) => Number(/([\d.]+)px/.exec(font)![1]);
-
-  function drawRing0(remPx: number) {
-    const { canvas, ctx, rec } = fakeCanvas();
-    const r = createWheelRenderer(canvas, body, ctx);
-    r.setColors(bodyTable, bodyPalette);
-    r.resize(phone.width, phone.height, 1);
-    const all = litMask(body, null);
-    const cam = ringFocusCamera(body, 0, phone, 0, { remPx, portrait: true, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
-    r.draw({ cam, vp: phone, lit: all, prevLit: all, fadeT: 1, selected: null, opened: false, pulseT: 1, mode: 'ring', ring: 0, remPx, keyboardFocus: false });
-    const sizes = (ring: number) => rec.texts.flatMap((t, k) => (labelsOn(ring).has(t) ? [pxOf(rec.fonts[k]!)] : []));
-    return { r, sizes };
-  }
 
   test('opened middle-ring labels on the body wheel fit their lifted cell at bold, and never shrink', () => {
     const vp: Viewport = { width: 390, height: 600, radius: 187 };
@@ -133,20 +120,6 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     }
   });
 
-  test('ring view: 12 px floor on the focused ring and inside it, 10 px outside it', () => {
-    const { r, sizes } = drawRing0(16);
-    expect(r.stats.labelsByRing[2]).toBeGreaterThan(0);
-    expect(Math.min(...sizes(2))).toBeGreaterThanOrEqual(10);
-    expect(Math.min(...sizes(2))).toBeLessThan(12);
-    expect(Math.min(...sizes(0))).toBeGreaterThanOrEqual(12);
-  });
-
-  test('the floors scale with remPx', () => {
-    const { r, sizes } = drawRing0(20);
-    expect(r.stats.labelsByRing[2]).toBeGreaterThan(0);
-    expect(Math.min(...sizes(2))).toBeGreaterThanOrEqual(12.5);
-  });
-
   test('a body outer cell is filled with its own ring\'s shade, like the feelings wheel (rework changes)', () => {
     const homed = buildLayout(bodyWheel, homes(layout));
     const { canvas, ctx, rec } = fakeCanvas();
@@ -171,15 +144,19 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     expect(nodeLabel({ kind: 'area', id: 'urges' })).toBe('Urges');
   });
 
-  test('whole-wheel view keeps 8 px for every ring, and labelsByRing adds up', () => {
+  test('labels never disappear: a tiny whole wheel draws every label on both wheels, and labelsByRing adds up', () => {
     const tiny: Viewport = { width: 300, height: 300, radius: 142 };
-    const { canvas, ctx, rec } = fakeCanvas();
-    const r = createWheelRenderer(canvas, layout, ctx);
-    r.setColors(table, palette);
-    r.resize(300, 300, 1);
-    r.draw(frame(tiny));
-    expect(Math.min(...rec.fonts.map(pxOf))).toBeGreaterThanOrEqual(8);
-    expect(r.stats.labelsByRing.reduce((a, b) => a + b, 0)).toBe(r.stats.labelsDrawn);
+    for (const [l, tbl, pal] of [[layout, table, palette], [body, bodyTable, bodyPalette]] as const) {
+      const { canvas, ctx, rec } = fakeCanvas();
+      const r = createWheelRenderer(canvas, l, ctx);
+      r.setColors(tbl, pal);
+      r.resize(300, 300, 1);
+      const all = litMask(l, null);
+      r.draw({ ...frame(tiny), lit: all, prevLit: all });
+      expect(r.stats.labelsDrawn, l.wheelId).toBe(l.segments.length);
+      expect(Math.min(...rec.fonts.map(pxOf)), `${l.wheelId}: some labels under the old 8 px floor`).toBeLessThan(8);
+      expect(r.stats.labelsByRing.reduce((a, b) => a + b, 0)).toBe(r.stats.labelsDrawn);
+    }
   });
 });
 
@@ -211,16 +188,6 @@ describe('wheel renderer', () => {
     r.resize(333.3, 200.2, 2.625);
     expect(canvas.width).toBe(Math.round(333.3 * 2.625));
     expect(canvas.height).toBe(Math.round(200.2 * 2.625));
-  });
-
-  test('labels are never drawn below 8px in overview', () => {
-    const tiny: Viewport = { width: 200, height: 200, radius: 92 };
-    const { canvas, ctx } = fakeCanvas();
-    const r = createWheelRenderer(canvas, layout, ctx);
-    r.setColors(table, palette);
-    r.resize(200, 200, 1);
-    r.draw(frame(tiny));
-    expect(r.stats.labelsDrawn).toBeLessThan(130);
   });
 
   test('faded fill used for unlit segments once the fade completes', () => {

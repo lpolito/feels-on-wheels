@@ -1,6 +1,5 @@
-import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { exploreLead, expectTitle, head, hint, idle, open, selectedPath, settled, state, tapPath, title } from './helpers';
+import { axe, exploreLead, expectTitle, head, hint, idle, open, selectedPath, settled, state, tapPath, title } from './helpers';
 
 const TAU = Math.PI * 2;
 const sameAngle = (a: number, b: number) => {
@@ -791,17 +790,17 @@ for (const colorScheme of ['light', 'dark'] as const) {
       await open(page, '/angry/aggressive/hostile');
       // Let the unfold finish, so axe reads the settled colors.
       await settled(page);
-      expect((await new AxeBuilder({ page }).analyze()).violations, 'opened').toEqual([]);
+      expect((await axe(page).analyze()).violations, 'opened').toEqual([]);
       await page.keyboard.press('Escape');
       await idle(page);
       await expect(title(page)).toHaveText('Hostile');
       await settled(page);
-      expect((await new AxeBuilder({ page }).analyze()).violations, 'selected').toEqual([]);
+      expect((await axe(page).analyze()).violations, 'selected').toEqual([]);
       await page.keyboard.press('Escape');
       await expect(page.locator('fw-card')).toBeHidden();
       // The message fades in (150 ms); let it finish so axe reads its settled contrast.
       await settled(page);
-      expect((await new AxeBuilder({ page }).analyze()).violations, 'nothing').toEqual([]);
+      expect((await axe(page).analyze()).violations, 'nothing').toEqual([]);
     });
 
     test(`axe: no violations with the opened card scrolled (${colorScheme})`, async ({ page, isMobile }) => {
@@ -812,7 +811,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       const card = page.locator('fw-card');
       expect(await card.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true);
       await card.evaluate((el) => { el.scrollTop = el.scrollHeight; });
-      expect((await new AxeBuilder({ page }).analyze()).violations, 'opened and scrolled').toEqual([]);
+      expect((await axe(page).analyze()).violations, 'opened and scrolled').toEqual([]);
     });
   });
 }
@@ -874,10 +873,10 @@ test.describe('v2.1: phones turned sideways', () => {
     await page.setViewportSize({ width: 851, height: 393 });
     await open(page);
     await settled(page);
-    expect((await new AxeBuilder({ page }).analyze()).violations, 'at rest').toEqual([]);
+    expect((await axe(page).analyze()).violations, 'at rest').toEqual([]);
     await open(page, '/body/head/headache');
     await settled(page);
-    expect((await new AxeBuilder({ page }).analyze()).violations, 'opened').toEqual([]);
+    expect((await axe(page).analyze()).violations, 'opened').toEqual([]);
   });
 
   test('iPhone SE sideways, word opened: the card is in the column and the word is clear of the switch', async ({ page }) => {

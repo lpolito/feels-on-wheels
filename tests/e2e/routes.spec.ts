@@ -1,6 +1,5 @@
-import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { exploreLead, aboutHeading, aboutLink, backToWheel, focused, hint, idle, open, selectedPath, settled, state, tapPath, title } from './helpers';
+import { axe, exploreLead, aboutHeading, aboutLink, backToWheel, focused, hint, idle, open, selectedPath, settled, state, tapPath, title } from './helpers';
 
 // URL redesign spec §1, §2, §6, §7: real paths, titles that follow the route, and not found.
 
@@ -127,7 +126,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
     await open(page, '/happy/plaful');
     await expect(notFound(page)).toBeVisible();
     await settled(page);
-    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    expect((await axe(page).analyze()).violations).toEqual([]);
   });
 }
 

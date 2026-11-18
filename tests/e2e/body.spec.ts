@@ -1,6 +1,5 @@
-import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { exploreLead, hint, idle, open, ring, selectedPath, settled, state, tapPath, title } from './helpers';
+import { axe, exploreLead, hint, idle, open, ring, selectedPath, settled, state, tapPath, title } from './helpers';
 
 const AREAS = /^(head|throat|shoulders|hands|chest|stomach|whole-body|urges)$/;
 const wheelId = (page: Page) => page.evaluate(() => window.__fw.wheel());
@@ -218,17 +217,17 @@ for (const colorScheme of ['light', 'dark'] as const) {
       await page.emulateMedia({ colorScheme });
       await open(page, '/body/chest/racing-heart/scared');
       await settled(page);
-      expect((await new AxeBuilder({ page }).analyze()).violations, 'opened').toEqual([]);
+      expect((await axe(page).analyze()).violations, 'opened').toEqual([]);
       await page.keyboard.press('Escape');
       await idle(page);
       await page.keyboard.press('Escape');
       await expect(page.locator('fw-card')).toBeHidden();
       await settled(page);
-      expect((await new AxeBuilder({ page }).analyze()).violations, 'nothing').toEqual([]);
+      expect((await axe(page).analyze()).violations, 'nothing').toEqual([]);
       await tapPath(page, 'chest');
       await expect(title(page)).toHaveText('Chest');
       await settled(page);
-      expect((await new AxeBuilder({ page }).analyze()).violations, 'area selected').toEqual([]);
+      expect((await axe(page).analyze()).violations, 'area selected').toEqual([]);
     });
   });
 }
@@ -397,7 +396,7 @@ test.describe('v2.2: the message heading', () => {
   test('axe: the body wheel at rest, with its heading', async ({ page }) => {
     await open(page, '/body');
     await settled(page);
-    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    expect((await axe(page).analyze()).violations).toEqual([]);
   });
 });
 
@@ -428,7 +427,7 @@ test.describe('v2.2: the core feeling in the definition', () => {
   test('axe: a body wheel definition with its core feeling link', async ({ page }) => {
     await open(page, '/body/whole-body/nothing-much/content');
     await settled(page);
-    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    expect((await axe(page).analyze()).violations).toEqual([]);
   });
 });
 

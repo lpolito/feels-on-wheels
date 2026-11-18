@@ -47,6 +47,22 @@ describe('fitLabel', () => {
     expect(fitLabel('Mad', measure, { width: 200, height: 10 }, sizes)).toBeNull();
   });
 
+  test('with wrapAt, a label wraps rather than shrink below it, as it did with a floor (known issues, round two)', () => {
+    // One line fits only at 7.5 px; two lines fit at 12 px: wrap, as before the floors went.
+    const r = fitLabel('Out of Control', measure, { width: 75, height: 60 }, { min: 1, max: 24, wrapAt: 12 })!;
+    expect(r.lines).toEqual(['Out of', 'Control']);
+  });
+
+  test('with wrapAt, a label that fits neither way above it takes the larger of one and two lines, down to min', () => {
+    // Too thin for two lines at all; one line fits at a small size: drawn, not dropped.
+    const thin = fitLabel('Out of Control', measure, { width: 60, height: 14 }, { min: 1, max: 24, wrapAt: 12 })!;
+    expect(thin.lines).toEqual(['Out of Control']);
+    expect(thin.px).toBeLessThan(12);
+    // Room for two lines below wrapAt beats a smaller single line.
+    const tall = fitLabel('Out of Control', measure, { width: 40, height: 40 }, { min: 1, max: 24, wrapAt: 12 })!;
+    expect(tall.lines).toEqual(['Out of', 'Control']);
+  });
+
   test('large text settings: long labels wrap or shrink, never truncated', () => {
     const big = { min: 18, max: 36 }; // root font 24px → sizes scaled by 24/16
     for (const word of ['Out of Control', 'Disillusioned', 'Disrespected', 'Insignificant']) {

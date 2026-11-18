@@ -133,6 +133,21 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     }
   });
 
+  test('a long core label wraps to two lines in a ring view, as before the floors went (known issues, round two)', () => {
+    const vp: Viewport = { width: 393, height: 600, radius: 188.5 };
+    const { canvas, ctx, rec } = fakeCanvas();
+    const r = createWheelRenderer(canvas, body, ctx);
+    r.setColors(bodyTable, bodyPalette);
+    r.resize(vp.width, vp.height, 1);
+    const throat = body.byPath.get('throat')!;
+    const cam = ringFocusCamera(body, 0, vp, -body.segments[throat]!.mid, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
+    const all = litMask(body, null);
+    r.draw({ cam, vp, lit: all, prevLit: all, fadeT: 1, selected: null, opened: false, pulseT: 1, mode: 'ring', ring: 0, remPx: 16, keyboardFocus: false });
+    expect(rec.texts).not.toContain('Throat / mouth');
+    expect(rec.texts).toContain('Throat');
+    expect(rec.texts).toContain('/ mouth');
+  });
+
   test('a body outer cell is filled with its own ring\'s shade, like the feelings wheel (rework changes)', () => {
     const homed = buildLayout(bodyWheel, homes(layout));
     const { canvas, ctx, rec } = fakeCanvas();

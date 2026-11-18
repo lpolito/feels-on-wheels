@@ -60,7 +60,7 @@ const PULSE_FROM = 0.96;
 /** Label fits are reused while the box stays within this many px (pinch frames). */
 const FIT_TOLERANCE = 1;
 
-interface LabelCache { w: number; h: number; min: number; max: number; result: { lines: string[]; px: number } | null }
+interface LabelCache { w: number; h: number; min: number; max: number; wrapAt: number; result: { lines: string[]; px: number } | null }
 
 const easeOut = (t: number): number => 1 - (1 - t) ** 3;
 
@@ -143,14 +143,15 @@ export function createWheelRenderer(
     g.closePath();
   }
 
-  function fitted(i: number, w: number, h: number, min: number, max: number): LabelCache['result'] {
+  function fitted(i: number, w: number, h: number, min: number, max: number, wrapAt: number): LabelCache['result'] {
     const c = labelCache[i];
-    if (c && Math.abs(c.w - w) <= FIT_TOLERANCE && Math.abs(c.h - h) <= FIT_TOLERANCE && c.min === min && c.max === max) {
+    if (c && Math.abs(c.w - w) <= FIT_TOLERANCE && Math.abs(c.h - h) <= FIT_TOLERANCE && c.min === min && c.max === max
+      && c.wrapAt === wrapAt) {
       return c.result;
     }
     stats.labelFits++;
-    const result = fitLabel(texts[i]!, measure, { width: w, height: h }, { min, max });
-    labelCache[i] = { w, h, min, max, result };
+    const result = fitLabel(texts[i]!, measure, { width: w, height: h }, { min, max, wrapAt });
+    labelCache[i] = { w, h, min, max, wrapAt, result };
     return result;
   }
 
@@ -166,7 +167,7 @@ export function createWheelRenderer(
       return c.result ?? fit;
     }
     const result = fitLabel(texts[i]!, measureBold, { width: w, height: h }, { min, max });
-    openedFit = { i, w, h, min, max, result };
+    openedFit = { i, w, h, min, max, wrapAt: min, result };
     return result ?? fit;
   }
 
@@ -249,10 +250,13 @@ export function createWheelRenderer(
       const { cam, vp } = f;
       const R = vp.radius * cam.scale;
       const k = f.remPx / 16;
-      // Known issues, round two (Lucas, 2026-11-18): labels are the look of the wheel, so they never disappear. A label
-      // shrinks as far as its cell needs; the 1 px floor only lets the fitting loop end. (Spec v2.1 §5's 8 / 10 / 12 px
-      // floors were readability choices, not accessibility ones: the canvas is hidden from screen readers.)
-      const floor = (_ring: number): number => 1 * k;
+      // Known issues, round two (Lucas, 2026-11-18): labels are the look of the wheel, so they never disappear. Spec
+      // v2.1 §5's sizes (8 px in the whole-wheel view; in a ring view 12 px on the view ring and inside it, 10 px
+      // outside) are now where a label wraps to two lines rather than shrink further; below them it shrinks as far as
+      // its cell needs (the 1 px floor only lets the fitting loop end). They were readability choices, not
+      // accessibility ones: the canvas is hidden from screen readers.
+      const wrapAt = (ring: number): number => (f.mode !== 'ring' ? 8 : f.ring !== null && ring > f.ring ? 10 : 12) * k;
+      const floor = 1 * k;
       // Quantised so pinch frames keep reusing label fits.
       const maxPx = Math.floor(Math.min(Math.max(16 * k * cam.scale, 16 * k), 24 * k) * 2) / 2;
       const lifted = f.opened ? f.selected : null;
@@ -300,7 +304,7 @@ export function createWheelRenderer(
         const y = cam.cy + rMid * Math.sin(angle);
         if (x < -rMid || y < -rMid || x > cssW + rMid || y > cssH + rMid) continue;
         const boxLen = (ring.outer - ring.inner) * R - 2 * LABEL_PAD;
-        const fit = fitted(s.index, boxLen, (s.end - s.start) * rMid, floor(s.ring), maxPx);
+        const fit = fitted(s.index, boxLen, (s.end - s.start) * rMid, floor, maxPx, wrapAt(s.ring));
         if (!fit) continue;
         const lit = f.fadeT >= 0.5 ? f.lit[s.index] === 1 : f.prevLit[s.index] === 1;
         drawLabel(fit.lines, fit.px, false, x, y, angle, 1, table.label(s.hue, s.ring, lit));
@@ -353,7 +357,7 @@ export function createWheelRenderer(
       g.shadowOffsetY = 0;
       g.shadowColor = 'transparent';
       outline(cam.cx, cam.cy, r0, r1, a0 - side, a1 + side, ink, palette.gap);
-      const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, floor(s.ring), maxPx);
+      const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, floor, maxPx, wrapAt(s.ring));
       if (fit) {
         // Round two: as clear of the outline (its inner half is inside the cell) as an unopened label is of its cell.
         const lifted = openedLabel(s.index, r1 - r0 - 2 * (LABEL_PAD + OUTLINE_INNER_PX), (s.end - s.start + 2 * side) * rMid, fit);

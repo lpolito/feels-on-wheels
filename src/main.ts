@@ -297,13 +297,6 @@ function openedYForHeight(unfolded: number): number {
   return (top + cardTop) / 2 - stageTop;
 }
 
-/** For a spin while opened: where the word it will land on should sit, measured from that word's card. */
-function predictOpenedY(segment: number): number | null {
-  const s = store.get();
-  if (!s.opened || !opts.portrait) return null;
-  return openedYForHeight(card.unfoldedHeightFor(cardModel(layout, feelings, { ...s, selected: segment }, jump)));
-}
-
 /** Re-measures the opened word's place after the card renders, and springs the camera to it. */
 function placeOpened(s: State): void {
   const y = openedYFor(s);
@@ -407,7 +400,7 @@ function mount(next: Layout, initial: State, intro: boolean): void {
     if (pendingDraw !== 0) cancelAnimationFrame(pendingDraw);
     frame();
   });
-  controller = createController(layout, store, camera, vp, opts, (segment) => predictOpenedY(segment));
+  controller = createController(layout, store, camera, vp, opts);
   renderer = createWheelRenderer(canvas, layout, undefined, sprites);
   allLit = litMask(layout, null);
   lit = litFor(store.get());

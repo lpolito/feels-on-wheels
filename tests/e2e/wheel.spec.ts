@@ -701,7 +701,7 @@ test.describe('phone', () => {
     await expect(label).toBeHidden({ timeout: 3000 });
   });
 
-  test("phone: after a spin, the word doesn't slide once the spin stops", async ({ page }) => {
+  test('phone: the axis stays still while the wheel spins, and the word re-centers once it stops', async ({ page }) => {
     await open(page, '/fearful/scared');
     await settled(page);
     // Record the camera on every frame from here on.
@@ -729,10 +729,10 @@ test.describe('phone', () => {
     const last = rec.at(-1)!;
     const TAU = Math.PI * 2;
     const off = (a: number) => { const d = (((a - last.rotation) % TAU) + TAU) % TAU; return Math.min(d, TAU - d); };
-    // The frame where the rotation came to rest: from there on, cy must not travel.
+    // The frame where the rotation came to rest: until then, the axis (cy) stays where it was.
     const restIdx = rec.findIndex((f, k) => k > 5 && rec.slice(k).every((g) => off(g.rotation) < 1e-3));
     expect(restIdx).toBeGreaterThan(0);
-    expect(Math.abs(rec[restIdx]!.cy - last.cy)).toBeLessThanOrEqual(2);
+    for (const f of rec.slice(0, restIdx)) expect(Math.abs(f.cy - rec[0]!.cy)).toBeLessThanOrEqual(1);
     const path = (await selectedPath(page))!;
     const { y, mid } = await openedPlacement(page, path);
     expect(Math.abs(y - mid)).toBeLessThanOrEqual(2);

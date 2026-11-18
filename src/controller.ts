@@ -37,8 +37,6 @@ const INTRO_SEGMENTS = 1.5;
 
 export function createController(
   layout: Layout, store: Store, camera: CameraController, initialVp: Viewport, initialOpts: CameraOpts,
-  /** Spec v1.3 §4.2: the opened y the word a fling will land on needs, so the spin and the vertical move are one. */
-  predictOpenedY?: (segment: number) => number | null,
 ): Controller {
   let vp = initialVp;
   let opts = initialOpts;
@@ -64,6 +62,8 @@ export function createController(
    * turn) re-aim or leave it, and a tap during them acts as usual.
    */
   let spinTarget: number | null = null;
+  /** A new opened y arrived while the wheel was turning: the camera moves to it once the turn settles. */
+  let cyAfterTurn = false;
   const spinning = (): boolean => camera.moving && spinTarget !== null && camera.target.rotation === spinTarget;
 
   const cam = camera.current;
@@ -139,9 +139,6 @@ export function createController(
     userSpin = ring !== null;
     camera.fling(v, ring, layout);
     spinTarget = camera.target.rotation;
-    if (ring !== null && store.get().opened && predictOpenedY) {
-      setOpenedY(predictOpenedY(segmentAt(layout, ring, normAngle(-camera.target.rotation))));
-    }
   }
 
   store.subscribe((s, prev, a) => {
@@ -167,6 +164,10 @@ export function createController(
   });
 
   camera.onSettle(() => {
+    if (cyAfterTurn) {
+      cyAfterTurn = false;
+      if (ringOf(store.get()) !== null && !zoom) camera.animateTo({ cy: restingCamera(store.get()).cy });
+    }
     const ring = ringOf(store.get());
     if (ring === null || !userSpin) return;
     userSpin = false;
@@ -284,6 +285,13 @@ export function createController(
     opts = { ...opts, openedY: y };
     const s = store.get();
     if (ringOf(s) === null || zoom) return;
+    // Known issues, round two (Lucas, 2026-11-18): while the wheel turns (a spin, a key, a tap on another word), its
+    // axis stays still; the word re-centers over its new card once the turn stops. Opening and closing zoom, so the
+    // vertical move joins them.
+    if (camera.moving && camera.target.rotation !== cam.rotation && camera.target.scale === cam.scale) {
+      cyAfterTurn = true;
+      return;
+    }
     camera.animateTo({ cy: restingCamera(s).cy });
   }
 

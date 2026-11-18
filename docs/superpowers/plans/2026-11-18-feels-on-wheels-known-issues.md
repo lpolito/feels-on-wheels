@@ -15,20 +15,19 @@
 - US spelling everywhere (color, center, gray, behavior); Oxford commas in prose.
 - `text-size-adjust` is `100%`, never `none`.
 - No test-only code paths: no hooks, flags, or optional parameters that only tests leave out.
-- Rules that keep the two wheels' rest view the same hold by construction (shared numbers), not by extra tests. Lucas doesn't want convoluted tests.
+- Rules that keep the two wheels' rest view the same hold by construction (shared numbers), not by convoluted tests.
+- Test what needs testing (Lucas, 2026-11-18): every new rule or behavior gets a test that would catch it breaking. No tests that restate the CSS, the code, or the content. Hand checks are for what tests can't reach: the iOS Simulator and Lucas's phone.
 - Commit messages: a sentence-case summary line, a short body. No `Co-Authored-By` or other AI attribution in commits or the PR (Lucas's global instructions).
 - `main` is protected: work on `known-issues`, open a PR, never push to `main`.
 - The approved spec is frozen. Where what ships differs from it, write `2026-11-18-feels-on-wheels-known-issues-changes.md` next to it (Task 5).
 
 ## Review Focus
 
-Lucas asked for no extra tests beyond the spec's, so each of these is checked by hand in its owning task, not by a new test:
-
-- **Sideways phone, tapping a core word from rest (feelings wheel):** the camera must not zoom out (rest and opened core both use the shared core width). Task 2, browser check at 852 × 393.
-- **Turning the phone with a word opened:** the new camera (cap, inset, shared width) applies after the turn, and the opened ring stays clear of the card. Task 3, Simulator check.
-- **A folded Galaxy Fold (280 × 653), body wheel, outer word opened:** cells stay at least 24 px tall; the ring may run about 2 px past the edges. Task 3, browser check.
-- **Pinching in after opening a body outer word on an upright phone:** pinch still zooms past the opened view (the controller's maximum is the largest ring scale × its headroom, now 4.70 × headroom at 390 × 844). Task 3, browser check.
-- **Long opened labels that split onto two lines, or that don't fit even at their unopened size:** never truncated, never smaller than unopened. Task 4, browser check of "Weight on shoulders" and the longest body sensations.
+- **Sideways phone, tapping a core word from rest (feelings wheel):** the camera must not zoom out, because the side view rests and opens a core word at the same shared zoom. Task 2, controller test.
+- **Upright phones of every common width:** the opened ring fits across the screen with 1rem clear, on every ring of both wheels. The existing camera test checks only the notched sideways phone. Task 3, camera test.
+- **A folded Galaxy Fold (280 × 653), body wheel, outer word opened:** the 24 px floor beats the fit, so the cell is at least 24 px tall; the ring may run about 2 px past the edges. Task 3, camera test.
+- **Long opened labels that split onto two lines, or that don't fit even at their unopened size:** never truncated, never smaller than unopened, and inside the lifted cell whenever they fit there at their unopened size. Task 4, renderer test over every middle-ring word on the body wheel.
+- **Turning the phone with a word opened:** the new camera (cap, inset, shared width) applies after the turn, and taps land on the right word. The controller already has a test that the camera follows `setViewport`; the real turn is checked in the Simulator. Task 3.
 
 ---
 
@@ -45,6 +44,8 @@ Lucas asked for no extra tests beyond the spec's, so each of these is checked by
 
 Run: `npx vitest run && npm run build`
 Expected: all pass; build succeeds.
+
+No automated test for this task. Playwright emulates neither Safari's text inflation nor double-tap zoom, and a test that reads the computed style back would only restate the CSS.
 
 - [ ] **Step 4: Check §1 in the iOS Simulator.** Start the dev server (`.claude/launch.json`, "dev", port 5199), open `http://localhost:5199/happy` in Safari on the iPhone 17 Simulator, and turn the phone between upright and sideways at least five times with the card open. Expected: the card's text keeps its size every time. Screenshot upright and sideways for the PR.
 - [ ] **Step 5: Commit**
@@ -83,9 +84,25 @@ test('both wheels rest on the half-wheel on an upright iPad (820 × 1180)', () =
 
 And in the existing test "the side view is the core ring view, Happy at 3 o'clock", add a line asserting the side view's scale is the same on both wheels: `wheelCamera(body, vp, 0, sideOpts).scale` equals `wheelCamera(layout, vp, 0, sideOpts).scale`, where `sideOpts` carries `sideCoreWidth: SHARED.coreWidth`.
 
-- [ ] **Step 2: Run it to verify it fails**
+In `tests/unit/controller.test.ts`, inside `describe('side view (sideways phone, spec v2.1 §6.2)')`, with `sideOpts` now carrying `sideCoreWidth: SHARED.coreWidth`:
 
-Run: `npx vitest run tests/unit/camera.test.ts`
+```ts
+test('the feelings wheel rests and opens a core word at the shared side zoom, so opening never zooms out', () => {
+  const body = buildLayout(loadData().wheels.find((w) => w.id === 'body')!);
+  const shared = ringFocusCamera(body, 0, sideVp, 0, sideOpts).scale;
+  setupSide();
+  expect(camera.current.scale).toBeCloseTo(shared, 9);
+  setupSide(opened('happy'));
+  step(2000);
+  expect(camera.current.scale).toBeCloseTo(shared, 9);
+});
+```
+
+(`opened(path)` is the file's existing state helper. If it only builds deeper paths, use the file's select-and-open dispatch instead.)
+
+- [ ] **Step 2: Run them to verify they fail**
+
+Run: `npx vitest run tests/unit/camera.test.ts tests/unit/controller.test.ts`
 Expected: FAIL, with `sharedSizes` not exported.
 
 - [ ] **Step 3: Implement.**
@@ -125,33 +142,61 @@ git commit -m "One rest view for both wheels, from numbers shared across the whe
 - Produces: nothing new. `ringFocusCamera`'s signature is unchanged.
 
 - [ ] **Step 1: Make the existing test the failing test.** In `tests/unit/camera.test.ts`, delete `OVERFLOWS`, its comment, and the branch that uses it in "the opened cell starts 1rem after the inset and ends before the aim width, on every ring of both wheels", so every ring takes the `toBeLessThanOrEqual(notched.width + 1e-9)` assertion.
-- [ ] **Step 2: Run it to verify it fails**
+- [ ] **Step 2: Write the two new tests**, in the same `describe` (`wheels` is that block's list of both layouts; `SHARED` is from Task 2):
 
-Run: `npx vitest run tests/unit/camera.test.ts -t "starts 1rem after the inset"`
-Expected: FAIL on "body ring 2 right".
+```ts
+test('upright, the opened ring fits across the stage with 1rem clear, on every ring of both wheels', () => {
+  const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+  for (const [w, h] of [[320, 568], [360, 640], [375, 667], [390, 844], [430, 932]] as const) {
+    const vp: Viewport = { width: w, height: h, radius: w / 2 - 8 };
+    for (const l of wheels) for (const ring of [0, 1, 2]) {
+      const r = l.rings[ring]!;
+      const cam = ringFocusCamera(l, ring, vp, 0, o);
+      const R = vp.radius * cam.scale;
+      const name = `${l.wheelId} ring ${ring} at ${w}×${h}`;
+      expect(cam.cx + r.inner * R - 10 - 2, `${name} left`).toBeGreaterThanOrEqual(16 - 1e-9);
+      expect(cam.cx + r.outer * R + 10 + 2, `${name} right`).toBeLessThanOrEqual(w - 16 + 1e-9);
+    }
+  }
+});
 
-- [ ] **Step 3: Implement the cap and floor in `ringFocusCamera`.** Rename today's result to `want`. Then:
+test('an opened cell is never under 24 px tall, even where the ring cannot fit (a folded Galaxy Fold)', () => {
+  const vp: Viewport = { width: 280, height: 653, radius: 132 };
+  const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+  for (const l of wheels) for (const ring of [0, 1, 2]) {
+    expect(segHeightOf(l, ring, vp, ringFocusCamera(l, ring, vp, 0, o).scale), `${l.wheelId} ring ${ring}`).toBeGreaterThanOrEqual(24 - 1e-9);
+  }
+});
+```
+
+`segHeightOf(l, ring, vp, scale)` is the file's `segHeight` (top of the file), with the layout as a parameter instead of the feelings layout. Make that change and update its callers.
+
+- [ ] **Step 3: Run them to verify they fail**
+
+Run: `npx vitest run tests/unit/camera.test.ts -t "inset|upright|24 px"`
+Expected: the notched and upright tests FAIL on body ring 2 (right edge). The 24 px test passes for now, on today's 44 px floor; it's there to keep the floor from giving way to the cap.
+
+- [ ] **Step 4: Implement the cap and floor in `ringFocusCamera`.** Rename today's result to `want`. Then:
   - `fit` in portrait: `(vp.width − 2·o.remPx − 2·(LIFT_RADIAL_PX + OUTLINE_OUTSIDE_PX)) / ((r.outer − r.inner) · vp.radius)`.
   - `fit` sideways: `(vp.width − (o.insetLeft ?? 0) − o.remPx − 2·LIFT_RADIAL_PX − OUTLINE_OUTSIDE_PX) / ((r.outer − r.inner) · vp.radius)`.
   - `scale = Math.max(Math.min(want, fit), MIN_CELL_PX / arcAtScale1, MIN_RING_SCALE)`.
   - Comment `MIN_CELL_PX`: WCAG 2.2 AA target size (2.5.8); it beats the fit.
-- [ ] **Step 4: Run the unit tests**
+- [ ] **Step 5: Run the unit tests**
 
 Run: `npx vitest run`
 Expected: all pass. If another expectation moves, check it against the spec's §4 table: only the outer ring changes, and only on phones.
 
-- [ ] **Step 5: Run the viewport sweep**
+- [ ] **Step 6: Run the viewport sweep**
 
 Run: `npx playwright test tests/e2e/viewports.spec.ts --project=chromium`
 Expected: pass. If a size fails because a view changed as the spec intends (for example, the feelings wheel resting on the half-wheel in a portrait window), update that expectation alone, with a comment naming the spec section. Don't add sizes.
 
-- [ ] **Step 6: Browser check** (the Task 2 build, rebuilt). With an outer word opened (`/happy/content/joyful`, `/body/shoulders/weight-on-shoulders/pressured`):
+- [ ] **Step 7: Browser check** (the Task 2 build, rebuilt). With an outer word opened (`/happy/content/joyful`, `/body/shoulders/weight-on-shoulders/pressured`):
   - `__fw.camera().scale` matches the spec's §4 table at 280 × 653, 320 × 568, 360 × 640, 375 × 667, 390 × 844, 430 × 932, and the notched 852 × 393.
   - Screenshot the body wheel at 390 × 844 and at the notched 852 × 393 for the PR: the whole wedge is on screen, clear of the card.
-  - At 280 × 653, the body cell is about 24 px (Review Focus 3).
-  - Pinching in on the body wheel at 390 × 844 still zooms past the opened view (Review Focus 4).
-  - In the iOS Simulator (dev server, as in Task 1), open `/body/shoulders/weight-on-shoulders/pressured` and turn the phone several times. Expected: upright, the whole wedge is on screen; sideways, the ring stops before the card; taps still land on the word tapped (Review Focus 2).
-- [ ] **Step 7: Commit**
+  - Pinching in on the body wheel at 390 × 844 still zooms past the opened view (the controller's maximum is the largest ring scale × its headroom).
+  - In the iOS Simulator (dev server, as in Task 1), open `/body/shoulders/weight-on-shoulders/pressured` and turn the phone several times. Expected: upright, the whole wedge is on screen; sideways, the ring stops before the card; taps still land on the word tapped (Review Focus 5).
+- [ ] **Step 8: Commit**
 
 ```bash
 git add src/camera.ts tests/unit/camera.test.ts tests/e2e/viewports.spec.ts
@@ -169,28 +214,38 @@ git commit -m "Opened rings fit the screen and stay clear of the card, never und
 - Produces: nothing new outside the renderer.
 
 - [ ] **Step 1: Make the fake canvas measure bold wider.** In `fakeCanvas()` in `tests/unit/wheel-render.test.ts`, multiply `measureText`'s width by 1.05 when `state.font` starts with `'800 '`, about the real difference between weights 600 and 800.
-- [ ] **Step 2: Write the failing test**
+- [ ] **Step 2: Write the failing test**, over every middle-ring word on the body wheel (where the long sensations are), at 390 × 844:
 
 ```ts
-test('a long opened label fits inside its lifted cell, at bold', () => {
+test('opened middle-ring labels on the body wheel fit their lifted cell at bold, and never shrink', () => {
   const body = buildLayout(loadData().wheels.find((w) => w.id === 'body')!);
-  const i = body.byPath.get('shoulders/weight-on-shoulders')!;
-  const s = body.segments[i]!;
   const vp: Viewport = { width: 390, height: 600, radius: 187 };
-  const cam = ringFocusCamera(body, 1, vp, -s.mid, { remPx: 16, portrait: true, rest: 'half', openedY: null, sideCoreWidth: SHARED.coreWidth });
-  // draw() with the body layout, opened on i, mode 'ring', ring 1 (the file's `draw` helper takes a layout, or add one that does)
+  const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
   const ring = body.rings[1]!;
-  const box = (ring.outer - ring.inner) * vp.radius * cam.scale + 2 * LIFT_RADIAL_PX - 2 * 6; // 6: the renderer's LABEL_PAD
-  const bold = rec.texts.flatMap((t, k) => (rec.fonts[k]!.startsWith('800 ') ? [t.length * pxOf(rec.fonts[k]!) * 0.6 * 1.05] : []));
-  expect(bold.length).toBeGreaterThan(0);
-  for (const w of bold) expect(w).toBeLessThanOrEqual(box + 1e-6);
+  for (const i of ring.segments) {
+    const s = body.segments[i]!;
+    const cam = ringFocusCamera(body, 1, vp, -s.mid, o);
+    const box = (ring.outer - ring.inner) * vp.radius * cam.scale + 2 * LIFT_RADIAL_PX - 2 * 6; // 6: the renderer's LABEL_PAD
+    // Draw once selected but not opened (the unopened size), then opened, with the body layout and mode 'ring', ring 1.
+    const unopened = /* px of the label's 600-weight fillText */;
+    const opened = /* the label's 800-weight fillTexts: each line's text and px */;
+    expect(opened.length, s.path).toBeGreaterThan(0);
+    for (const line of opened) expect(line.px, s.path).toBeGreaterThanOrEqual(unopened - 1e-9);
+    // It fits, unless it can't fit even at its unopened size, in which case it's drawn at exactly that size.
+    const fits = opened.every((l) => l.text.length * l.px * 0.6 * 1.05 <= box + 1e-6);
+    if (!fits) for (const line of opened) expect(line.px, `${s.path} falls back to its unopened size`).toBeCloseTo(unopened, 9);
+  }
 });
 ```
+
+The two placeholders are reads from `rec.texts` and `rec.fonts`, as the neighboring tests do with `pxOf`. The file's `draw` helper uses the feelings layout, so add a `layout` parameter or a body variant. Find the label's text with `wheelCellLabel(s.node)`.
+
+"Weight on shoulders" must fit, not fall back. Add `expect(fitsFor('shoulders/weight-on-shoulders')).toBe(true)`, or check it by name in the loop.
 
 - [ ] **Step 3: Run it to verify it fails**
 
 Run: `npx vitest run tests/unit/wheel-render.test.ts -t "long opened label"`
-Expected: FAIL, the bold width exceeding `box`.
+Expected: FAIL, with "Weight on shoulders" (and likely others) wider than `box`.
 
 - [ ] **Step 4: Implement in `src/render/wheel.ts`.**
   - Add a bold `Measure` that caches widths at `font(MEASURE_PX, true)` in its own map.
@@ -202,7 +257,7 @@ Expected: FAIL, the bold width exceeding `box`.
 Run: `npx vitest run`
 Expected: all pass, including "opened label uses weight 800 and a larger px than its neighbours". Short words still grow.
 
-- [ ] **Step 6: Browser check** at 390 × 844 (Review Focus 5): open `/body/shoulders/weight-on-shoulders` and two other long body sensations, and screenshot. Expected: the label sits inside the lifted cell, bold, never truncated.
+- [ ] **Step 6: Browser check** at 390 × 844: open `/body/shoulders/weight-on-shoulders` and two other long body sensations, and screenshot. Expected: the label sits inside the lifted cell, bold, never truncated.
 - [ ] **Step 7: Commit**
 
 ```bash
@@ -223,11 +278,11 @@ git commit -m "Long opened labels fit their lifted cell"
   - Under "Layout and labels," delete the four fixed or moved issues. Keep the heading, holding only the new issue "At rest, outer cells are under WCAG AA's 24 px tap target," written from spec §7.3, with its table.
   - Add `### Low priority or not fixing` as the last heading in Known issues, with the five entries from spec §6.
   - Repoint both `#layout-and-labels` links (in Emoji wheel and Wheels for kids) to `#low-priority-or-not-fixing`.
-- [ ] **Step 2: Roadmap Shipped row.** Set the row's status to "Shipped" with the date the PR opens, add the plan link, and add a *changes* link if Step 4 writes one.
+- [ ] **Step 2: Roadmap Shipped row.** Set the row's status to "Shipped" with the date the PR opens, add the plan link, and add the *changes* link (Step 4).
 - [ ] **Step 3: ACCESSIBILITY.md** (spec §7.2):
   - "Easy to read and tap" ends with "…so each word's cell is at least 24 px tall."
   - In Known limitations: delete the double-tap item, the long-words item, and the sideways-iPhone item. Reword the turning item down to taps landing on the wrong word, not reproduced. Add the cells-at-rest item, in plain words.
-- [ ] **Step 4: Changes file.** If anything shipped differently from the spec, list each difference in `…-known-issues-changes.md`, named as AGENTS.md says.
+- [ ] **Step 4: Changes file.** Write `…-known-issues-changes.md`, named as AGENTS.md says. List every way what shipped differs from the spec, including the tests added beyond the spec's: Lucas, 2026-11-18, said to test what needs testing. Those are the side view's controller test, the upright-fit and 24 px camera tests, and the renderer test over every body middle-ring word.
 - [ ] **Step 5: Run everything**
 
 Run: `npx vitest run && npm run build && npx playwright test tests/e2e`

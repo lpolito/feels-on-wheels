@@ -220,12 +220,15 @@ describe('resting cameras', () => {
     expect(wheelCamera(body, vp, 0, sideOpts).scale, 'same side zoom on both wheels').toBe(wheelCamera(layout, vp, 0, sideOpts).scale);
   });
 
-  test("portrait, a core word keeps the rest view's horizontal position; deeper words stay centered", () => {
+  test("portrait half-wheel: a core word keeps the rest view's horizontal position; otherwise rings stay centered", () => {
     const vp: Viewport = { width: 402, height: 600, radius: 193 };
     const half = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    const middle = (l: Layout, ring: number) => ((l.rings[ring]!.inner + l.rings[ring]!.outer) / 2) * vp.radius;
     for (const l of [layout, buildLayout(loadData().wheels.find((w) => w.id === 'body')!)]) {
       expect(ringFocusCamera(l, 0, vp, 0, half).cx, `${l.wheelId} half`).toBe(wheelCamera(l, vp, 0, half).cx);
-      expect(ringFocusCamera(l, 0, vp, 0, { ...half, rest: 'whole' }).cx, `${l.wheelId} whole`).toBe(vp.width / 2);
+      // Where the whole wheel rests (short or squarish portrait windows), the core ring stays centered as before.
+      const whole = ringFocusCamera(l, 0, vp, 0, { ...half, rest: 'whole' });
+      expect(whole.cx + middle(l, 0) * whole.scale, `${l.wheelId} whole`).toBeCloseTo(vp.width / 2, 6);
       for (const ring of [1, 2]) {
         const cam = ringFocusCamera(l, ring, vp, 0, half);
         const mid = ((l.rings[ring]!.inner + l.rings[ring]!.outer) / 2) * vp.radius * cam.scale;

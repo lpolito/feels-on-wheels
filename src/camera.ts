@@ -138,11 +138,11 @@ export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rota
   // Spec v1.2 §4.1–§4.2: phones center the ring's middle; elsewhere the wheel meets the stage's right edge (the
   // card's column) — its outer edge plus the opened cell's lift and outline, so an opened outer word isn't clipped —
   // unless that would start the opened cell (with its lift) within 1rem of the left — of the notch, if any (v2.2.1).
-  // Known issues, round two (Lucas, 2026-11-18): in portrait, a core word keeps the rest view's horizontal position
-  // (the half-wheel's center on the left edge, or the whole wheel centered), so the whole wedge stays in view.
+  // Known issues, round two (Lucas, 2026-11-18): on the portrait half-wheel, a core word keeps the rest view's
+  // horizontal position (the wheel's center on the left edge), so the whole wedge stays in view.
   const leftClear = (o.insetLeft ?? 0) + o.remPx - (r.inner * R - LIFT_RADIAL_PX);
   const cx = o.portrait
-    ? ring === 0 ? Math.max(o.rest === 'half' ? 0 : 0.5 * vp.width, leftClear) : 0.5 * vp.width - rMid * R
+    ? ring === 0 && o.rest === 'half' ? Math.max(0, leftClear) : 0.5 * vp.width - rMid * R
     : Math.max(vp.width - (R + LIFT_RADIAL_PX + OUTLINE_OUTSIDE_PX), leftClear);
   const cy = o.portrait && o.openedY !== null ? o.openedY : vp.height / 2;
   return { scale, rotation, cx, cy };

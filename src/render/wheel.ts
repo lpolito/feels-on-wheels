@@ -87,15 +87,19 @@ export function createWheelRenderer(
     }
     return f;
   };
-  const measure: Measure = (text, px) => {
-    let w = widthAt100.get(text);
+  const measureAt = (cache: Map<string, number>, bold: boolean): Measure => (text, px) => {
+    let w = cache.get(text);
     if (w === undefined) {
-      g.font = font(MEASURE_PX);
+      g.font = font(MEASURE_PX, bold);
       w = g.measureText(text).width;
-      widthAt100.set(text, w);
+      cache.set(text, w);
     }
     return (w * px) / MEASURE_PX;
   };
+  const measure = measureAt(widthAt100, false);
+  /** Known-issues spec §5: the opened label is fitted at its own weight, 800. */
+  const measureBold = measureAt(new Map(), true);
+  let openedFit: (LabelCache & { i: number }) | null = null;
 
   function sector(cx: number, cy: number, r0: number, r1: number, a0: number, a1: number): void {
     g.beginPath();
@@ -113,6 +117,22 @@ export function createWheelRenderer(
     const result = fitLabel(texts[i]!, measure, { width: w, height: h }, { min, max });
     labelCache[i] = { w, h, min, max, result };
     return result;
+  }
+
+  /**
+   * Known-issues spec §5: the opened label, at bold, inside the lifted cell's box, grown up to LIFT_LABEL× its unopened
+   * size `fit` and never below it. When even the unopened size doesn't fit, it's drawn at that size.
+   */
+  function openedLabel(i: number, w: number, h: number, fit: { lines: string[]; px: number }): { lines: string[]; px: number } {
+    const min = fit.px;
+    const max = fit.px * LIFT_LABEL;
+    const c = openedFit;
+    if (c && c.i === i && Math.abs(c.w - w) <= FIT_TOLERANCE && Math.abs(c.h - h) <= FIT_TOLERANCE && c.min === min && c.max === max) {
+      return c.result ?? fit;
+    }
+    const result = fitLabel(texts[i]!, measureBold, { width: w, height: h }, { min, max });
+    openedFit = { i, w, h, min, max, result };
+    return result ?? fit;
   }
 
   function drawLabel(lines: string[], px: number, bold: boolean, x: number, y: number, angle: number, scale: number, color: string): void {
@@ -299,7 +319,8 @@ export function createWheelRenderer(
       outline(cam.cx, cam.cy, r0, r1, a0 - side, a1 + side, ink, palette.gap);
       const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, floor(s.ring), maxPx);
       if (fit) {
-        drawLabel(fit.lines, fit.px * LIFT_LABEL, true, x, y, angle, p, table.label(s.hue, s.ring, true));
+        const lifted = openedLabel(s.index, r1 - r0 - 2 * LABEL_PAD, (s.end - s.start + 2 * side) * rMid, fit);
+        drawLabel(lifted.lines, lifted.px, true, x, y, angle, p, table.label(s.hue, s.ring, true));
         stats.labelsByRing[s.ring]!++;
       }
       g.setTransform(dpr, 0, 0, dpr, 0, 0);

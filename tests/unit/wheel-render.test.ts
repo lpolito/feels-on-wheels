@@ -1,11 +1,12 @@
 import { beforeAll, describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
-import { label, nodeLabel, setLocale } from '../../src/i18n';
+import { label, nodeLabel, setLocale, wheelCellLabel } from '../../src/i18n';
 import { buildLayout, homes, litMask } from '../../src/model/layout';
 import { overviewCamera, ringFocusCamera, sharedSizes } from '../../src/camera';
 import { buildFillTable, type Palette } from '../../src/render/colors';
 import { createWheelRenderer, type Frame } from '../../src/render/wheel';
 import { drawWidthOf, type Viewport } from '../../src/model/geometry';
+import { LIFT_RADIAL_PX } from '../../src/render/selection';
 
 const { wheel, locale } = loadData();
 const SHARED = sharedSizes(loadData().wheels);
@@ -49,7 +50,8 @@ function fakeCanvas(): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2
       rec.strokeLog.push({ style: state.strokeStyle, lineWidth: state.lineWidth, arcs: path.slice() });
     },
     fillText: (t: string) => { rec.texts.push(t); rec.fonts.push(state.font); rec.textAt.push({ text: t, ...tf }); },
-    measureText: (t: string) => ({ width: t.length * Number(/([\d.]+)px/.exec(state.font)![1]) * 0.6 }),
+    // Bold (800) measures about 5% wider than the regular 600, as real fonts do.
+    measureText: (t: string) => ({ width: t.length * Number(/([\d.]+)px/.exec(state.font)![1]) * 0.6 * (state.font.startsWith('800 ') ? 1.05 : 1) }),
   } as Record<string, unknown>;
   for (const k of Object.keys(state) as (keyof typeof state)[]) {
     Object.defineProperty(ctx, k, {
@@ -97,6 +99,39 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     const sizes = (ring: number) => rec.texts.flatMap((t, k) => (labelsOn(ring).has(t) ? [pxOf(rec.fonts[k]!)] : []));
     return { r, sizes };
   }
+
+  test('opened middle-ring labels on the body wheel fit their lifted cell at bold, and never shrink', () => {
+    const vp: Viewport = { width: 390, height: 600, radius: 187 };
+    const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    const ring = body.rings[1]!;
+    const LABEL_PAD = 6; // the renderer's padding at each end of a label
+    const drawn = (i: number, opened: boolean) => {
+      const { canvas, ctx, rec } = fakeCanvas();
+      const r = createWheelRenderer(canvas, body, ctx);
+      r.setColors(bodyTable, bodyPalette);
+      r.resize(vp.width, vp.height, 1);
+      const cam = ringFocusCamera(body, 1, vp, -body.segments[i]!.mid, o);
+      const lit = litMask(body, i);
+      r.draw({ cam, vp, lit, prevLit: lit, fadeT: 1, selected: i, opened, pulseT: 1, mode: 'ring', ring: 1, remPx: 16, keyboardFocus: false });
+      return { rec, R: vp.radius * cam.scale };
+    };
+    for (const i of ring.segments) {
+      const s = body.segments[i]!;
+      const text = wheelCellLabel(s.node);
+      const isLine = (t: string) => t === text || text.startsWith(`${t} `) || text.endsWith(` ${t}`);
+      const before = drawn(i, false).rec;
+      const unopened = Math.max(...before.texts.flatMap((t, k) => (isLine(t) && before.fonts[k]!.startsWith('600 ') ? [pxOf(before.fonts[k]!)] : [])));
+      const { rec, R } = drawn(i, true);
+      const opened = rec.texts.flatMap((t, k) => (rec.fonts[k]!.startsWith('800 ') ? [{ text: t, px: pxOf(rec.fonts[k]!) }] : []));
+      expect(opened.length, s.path).toBeGreaterThan(0);
+      for (const line of opened) expect(line.px, s.path).toBeGreaterThanOrEqual(unopened - 1e-9);
+      const box = (ring.outer - ring.inner) * R + 2 * LIFT_RADIAL_PX - 2 * LABEL_PAD;
+      const fits = opened.every((l) => l.text.length * l.px * 0.6 * 1.05 <= box + 1e-6);
+      if (s.path === 'shoulders/weight-on-shoulders') expect(fits, 'Weight on shoulders fits its lifted cell').toBe(true);
+      // It fits, unless it can't even at its unopened size: then it's drawn at exactly that size.
+      if (!fits) for (const line of opened) expect(line.px, `${s.path} falls back to its unopened size`).toBeCloseTo(unopened, 9);
+    }
+  });
 
   test('ring view: 12 px floor on the focused ring and inside it, 10 px outside it', () => {
     const { r, sizes } = drawRing0(16);

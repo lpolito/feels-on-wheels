@@ -65,7 +65,7 @@ These are known and tracked in the [roadmap's known issues](docs/ROADMAP.md#know
 - **On an iPhone with VoiceOver, the words on the wheel can't be reached**, so you can't pick a word that way. TalkBack on Android likely has the same problem but hasn't been tried. Until it's fixed, a word's own address (such as `/angry`) opens its card directly.
 - **On the wheel, pinching zooms the wheel itself, not the page.** To make text larger, use the browser's or the system's text size or zoom settings.
 - **Small windows**, which can include a computer's browser zoomed in a long way, may show the body sensations wheel without labels until you open something. The card's words are still there.
-- **Words on the wheel can be small to tap before you've picked anything**, especially on the body sensations wheel: on a phone and on some computers, the outer words are under 24 px tall. Tap a word nearer the middle first. The wheel zooms in, and every word around it is then large enough to tap.
+- **Words on the wheel can be small to tap before you've opened anything**, especially on the body sensations wheel: on a phone and on some computers, the outer words are under 24 px tall. Open a word in the middle ring first by tapping it twice. The wheel zooms in, and every word in the outer ring is then large enough to tap.
 - **On some phones, after turning the phone sideways and back several times**, taps were once reported to land on the wrong word. It couldn't be reproduced in testing. Reloading the page may set it right.
 - **On very short phones**, the opened word can sit under the toolbar.
 - **Linux computers with a wide default font** may show the wheel switch overlapping the toolbar on very narrow windows.

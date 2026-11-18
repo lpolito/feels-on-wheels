@@ -28,6 +28,7 @@ Each change is used before the next one is designed. When Lucas picks an idea to
 | Question first in page order, Tab onto the wheel selects nothing, a ring around the focused wheel, and the instruction by device | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-question-first.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-question-first-changes.md) |
 | <a id="the-wheel-and-the-card"></a><a id="a-different-word-to-start-on"></a><a id="return-to-the-word-you-jumped-from"></a><a id="feeling-links-underlined-in-their-feelings-color"></a>Start on Happy and Whole body at 3 o'clock, Back to the word you jumped from, and breadcrumbs in their own color | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-wheel-and-card.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-changes.md) |
 | <a id="rework-the-body-wheels-areas-and-sensations"></a>Body wheel rework: places head to toe, Urges, two strings per sensation, and its research in public | Shipped 2026-11-16 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md), [plan](superpowers/plans/2026-11-16-feels-on-wheels-body-wheel-rework.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md) |
+| Known issues: card text that keeps its size when the phone turns, no double-tap zoom on labels, one rest view for both wheels, opened rings that fit the screen, and opened labels that fit their cell | In progress | [spec](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-design.md) |
 
 ## Ideas
 
@@ -44,6 +45,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
 | [Check every test is worth keeping](#check-every-test-is-worth-keeping) | [Tests](#tests) | Idea |
+| [Snapshots across devices and window sizes](#snapshots-across-devices-and-window-sizes) | Tests | Idea |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
 
@@ -140,6 +142,12 @@ What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheel
 - Lucas, 2026-11-16: the test suites are huge and keep growing, about 9,000 lines across 45 unit and end-to-end files. Go through them and keep only the tests that earn their place.
 - Found during the body wheel rework: some tests just restate the content (the body wheel's full list of sensations, exact cell counts, the exact feelings under one sensation). They duplicate `body.json` word for word and have to be edited with every content change, without catching anything. Tests that check rules (every feeling is on the feelings wheel, 2 or 3 feelings per sensation) or behavior (with any valid path) are worth more.
 - To decide when designing: what a test has to protect to stay, whether a single snapshot replaces the content tests, how much end-to-end coverage each of the five browsers needs, and whether to write the bar down for future changes, since the plans' test-first steps add tests with every change.
+
+#### Snapshots across devices and window sizes
+
+- Lucas, 2026-11-18: add visual snapshot tests, such as Chromatic's. Outside a session that sets out to explore it, there's no way to see what the app looks like across devices and window sizes.
+- Found while sorting the known issues: comparing the camera's options meant building each one and screenshotting both wheels at rest and opened, on phones upright and sideways (Chromium can emulate a notch's safe-area insets), iPads and a laptop. The viewport sweep (`tests/e2e/viewports.spec.ts`) already visits 35 window sizes, but it checks boxes and numbers, not what's drawn.
+- To decide when designing: a hosted service such as Chromatic, or Playwright's own screenshot comparison; which sizes, wheels, themes and states to capture; how a PR shows the differences; and how it fits with [checking every test is worth keeping](#check-every-test-is-worth-keeping).
 
 ## Known issues
 

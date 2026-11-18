@@ -11,6 +11,8 @@ h1, h2, h3, h4, h5, h6 { text-wrap: balance; }
 #app { isolation: isolate; }
 
 html, body { height: 100%; }
+/* Safari on iOS enlarges text when the phone turns unless told not to. 100%, not none, so people's own zoom still works. */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 /* URL redesign spec §3: the page scrolls on About, never on the wheel. */
 html:not([data-route="about"]), html:not([data-route="about"]) body { overflow: hidden; }
 body {
@@ -36,7 +38,6 @@ html[data-route="about"] #app, html:not([data-route="about"]) #about { display: 
 html[data-route="about"] body > noscript { display: none; }
 
 /* The About view (going-public spec §8.1): one readable column in the app's tokens and font. */
-html[data-route="about"] body { -webkit-text-size-adjust: 100%; }
 #about {
   max-width: 40rem;
   margin: 0 auto;
@@ -173,6 +174,9 @@ fw-toolbar :is(.fw-theme-toggle, .fw-share) { width: 44px; padding: 0; display: 
   font-size: 0.85rem;
   white-space: nowrap;
   pointer-events: none;
+  /* Plain text gets double-tap-to-zoom, and the canvas takes every pinch, so there'd be no way back. manipulation
+     turns off double-tap zoom here and keeps pinch zoom. */
+  touch-action: manipulation;
   opacity: 0;
   visibility: hidden;
   transition: opacity 300ms ease-out, visibility 0s linear 300ms;

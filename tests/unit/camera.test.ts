@@ -237,6 +237,17 @@ describe('resting cameras', () => {
     }
   });
 
+  test('portrait half-wheel: opening a core word never zooms out from the rest view (an upright iPad)', () => {
+    const vp: Viewport = { width: 820, height: 1000, radius: 402 };
+    const half = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    for (const l of [layout, buildLayout(loadData().wheels.find((w) => w.id === 'body')!)]) {
+      const rest = wheelCamera(l, vp, 0, half);
+      const core = ringFocusCamera(l, 0, vp, 0, half);
+      expect(core.scale, l.wheelId).toBeGreaterThanOrEqual(rest.scale - 1e-9);
+      expect(core.cx, l.wheelId).toBe(0);
+    }
+  });
+
   test('both wheels rest on the half-wheel on an upright iPad (820 × 1180)', () => {
     expect(restView(SHARED.outerArc, { width: 820, height: 1180, radius: 402 }, { width: 820, height: 1180 })).toBe('half');
     expect(SHARED.outerArc).toBe(Math.min(...loadData().wheels.map((w) => sharedSizes([w]).outerArc)));

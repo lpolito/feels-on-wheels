@@ -133,7 +133,10 @@ export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rota
   const fit = o.portrait
     ? (vp.width - 2 * o.remPx - 2 * (LIFT_RADIAL_PX + OUTLINE_OUTSIDE_PX)) / band
     : (vp.width - (o.insetLeft ?? 0) - o.remPx - 2 * LIFT_RADIAL_PX - OUTLINE_OUTSIDE_PX) / band;
-  const scale = Math.max(Math.min(want, fit), MIN_CELL_PX / arcAtScale1, MIN_RING_SCALE);
+  // Known issues, round two: on the portrait half-wheel, the core view is the rest view moved up, so it never zooms
+  // out from it (an upright iPad would otherwise leave its right side empty).
+  const restScale = o.portrait && ring === 0 && o.rest === 'half' ? (HALF_REACH * vp.width) / vp.radius : 0;
+  const scale = Math.max(Math.min(want, fit), MIN_CELL_PX / arcAtScale1, MIN_RING_SCALE, restScale);
   const R = vp.radius * scale;
   // Spec v1.2 §4.1–§4.2: phones center the ring's middle; elsewhere the wheel meets the stage's right edge (the
   // card's column) — its outer edge plus the opened cell's lift and outline, so an opened outer word isn't clipped —

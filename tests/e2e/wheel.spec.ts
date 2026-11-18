@@ -481,8 +481,9 @@ test.describe('desktop', () => {
     expect(card.x).toBeLessThan(20);
     const { y, mid } = await openedPlacement(page, 'angry');
     expect(Math.abs(y - mid)).toBeLessThanOrEqual(2);
-    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
-    expect(Math.abs(p.x - 450)).toBeLessThanOrEqual(2);
+    // It rests on the half-wheel, so an opened core word keeps the wheel's center on the left edge (known issues,
+    // round two), as at rest.
+    expect(Math.abs((await page.evaluate(() => window.__fw.camera())).cx)).toBeLessThanOrEqual(0.5);
   });
 
   test('Escape on a focused row closes and leaves focus on the card toggle', async ({ page }) => {

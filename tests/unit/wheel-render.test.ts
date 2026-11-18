@@ -30,6 +30,15 @@ interface Rec {
   textAt: { text: string; e: number; f: number }[];
 }
 
+/**
+ * The fake font's width. Like the app's system font: bold (800) is about 5% wider than the regular 600, and text under
+ * 20 px is about 6% wider than a straight scale-down predicts (its optical size for small text).
+ */
+function fakeWidth(text: string, font: string): number {
+  const px = Number(/([\d.]+)px/.exec(font)![1]);
+  return text.length * px * 0.6 * (font.startsWith('800 ') ? 1.05 : 1) * (px < 20 ? 1.06 : 1);
+}
+
 function fakeCanvas(): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D; rec: Rec } {
   const rec: Rec = { fills: [], strokes: [], texts: [], fonts: [], shadowSets: 0, strokeLog: [], textAt: [] };
   const state = {
@@ -50,8 +59,7 @@ function fakeCanvas(): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2
       rec.strokeLog.push({ style: state.strokeStyle, lineWidth: state.lineWidth, arcs: path.slice() });
     },
     fillText: (t: string) => { rec.texts.push(t); rec.fonts.push(state.font); rec.textAt.push({ text: t, ...tf }); },
-    // Bold (800) measures about 5% wider than the regular 600, as real fonts do.
-    measureText: (t: string) => ({ width: t.length * Number(/([\d.]+)px/.exec(state.font)![1]) * 0.6 * (state.font.startsWith('800 ') ? 1.05 : 1) }),
+    measureText: (t: string) => ({ width: fakeWidth(t, state.font) }),
   } as Record<string, unknown>;
   for (const k of Object.keys(state) as (keyof typeof state)[]) {
     Object.defineProperty(ctx, k, {
@@ -87,36 +95,41 @@ describe('label floors by ring (spec v2.1 §5)', () => {
   const phone: Viewport = { width: 393, height: 851, radius: 188.5 };
   const pxOf = (font: string) => Number(/([\d.]+)px/.exec(font)![1]);
 
-  test('opened middle-ring labels on the body wheel fit their lifted cell at bold, and never shrink', () => {
-    const vp: Viewport = { width: 390, height: 600, radius: 187 };
+  test('opened labels stay 6 px clear of their outline at bold, and never shrink (core and middle rings, both wheels)', () => {
+    const vp: Viewport = { width: 393, height: 600, radius: 188.5 };
     const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
-    const ring = body.rings[1]!;
-    const LABEL_PAD = 6; // the renderer's padding at each end of a label
-    const drawn = (i: number, opened: boolean) => {
-      const { canvas, ctx, rec } = fakeCanvas();
-      const r = createWheelRenderer(canvas, body, ctx);
-      r.setColors(bodyTable, bodyPalette);
-      r.resize(vp.width, vp.height, 1);
-      const cam = ringFocusCamera(body, 1, vp, -body.segments[i]!.mid, o);
-      const lit = litMask(body, i);
-      r.draw({ cam, vp, lit, prevLit: lit, fadeT: 1, selected: i, opened, pulseT: 1, mode: 'ring', ring: 1, remPx: 16, keyboardFocus: false });
-      return { rec, R: vp.radius * cam.scale };
-    };
-    for (const i of ring.segments) {
-      const s = body.segments[i]!;
-      const text = wheelCellLabel(s.node);
-      const isLine = (t: string) => t === text || text.startsWith(`${t} `) || text.endsWith(` ${t}`);
-      const before = drawn(i, false).rec;
-      const unopened = Math.max(...before.texts.flatMap((t, k) => (isLine(t) && before.fonts[k]!.startsWith('600 ') ? [pxOf(before.fonts[k]!)] : [])));
-      const { rec, R } = drawn(i, true);
-      const opened = rec.texts.flatMap((t, k) => (rec.fonts[k]!.startsWith('800 ') ? [{ text: t, px: pxOf(rec.fonts[k]!) }] : []));
-      expect(opened.length, s.path).toBeGreaterThan(0);
-      for (const line of opened) expect(line.px, s.path).toBeGreaterThanOrEqual(unopened - 1e-9);
-      const box = (ring.outer - ring.inner) * R + 2 * LIFT_RADIAL_PX - 2 * LABEL_PAD;
-      const fits = opened.every((l) => l.text.length * l.px * 0.6 * 1.05 <= box + 1e-6);
-      if (s.path === 'shoulders/weight-on-shoulders') expect(fits, 'Weight on shoulders fits its lifted cell').toBe(true);
-      // It fits, unless it can't even at its unopened size: then it's drawn at exactly that size.
-      if (!fits) for (const line of opened) expect(line.px, `${s.path} falls back to its unopened size`).toBeCloseTo(unopened, 9);
+    const CLEAR = 6 + 2; // 6 px clear of the outline, whose inner half is 2 px inside the lifted cell
+    for (const [l, tbl, pal] of [[layout, table, palette], [body, bodyTable, bodyPalette]] as const) {
+      for (const ringIndex of [0, 1]) {
+        const ring = l.rings[ringIndex]!;
+        const drawn = (i: number, opened: boolean) => {
+          const { canvas, ctx, rec } = fakeCanvas();
+          const r = createWheelRenderer(canvas, l, ctx);
+          r.setColors(tbl, pal);
+          r.resize(vp.width, vp.height, 1);
+          const cam = ringFocusCamera(l, ringIndex, vp, -l.segments[i]!.mid, o);
+          const lit = litMask(l, i);
+          r.draw({ cam, vp, lit, prevLit: lit, fadeT: 1, selected: i, opened, pulseT: 1, mode: 'ring', ring: ringIndex, remPx: 16, keyboardFocus: false });
+          return { rec, R: vp.radius * cam.scale };
+        };
+        for (const i of ring.segments) {
+          const s = l.segments[i]!;
+          const text = wheelCellLabel(s.node);
+          const isLine = (t: string) => t === text || text.startsWith(`${t} `) || text.endsWith(` ${t}`);
+          const before = drawn(i, false).rec;
+          const unopened = Math.max(...before.texts.flatMap((t, k) => (isLine(t) && before.fonts[k]!.startsWith('600 ') ? [pxOf(before.fonts[k]!)] : [])));
+          const { rec, R } = drawn(i, true);
+          const opened = rec.texts.flatMap((t, k) => (rec.fonts[k]!.startsWith('800 ') ? [{ text: t, px: pxOf(rec.fonts[k]!) }] : []));
+          const name = `${l.wheelId} ${s.path}`;
+          expect(opened.length, name).toBeGreaterThan(0);
+          for (const line of opened) expect(line.px, name).toBeGreaterThanOrEqual(unopened - 1e-9);
+          const box = (ring.outer - ring.inner) * R + 2 * LIFT_RADIAL_PX - 2 * CLEAR;
+          const fits = opened.every((x) => fakeWidth(x.text, `800 ${x.px}px`) <= box + 1e-6);
+          if (s.path === 'shoulders/weight-on-shoulders') expect(fits, 'Weight on shoulders fits its lifted cell').toBe(true);
+          // It fits, unless it can't even at its unopened size: then it's drawn at exactly that size.
+          if (!fits) for (const line of opened) expect(line.px, `${name} falls back to its unopened size`).toBeCloseTo(unopened, 9);
+        }
+      }
     }
   });
 

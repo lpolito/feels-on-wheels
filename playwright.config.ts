@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: 'tests',
+  // The screenshot suite has its own config (playwright.screenshots.config.ts) and runs only for Chromatic.
+  testIgnore: 'screenshots/**',
   fullyParallel: true,
   reporter: 'list',
   // On CI, retry a failed test once; Playwright then reports it as flaky rather than hiding it.

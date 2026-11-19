@@ -11,11 +11,15 @@
     "test": "vitest run",
     "test:e2e": "playwright test tests/e2e",
     "size": "node scripts/check-size.mjs",
-    "test:perf": "playwright test tests/perf --project=chromium --project=firefox --workers=1"
+    "test:perf": "playwright test tests/perf --project=chromium --project=firefox --workers=1",
+    "screenshots": "playwright test -c playwright.screenshots.config.ts",
+    "screenshots:check": "node scripts/check-screenshots.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
+    "@chromatic-com/playwright": "1.0.0",
     "@playwright/test": "1.65.0",
+    "chromatic": "18.15.0",
     "happy-dom": "21.0.4",
     "typescript": "7.0.2",
     "vite": "8.3.8",

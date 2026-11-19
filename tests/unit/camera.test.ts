@@ -293,6 +293,36 @@ describe('sideways zoom spec: the core word stays in view', () => {
     expect(ringFocusCamera(body, 0, { width: 600, height: 768, radius: 292 }, 0, opts).scale).toBeCloseTo(1.73, 2);
   });
 
+  test('opening a middle word always zooms in at least 1.25× from its core word', () => {
+    // Aim widths for 720 × 480, 784 × 688, 1024 × 768, 1180 × 820, and 1440 × 900.
+    const stages: Viewport[] = [
+      { width: 432, height: 480, radius: 208 }, { width: 496, height: 688, radius: 240 },
+      { width: 600, height: 768, radius: 292 }, tablet, { width: 996, height: 900, radius: 442 },
+    ];
+    for (const l of wheels) {
+      for (const vp of stages) {
+        const core = ringFocusCamera(l, 0, vp, 0, opts).scale;
+        expect(ringFocusCamera(l, 1, vp, 0, opts).scale / core, `${l.wheelId} ${vp.width}`).toBeGreaterThanOrEqual(1.25 - 1e-9);
+      }
+    }
+  });
+
+  test('on a small sideways window the step wins over keeping the core ring in view (body, 720 × 480)', () => {
+    const small: Viewport = { width: 432, height: 480, radius: 208 };
+    const body = wheels.find((l) => l.wheelId === 'body')!;
+    expect(ringFocusCamera(body, 0, small, 0, opts).scale).toBeCloseTo(2.43, 2);
+    expect(ringFocusCamera(body, 1, small, 0, opts).scale).toBeCloseTo(1.25 * ringFocusCamera(body, 0, small, 0, opts).scale, 6);
+  });
+
+  test('the step never zooms further than the middle view did before (its target, fitted to the screen)', () => {
+    // A stage where the core view's own zoom is close to the middle view's target, so 1.25× would overshoot it.
+    const vp: Viewport = { width: 300, height: 480, radius: 142 };
+    for (const l of wheels) {
+      const before = ringFocusCamera(l, 1, vp, 0, { ...opts, rest: 'side' as const }).scale;
+      expect(ringFocusCamera(l, 1, vp, 0, opts).scale, l.wheelId).toBeLessThanOrEqual(before + 1e-9);
+    }
+  });
+
   test('the side view is unchanged', () => {
     const side = { ...opts, rest: 'side' as const };
     for (const l of wheels) {
@@ -301,8 +331,8 @@ describe('sideways zoom spec: the core word stays in view', () => {
   });
 
   test('the 24 px floor beats the cap', () => {
-    // A tiny aim width, where keeping the core ring in view would leave middle cells under 24 px.
-    const narrow: Viewport = { width: 220, height: 480, radius: 102 };
+    // A tiny aim width, where neither keeping the core ring in view nor the opened ring fitting leaves 24 px cells.
+    const narrow: Viewport = { width: 120, height: 480, radius: 52 };
     const cap = (narrow.width - 12 - 16) / ((1 - layout.rings[0]!.inner) * narrow.radius);
     for (const l of wheels) {
       const scale = ringFocusCamera(l, 1, narrow, 0, opts).scale;

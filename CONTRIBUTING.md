@@ -27,6 +27,7 @@ The app doesn't have a language switcher yet: it's [planned](docs/ROADMAP.md#lan
 
 - Run `npm test` and `npm run test:e2e` before opening a pull request. See the [README](README.md#running-it). The same checks run on every pull request, and they must pass before it can merge.
 - Follow the existing style. Every change comes with a test.
+- To see the app on every device size, add the `screenshots` label to your pull request. The `Screenshots` check captures every screen on 19 phones, tablets and computers and Chromatic links its build from the pull request's checks. It's not required to merge. Locally, `npm run screenshots` captures them, `npm run screenshots:check` checks them, and `npx chromatic --playwright` uploads them with a project token.
 - Changes to what people see or do follow the [accessibility expectations](ACCESSIBILITY.md#contributor-expectations).
 - Larger changes start with an issue, so we can agree on the approach first.
 

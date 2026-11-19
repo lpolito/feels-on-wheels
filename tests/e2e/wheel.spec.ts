@@ -758,11 +758,20 @@ test.describe('phone', () => {
     expect(Math.abs(y - mid)).toBeLessThanOrEqual(2);
   });
 
-  test('phone: on a short screen the opened cell still fits above the card', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 600 });
-    await open(page, '/fearful');
-    const { y, cardTop, half } = await openedPlacement(page, 'fearful');
-    expect(cardTop).toBeGreaterThanOrEqual(y + half + 12 - 1);
+  test('phone: on a short screen the card leaves room for the opened cell, and its label sits between the controls and the card', async ({ page }) => {
+    // Spec v1.3 §4.2's cap still keeps room above the card for the opened cell plus 12 px on each side. Round three
+    // centers the cell below the controls, so its edges may fall under the card or the controls ("who cares where the
+    // edges fall", Lucas, 2026-11-18); its label may not.
+    for (const [height, wheel, path] of [[600, '', 'fearful'], [420, '', 'sad'], [600, '/body', 'whole-body'], [420, '/body', 'urges']] as const) {
+      await page.setViewportSize({ width: 375, height });
+      await open(page, `${wheel}/${path}`);
+      const { y, cardTop, controlsBottom, half } = await openedPlacement(page, path);
+      const stageTop = (await page.locator('#stage').boundingBox())!.y;
+      const name = `${height} ${path}`;
+      expect(cardTop - stageTop, name).toBeGreaterThanOrEqual(2 * half + 24 - 1);
+      expect(y, name).toBeGreaterThan(controlsBottom);
+      expect(y, name).toBeLessThan(cardTop);
+    }
   });
 
   test('phone: Back from an opened word returns to the whole wheel with it selected', async ({ page }) => {

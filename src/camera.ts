@@ -142,7 +142,10 @@ export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rota
   const keepCore = sidewaysWhole && ring === 1
     ? (vp.width - LIFT_RADIAL_PX - OUTLINE_OUTSIDE_PX - (o.insetLeft ?? 0) - o.remPx) / ((1 - layout.rings[0]!.inner) * vp.radius)
     : Infinity;
-  const scale = Math.max(Math.min(want, fit, keepCore), MIN_CELL_PX / arcAtScale1, MIN_RING_SCALE, restScale);
+  // There, a core word's view zooms at least halfway, on a log scale, from the rest view (1×) to the middle word's view
+  // (Lucas picked this after comparing three amounts at 1180 × 820). It only raises, so it never becomes the largest view.
+  const halfway = sidewaysWhole && ring === 0 ? Math.sqrt(ringFocusCamera(layout, 1, vp, rotation, o).scale) : 0;
+  const scale = Math.max(Math.min(want, fit, keepCore), MIN_CELL_PX / arcAtScale1, MIN_RING_SCALE, restScale, halfway);
   const R = vp.radius * scale;
   // Spec v1.2 §4.1–§4.2: phones center the ring's middle; elsewhere the wheel meets the stage's right edge (the
   // card's column) — its outer edge plus the opened cell's lift and outline, so an opened outer word isn't clipped —

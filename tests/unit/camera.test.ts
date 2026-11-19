@@ -282,6 +282,24 @@ describe('sideways zoom spec: the core word stays in view', () => {
     expect(ringFocusCamera(layout, 1, { width: 996, height: 900, radius: 442 }, 0, opts).scale).toBeCloseTo(2.26, 2);
   });
 
+  test('a core word zooms to the square root of the middle view', () => {
+    const core = ringFocusCamera(layout, 0, tablet, 0, opts).scale;
+    expect(core).toBeCloseTo(Math.sqrt(ringFocusCamera(layout, 1, tablet, 0, opts).scale), 6);
+    expect(core).toBeCloseTo(1.49, 2);
+  });
+
+  test('a core view that already zooms further keeps its own zoom', () => {
+    const body = wheels.find((l) => l.wheelId === 'body')!;
+    expect(ringFocusCamera(body, 0, { width: 600, height: 768, radius: 292 }, 0, opts).scale).toBeCloseTo(1.73, 2);
+  });
+
+  test('the side view is unchanged', () => {
+    const side = { ...opts, rest: 'side' as const };
+    for (const l of wheels) {
+      expect(ringFocusCamera(l, 0, { width: 476, height: 393, radius: 188.5 }, 0, side).scale, l.wheelId).toBeCloseTo(2.68, 2);
+    }
+  });
+
   test('the 24 px floor beats the cap', () => {
     const narrow: Viewport = { width: 500, height: 768, radius: 242 };
     for (const l of wheels) {

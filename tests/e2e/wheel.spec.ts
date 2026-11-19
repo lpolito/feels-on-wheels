@@ -579,15 +579,22 @@ test.describe('desktop', () => {
   });
 });
 
-/** The opened word's y against the gap between the stage's top and the unfolded card's top (spec v1.3 §4.2). */
+/**
+ * The opened word's y against the gap between the bottom of the controls and the unfolded card's top (known issues,
+ * round three, replacing spec v1.3 §4.2's top of the stage).
+ */
 async function openedPlacement(page: Page, path: string) {
   await idle(page);
   await settled(page);
   const y = (await page.evaluate((p) => window.__fw.segmentScreenPoint(p), path)).y;
-  const stage = (await wheelBox(page))!;
+  const bottom = async (sel: string) => {
+    const b = (await page.locator(sel).boundingBox())!;
+    return b.y + b.height;
+  };
+  const controlsBottom = Math.max(await bottom('fw-wheel-switch'), await bottom('fw-toolbar'));
   const card = (await page.locator('fw-card').boundingBox())!;
   const half = await page.evaluate(() => Number.parseFloat(getComputedStyle(document.getElementById('app')!).getPropertyValue('--opened-half')));
-  return { y, mid: (stage.y + card.y) / 2, cardTop: card.y, half };
+  return { y, mid: (controlsBottom + card.y) / 2, cardTop: card.y, controlsBottom, half };
 }
 
 test.describe('phone', () => {
@@ -661,13 +668,26 @@ test.describe('phone', () => {
     expect((await state(page)).opened).toBe(false);
   });
 
-  test('phone: the opened word is centered between the top and the unfolded card', async ({ page }) => {
+  test('phone: the opened wedge is centered between the controls and the unfolded card', async ({ page }) => {
     for (const path of ['fearful', 'fearful/scared', 'fearful/scared/helpless']) {
       await open(page, `/${path}`);
-      const { y, mid, cardTop, half } = await openedPlacement(page, path);
+      const { y, mid, cardTop, controlsBottom, half } = await openedPlacement(page, path);
       expect(Math.abs(y - mid), path).toBeLessThanOrEqual(2);
       expect(half, path).toBeGreaterThan(20);
-      expect(y + half, path).toBeLessThan(cardTop);
+      // Lucas, 2026-11-18: "who cares where the edges fall." Only the wedge's middle, its label, has a place to be.
+      expect(y, path).toBeGreaterThan(controlsBottom);
+      expect(y, path).toBeLessThan(cardTop);
+    }
+  });
+
+  test('phone: in a very short window the opened word sits between the controls and the card', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 380 });
+    for (const path of ['fearful', 'fearful/scared', 'fearful/scared/helpless']) {
+      await open(page, `/${path}`);
+      const { y, mid, cardTop, controlsBottom } = await openedPlacement(page, path);
+      expect(Math.abs(y - mid), path).toBeLessThanOrEqual(2);
+      expect(y, path).toBeGreaterThan(controlsBottom);
+      expect(y, path).toBeLessThan(cardTop);
     }
   });
 

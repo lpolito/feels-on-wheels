@@ -279,8 +279,10 @@ function setOpenedHalf(s: State): void {
 }
 
 /**
- * Spec v1.3 §4.2: on portrait stages, the stage y that centers the opened word between the top (below the safe area)
- * and the top of the card once fully unfolded. Null when nothing is opened or the stage isn't portrait.
+ * Spec v1.3 §4.2: on portrait stages, the stage y that centers the opened word above the card once fully unfolded.
+ * Known issues, round three (Lucas, 2026-11-18): halfway between the bottom of the controls (the switch and the
+ * toolbar float over the wheel) and the top of the card, not the top of the stage. Null when nothing is opened or the
+ * stage isn't portrait.
  */
 function openedYFor(s: State): number | null {
   if (!s.opened || !opts.portrait) return null;
@@ -290,7 +292,7 @@ function openedYFor(s: State): number | null {
 /** The opened word's stage y for a card that unfolds to `unfolded` px (capped like the card itself). */
 function openedYForHeight(unfolded: number): number {
   const stageTop = stage.getBoundingClientRect().top;
-  const top = stageTop + (Number.parseFloat(getComputedStyle(app).paddingTop) || 0);
+  const top = Math.max(wheelSwitch.getBoundingClientRect().bottom, toolbar.getBoundingClientRect().bottom);
   const cap = Number.parseFloat(getComputedStyle(float).maxHeight);
   const height = Math.min(unfolded, Number.isFinite(cap) ? cap : Infinity);
   const cardTop = float.getBoundingClientRect().bottom - height;

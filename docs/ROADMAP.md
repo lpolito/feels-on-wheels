@@ -28,7 +28,7 @@ Each change is used before the next one is designed. When Lucas picks an idea to
 | Question first in page order, Tab onto the wheel selects nothing, a ring around the focused wheel, and the instruction by device | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-question-first.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-question-first-changes.md) |
 | <a id="the-wheel-and-the-card"></a><a id="a-different-word-to-start-on"></a><a id="return-to-the-word-you-jumped-from"></a><a id="feeling-links-underlined-in-their-feelings-color"></a>Start on Happy and Whole body at 3 o'clock, Back to the word you jumped from, and breadcrumbs in their own color | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-wheel-and-card.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-changes.md) |
 | <a id="rework-the-body-wheels-areas-and-sensations"></a>Body wheel rework: places head to toe, Urges, two strings per sensation, and its research in public | Shipped 2026-11-16 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md), [plan](superpowers/plans/2026-11-16-feels-on-wheels-body-wheel-rework.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md) |
-| Known issues: card text that keeps its size when the phone turns, no double-tap zoom on labels, one rest view for both wheels, opened rings that fit the screen, opened labels that fit their cell, a wheel that keeps its axis while it turns, and labels that never disappear | Shipped 2026-11-18 | [spec](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-design.md), [plan](superpowers/plans/2026-11-18-feels-on-wheels-known-issues.md), [round-two plan](superpowers/plans/2026-11-18-feels-on-wheels-known-issues-round-2.md), [changes](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-changes.md) |
+| Known issues: card text that keeps its size when the phone turns, no double-tap zoom on labels, one rest view for both wheels, opened rings that fit the screen, opened labels that fit their cell, a wheel that keeps its axis while it turns, labels that never disappear, and an opened wedge centered below the controls | Shipped 2026-11-18 | [spec](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-design.md), [plan](superpowers/plans/2026-11-18-feels-on-wheels-known-issues.md), [round-two plan](superpowers/plans/2026-11-18-feels-on-wheels-known-issues-round-2.md), [round-three plan](superpowers/plans/2026-11-18-feels-on-wheels-known-issues-round-3.md), [changes](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-changes.md) |
 
 ## Ideas
 
@@ -44,6 +44,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
+| [Half-wheel on tablets, card on the right](#half-wheel-on-tablets-card-on-the-right) | [Layout](#layout) | Idea |
 | [Check every test is worth keeping](#check-every-test-is-worth-keeping) | [Tests](#tests) | Idea |
 | [Snapshots across devices and window sizes](#snapshots-across-devices-and-window-sizes) | Tests | Idea |
 
@@ -135,6 +136,15 @@ What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheel
 - To decide when designing: stable English slugs in every language (`/es/happy/…`) or translated ones (`/es/feliz/…`). The URL shape (a `/es/` prefix, English unprefixed) is set by the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) §9.
 - The link preview's alt text lowercases the wheel's name in code (`src/og.ts`: "the feelings wheel"), which is wrong for languages that capitalize nouns, such as German. To decide when designing: a separate lowercase name per wheel in the locale, or alt text written whole per wheel.
 
+### Layout
+
+#### Half-wheel on tablets, card on the right
+
+- Lucas, 2026-11-18: use the phone's half-wheel on much larger displays, like tablets, but keep the opened word's card on the right, as the desktop layout does today, instead of the phone layout's card at the bottom.
+- He expects it to make [labels jumping while a word opens](#layout-and-labels) easier to fix.
+- Today the half-wheel rests only on portrait stages (`useHalfWheel` in `src/camera.ts`), upright iPads included, with the card at the bottom. Sideways tablets and laptops rest on the whole wheel, beside the card's column.
+- To decide when designing: which windows count (upright and sideways tablets, laptops), how the half-wheel and the opened view fit beside the card, whether opening a word still zooms, and how it meets the rest-view rules (`restView`, `useHalfWheel`, and `isPortrait` in `src/camera.ts`).
+
 ### Tests
 
 #### Check every test is worth keeping
@@ -155,6 +165,7 @@ Still open. None blocks the next change. The ones that get in someone's way are 
 
 ### Layout and labels
 
+- **Labels jump while a word opens.** Found by Lucas on his phone 2026-11-18, also on `main`. When a word opens, the size where labels wrap to two lines switches from 8 to 12 px at once, because it follows the app's mode, while the cells grow with the camera's zoom over about a second. A label between those sizes wraps to two lines at about double its size, then goes back to one line partway through the zoom: "Whole body" on the body wheel at 393 × 650 goes from 9.5 px, to 20.5 px on two lines, to 12 px. Lucas set it aside for the [half-wheel on tablets](#half-wheel-on-tablets-card-on-the-right), which he expects to make it easier. No fix chosen yet.
 - **At rest, the outer cells are smaller than WCAG AA's 24 px tap target.** Found 2026-11-18 while sorting these known issues ([spec](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-design.md)). At rest, tapping an outer cell selects that word, so each cell is a tap target, and at common sizes it's under WCAG 2.2 AA's 24 px (success criterion 2.5.8): on the half-wheel at 390 × 844 the outer cells are about 23 px tall on the feelings wheel and 15 px on the body wheel; on the whole wheel at 1440 × 900, about 27 px and 18 px. The cells touch, so the spacing exception doesn't apply. The "equivalent control" exception might: open a middle-ring word first (two taps), and every outer cell is then at least 24 px tall. Opening a core word isn't enough (its outer cells stay about 20 px). But reaching an outer word that way takes three taps instead of one. The cells are this small so the whole wheel fits, so a fix needs its own design. No fix chosen yet.
 
 ### Navigation
@@ -185,7 +196,6 @@ Looked at on 2026-11-18 ([spec](superpowers/specs/2026-11-18-feels-on-wheels-kno
 - **After turning the phone several times, taps land on the wrong word.** Low priority. Found 2026-11-12. Not reproduced: after seven turns in the iOS Simulator, taps hit the right word upright and sideways, and `src/input/gestures.ts` reads the canvas's position on every touch-down, so a stale position isn't the cause. Most likely it was leftover page zoom from the card's text inflating and from double-tap zoom on the labels, both fixed on 2026-11-18. Watch for it.
 - **Wide fallback fonts don't fit the tightest layouts.** Not fixing. Found 2026-11-09 on GitHub's Ubuntu runners, whose `system-ui` font is DejaVu Sans, much wider than Apple's, Android's, and Windows's. With Verdana standing in for it, the wheel switch and the toolbar overlap by 3 px at 280 px wide; from 300 px up there's room. Linux only, at one width; the tests run on macOS runners. Whether the switch's third option fits gets settled when a third wheel is designed.
 - **Portrait phones, inner tier opened: the outer ring runs off the right edge.** Not fixing. Reproduced at 390 × 844 with Happy opened: Inspired, Sensitive, and Thankful are cut off. The outer ring is only context there, and the card lists its words under "Narrow it down."
-- **Very short phones: the opened word can sit under the toolbar.** Not fixing. Only in portrait windows 420 px tall or shorter, where the card cap's safeguard measures from the stage's top, not the toolbar's bottom (v1.3 spec §4.2); at 360 × 380 the word touches the switch. No phone held upright is that short.
 
 ## Before launching
 

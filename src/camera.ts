@@ -136,7 +136,13 @@ export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rota
   // Known issues, round two: on the portrait half-wheel, the core view is the rest view moved up, so it never zooms
   // out from it (an upright iPad would otherwise leave its right side empty).
   const restScale = o.portrait && ring === 0 && o.rest === 'half' ? (HALF_REACH * vp.width) / vp.radius : 0;
-  const scale = Math.max(Math.min(want, fit), MIN_CELL_PX / arcAtScale1, MIN_RING_SCALE, restScale);
+  // Sideways zoom spec (Lucas, 2026-11-18, a sideways iPad): on sideways stages that rest on the whole wheel, a middle
+  // word's view keeps the whole core ring on screen, 1rem after the notch. The wheel meets the aim width on the right.
+  const sidewaysWhole = !o.portrait && o.rest === 'whole';
+  const keepCore = sidewaysWhole && ring === 1
+    ? (vp.width - LIFT_RADIAL_PX - OUTLINE_OUTSIDE_PX - (o.insetLeft ?? 0) - o.remPx) / ((1 - layout.rings[0]!.inner) * vp.radius)
+    : Infinity;
+  const scale = Math.max(Math.min(want, fit, keepCore), MIN_CELL_PX / arcAtScale1, MIN_RING_SCALE, restScale);
   const R = vp.radius * scale;
   // Spec v1.2 §4.1–§4.2: phones center the ring's middle; elsewhere the wheel meets the stage's right edge (the
   // card's column) — its outer edge plus the opened cell's lift and outline, so an opened outer word isn't clipped —

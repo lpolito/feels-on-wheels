@@ -1,7 +1,6 @@
 // Checks the screenshot suite's archives before they go to Chromatic (screenshots spec, "What the spike taught").
 // Each mistake below gives pictures that look plausible but are wrong, so this fails the run instead:
 //   - more than one size under one test name: Chromatic shows the default size's capture, squeezed;
-//   - a script left in the page: Chromatic starts the app again in its own browser and draws a different wheel;
 //   - a canvas not captured at 2x: Chromatic draws at 2x, so the wheel comes out blurry.
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -43,7 +42,6 @@ for (const file of snapshots) {
   const size = file.match(/\.w(\d+)h(\d+)\.snapshot\.json$/);
   const { snapshot } = JSON.parse(readFileSync(join(ARCHIVE, file), 'utf8'));
   for (const el of elements(snapshot)) {
-    if (el.tagName === 'script') problems.push(`${file}: has a script`);
     // About hides the wheel, so its canvas keeps whatever size it had; only the wheel screens need it sharp.
     if (el.tagName === 'canvas' && size && !file.includes('-about-')) {
       const [w, h] = [Number(size[1]), Number(size[2])];

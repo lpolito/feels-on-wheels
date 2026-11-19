@@ -272,7 +272,10 @@ function hintContent(s: State): HintContent {
   return { ...usual, title: t('notFoundTitle'), lead: `${t('notFoundText', { word: notFound.word })} `, variant: 'notFound' };
 }
 
-/** Spec v1.2 §4.2: the phone card's height cap keeps it below the opened cell. */
+/**
+ * Spec v1.2 §4.2: the phone card's height cap leaves room above the card for the opened cell. Known issues, round three:
+ * the cell is centered below the controls, not in that room, so on short phones its edges may fall under the card.
+ */
 function setOpenedHalf(s: State): void {
   const half = s.opened && s.selected !== null ? openedHalfHeight(layout, s.selected, vp, opts) : 0;
   app.style.setProperty('--opened-half', `${half}px`);

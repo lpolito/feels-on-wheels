@@ -508,8 +508,9 @@ fw-card[data-open] :is(.fw-crumbs-wrap, .fw-card-body) { grid-template-rows: 1fr
     right: calc(12px + env(safe-area-inset-right));
     bottom: calc(12px + env(safe-area-inset-bottom));
     width: auto;
-    /* Spec v1.2 §4.2: ends 12px below the opened cell, which main.ts measures into --opened-half. */
-    /* Spec v1.3 §4.2: at most 55% of the screen, and always leaving room above for the opened cell + 12 px each side. */
+    /* Spec v1.3 §4.2: at most 55% of the screen, and always leaving room above for the opened cell + 12 px each side
+       (main.ts measures the cell into --opened-half). Known issues, round three: the cell is centered below the controls,
+       not in that room, so on short phones its edges may fall under the card. */
     max-height: min(
       calc(55dvh - 12px - env(safe-area-inset-bottom)),
       calc(100dvh - 2 * var(--opened-half, 0px) - 36px - env(safe-area-inset-top) - env(safe-area-inset-bottom))

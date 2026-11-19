@@ -301,9 +301,13 @@ describe('sideways zoom spec: the core word stays in view', () => {
   });
 
   test('the 24 px floor beats the cap', () => {
-    const narrow: Viewport = { width: 500, height: 768, radius: 242 };
+    // A tiny aim width, where keeping the core ring in view would leave middle cells under 24 px.
+    const narrow: Viewport = { width: 220, height: 480, radius: 102 };
+    const cap = (narrow.width - 12 - 16) / ((1 - layout.rings[0]!.inner) * narrow.radius);
     for (const l of wheels) {
-      expect(segHeight(l, 1, narrow, ringFocusCamera(l, 1, narrow, 0, opts).scale), l.wheelId).toBeGreaterThanOrEqual(24 - 1e-9);
+      const scale = ringFocusCamera(l, 1, narrow, 0, opts).scale;
+      expect(scale, l.wheelId).toBeGreaterThan(cap);
+      expect(segHeight(l, 1, narrow, scale), l.wheelId).toBeCloseTo(24, 6);
     }
   });
 });

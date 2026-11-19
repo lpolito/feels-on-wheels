@@ -18,7 +18,11 @@ concurrency:
 jobs:
   screenshots:
     name: screenshots
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'screenshots')
+    # Labeled PRs only, and adding some other label to one doesn't start another run.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (contains(github.event.pull_request.labels.*.name, 'screenshots') &&
+       (github.event.action != 'labeled' || github.event.label.name == 'screenshots'))
     # macOS like the end-to-end tests: the wheel's canvas is captured here, with Apple's system font.
     runs-on: macos-latest
     env:
@@ -31,6 +35,9 @@ jobs:
           exit 1
       - uses: actions/checkout@v7
         with:
+          # The PR's own branch rather than GitHub's temporary merge commit, so Chromatic records the build on a commit
+          # in the branch's history and posts its status where the PR shows it.
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
           # Chromatic reads git history to find each build's baseline.
           fetch-depth: 0
       - uses: actions/setup-node@v7

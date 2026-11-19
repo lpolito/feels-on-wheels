@@ -18,17 +18,20 @@ if (!existsSync(ARCHIVE)) {
   process.exit(1);
 }
 
-for (const file of readdirSync(ROOT).filter((f) => f.endsWith('.stories.json'))) {
-  const { stories } = JSON.parse(readFileSync(join(ROOT, file), 'utf8'));
-  for (const story of stories) {
-    if (Object.keys(story.parameters?.chromatic?.modes ?? {}).length > 1) {
-      problems.push(`${file}: more than one size under one test name`);
-    }
-  }
-}
-
 const snapshots = readdirSync(ARCHIVE).filter((f) => f.endsWith('.snapshot.json'));
 if (snapshots.length !== EXPECTED) problems.push(`${snapshots.length} snapshots, expected ${EXPECTED}`);
+
+// Each archive is <snapshot id>.w<width>h<height>.snapshot.json. Chromatic merges one id's sizes into one test only at
+// upload, so here an id with two sizes means two devices ended up under one test name (a device added as a Playwright
+// project rather than a describe, say).
+const sizesById = new Map();
+for (const file of snapshots) {
+  const [, id, size] = file.match(/^(.*)\.(w\d+h\d+)\.snapshot\.json$/) ?? [];
+  if (id) sizesById.set(id, [...(sizesById.get(id) ?? []), size]);
+}
+for (const [id, sizes] of sizesById) {
+  if (sizes.length > 1) problems.push(`${id}: more than one size under one test name (${sizes.join(', ')})`);
+}
 
 /** Every serialized element in an rrweb snapshot, depth first. */
 function* elements(node) {

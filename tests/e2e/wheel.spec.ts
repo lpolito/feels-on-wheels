@@ -1,6 +1,5 @@
-import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { exploreLead, expectTitle, head, hint, idle, open, selectedPath, settled, state, tapPath, title } from './helpers';
+import { axe, exploreLead, expectTitle, head, hint, idle, open, selectedPath, settled, state, tapPath, title } from './helpers';
 
 const TAU = Math.PI * 2;
 const sameAngle = (a: number, b: number) => {
@@ -482,8 +481,9 @@ test.describe('desktop', () => {
     expect(card.x).toBeLessThan(20);
     const { y, mid } = await openedPlacement(page, 'angry');
     expect(Math.abs(y - mid)).toBeLessThanOrEqual(2);
-    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry'));
-    expect(Math.abs(p.x - 450)).toBeLessThanOrEqual(2);
+    // It rests on the half-wheel, so an opened core word keeps the wheel's center on the left edge (known issues,
+    // round two), as at rest.
+    expect(Math.abs((await page.evaluate(() => window.__fw.camera())).cx)).toBeLessThanOrEqual(0.5);
   });
 
   test('Escape on a focused row closes and leaves focus on the card toggle', async ({ page }) => {
@@ -579,15 +579,22 @@ test.describe('desktop', () => {
   });
 });
 
-/** The opened word's y against the gap between the stage's top and the unfolded card's top (spec v1.3 §4.2). */
+/**
+ * The opened word's y against the gap between the bottom of the controls and the unfolded card's top (known issues,
+ * round three, replacing spec v1.3 §4.2's top of the stage).
+ */
 async function openedPlacement(page: Page, path: string) {
   await idle(page);
   await settled(page);
   const y = (await page.evaluate((p) => window.__fw.segmentScreenPoint(p), path)).y;
-  const stage = (await wheelBox(page))!;
+  const bottom = async (sel: string) => {
+    const b = (await page.locator(sel).boundingBox())!;
+    return b.y + b.height;
+  };
+  const controlsBottom = Math.max(await bottom('fw-wheel-switch'), await bottom('fw-toolbar'));
   const card = (await page.locator('fw-card').boundingBox())!;
   const half = await page.evaluate(() => Number.parseFloat(getComputedStyle(document.getElementById('app')!).getPropertyValue('--opened-half')));
-  return { y, mid: (stage.y + card.y) / 2, cardTop: card.y, half };
+  return { y, mid: (controlsBottom + card.y) / 2, cardTop: card.y, controlsBottom, half };
 }
 
 test.describe('phone', () => {
@@ -661,13 +668,26 @@ test.describe('phone', () => {
     expect((await state(page)).opened).toBe(false);
   });
 
-  test('phone: the opened word is centered between the top and the unfolded card', async ({ page }) => {
+  test('phone: the opened wedge is centered between the controls and the unfolded card', async ({ page }) => {
     for (const path of ['fearful', 'fearful/scared', 'fearful/scared/helpless']) {
       await open(page, `/${path}`);
-      const { y, mid, cardTop, half } = await openedPlacement(page, path);
+      const { y, mid, cardTop, controlsBottom, half } = await openedPlacement(page, path);
       expect(Math.abs(y - mid), path).toBeLessThanOrEqual(2);
       expect(half, path).toBeGreaterThan(20);
-      expect(y + half, path).toBeLessThan(cardTop);
+      // Lucas, 2026-11-18: "who cares where the edges fall." Only the wedge's middle, its label, has a place to be.
+      expect(y, path).toBeGreaterThan(controlsBottom);
+      expect(y, path).toBeLessThan(cardTop);
+    }
+  });
+
+  test('phone: in a very short window the opened word sits between the controls and the card', async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 380 });
+    for (const path of ['fearful', 'fearful/scared', 'fearful/scared/helpless']) {
+      await open(page, `/${path}`);
+      const { y, mid, cardTop, controlsBottom } = await openedPlacement(page, path);
+      expect(Math.abs(y - mid), path).toBeLessThanOrEqual(2);
+      expect(y, path).toBeGreaterThan(controlsBottom);
+      expect(y, path).toBeLessThan(cardTop);
     }
   });
 
@@ -701,7 +721,7 @@ test.describe('phone', () => {
     await expect(label).toBeHidden({ timeout: 3000 });
   });
 
-  test("phone: after a spin, the word doesn't slide once the spin stops", async ({ page }) => {
+  test('phone: the axis stays still while the wheel spins, and the word re-centers once it stops', async ({ page }) => {
     await open(page, '/fearful/scared');
     await settled(page);
     // Record the camera on every frame from here on.
@@ -729,20 +749,29 @@ test.describe('phone', () => {
     const last = rec.at(-1)!;
     const TAU = Math.PI * 2;
     const off = (a: number) => { const d = (((a - last.rotation) % TAU) + TAU) % TAU; return Math.min(d, TAU - d); };
-    // The frame where the rotation came to rest: from there on, cy must not travel.
+    // The frame where the rotation came to rest: until then, the axis (cy) stays where it was.
     const restIdx = rec.findIndex((f, k) => k > 5 && rec.slice(k).every((g) => off(g.rotation) < 1e-3));
     expect(restIdx).toBeGreaterThan(0);
-    expect(Math.abs(rec[restIdx]!.cy - last.cy)).toBeLessThanOrEqual(2);
+    for (const f of rec.slice(0, restIdx)) expect(Math.abs(f.cy - rec[0]!.cy)).toBeLessThanOrEqual(1);
     const path = (await selectedPath(page))!;
     const { y, mid } = await openedPlacement(page, path);
     expect(Math.abs(y - mid)).toBeLessThanOrEqual(2);
   });
 
-  test('phone: on a short screen the opened cell still fits above the card', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 600 });
-    await open(page, '/fearful');
-    const { y, cardTop, half } = await openedPlacement(page, 'fearful');
-    expect(cardTop).toBeGreaterThanOrEqual(y + half + 12 - 1);
+  test('phone: on a short screen the card leaves room for the opened cell, and its label sits between the controls and the card', async ({ page }) => {
+    // Spec v1.3 §4.2's cap still keeps room above the card for the opened cell plus 12 px on each side. Round three
+    // centers the cell below the controls, so its edges may fall under the card or the controls ("who cares where the
+    // edges fall", Lucas, 2026-11-18); its label may not.
+    for (const [height, wheel, path] of [[600, '', 'fearful'], [420, '', 'sad'], [600, '/body', 'whole-body'], [420, '/body', 'urges']] as const) {
+      await page.setViewportSize({ width: 375, height });
+      await open(page, `${wheel}/${path}`);
+      const { y, cardTop, controlsBottom, half } = await openedPlacement(page, path);
+      const stageTop = (await page.locator('#stage').boundingBox())!.y;
+      const name = `${height} ${path}`;
+      expect(cardTop - stageTop, name).toBeGreaterThanOrEqual(2 * half + 24 - 1);
+      expect(y, name).toBeGreaterThan(controlsBottom);
+      expect(y, name).toBeLessThan(cardTop);
+    }
   });
 
   test('phone: Back from an opened word returns to the whole wheel with it selected', async ({ page }) => {
@@ -791,17 +820,17 @@ for (const colorScheme of ['light', 'dark'] as const) {
       await open(page, '/angry/aggressive/hostile');
       // Let the unfold finish, so axe reads the settled colors.
       await settled(page);
-      expect((await new AxeBuilder({ page }).analyze()).violations, 'opened').toEqual([]);
+      expect((await axe(page).analyze()).violations, 'opened').toEqual([]);
       await page.keyboard.press('Escape');
       await idle(page);
       await expect(title(page)).toHaveText('Hostile');
       await settled(page);
-      expect((await new AxeBuilder({ page }).analyze()).violations, 'selected').toEqual([]);
+      expect((await axe(page).analyze()).violations, 'selected').toEqual([]);
       await page.keyboard.press('Escape');
       await expect(page.locator('fw-card')).toBeHidden();
       // The message fades in (150 ms); let it finish so axe reads its settled contrast.
       await settled(page);
-      expect((await new AxeBuilder({ page }).analyze()).violations, 'nothing').toEqual([]);
+      expect((await axe(page).analyze()).violations, 'nothing').toEqual([]);
     });
 
     test(`axe: no violations with the opened card scrolled (${colorScheme})`, async ({ page, isMobile }) => {
@@ -812,7 +841,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       const card = page.locator('fw-card');
       expect(await card.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true);
       await card.evaluate((el) => { el.scrollTop = el.scrollHeight; });
-      expect((await new AxeBuilder({ page }).analyze()).violations, 'opened and scrolled').toEqual([]);
+      expect((await axe(page).analyze()).violations, 'opened and scrolled').toEqual([]);
     });
   });
 }
@@ -874,10 +903,10 @@ test.describe('v2.1: phones turned sideways', () => {
     await page.setViewportSize({ width: 851, height: 393 });
     await open(page);
     await settled(page);
-    expect((await new AxeBuilder({ page }).analyze()).violations, 'at rest').toEqual([]);
+    expect((await axe(page).analyze()).violations, 'at rest').toEqual([]);
     await open(page, '/body/head/headache');
     await settled(page);
-    expect((await new AxeBuilder({ page }).analyze()).violations, 'opened').toEqual([]);
+    expect((await axe(page).analyze()).violations, 'opened').toEqual([]);
   });
 
   test('iPhone SE sideways, word opened: the card is in the column and the word is clear of the switch', async ({ page }) => {

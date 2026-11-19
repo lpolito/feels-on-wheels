@@ -2,14 +2,15 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { loadData } from '../../src/data/load';
 import { buildLayout } from '../../src/model/layout';
 import { TAU, hitTest, normAngle, rotationToCenter, segmentAt, type Camera, type Viewport } from '../../src/model/geometry';
-import { createCameraController, restRotation, ringFocusCamera, type CameraController } from '../../src/camera';
+import { createCameraController, restRotation, ringFocusCamera, sharedSizes, type CameraController } from '../../src/camera';
 import { createStore, initialState, type Action, type State, type Store } from '../../src/state/store';
 import { createController, type Controller } from '../../src/controller';
 
 const layout = buildLayout(loadData().wheel);
+const SHARED = sharedSizes(loadData().wheels);
 const idx = (p: string): number => layout.byPath.get(p)!;
 const desk: Viewport = { width: 1200, height: 900, radius: 442 };
-const opts = { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null };
+const opts = { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
 
 let now = 0;
 let queue: Map<number, FrameRequestCallback>;
@@ -56,11 +57,11 @@ function setup(initial = initialState): void {
 beforeEach(() => setup());
 
 const phoneVp: Viewport = { width: 390, height: 844, radius: 187 };
-const phoneOpts = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null };
+const phoneOpts = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
 const halfScale = (0.95 * phoneVp.width) / phoneVp.radius;
 
 /** A phone (spec v1.2 §3.2): the whole-wheel view is the half-wheel. */
-function setupPhone(initial = initialState, predictOpenedY?: (segment: number) => number | null): void {
+function setupPhone(initial = initialState): void {
   now = 0; queue = new Map(); nextId = 1;
   store = createStore(layout, initial);
   camera = createCameraController({
@@ -69,7 +70,7 @@ function setupPhone(initial = initialState, predictOpenedY?: (segment: number) =
     caf: (id) => { queue.delete(id); },
     reducedMotion: () => false,
   });
-  ctl = createController(layout, store, camera, phoneVp, phoneOpts, predictOpenedY);
+  ctl = createController(layout, store, camera, phoneVp, phoneOpts);
   step(50);
 }
 
@@ -601,7 +602,7 @@ describe('intro and restore', () => {
 
 describe('side view (sideways phone, spec v2.1 §6.2)', () => {
   const sideVp: Viewport = { width: 511, height: 393, radius: 393 / 2 - 8 };
-  const sideOpts = { remPx: 16, portrait: false, rest: 'side' as const, openedY: null };
+  const sideOpts = { remPx: 16, portrait: false, rest: 'side' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
   const sideCam = (rotation: number) => ringFocusCamera(layout, 0, sideVp, rotation, sideOpts);
 
   function setupSide(initial = initialState): void {
@@ -631,6 +632,16 @@ describe('side view (sideways phone, spec v2.1 §6.2)', () => {
     if (rotation !== undefined) expect(sameAngle(camera.current.rotation, rotation)).toBeLessThan(1e-6);
   };
 
+  test('the feelings wheel rests and opens a core word at the shared side zoom, so opening never zooms out', () => {
+    const body = buildLayout(loadData().wheels.find((w) => w.id === 'body')!);
+    const shared = ringFocusCamera(body, 0, sideVp, 0, sideOpts).scale;
+    setupSide();
+    expect(camera.current.scale).toBeCloseTo(shared, 9);
+    setupSide(opened('happy'));
+    step(2000);
+    expect(camera.current.scale).toBeCloseTo(shared, 9);
+  });
+
   test("starts on the side view with Happy at 3 o'clock", () => {
     setupSide();
     expectSide();
@@ -651,9 +662,10 @@ describe('side view (sideways phone, spec v2.1 §6.2)', () => {
   test('a tap selects without moving the camera', () => {
     setupSide();
     const before = { ...camera.current };
-    ctl.handle([{ type: 'tap', ...sideScreenOf(idx('fearful')) }]);
+    // Surprised sits beside Happy: at the shared side zoom (known-issues spec §3), Fearful is off-screen.
+    ctl.handle([{ type: 'tap', ...sideScreenOf(idx('surprised')) }]);
     step(1000);
-    expect(store.get()).toMatchObject({ selected: idx('fearful'), opened: false, view: { mode: 'wheel' } });
+    expect(store.get()).toMatchObject({ selected: idx('surprised'), opened: false, view: { mode: 'wheel' } });
     expect(camera.current).toEqual(before);
   });
 
@@ -759,7 +771,7 @@ describe('half-wheel (phone)', () => {
     const rot = camera.current.rotation;
     const before = store.get();
     const land: Viewport = { width: 844, height: 390, radius: 187 };
-    ctl.setViewport(land, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null });
+    ctl.setViewport(land, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     step(2000);
     expect(store.get()).toBe(before);
     expect(before).toMatchObject({ selected: idx('surprised'), opened: false, view: { mode: 'wheel' } });
@@ -775,36 +787,52 @@ describe('half-wheel (phone)', () => {
 });
 
 describe('phone: the opened word above the card', () => {
-  test("a fling while opened springs cy to the destination's predicted y in the same motion", () => {
-    const asked: number[] = [];
-    setupPhone(opened('fearful/scared'), (seg) => {
-      asked.push(seg);
-      return 300;
-    });
+  test('a fling while opened keeps cy still until the spin settles', () => {
+    setupPhone(opened('fearful/scared'));
     step(2000);
+    const cy = camera.current.cy;
     const p = phoneScreenOf(idx('fearful/scared'));
     ctl.handle([{ type: 'dragStart', x: p.x, y: p.y, axis: 'y' }, { type: 'dragEnd', vx: 0, vy: 2500 }]);
-    const dest = segmentAt(layout, 1, normAngle(-camera.target.rotation));
-    expect(dest).not.toBe(idx('fearful/scared'));
-    expect(asked).toEqual([dest]);
-    // One spring: the vertical target is set while the rotation is still flying.
-    expect(camera.target.cy).toBe(300);
-    expect(camera.moving).toBe(true);
-    step(2000);
-    expect(store.get().selected).toBe(dest);
-    expect(store.get().opened).toBe(true);
-    expect(camera.current.cy).toBeCloseTo(300, 6);
+    expect(camera.target.cy).toBe(cy);
+    for (let t = 0; t < 400 && camera.moving; t++) {
+      step(16);
+      expect(camera.current.cy).toBeCloseTo(cy, 9);
+    }
+    expect(store.get().selected).not.toBe(idx('fearful/scared'));
   });
 
-  test('no prediction for a fling on the whole wheel', () => {
-    const asked: number[] = [];
-    setupPhone(initialState, (seg) => {
-      asked.push(seg);
-      return 300;
-    });
-    ctl.handle([{ type: 'dragStart', x: 300, y: 300, axis: 'y' }, { type: 'dragEnd', vx: 0, vy: 2500 }]);
+  test('while the wheel turns to another opened word, the axis stays still; the word re-centers once it stops', () => {
+    setupPhone(opened('fearful/scared'));
     step(2000);
-    expect(asked).toEqual([]);
+    const cy = camera.current.cy;
+    const ring = layout.rings[1]!.segments;
+    const next = ring[(ring.indexOf(idx('fearful/scared')) + 1) % ring.length]!;
+    store.dispatch({ type: 'open', segment: next });
+    // The new word's card is a different height (main.ts re-measures it as soon as it renders).
+    ctl.setOpenedY(cy + 80);
+    expect(camera.moving).toBe(true);
+    // Until the rotation lands, the axis holds; then the camera moves to the new y.
+    for (let t = 0; t < 400 && camera.current.rotation !== camera.target.rotation; t++) {
+      expect(camera.current.cy).toBeCloseTo(cy, 9);
+      step(16);
+    }
+    step(2000);
+    expect(camera.current.cy).toBeCloseTo(cy + 80, 6);
+  });
+
+  test('opening a core word from the half-wheel moves cy while the card opens, even when it only turns (Lucas, 2026-11-18)', () => {
+    setupPhone();
+    // Bad isn't at 3 o'clock, so opening it turns the wheel; on the half-wheel the core view keeps the rest zoom.
+    store.dispatch({ type: 'open', segment: idx('bad') });
+    expect(camera.target.scale).toBeCloseTo(halfScale, 9);
+    expect(camera.target.rotation).not.toBeCloseTo(camera.current.rotation, 3);
+    // main.ts measures the card as soon as it renders.
+    ctl.setOpenedY(200);
+    step(100);
+    expect(camera.current.rotation).not.toBeCloseTo(camera.target.rotation, 3);
+    expect(camera.current.cy).toBeLessThan(phoneVp.height / 2 - 50);
+    step(2000);
+    expect(camera.current.cy).toBeCloseTo(200, 6);
   });
 
   test('setOpenedY springs cy without moving rotation or scale', () => {
@@ -849,7 +877,7 @@ describe('viewport', () => {
   test('setViewport while opened keeps the same word centered at angle 0', () => {
     setup(opened('angry/aggressive/hostile'));
     step(1000);
-    ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true, rest: 'whole' as const, openedY: null });
+    ctl.setViewport({ width: 700, height: 1000, radius: 342 }, { remPx: 16, portrait: true, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     step(1000);
     expect(offCenter(idx('angry/aggressive/hostile'))).toBeLessThan(1e-9);
     expect(camera.current.cx + 0.81 * 342 * camera.current.scale).toBeCloseTo(350, 6);

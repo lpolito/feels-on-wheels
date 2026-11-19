@@ -1,4 +1,12 @@
+import AxeBuilder from '@axe-core/playwright';
 import { expect, type Locator, type Page } from '@playwright/test';
+
+/**
+ * axe with WCAG 2.2 AA's target size (2.5.8, 24 px) turned on: axe 4.14 ships that rule off (Lucas, 2026-11-18). It
+ * checks the page's controls; the wheel's cells are drawn on the canvas, which axe can't see (the camera tests cover
+ * opened cells).
+ */
+export const axe = (page: Page): AxeBuilder => new AxeBuilder({ page }).options({ rules: { 'target-size': { enabled: true } } });
 
 export async function open(page: Page, path = '/'): Promise<void> {
   await page.goto(path);

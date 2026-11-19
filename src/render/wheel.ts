@@ -41,8 +41,12 @@ export interface WheelRenderer {
 const FONT_STACK = 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 /** The regular label font, shared with the sprite cache. */
 export const labelFont = (px: number): string => `600 ${px}px ${FONT_STACK}`;
-const MEASURE_PX = 100;
 const LABEL_PAD = 6;
+const MEASURE_PX = 100;
+/** The word each size's extra tracking is read from. */
+const TRACK_REF = 'Hamburgefonstiv';
+/** Opened-label widths kept before the cache starts over. */
+const MEASURE_CACHE_MAX = 4000;
 const LINE_HEIGHT = 1.15;
 const GAP_PX = 1.5;
 const GAP_PX_MORE = 2.5;
@@ -56,7 +60,7 @@ const PULSE_FROM = 0.96;
 /** Label fits are reused while the box stays within this many px (pinch frames). */
 const FIT_TOLERANCE = 1;
 
-interface LabelCache { w: number; h: number; min: number; max: number; result: { lines: string[]; px: number } | null }
+interface LabelCache { w: number; h: number; min: number; max: number; wrapAt: number; result: { lines: string[]; px: number } | null }
 
 const easeOut = (t: number): number => 1 - (1 - t) ** 3;
 
@@ -66,7 +70,6 @@ export function createWheelRenderer(
 ): WheelRenderer {
   const g = ctx ?? canvas.getContext('2d', { alpha: false })!;
   const texts = layout.segments.map((s) => wheelCellLabel(s.node));
-  const widthAt100 = new Map<string, number>();
   const fonts = new Map<number, string>();
   const labelCache: (LabelCache | null)[] = layout.segments.map(() => null);
   const win: ViewWindow = { rMin: 0, rMax: 0, full: true, from: 0, to: 0 };
@@ -87,15 +90,51 @@ export function createWheelRenderer(
     }
     return f;
   };
-  const measure: Measure = (text, px) => {
-    let w = widthAt100.get(text);
+  /**
+   * Known issues, round two: the system font is wider at small sizes than a scale-down from one size predicts (it adds
+   * tracking for small text): about 4% at 18 px and 12% at 9 px. Every label's width is its width at 100 px scaled
+   * down, plus that size's extra tracking per character, read once per size from a reference word (within about 2%,
+   * 3% at worst). The opened label is measured exactly at its size (below), since its clearance is what's seen.
+   */
+  const widthAt100 = [new Map<string, number>(), new Map<string, number>()];
+  const trackAt = [new Map<number, number>(), new Map<number, number>()];
+  const at100 = (text: string, bold: boolean): number => {
+    const cache = widthAt100[bold ? 1 : 0]!;
+    let w = cache.get(text);
     if (w === undefined) {
-      g.font = font(MEASURE_PX);
+      g.font = font(MEASURE_PX, bold);
       w = g.measureText(text).width;
-      widthAt100.set(text, w);
+      cache.set(text, w);
     }
-    return (w * px) / MEASURE_PX;
+    return w;
   };
+  const track = (px: number, bold: boolean): number => {
+    const size = Math.round(px * 4) / 4;
+    const cache = trackAt[bold ? 1 : 0]!;
+    let t = cache.get(size);
+    if (t === undefined) {
+      g.font = font(size, bold);
+      t = (g.measureText(TRACK_REF).width - (at100(TRACK_REF, bold) * size) / MEASURE_PX) / TRACK_REF.length;
+      cache.set(size, t);
+    }
+    return t;
+  };
+  const measure: Measure = (text, px) => (at100(text, false) * px) / MEASURE_PX + text.length * track(px, false);
+  /** Known-issues spec §5: the opened label is fitted at its own weight, 800, measured exactly at each size. */
+  const boldAt = new Map<string, number>();
+  const measureBold: Measure = (text, px) => {
+    const key = `${px}|${text}`;
+    let w = boldAt.get(key);
+    if (w === undefined) {
+      // A long pinch fits at many sizes: start over rather than grow without end.
+      if (boldAt.size >= MEASURE_CACHE_MAX) boldAt.clear();
+      g.font = font(px, true);
+      w = g.measureText(text).width;
+      boldAt.set(key, w);
+    }
+    return w;
+  };
+  let openedFit: (LabelCache & { i: number }) | null = null;
 
   function sector(cx: number, cy: number, r0: number, r1: number, a0: number, a1: number): void {
     g.beginPath();
@@ -104,15 +143,32 @@ export function createWheelRenderer(
     g.closePath();
   }
 
-  function fitted(i: number, w: number, h: number, min: number, max: number): LabelCache['result'] {
+  function fitted(i: number, w: number, h: number, min: number, max: number, wrapAt: number): LabelCache['result'] {
     const c = labelCache[i];
-    if (c && Math.abs(c.w - w) <= FIT_TOLERANCE && Math.abs(c.h - h) <= FIT_TOLERANCE && c.min === min && c.max === max) {
+    if (c && Math.abs(c.w - w) <= FIT_TOLERANCE && Math.abs(c.h - h) <= FIT_TOLERANCE && c.min === min && c.max === max
+      && c.wrapAt === wrapAt) {
       return c.result;
     }
     stats.labelFits++;
-    const result = fitLabel(texts[i]!, measure, { width: w, height: h }, { min, max });
-    labelCache[i] = { w, h, min, max, result };
+    const result = fitLabel(texts[i]!, measure, { width: w, height: h }, { min, max, wrapAt });
+    labelCache[i] = { w, h, min, max, wrapAt, result };
     return result;
+  }
+
+  /**
+   * Known-issues spec §5: the opened label, at bold, inside the lifted cell's box, grown up to LIFT_LABEL× its unopened
+   * size `fit` and never below it. When even the unopened size doesn't fit, it's drawn at that size.
+   */
+  function openedLabel(i: number, w: number, h: number, fit: { lines: string[]; px: number }): { lines: string[]; px: number } {
+    const min = fit.px;
+    const max = fit.px * LIFT_LABEL;
+    const c = openedFit;
+    if (c && c.i === i && Math.abs(c.w - w) <= FIT_TOLERANCE && Math.abs(c.h - h) <= FIT_TOLERANCE && c.min === min && c.max === max) {
+      return c.result ?? fit;
+    }
+    const result = fitLabel(texts[i]!, measureBold, { width: w, height: h }, { min, max });
+    openedFit = { i, w, h, min, max, wrapAt: min, result };
+    return result ?? fit;
   }
 
   function drawLabel(lines: string[], px: number, bold: boolean, x: number, y: number, angle: number, scale: number, color: string): void {
@@ -194,9 +250,13 @@ export function createWheelRenderer(
       const { cam, vp } = f;
       const R = vp.radius * cam.scale;
       const k = f.remPx / 16;
-      // Spec v2.1 §5: 8 px in the whole-wheel view; in a ring view 12 px on the view ring and inside it, 10 px outside.
-      const floor = (ring: number): number =>
-        (f.mode !== 'ring' ? 8 : f.ring !== null && ring > f.ring ? 10 : 12) * k;
+      // Known issues, round two (Lucas, 2026-11-18): labels are the look of the wheel, so they never disappear. Spec
+      // v2.1 §5's sizes (8 px in the whole-wheel view; in a ring view 12 px on the view ring and inside it, 10 px
+      // outside) are now where a label wraps to two lines rather than shrink further; below them it shrinks as far as
+      // its cell needs (the 1 px floor only lets the fitting loop end). They were readability choices, not
+      // accessibility ones: the canvas is hidden from screen readers.
+      const wrapAt = (ring: number): number => (f.mode !== 'ring' ? 8 : f.ring !== null && ring > f.ring ? 10 : 12) * k;
+      const floor = 1 * k;
       // Quantised so pinch frames keep reusing label fits.
       const maxPx = Math.floor(Math.min(Math.max(16 * k * cam.scale, 16 * k), 24 * k) * 2) / 2;
       const lifted = f.opened ? f.selected : null;
@@ -244,7 +304,7 @@ export function createWheelRenderer(
         const y = cam.cy + rMid * Math.sin(angle);
         if (x < -rMid || y < -rMid || x > cssW + rMid || y > cssH + rMid) continue;
         const boxLen = (ring.outer - ring.inner) * R - 2 * LABEL_PAD;
-        const fit = fitted(s.index, boxLen, (s.end - s.start) * rMid, floor(s.ring), maxPx);
+        const fit = fitted(s.index, boxLen, (s.end - s.start) * rMid, floor, maxPx, wrapAt(s.ring));
         if (!fit) continue;
         const lit = f.fadeT >= 0.5 ? f.lit[s.index] === 1 : f.prevLit[s.index] === 1;
         drawLabel(fit.lines, fit.px, false, x, y, angle, 1, table.label(s.hue, s.ring, lit));
@@ -297,9 +357,11 @@ export function createWheelRenderer(
       g.shadowOffsetY = 0;
       g.shadowColor = 'transparent';
       outline(cam.cx, cam.cy, r0, r1, a0 - side, a1 + side, ink, palette.gap);
-      const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, floor(s.ring), maxPx);
+      const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, floor, maxPx, wrapAt(s.ring));
       if (fit) {
-        drawLabel(fit.lines, fit.px * LIFT_LABEL, true, x, y, angle, p, table.label(s.hue, s.ring, true));
+        // Round two: as clear of the outline (its inner half is inside the cell) as an unopened label is of its cell.
+        const lifted = openedLabel(s.index, r1 - r0 - 2 * (LABEL_PAD + OUTLINE_INNER_PX), (s.end - s.start + 2 * side) * rMid, fit);
+        drawLabel(lifted.lines, lifted.px, true, x, y, angle, p, table.label(s.hue, s.ring, true));
         stats.labelsByRing[s.ring]!++;
       }
       g.setTransform(dpr, 0, 0, dpr, 0, 0);

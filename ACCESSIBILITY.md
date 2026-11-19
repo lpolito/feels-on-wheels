@@ -13,7 +13,7 @@ What the app is built to do:
 - **Every action works by touch, mouse, trackpad and keyboard.** On the wheel, the arrow keys move between words and in and out of the rings, Enter or Space opens a word, and Escape steps back.
 - **Screen readers get the wheel as a tree.** The drawn wheel is hidden from screen readers. In its place is a tree of the same words that you move through with the arrow keys, and each choice is announced.
 - **Your settings are followed:** light or dark mode (the system's, or the one you choose in the app), reduced motion, more contrast, and forced colors such as Windows high contrast.
-- **Easy to read and tap:** text is checked for contrast in both themes, and on a phone the wheel zooms into the ring you're in so each word's cell is at least 44 px tall.
+- **Easy to read and tap:** text is checked for contrast in both themes, and on a phone the wheel zooms into the ring you're in so each word's cell is at least 24 px tall.
 - **Plain language:** definitions and sensations are short, everyday words.
 
 ## Contributor expectations
@@ -64,12 +64,8 @@ These are known and tracked in the [roadmap's known issues](docs/ROADMAP.md#know
 - **On a phone, swiping back from the edge of the screen doesn't work on the wheel**, because the wheel takes every touch. Use the browser's Back button instead. In the app installed to an iPhone's home screen there's no Back at all: use Start over, or "Back to the wheel" on the About page. After jumping from the body wheel to the feelings wheel, "Back to the body wheel" above the card goes back without the browser's Back.
 - **On an iPhone with VoiceOver, the words on the wheel can't be reached**, so you can't pick a word that way. TalkBack on Android likely has the same problem but hasn't been tried. Until it's fixed, a word's own address (such as `/angry`) opens its card directly.
 - **On the wheel, pinching zooms the wheel itself, not the page.** To make text larger, use the browser's or the system's text size or zoom settings.
-- **Small windows**, which can include a computer's browser zoomed in a long way, may show the body sensations wheel without labels until you open something. The card's words are still there.
-- **On some phones, turning the phone sideways and back** can leave the card's text much larger than it should be, and after several turns, taps can land on the wrong word. Closing the word, or reloading the page, may set it right.
-- **Double-tapping a label under the toolbar's buttons**, such as the one that shows the theme choice or "Link copied", or the card's "Link copied", zooms the page on phones, and pinching out doesn't undo it. Double-tap the label again while it's still showing to zoom back out.
-- **Long body sensation words**, such as "Weight on shoulders", can run past the edges of their cell when opened. The card shows them in full.
-- **On an iPhone held sideways**, opening a word on the body sensations wheel can put part of its ring under the card. The card shows the word, and the wheel can be spun to see the rest.
-- **On very short phones**, the opened word can sit under the toolbar.
+- **Words on the wheel can be small to tap before you've opened anything**, especially on the body sensations wheel: on a phone and on some computers, the outer words are under 24 px tall. Open a word in the middle ring first by tapping it twice. The wheel zooms in, and every word in the outer ring is then large enough to tap.
+- **On some phones, after turning the phone sideways and back several times**, taps were once reported to land on the wrong word. It couldn't be reproduced in testing. Reloading the page may set it right.
 - **Linux computers with a wide default font** may show the wheel switch overlapping the toolbar on very narrow windows.
 
 ## Feedback and improvements

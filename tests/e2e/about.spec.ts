@@ -1,6 +1,5 @@
-import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { aboutHeading, aboutLink, backToWheel, focused, idle, open, ring, selectedPath, state } from './helpers';
+import { axe, aboutHeading, aboutLink, backToWheel, focused, idle, open, ring, selectedPath, state } from './helpers';
 
 // Going-public spec §8 and URL redesign spec §3: About is a view in the one shell, with its theme and accessibility.
 
@@ -201,7 +200,7 @@ for (const [theme, bg] of [['dark', 'rgb(18, 17, 20)'], ['light', 'rgb(255, 255,
     await page.addInitScript(saveTheme, theme);
     await page.goto('/about');
     await expect(aboutHeading(page)).toBeVisible();
-    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    expect((await axe(page).analyze()).violations).toEqual([]);
   });
 }
 

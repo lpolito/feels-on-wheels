@@ -1,0 +1,41 @@
+# Changes from the spec: known issues on phones, layout, and labels
+
+What differs from [the spec](2026-11-18-feels-on-wheels-known-issues-design.md).
+
+## Tests (§3, §4, §5)
+
+- **Spec:** two new lines for the rest view (§3), no new test for the opened ring (§4), and a renderer test only if the fake canvas measured by weight (§5).
+- **Now:** Lucas, 2026-11-18, while reviewing the plan: "test what needs to be tested." Each new rule got a test that would catch it breaking:
+  - `tests/unit/controller.test.ts`: on a sideways phone, the feelings wheel rests and opens a core word at the shared side zoom, so opening never zooms out;
+  - `tests/unit/camera.test.ts`: upright phones from 320 to 430 px wide fit every opened ring across the stage with 1rem clear, and at 280 × 653 no opened cell is under 24 px tall;
+  - `tests/unit/wheel-render.test.ts`: every middle-ring word on the body wheel, opened at 390 × 844, is never smaller than unopened, and fits its lifted cell at bold unless even its unopened size can't. The fake canvas now measures bold about 5% wider.
+- Expectations that changed with the rest view (§3): upright 1024 × 1366 rests on the half-wheel, `shouldStartZoomed`'s "false" example moved from 1440 × 900 to 2560 × 1440, and the side-view tap test taps Surprised instead of Fearful, which is off-screen at the shared side zoom. The viewport sweep needed no changes.
+
+## Opened labels in thin cells (§5)
+
+- **Spec:** short words still grow the full 1.15×.
+- **Now:** the opened label is fitted like any label, so the cell's height bounds it too. In a thin cell, a short word may grow a little less than 1.15×.
+
+## How the fixes were checked (§8)
+
+- **Spec:** §1 checked over several turns in the iOS Simulator; the opened ring checked in a browser.
+- **Now:** in this session the Simulator's Safari stayed in its tab overview, and turning the device had no effect. One sideways view with the card open showed normal-size text, and the session that found the cause checked the same rule over several turns. Turning the phone (§1, and a word staying clear of the card through a turn) is left for Lucas's phone, with the double-tap check (§2). Chromium covered every size in §4's table, the notched sideways iPhone, pinching in past the opened view, and the long labels.
+
+## After review on the PR (Lucas, 2026-11-18)
+
+Lucas tried the PR's preview at several phone sizes and asked for four more fixes on the same PR. The [round-two plan](../plans/2026-11-18-feels-on-wheels-known-issues-round-2.md) has the details.
+
+- **The wheel keeps its axis while it turns.** With a word opened on a portrait phone, turning to another word (a spin, an arrow key, a tap on a neighbor) used to move the wheel vertically during the turn, because the new word's card is a different height. Now the axis stays still until the turn stops, then the word re-centers between the top and its new card. This removes the prediction added in 3fb060e ("a spin's vertical move joins the spin"); opening and closing still move it in one motion.
+- **Portrait: a core word keeps the wheel where it rests.** On the half-wheel (portrait phones), opening a core word no longer slides the wheel right to center its ring: the wheel's center stays on the left edge, and it never zooms out from the rest view, so the core view is the rest view moved up and the whole wedge stays in view (on an upright iPad, keeping the ring's own smaller zoom left the right side empty, found in review). Middle and outer words stay centered, and so does a core word where the whole wheel rests: keeping the whole wheel centered there put the opened word under the toolbar in windows 260 px tall (found by the grid sweep).
+- **Labels never disappear.** Spec v2.1 §5's minimum label sizes (8 px at rest, 10 or 12 px with a word opened) were readability choices; Lucas wants the labels as the look of the wheel. The old sizes are now where a label wraps to two lines rather than shrink further, so labels look as they did; only labels that used to disappear shrink below them, as far as their cells need (found in review: without that, long labels stopped wrapping). This also fixes the body wheel resting unlabeled in tiny windows and on an iPhone SE, so that low-priority issue and its accessibility limitation are gone. There's no accessibility cost (the canvas is hidden from screen readers, and every word is in the tree and on the card). Drawing them costs some time while pinching; Lucas checks on his phone whether it's noticeable.
+- **Opened labels keep clear of their outline**, 6 px inside it, as an unopened label is of its cell; never smaller than unopened. Checking it found that every label was measured too narrow: widths were scaled down from 100 px, but the system font adds tracking at small sizes (about 4% at 18 px, 12% at 9 px). Labels are now measured with that tracking, and the opened label exactly at its size.
+- **Axe checks tap size.** axe 4.14 ships WCAG 2.2 AA's target-size rule turned off; every end-to-end axe run now turns it on. It covers the page's controls, not the wheel's canvas cells.
+
+## After review on the PR, round three (Lucas, 2026-11-18)
+
+Lucas tried round two on his iPhone 15. The [round-three plan](../plans/2026-11-18-feels-on-wheels-known-issues-round-3.md) has the details.
+
+- **The opened wedge centers below the controls.** v1.3 §4.2 put the opened word's center halfway between the top of the stage and the top of the fully unfolded card. Back then, only the toolbar sat at the top, on the right. The Feelings | Body switch (v2) floats over the wheel at the top left, and round two keeps a core word's wedge on the left edge on the half-wheel, right under the switch. So the wedge read as too high: about 34 px, half the controls' height, on an iPhone 15. Now the wedge's middle, where its label is, sits halfway between the bottom of the controls (the lower of the switch and the toolbar) and the top of the fully unfolded card. The card's height cap doesn't change. Lucas: "who cares where the edges fall." On short phones the card or the controls may cover the wedge's edges; the label, in the wedge's middle, stays between them.
+- **Opening a word moves into place while the card opens, on both wheels.** Found by Lucas on his iPhone: on the feelings wheel, opening Happy from the half-wheel (after collapsing Inquisitive's card) turned the wheel first and only moved it up once the turn ended; on the body wheel, opening Urges did both at once. Round two told a turn from an open by the zoom: a move that rotated without zooming counted as a turn, and a turn holds the vertical move until it stops. But on the half-wheel a core view keeps the rest zoom, and the feelings wheel's core view would otherwise zoom out, so opening a feelings core word only rotates. The controller now records whether a move is a turn where the move starts (a spin, a key, or a tap on a neighbor), so opening and closing always move up or down with the card.
+- **Very short phones: fixed along the way.** The spec set aside the opened word sitting under the toolbar in portrait windows 420 px tall or shorter (§6, Low priority or not fixing). Measured from the controls, the word now sits between them and the card in every portrait window checked, down to 260 × 260, so the known issue and its accessibility limitation are gone.
+- **How it was checked:** the phone placement tests now measure from the controls (iPhone and Pixel), with a new one at 360 × 380, and the square 900 × 900 window in Chromium; the full end-to-end run in all five browsers; a throwaway check of 25 portrait windows from 260 to 393 px wide and 260 to 420 px tall, with three feelings and two body words opened; and in Chromium at 393 × 659 (an iPhone 15 in Safari), Whole body, Urges, Sad, and Bad each within 2 px of halfway between the controls and the card.

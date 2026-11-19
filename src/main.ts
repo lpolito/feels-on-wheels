@@ -2,7 +2,7 @@ import { data } from './boot';
 import { createAnnouncer } from './a11y/announce';
 import { installFocusTracking, moveFocus } from './a11y/focus';
 import { announceFor, createA11yTree, type A11yTree } from './a11y/tree';
-import { createCameraController, isPortrait, openedHalfHeight, restView, type CameraController, type CameraOpts } from './camera';
+import { createCameraController, isPortrait, openedHalfHeight, restView, sharedSizes, type CameraController, type CameraOpts } from './camera';
 import { createController, type Controller } from './controller';
 import { t, wheelText } from './i18n';
 import { attachGestures } from './input/gestures';
@@ -41,6 +41,8 @@ const media = (q: string): MediaQueryList => matchMedia(q);
 // ── Wheels (spec v2 §7) ──────────────────────────────────────────────────
 const { feelings } = data;
 const wheelIds = data.wheels.map((w) => w.id);
+/** Known-issues spec §3: worked out once from the wheel list, so every wheel rests in the same view. */
+const shared = sharedSizes(data.wheels);
 const firstId = wheelIds[0]!;
 /** Each feeling's first place on the first wheel: its color and jump target on other wheels (spec v2 §5.1, §6.2). */
 const home = homes(buildLayout(data.wheels[0]!));
@@ -128,7 +130,7 @@ function measure(): { vp: Viewport; opts: CameraOpts } {
   const vp = { width, height, radius: Math.max(Math.min(width, height) / 2 - 8, 1), drawWidth: box.width };
   // v2.2.1: the app's left padding is env(safe-area-inset-left), a sideways phone's notch; the camera keeps clear of it.
   const insetLeft = Number.parseFloat(getComputedStyle(app).paddingLeft) || 0;
-  return { vp, opts: { remPx, portrait, rest: restView(layout, vp, whole), openedY: null, insetLeft } };
+  return { vp, opts: { remPx, portrait, rest: restView(shared.outerArc, vp, whole), openedY: null, insetLeft, sideCoreWidth: shared.coreWidth } };
 }
 
 let vp!: Viewport;
@@ -270,15 +272,20 @@ function hintContent(s: State): HintContent {
   return { ...usual, title: t('notFoundTitle'), lead: `${t('notFoundText', { word: notFound.word })} `, variant: 'notFound' };
 }
 
-/** Spec v1.2 §4.2: the phone card's height cap keeps it below the opened cell. */
+/**
+ * Spec v1.2 §4.2: the phone card's height cap leaves room above the card for the opened cell. Known issues, round three:
+ * the cell is centered below the controls, not in that room, so on short phones its edges may fall under the card.
+ */
 function setOpenedHalf(s: State): void {
   const half = s.opened && s.selected !== null ? openedHalfHeight(layout, s.selected, vp, opts) : 0;
   app.style.setProperty('--opened-half', `${half}px`);
 }
 
 /**
- * Spec v1.3 §4.2: on portrait stages, the stage y that centers the opened word between the top (below the safe area)
- * and the top of the card once fully unfolded. Null when nothing is opened or the stage isn't portrait.
+ * Spec v1.3 §4.2: on portrait stages, the stage y that centers the opened word above the card once fully unfolded.
+ * Known issues, round three (Lucas, 2026-11-18): halfway between the bottom of the controls (the switch and the
+ * toolbar float over the wheel) and the top of the card, not the top of the stage. Null when nothing is opened or the
+ * stage isn't portrait.
  */
 function openedYFor(s: State): number | null {
   if (!s.opened || !opts.portrait) return null;
@@ -288,18 +295,11 @@ function openedYFor(s: State): number | null {
 /** The opened word's stage y for a card that unfolds to `unfolded` px (capped like the card itself). */
 function openedYForHeight(unfolded: number): number {
   const stageTop = stage.getBoundingClientRect().top;
-  const top = stageTop + (Number.parseFloat(getComputedStyle(app).paddingTop) || 0);
+  const top = Math.max(wheelSwitch.getBoundingClientRect().bottom, toolbar.getBoundingClientRect().bottom);
   const cap = Number.parseFloat(getComputedStyle(float).maxHeight);
   const height = Math.min(unfolded, Number.isFinite(cap) ? cap : Infinity);
   const cardTop = float.getBoundingClientRect().bottom - height;
   return (top + cardTop) / 2 - stageTop;
-}
-
-/** For a spin while opened: where the word it will land on should sit, measured from that word's card. */
-function predictOpenedY(segment: number): number | null {
-  const s = store.get();
-  if (!s.opened || !opts.portrait) return null;
-  return openedYForHeight(card.unfoldedHeightFor(cardModel(layout, feelings, { ...s, selected: segment }, jump)));
 }
 
 /** Re-measures the opened word's place after the card renders, and springs the camera to it. */
@@ -405,7 +405,7 @@ function mount(next: Layout, initial: State, intro: boolean): void {
     if (pendingDraw !== 0) cancelAnimationFrame(pendingDraw);
     frame();
   });
-  controller = createController(layout, store, camera, vp, opts, (segment) => predictOpenedY(segment));
+  controller = createController(layout, store, camera, vp, opts);
   renderer = createWheelRenderer(canvas, layout, undefined, sprites);
   allLit = litMask(layout, null);
   lit = litFor(store.get());

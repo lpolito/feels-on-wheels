@@ -28,6 +28,7 @@ Each change is used before the next one is designed. When Lucas picks an idea to
 | Question first in page order, Tab onto the wheel selects nothing, a ring around the focused wheel, and the instruction by device | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-question-first.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-question-first-changes.md) |
 | <a id="the-wheel-and-the-card"></a><a id="a-different-word-to-start-on"></a><a id="return-to-the-word-you-jumped-from"></a><a id="feeling-links-underlined-in-their-feelings-color"></a>Start on Happy and Whole body at 3 o'clock, Back to the word you jumped from, and breadcrumbs in their own color | Shipped 2026-11-15 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-design.md), [plan](superpowers/plans/2026-11-15-feels-on-wheels-wheel-and-card.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-changes.md) |
 | <a id="rework-the-body-wheels-areas-and-sensations"></a>Body wheel rework: places head to toe, Urges, two strings per sensation, and its research in public | Shipped 2026-11-16 | [spec](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md), [plan](superpowers/plans/2026-11-16-feels-on-wheels-body-wheel-rework.md), [changes](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md) |
+| Known issues: card text that keeps its size when the phone turns, no double-tap zoom on labels, one rest view for both wheels, opened rings that fit the screen, opened labels that fit their cell, a wheel that keeps its axis while it turns, labels that never disappear, and an opened wedge centered below the controls | Shipped 2026-11-18 | [spec](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-design.md), [plan](superpowers/plans/2026-11-18-feels-on-wheels-known-issues.md), [round-two plan](superpowers/plans/2026-11-18-feels-on-wheels-known-issues-round-2.md), [round-three plan](superpowers/plans/2026-11-18-feels-on-wheels-known-issues-round-3.md), [changes](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-changes.md) |
 
 ## Ideas
 
@@ -43,7 +44,9 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
+| [Half-wheel on tablets, card on the right](#half-wheel-on-tablets-card-on-the-right) | [Layout](#layout) | Idea |
 | [Check every test is worth keeping](#check-every-test-is-worth-keeping) | [Tests](#tests) | Idea |
+| [Snapshots across devices and window sizes](#snapshots-across-devices-and-window-sizes) | Tests | Idea |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
 
@@ -62,7 +65,7 @@ Each of these is a big change of its own, not polish to what's there.
 - Very simplified: core feelings and a few middle-ring ones, because there are only so many emoji.
 - The data is ready: `Feeling.emoji` is already an optional field.
 - After v2, another wheel is a wheel file, an entry in the wheel list and its locale strings; the switch, URLs, colors and card handle it (v2 spec §7).
-- A third wheel is when the [Back to pill](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-design.md#2-back-to-the-word-you-jumped-from) has to work across more than two wheels, and the switch's third option meets the [wide fallback fonts](#layout-and-labels) known issue.
+- A third wheel is when the [Back to pill](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-design.md#2-back-to-the-word-you-jumped-from) has to work across more than two wheels, and the switch's third option meets the [wide fallback fonts](#low-priority-or-not-fixing) known issue.
 
 #### Strength
 
@@ -84,7 +87,7 @@ What Lucas first asked for:
 - Three sizes, all with kids in mind: a super simple wheel of one tier, plus two- and three-tier ones.
 - To decide when designing:
   - whether they're kid versions of both the feelings and body wheels, or of the feelings wheel only;
-  - where the kids' wheels go in the wheel switch, which already struggles to fit a third option (the [wide fallback fonts](#layout-and-labels) known issue), and how you pick one of the three sizes;
+  - where the kids' wheels go in the wheel switch, which already struggles to fit a third option (the [wide fallback fonts](#low-priority-or-not-fixing) known issue), and how you pick one of the three sizes;
   - whether a one-tier wheel still opens a card, and what's on it;
   - their URLs, and whether a kids' word links to the same word on the grown-up wheel;
   - where the words come from, since any new source gets a [reference note](reference/README.md) and a credit.
@@ -133,6 +136,15 @@ What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheel
 - To decide when designing: stable English slugs in every language (`/es/happy/…`) or translated ones (`/es/feliz/…`). The URL shape (a `/es/` prefix, English unprefixed) is set by the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) §9.
 - The link preview's alt text lowercases the wheel's name in code (`src/og.ts`: "the feelings wheel"), which is wrong for languages that capitalize nouns, such as German. To decide when designing: a separate lowercase name per wheel in the locale, or alt text written whole per wheel.
 
+### Layout
+
+#### Half-wheel on tablets, card on the right
+
+- Lucas, 2026-11-18: use the phone's half-wheel on much larger displays, like tablets, but keep the opened word's card on the right, as the desktop layout does today, instead of the phone layout's card at the bottom.
+- He expects it to make [labels jumping while a word opens](#layout-and-labels) easier to fix.
+- Today the half-wheel rests only on portrait stages (`useHalfWheel` in `src/camera.ts`), upright iPads included, with the card at the bottom. Sideways tablets and laptops rest on the whole wheel, beside the card's column.
+- To decide when designing: which windows count (upright and sideways tablets, laptops), how the half-wheel and the opened view fit beside the card, whether opening a word still zooms, and how it meets the rest-view rules (`restView`, `useHalfWheel`, and `isPortrait` in `src/camera.ts`).
+
 ### Tests
 
 #### Check every test is worth keeping
@@ -141,34 +153,20 @@ What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheel
 - Found during the body wheel rework: some tests just restate the content (the body wheel's full list of sensations, exact cell counts, the exact feelings under one sensation). They duplicate `body.json` word for word and have to be edited with every content change, without catching anything. Tests that check rules (every feeling is on the feelings wheel, 2 or 3 feelings per sensation) or behavior (with any valid path) are worth more.
 - To decide when designing: what a test has to protect to stay, whether a single snapshot replaces the content tests, how much end-to-end coverage each of the five browsers needs, and whether to write the bar down for future changes, since the plans' test-first steps add tests with every change.
 
+#### Snapshots across devices and window sizes
+
+- Lucas, 2026-11-18: add visual snapshot tests, such as Chromatic's. Outside a session that sets out to explore it, there's no way to see what the app looks like across devices and window sizes.
+- Found while sorting the known issues: comparing the camera's options meant building each one and screenshotting both wheels at rest and opened, on phones upright and sideways (Chromium can emulate a notch's safe-area insets), iPads and a laptop. The viewport sweep (`tests/e2e/viewports.spec.ts`) already visits 35 window sizes, but it checks boxes and numbers, not what's drawn.
+- To decide when designing: a hosted service such as Chromatic, or Playwright's own screenshot comparison; which sizes, wheels, themes and states to capture; how a PR shows the differences; and how it fits with [checking every test is worth keeping](#check-every-test-is-worth-keeping).
+
 ## Known issues
 
 Still open. None blocks the next change. The ones that get in someone's way are also listed, in plain words, under known limitations in [ACCESSIBILITY.md](../ACCESSIBILITY.md#known-limitations); keep the two in step.
 
-### Phones: turning and zooming
-
-These may share a cause: the browser's own zoom or text inflation, which the app doesn't account for. Worth looking at together.
-
-- **Turning the phone makes the card's text huge.** Found 2026-11-12: going from portrait to sideways and back leaves the description text very large, possibly only when a word is open as it turns. Likely cause: Safari on iOS enlarges text when the phone turns unless told not to. `about.css` sets `-webkit-text-size-adjust: 100%`, but `app.css` doesn't. Likely fix: the same in `app.css`. No fix chosen yet.
-- **After turning the phone several times, taps land in the wrong place.** Found 2026-11-12: words stopped opening and closing, and a tap on a word acted on another. Swiping back fixed it. Not yet known whether it's the app or the browser. Worth checking first: a leftover page zoom from turning, and whether the app's mapping from a tap to a word uses a stale position of the wheel.
-- **Double-tapping the toolbar's or the card's labels zooms the page.** Found 2026-11-09 using v2.2.1, mostly on phones while tapping through the theme choices: a quick second tap lands on the label that shows the choice (`.fw-theme-label`, v1.3 §6.2) and the browser zooms into it. The "Link copied" labels under the toolbar's and the card's Share (`.fw-share-label`, [share change](superpowers/specs/2026-11-15-feels-on-wheels-share-and-preview-design.md)) follow the same rule, so they likely do the same. Pinching out doesn't undo it on iOS (Lucas, 2026-11-12), likely because the wheel's canvas takes every pinch for itself (`touch-action: none`); the only way back is double-tapping the label again while it's showing, and once the label goes, that's gone too. Each label takes taps while shown, so a tap on it never reaches the wheel beneath, and as plain text it gets the browser's double-tap-to-zoom; the button beside it doesn't. Likely fix: `touch-action: manipulation` on the labels (or the toolbar and the card's bar), which turns off double-tap zoom there while leaving pinch zoom alone. No fix chosen yet.
-
 ### Layout and labels
 
-- **The two wheels can rest, and zoom, differently in the same window.** Found by Lucas 2026-11-15: in a window taller than it is wide, roughly 720 to 920 px wide, the feelings wheel rests whole and the body wheel on the half-wheel. Lucas wants the view to be the same on both wheels.
-  - **Opening a word does the same** (Lucas, 2026-11-16, on an iPhone 15 sideways): at each level, the body wheel zooms in further than the feelings wheel. `ringFocusCamera` (`src/camera.ts`) zooms until a typical cell in the opened ring is readable, also per wheel, and the body wheel's cells are thinner. With the [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md)'s 126 outer cells, on a sideways iPhone with its 59 px insets the opened ring can no longer clear the notch and stay left of the card, so it runs under the card. The unit test "the opened cell starts 1rem after the inset and ends before the aim width" (`tests/unit/camera.test.ts`) pins the body wheel's outer ring as a known overflow (`OVERFLOWS`), and fails once the overflow is fixed so the pin can be removed. The ring fits at 114 outer cells or fewer.
-  - Why: on an upright stage, `restView` (`src/camera.ts`) rests on the whole wheel only if a typical outer cell's label would be at least 12 px tall (`shouldStartZoomed`: the median outer cell's arc × 0.55 ≥ 12 px), and it decides per wheel. The feelings wheel has 82 outer cells and the body wheel 126 (105 before the [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md)), so the body wheel's cells are narrower. The whole wheel needs a radius of about 352 px on the feelings wheel and about 545 px on the body wheel (450 px before the rework), and windows in between split.
-  - To decide when designing: one rule for both wheels, at rest and when a word is opened, such as deciding with the wheel that has the most outer cells (so the feelings wheel would also rest on the half-wheel in those windows, and zoom as far), whether the opened ring's zoom should give way to the card in tight layouts, and what the viewport sweep (`tests/e2e/viewports.spec.ts`) should pin. The [emoji wheel](#emoji-wheel) and [wheels for kids](#wheels-for-kids) would join the same rule. No fix chosen yet.
-- **Wide fallback fonts don't fit the tightest layouts.** Found 2026-11-09 when the end-to-end tests first ran on GitHub's Ubuntu runners, whose `system-ui` font is DejaVu Sans, much wider than the system fonts on Apple, Android and Windows devices. With it:
-  - the wheel switch and toolbar overlap on 280 px screens;
-  - the switch's planned third option no longer fits at 320 px;
-  - the feelings wheel rests with no core labels in 500 × 300 and 400 × 350 windows.
-
-  This only affects Linux desktops with a wide default font, at window sizes few people use. The tests now run on macOS runners. A likely fix is measuring the switch's and labels' real widths rather than assuming a font. No fix chosen yet.
-- **An opened word's long label spills past its cell.** Found 2026-11-09 using v2.2.1, on the body wheel's long words (Chest › Hollow feeling in your chest, Warmth in your chest; since the rework, Shoulders › Weight on shoulders): when opened, the label runs past both ends of the lifted cell. The renderer fits the label to the cell's normal box at the regular weight (600), then draws it 1.15× larger (`LIFT_LABEL`) and bold (800), while the lifted cell only grows 10 px at each end (`LIFT_RADIAL_PX`). Short words have room to spare; a label that already fills its box grows by about 15% plus bold's extra width, far more than 20 px. Likely fix: fit the opened label in the lifted box at its bold weight and capped at 1.15×, so it grows only as much as it fits. No fix chosen yet.
-- **Portrait phones, inner tier opened: the outer ring runs off the right edge.** v2.1 made its labels draw (10 px floor on context rings) but left the camera alone, so some outer labels are cut off at the screen's edge. Lucas wanted to try that first (v2.1 spec §1, out of scope); moving the wheel left is the fix if it bothers him.
-- **Tiny, short windows show the body wheel unlabeled at rest.** At about 560 × 320 and smaller (split screen, 500 × 300), the whole-wheel view is too small for any area label ("Throat / mouth"), so the body wheel rests without labels until you open something. The feelings wheel's short words still fit. It was like this before v2.1; the viewport sweep (`tests/e2e/viewports.spec.ts`) pins it so a fix shows up there.
-- **Very short phones.** When the card cap's safeguard is active, the opened word can sit under the toolbar: v1.3 spec §4.2 measures the gap from the stage's top, not the toolbar's bottom. (v1.3 review)
+- **Labels jump while a word opens.** Found by Lucas on his phone 2026-11-18, also on `main`. When a word opens, the size where labels wrap to two lines switches from 8 to 12 px at once, because it follows the app's mode, while the cells grow with the camera's zoom over about a second. A label between those sizes wraps to two lines at about double its size, then goes back to one line partway through the zoom: "Whole body" on the body wheel at 393 × 650 goes from 9.5 px, to 20.5 px on two lines, to 12 px. Lucas set it aside for the [half-wheel on tablets](#half-wheel-on-tablets-card-on-the-right), which he expects to make it easier. No fix chosen yet.
+- **At rest, the outer cells are smaller than WCAG AA's 24 px tap target.** Found 2026-11-18 while sorting these known issues ([spec](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-design.md)). At rest, tapping an outer cell selects that word, so each cell is a tap target, and at common sizes it's under WCAG 2.2 AA's 24 px (success criterion 2.5.8): on the half-wheel at 390 × 844 the outer cells are about 23 px tall on the feelings wheel and 15 px on the body wheel; on the whole wheel at 1440 × 900, about 27 px and 18 px. The cells touch, so the spacing exception doesn't apply. The "equivalent control" exception might: open a middle-ring word first (two taps), and every outer cell is then at least 24 px tall. Opening a core word isn't enough (its outer cells stay about 20 px). But reaching an outer word that way takes three taps instead of one. The cells are this small so the whole wheel fits, so a fix needs its own design. No fix chosen yet.
 
 ### Navigation
 
@@ -190,6 +188,14 @@ These may share a cause: the browser's own zoom or text inflation, which the app
 - **The end-to-end suite skips offline in WebKit.** Playwright can't emulate offline with a service worker there, so the offline tests run only in Chromium and Firefox. Checked by hand on 2026-11-13 by stopping the server instead: the wheel and About loaded from the cache. A test that stops or blocks the server would cover it.
 - **Opened-word position lives in two places.** `main.ts` keeps its own copy of the phone's opened-word position and syncs it into the controller in three places; the controller could own it. (v1.3 review)
 - **The card's heading size watcher isn't disconnected when the card hides.** Harmless. (v1.3 review)
+
+### Low priority or not fixing
+
+Looked at on 2026-11-18 ([spec](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-design.md)) and set aside, each with what was found and why. They're still true, so they stay listed.
+
+- **After turning the phone several times, taps land on the wrong word.** Low priority. Found 2026-11-12. Not reproduced: after seven turns in the iOS Simulator, taps hit the right word upright and sideways, and `src/input/gestures.ts` reads the canvas's position on every touch-down, so a stale position isn't the cause. Most likely it was leftover page zoom from the card's text inflating and from double-tap zoom on the labels, both fixed on 2026-11-18. Watch for it.
+- **Wide fallback fonts don't fit the tightest layouts.** Not fixing. Found 2026-11-09 on GitHub's Ubuntu runners, whose `system-ui` font is DejaVu Sans, much wider than Apple's, Android's, and Windows's. With Verdana standing in for it, the wheel switch and the toolbar overlap by 3 px at 280 px wide; from 300 px up there's room. Linux only, at one width; the tests run on macOS runners. Whether the switch's third option fits gets settled when a third wheel is designed.
+- **Portrait phones, inner tier opened: the outer ring runs off the right edge.** Not fixing. Reproduced at 390 × 844 with Happy opened: Inspired, Sensitive, and Thankful are cut off. The outer ring is only context there, and the card lists its words under "Narrow it down."
 
 ## Before launching
 

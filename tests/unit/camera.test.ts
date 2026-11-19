@@ -1,20 +1,21 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
-import { buildLayout } from '../../src/model/layout';
+import { buildLayout, type Layout } from '../../src/model/layout';
 import { TAU, normAngle, type Viewport } from '../../src/model/geometry';
 import {
   createCameraController, restRotation, openedHalfHeight, overviewCamera, ringFocusCamera,
-  isPortrait, restView, shouldStartZoomed, useHalfWheel, wheelCamera, type CameraController,
+  isPortrait, restView, sharedSizes, shouldStartZoomed, useHalfWheel, wheelCamera, type CameraController,
 } from '../../src/camera';
 
 const layout = buildLayout(loadData().wheel);
+const SHARED = sharedSizes(loadData().wheels);
 const phone: Viewport = { width: 375, height: 667, radius: 375 / 2 - 8 };
 const desk: Viewport = { width: 1440, height: 900, radius: 900 / 2 - 8 };
-const opts = { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null };
+const opts = { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
 
-function segHeight(ring: number, vp: Viewport, scale: number): number {
-  const r = layout.rings[ring]!;
-  const widths = r.segments.map((i) => layout.segments[i]!.end - layout.segments[i]!.start).sort((a, b) => a - b);
+function segHeight(l: Layout, ring: number, vp: Viewport, scale: number): number {
+  const r = l.rings[ring]!;
+  const widths = r.segments.map((i) => l.segments[i]!.end - l.segments[i]!.start).sort((a, b) => a - b);
   const typical = widths[Math.floor(widths.length / 2)]!;
   return typical * ((r.inner + r.outer) / 2) * vp.radius * scale;
 }
@@ -24,13 +25,6 @@ describe('v2.2.1: the left safe-area inset', () => {
   const notched: Viewport = { width: 476, height: 393, radius: 188.5 };
   const wheels = loadData().wheels.map((w, i) => (i === 0 ? layout : buildLayout(w)));
 
-  /**
-   * Known issue (roadmap: "The two wheels can rest, and zoom, differently"): with the body wheel rework's 126 outer
-   * cells, the body wheel's outer ring zooms in too far to clear the notch and stay left of the card. When that's
-   * fixed, this expectation fails; remove the entry.
-   */
-  const OVERFLOWS = new Set(['body ring 2']);
-
   test('the opened cell starts 1rem after the inset and ends before the aim width, on every ring of both wheels', () => {
     for (const l of wheels) {
       for (const ring of [0, 1, 2]) {
@@ -39,11 +33,35 @@ describe('v2.2.1: the left safe-area inset', () => {
         const R = notched.radius * cam.scale;
         const name = `${l.wheelId} ring ${ring}`;
         expect(cam.cx + r.inner * R - 10, `${name} left`).toBeGreaterThanOrEqual(59 + 16 - 1e-9);
-        if (OVERFLOWS.has(name)) {
-          expect(cam.cx + r.outer * R + 12, `${name} right: still overflows; if not, drop it from OVERFLOWS`).toBeGreaterThan(notched.width);
-        } else {
-          expect(cam.cx + r.outer * R + 12, `${name} right`).toBeLessThanOrEqual(notched.width + 1e-9);
+        expect(cam.cx + r.outer * R + 12, `${name} right`).toBeLessThanOrEqual(notched.width + 1e-9);
+      }
+    }
+  });
+
+  test('upright, the opened ring fits across the stage with 1rem clear, on every ring of both wheels', () => {
+    const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    for (const [w, h] of [[320, 568], [360, 640], [375, 667], [390, 844], [430, 932]] as const) {
+      const vp: Viewport = { width: w, height: h, radius: w / 2 - 8 };
+      for (const l of wheels) {
+        for (const ring of [0, 1, 2]) {
+          const r = l.rings[ring]!;
+          const cam = ringFocusCamera(l, ring, vp, 0, o);
+          const R = vp.radius * cam.scale;
+          const name = `${l.wheelId} ring ${ring} at ${w}×${h}`;
+          // The opened cell's 10 px lift and 2 px outline at both ends.
+          expect(cam.cx + r.inner * R - 10 - 2, `${name} left`).toBeGreaterThanOrEqual(16 - 1e-9);
+          expect(cam.cx + r.outer * R + 10 + 2, `${name} right`).toBeLessThanOrEqual(w - 16 + 1e-9);
         }
+      }
+    }
+  });
+
+  test('an opened cell is never under 24 px tall, even where the ring cannot fit (a folded Galaxy Fold)', () => {
+    const vp: Viewport = { width: 280, height: 653, radius: 132 };
+    const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    for (const l of wheels) {
+      for (const ring of [0, 1, 2]) {
+        expect(segHeight(l, ring, vp, ringFocusCamera(l, ring, vp, 0, o).scale), `${l.wheelId} ring ${ring}`).toBeGreaterThanOrEqual(24 - 1e-9);
       }
     }
   });
@@ -83,9 +101,10 @@ describe('resting cameras', () => {
     expect(innerX(1, mid)).toBeCloseTo(16, 6);
   });
 
-  test('portrait ring camera centers the ring middle horizontally and the word vertically', () => {
-    for (const ring of [0, 1, 2]) {
-      const cam = ringFocusCamera(layout, ring, phone, 0, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null });
+  test('portrait ring camera centers the middle and outer rings horizontally, and the word vertically', () => {
+    // The core ring keeps the rest view's horizontal position (known issues, round two).
+    for (const ring of [1, 2]) {
+      const cam = ringFocusCamera(layout, ring, phone, 0, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
       const r = layout.rings[ring]!;
       expect(cam.cx + ((r.inner + r.outer) / 2) * phone.radius * cam.scale).toBeCloseTo(0.5 * phone.width, 6);
       expect(cam.cy).toBe(0.5 * phone.height);
@@ -93,8 +112,8 @@ describe('resting cameras', () => {
   });
 
   test('portrait ring camera puts the opened word at openedY', () => {
-    const base = ringFocusCamera(layout, 1, phone, 0.4, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null });
-    const cam = ringFocusCamera(layout, 1, phone, 0.4, { remPx: 16, portrait: true, rest: 'half' as const, openedY: 200 });
+    const base = ringFocusCamera(layout, 1, phone, 0.4, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
+    const cam = ringFocusCamera(layout, 1, phone, 0.4, { remPx: 16, portrait: true, rest: 'half' as const, openedY: 200, sideCoreWidth: SHARED.coreWidth });
     expect(cam.cy).toBe(200);
     expect(cam.cx).toBe(base.cx);
     expect(cam.scale).toBe(base.scale);
@@ -102,15 +121,15 @@ describe('resting cameras', () => {
   });
 
   test('openedY null keeps the stage center', () => {
-    expect(ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null }).cy).toBe(phone.height / 2);
+    expect(ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth }).cy).toBe(phone.height / 2);
   });
 
   test('desktop ignores openedY', () => {
-    expect(ringFocusCamera(layout, 2, desk, 0, { ...opts, openedY: 200 }).cy).toBe(desk.height / 2);
+    expect(ringFocusCamera(layout, 2, desk, 0, { ...opts, openedY: 200, sideCoreWidth: SHARED.coreWidth }).cy).toBe(desk.height / 2);
   });
 
   test('openedHalfHeight is larger for a core word than an outer word on a phone', () => {
-    const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null };
+    const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
     const hostile = layout.byPath.get('angry/aggressive/hostile')!;
     const core = openedHalfHeight(layout, layout.byPath.get('angry')!, phone, o);
     const outer = openedHalfHeight(layout, hostile, phone, o);
@@ -126,23 +145,23 @@ describe('resting cameras', () => {
 
   test('ringFocusCamera typical segment ≈ 4.5rem tall on a roomy viewport', () => {
     const cam = ringFocusCamera(layout, 2, desk, 0, opts);
-    expect(segHeight(2, desk, cam.scale)).toBeCloseTo(72, 6);
+    expect(segHeight(layout, 2, desk, cam.scale)).toBeCloseTo(72, 6);
   });
 
   test('ringFocusCamera is clamped by the 60% band rule on a narrow viewport', () => {
     const narrow: Viewport = { width: 400, height: 1000, radius: 192 };
     const cam = ringFocusCamera(layout, 1, narrow, 0, opts);
     expect((0.62 - 0.32) * narrow.radius * cam.scale).toBeLessThanOrEqual(0.6 * narrow.width + 1e-9);
-    expect(segHeight(1, narrow, cam.scale)).toBeLessThan(72);
+    expect(segHeight(layout, 1, narrow, cam.scale)).toBeLessThan(72);
   });
 
   test('outer ring focus on a 375×667 viewport gives focused-ring segments ≥ 44px tall', () => {
-    const cam = ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, rest: 'whole' as const, openedY: null });
-    expect(segHeight(2, phone, cam.scale)).toBeGreaterThanOrEqual(44 - 1e-9);
+    const cam = ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
+    expect(segHeight(layout, 2, phone, cam.scale)).toBeGreaterThanOrEqual(44 - 1e-9);
   });
 
   test('half wheelCamera puts the center on the left edge, halfway down, outer edge at 95% width', () => {
-    const c = wheelCamera(layout, phone, 0.3, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null });
+    const c = wheelCamera(layout, phone, 0.3, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     expect(c.cx).toBe(0);
     expect(c.cy).toBe(phone.height / 2);
     expect(c.rotation).toBe(0.3);
@@ -168,12 +187,13 @@ describe('resting cameras', () => {
 
   test('useHalfWheel: portrait phones only; a phone turned sideways, even under 720px wide, gets the full wheel', () => {
     const vp = (width: number, height: number): Viewport => ({ width, height, radius: Math.min(width, height) / 2 - 8 });
-    expect(useHalfWheel(layout, vp(375, 667))).toBe(true);
-    expect(useHalfWheel(layout, vp(390, 844))).toBe(true);
-    expect(useHalfWheel(layout, vp(667, 375))).toBe(false);
-    expect(useHalfWheel(layout, vp(640, 360))).toBe(false);
-    expect(useHalfWheel(layout, vp(700, 500))).toBe(false);
-    expect(useHalfWheel(layout, vp(1024, 1366))).toBe(false);
+    expect(useHalfWheel(SHARED.outerArc, vp(375, 667))).toBe(true);
+    expect(useHalfWheel(SHARED.outerArc, vp(390, 844))).toBe(true);
+    expect(useHalfWheel(SHARED.outerArc, vp(667, 375))).toBe(false);
+    expect(useHalfWheel(SHARED.outerArc, vp(640, 360))).toBe(false);
+    expect(useHalfWheel(SHARED.outerArc, vp(700, 500))).toBe(false);
+    // Known-issues spec §3: upright iPads rest on the half-wheel on both wheels.
+    expect(useHalfWheel(SHARED.outerArc, vp(1024, 1366))).toBe(true);
   });
 
   test('isPortrait (spec v2.1 §6.1)', () => {
@@ -184,26 +204,58 @@ describe('resting cameras', () => {
   });
 
   test('restView (spec v2.1 §6.2)', () => {
-    const body = buildLayout(loadData().wheels.find((w) => w.id === 'body')!);
     const vp = (width: number, height: number): Viewport => ({ width, height, radius: Math.min(width, height) / 2 - 8 });
-    for (const l of [layout, body]) {
-      expect(restView(l, vp(393, 851), { width: 393, height: 851 })).toBe('half');
-      expect(restView(l, vp(511, 393), { width: 851, height: 393 })).toBe('side');
-      expect(restView(l, vp(400, 375), { width: 667, height: 375 })).toBe('side');
-      expect(restView(l, vp(800, 800), { width: 1280, height: 800 })).toBe('whole');
-    }
+    expect(restView(SHARED.outerArc, vp(393, 851), { width: 393, height: 851 })).toBe('half');
+    expect(restView(SHARED.outerArc, vp(511, 393), { width: 851, height: 393 })).toBe('side');
+    expect(restView(SHARED.outerArc, vp(400, 375), { width: 667, height: 375 })).toBe('side');
+    expect(restView(SHARED.outerArc, vp(800, 800), { width: 1280, height: 800 })).toBe('whole');
   });
 
   test("the side view is the core ring view, Happy at 3 o'clock", () => {
     const vp: Viewport = { width: 511, height: 393, radius: 393 / 2 - 8 };
     const r = restRotation(layout);
-    expect(wheelCamera(layout, vp, r, { remPx: 16, portrait: false, rest: 'side', openedY: null }))
-      .toEqual(ringFocusCamera(layout, 0, vp, r, { remPx: 16, portrait: false, rest: 'side', openedY: null }));
+    const sideOpts = { remPx: 16, portrait: false, rest: 'side' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    expect(wheelCamera(layout, vp, r, sideOpts)).toEqual(ringFocusCamera(layout, 0, vp, r, sideOpts));
+    const body = buildLayout(loadData().wheels.find((w) => w.id === 'body')!);
+    expect(wheelCamera(body, vp, 0, sideOpts).scale, 'same side zoom on both wheels').toBe(wheelCamera(layout, vp, 0, sideOpts).scale);
   });
 
-  test('shouldStartZoomed true for 375×667, false for 1440×900', () => {
-    expect(shouldStartZoomed(layout, phone)).toBe(true);
-    expect(shouldStartZoomed(layout, desk)).toBe(false);
+  test("portrait half-wheel: a core word keeps the rest view's horizontal position; otherwise rings stay centered", () => {
+    const vp: Viewport = { width: 402, height: 600, radius: 193 };
+    const half = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    const middle = (l: Layout, ring: number) => ((l.rings[ring]!.inner + l.rings[ring]!.outer) / 2) * vp.radius;
+    for (const l of [layout, buildLayout(loadData().wheels.find((w) => w.id === 'body')!)]) {
+      expect(ringFocusCamera(l, 0, vp, 0, half).cx, `${l.wheelId} half`).toBe(wheelCamera(l, vp, 0, half).cx);
+      // Where the whole wheel rests (short or squarish portrait windows), the core ring stays centered as before.
+      const whole = ringFocusCamera(l, 0, vp, 0, { ...half, rest: 'whole' });
+      expect(whole.cx + middle(l, 0) * whole.scale, `${l.wheelId} whole`).toBeCloseTo(vp.width / 2, 6);
+      for (const ring of [1, 2]) {
+        const cam = ringFocusCamera(l, ring, vp, 0, half);
+        const mid = ((l.rings[ring]!.inner + l.rings[ring]!.outer) / 2) * vp.radius * cam.scale;
+        expect(cam.cx + mid, `${l.wheelId} ring ${ring} centered`).toBeCloseTo(vp.width / 2, 6);
+      }
+    }
+  });
+
+  test('portrait half-wheel: opening a core word never zooms out from the rest view (an upright iPad)', () => {
+    const vp: Viewport = { width: 820, height: 1000, radius: 402 };
+    const half = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    for (const l of [layout, buildLayout(loadData().wheels.find((w) => w.id === 'body')!)]) {
+      const rest = wheelCamera(l, vp, 0, half);
+      const core = ringFocusCamera(l, 0, vp, 0, half);
+      expect(core.scale, l.wheelId).toBeGreaterThanOrEqual(rest.scale - 1e-9);
+      expect(core.cx, l.wheelId).toBe(0);
+    }
+  });
+
+  test('both wheels rest on the half-wheel on an upright iPad (820 × 1180)', () => {
+    expect(restView(SHARED.outerArc, { width: 820, height: 1180, radius: 402 }, { width: 820, height: 1180 })).toBe('half');
+    expect(SHARED.outerArc).toBe(Math.min(...loadData().wheels.map((w) => sharedSizes([w]).outerArc)));
+  });
+
+  test('shouldStartZoomed true for 375×667, false for 2560×1440', () => {
+    expect(shouldStartZoomed(SHARED.outerArc, phone)).toBe(true);
+    expect(shouldStartZoomed(SHARED.outerArc, { width: 2560, height: 1440, radius: 712 })).toBe(false);
   });
 });
 

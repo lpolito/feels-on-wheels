@@ -1,5 +1,6 @@
-import type { Layout } from './model/layout';
-import { normAngle, snapRotation, type Camera, type Viewport } from './model/geometry';
+import type { Wheel } from './data/types';
+import { leaves, type Layout } from './model/layout';
+import { TAU, normAngle, snapRotation, type Camera, type Viewport } from './model/geometry';
 import { LIFT_RADIAL_PX, LIFT_SIDE_PX, OUTLINE_OUTSIDE_PX } from './render/selection';
 
 export type RestView = 'whole' | 'half' | 'side';
@@ -17,6 +18,30 @@ export interface CameraOpts {
   openedY: number | null;
   /** v2.2.1: the left safe-area inset (a sideways phone's notch); the ring view's 1rem left margin starts after it. */
   insetLeft?: number;
+  /**
+   * Known-issues spec §3: in the side layout (`rest: 'side'`), the core ring's cell width (radians) for every wheel:
+   * `SharedSizes.coreWidth`, so both wheels rest, and open a core word, at the same zoom.
+   */
+  sideCoreWidth: number;
+}
+
+/** Known-issues spec §3: numbers shared by every wheel, worked out once from the wheel list, so the wheels rest alike. */
+export interface SharedSizes {
+  /** The narrowest outer cell of any wheel, as an arc at radius 1: 2π ÷ outer-cell count × the outer ring's middle radius. */
+  outerArc: number;
+  /** The narrowest typical (median) core cell of any wheel, in radians. */
+  coreWidth: number;
+}
+
+/** Every leaf is in the outer ring, so a wheel's cell widths follow from its leaf counts, read from the wheel JSON. */
+export function sharedSizes(wheels: readonly Wheel[]): SharedSizes {
+  const per = wheels.map((w) => {
+    const count = w.children.reduce((sum, n) => sum + leaves(n), 0);
+    const outer = w.rings[w.rings.length - 1]!;
+    const cores = w.children.map((n) => (leaves(n) / count) * TAU).sort((a, b) => a - b);
+    return { outerArc: (TAU / count) * ((outer.inner + outer.outer) / 2), coreWidth: cores[Math.floor(cores.length / 2)]! };
+  });
+  return { outerArc: Math.min(...per.map((p) => p.outerArc)), coreWidth: Math.min(...per.map((p) => p.coreWidth)) };
 }
 
 /** Spec §4.2 constants. */
@@ -24,6 +49,8 @@ const TARGET_SEGMENT_REM = 4.5;
 const MAX_BAND_FRACTION = 0.6;
 const MIN_TARGET_PX = 44;
 const MIN_RING_SCALE = 1.25;
+/** Known-issues spec §4: WCAG 2.2 AA's target size (2.5.8). An opened ring's cells never go under it, even to fit. */
+const MIN_CELL_PX = 24;
 const START_ZOOMED_BELOW_PX = 12;
 const LABEL_HEIGHT_RATIO = 0.55;
 /** Spring stiffness (spec v1.2 §3.5): about 90% of a move done in 270ms. */
@@ -66,9 +93,9 @@ export function isPortrait(app: { width: number; height: number }): boolean {
 
 const SIDEWAYS_MIN_WIDTH_PX = 560;
 
-/** Spec v2.1 §6.2: which whole-wheel view rests on this stage (`vp`) inside this app. */
-export function restView(layout: Layout, vp: Viewport, app: { width: number; height: number }): RestView {
-  if (isPortrait(app)) return useHalfWheel(layout, vp) ? 'half' : 'whole';
+/** Spec v2.1 §6.2: which whole-wheel view rests on this stage (`vp`) inside this app. `outerArc`: `SharedSizes`. */
+export function restView(outerArc: number, vp: Viewport, app: { width: number; height: number }): RestView {
+  if (isPortrait(app)) return useHalfWheel(outerArc, vp) ? 'half' : 'whole';
   return app.height < SIDE_BELOW_PX ? 'side' : 'whole';
 }
 
@@ -79,8 +106,8 @@ const SIDE_BELOW_PX = 480;
  * Spec v1.2 §3.2: the whole wheel is a half-wheel where the full wheel's labels would be too small, but only while
  * the stage itself stands upright: a phone turned sideways gets the full wheel, even when it is under 720px wide.
  */
-export function useHalfWheel(layout: Layout, vp: Viewport): boolean {
-  return vp.height >= vp.width && shouldStartZoomed(layout, vp);
+export function useHalfWheel(outerArc: number, vp: Viewport): boolean {
+  return vp.height >= vp.width && shouldStartZoomed(outerArc, vp);
 }
 
 /** Rotation that centers the wheel's start word at 3 o'clock, in every view (wheel and card spec §1). */
@@ -91,20 +118,35 @@ export function restRotation(layout: Layout): number {
 export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rotation: number, o: CameraOpts): Camera {
   const r = layout.rings[ring]!;
   const rMid = ringMid(layout, ring);
-  const arcAtScale1 = typicalWidth(layout, ring) * rMid * vp.radius;
+  const width = ring === 0 && o.rest === 'side' ? o.sideCoreWidth : typicalWidth(layout, ring);
+  const arcAtScale1 = width * rMid * vp.radius;
   const bandClamp = (MAX_BAND_FRACTION * vp.width) / ((r.outer - r.inner) * vp.radius);
-  const scale = Math.max(
+  const want = Math.max(
     Math.min((TARGET_SEGMENT_REM * o.remPx) / arcAtScale1, bandClamp),
     MIN_TARGET_PX / arcAtScale1,
     MIN_RING_SCALE,
   );
+  // Known-issues spec §4: the opened ring, with the opened cell's lift and outline, fits on screen: upright, across the
+  // stage with 1rem clear on each side; sideways, from 1rem after the notch to the aim width (left of the card). The
+  // 24 px floor beats the fit.
+  const band = (r.outer - r.inner) * vp.radius;
+  const fit = o.portrait
+    ? (vp.width - 2 * o.remPx - 2 * (LIFT_RADIAL_PX + OUTLINE_OUTSIDE_PX)) / band
+    : (vp.width - (o.insetLeft ?? 0) - o.remPx - 2 * LIFT_RADIAL_PX - OUTLINE_OUTSIDE_PX) / band;
+  // Known issues, round two: on the portrait half-wheel, the core view is the rest view moved up, so it never zooms
+  // out from it (an upright iPad would otherwise leave its right side empty).
+  const restScale = o.portrait && ring === 0 && o.rest === 'half' ? (HALF_REACH * vp.width) / vp.radius : 0;
+  const scale = Math.max(Math.min(want, fit), MIN_CELL_PX / arcAtScale1, MIN_RING_SCALE, restScale);
   const R = vp.radius * scale;
   // Spec v1.2 §4.1–§4.2: phones center the ring's middle; elsewhere the wheel meets the stage's right edge (the
   // card's column) — its outer edge plus the opened cell's lift and outline, so an opened outer word isn't clipped —
   // unless that would start the opened cell (with its lift) within 1rem of the left — of the notch, if any (v2.2.1).
+  // Known issues, round two (Lucas, 2026-11-18): on the portrait half-wheel, a core word keeps the rest view's
+  // horizontal position (the wheel's center on the left edge), so the whole wedge stays in view.
+  const leftClear = (o.insetLeft ?? 0) + o.remPx - (r.inner * R - LIFT_RADIAL_PX);
   const cx = o.portrait
-    ? 0.5 * vp.width - rMid * R
-    : Math.max(vp.width - (R + LIFT_RADIAL_PX + OUTLINE_OUTSIDE_PX), (o.insetLeft ?? 0) + o.remPx - (r.inner * R - LIFT_RADIAL_PX));
+    ? ring === 0 && o.rest === 'half' ? Math.max(0, leftClear) : 0.5 * vp.width - rMid * R
+    : Math.max(vp.width - (R + LIFT_RADIAL_PX + OUTLINE_OUTSIDE_PX), leftClear);
   const cy = o.portrait && o.openedY !== null ? o.openedY : vp.height / 2;
   return { scale, rotation, cx, cy };
 }
@@ -123,11 +165,12 @@ export function openedHalfHeight(layout: Layout, index: number, vp: Viewport, o:
   return rOut * Math.sin(half) + OUTLINE_OUTSIDE_PX;
 }
 
-/** Spec §4.6: start zoomed when overview would draw outer labels under 12 CSS px. */
-export function shouldStartZoomed(layout: Layout, vp: Viewport): boolean {
-  const outer = layout.rings.length - 1;
-  const arc = typicalWidth(layout, outer) * ringMid(layout, outer) * vp.radius;
-  return arc * LABEL_HEIGHT_RATIO < START_ZOOMED_BELOW_PX;
+/**
+ * Spec §4.6: start zoomed when overview would draw outer labels under 12 CSS px. Known-issues spec §3: measured on the
+ * narrowest outer cell of any wheel (`SharedSizes.outerArc`), so every wheel rests in the same view.
+ */
+export function shouldStartZoomed(outerArc: number, vp: Viewport): boolean {
+  return outerArc * vp.radius * LABEL_HEIGHT_RATIO < START_ZOOMED_BELOW_PX;
 }
 
 export interface CameraController {

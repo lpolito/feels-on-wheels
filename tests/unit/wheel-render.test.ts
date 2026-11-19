@@ -1,13 +1,15 @@
 import { beforeAll, describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
-import { label, nodeLabel, setLocale } from '../../src/i18n';
+import { label, nodeLabel, setLocale, wheelCellLabel } from '../../src/i18n';
 import { buildLayout, homes, litMask } from '../../src/model/layout';
-import { overviewCamera, ringFocusCamera } from '../../src/camera';
+import { overviewCamera, ringFocusCamera, sharedSizes } from '../../src/camera';
 import { buildFillTable, type Palette } from '../../src/render/colors';
 import { createWheelRenderer, type Frame } from '../../src/render/wheel';
 import { drawWidthOf, type Viewport } from '../../src/model/geometry';
+import { LIFT_RADIAL_PX } from '../../src/render/selection';
 
 const { wheel, locale } = loadData();
+const SHARED = sharedSizes(loadData().wheels);
 const layout = buildLayout(wheel);
 beforeAll(() => setLocale(locale));
 
@@ -26,6 +28,15 @@ interface Rec {
   strokeLog: StrokeRec[];
   /** The transform's translation (e, f) at each fillText. */
   textAt: { text: string; e: number; f: number }[];
+}
+
+/**
+ * The fake font's width. Like the app's system font: bold (800) is about 5% wider than the regular 600, and text under
+ * 20 px is about 6% wider than a straight scale-down predicts (its optical size for small text).
+ */
+function fakeWidth(text: string, font: string): number {
+  const px = Number(/([\d.]+)px/.exec(font)![1]);
+  return text.length * px * 0.6 * (font.startsWith('800 ') ? 1.05 : 1) * (px < 20 ? 1.06 : 1);
 }
 
 function fakeCanvas(): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D; rec: Rec } {
@@ -48,7 +59,7 @@ function fakeCanvas(): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2
       rec.strokeLog.push({ style: state.strokeStyle, lineWidth: state.lineWidth, arcs: path.slice() });
     },
     fillText: (t: string) => { rec.texts.push(t); rec.fonts.push(state.font); rec.textAt.push({ text: t, ...tf }); },
-    measureText: (t: string) => ({ width: t.length * Number(/([\d.]+)px/.exec(state.font)![1]) * 0.6 }),
+    measureText: (t: string) => ({ width: fakeWidth(t, state.font) }),
   } as Record<string, unknown>;
   for (const k of Object.keys(state) as (keyof typeof state)[]) {
     Object.defineProperty(ctx, k, {
@@ -82,33 +93,59 @@ describe('label floors by ring (spec v2.1 §5)', () => {
   };
   const bodyTable = buildFillTable(bodyPalette, 3, 'light');
   const phone: Viewport = { width: 393, height: 851, radius: 188.5 };
-  const labelsOn = (ring: number) => new Set(body.rings[ring]!.segments.map((i) => nodeLabel(body.segments[i]!.node)));
   const pxOf = (font: string) => Number(/([\d.]+)px/.exec(font)![1]);
 
-  function drawRing0(remPx: number) {
+  test('opened labels stay 6 px clear of their outline at bold, and never shrink (core and middle rings, both wheels)', () => {
+    const vp: Viewport = { width: 393, height: 600, radius: 188.5 };
+    const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    const CLEAR = 6 + 2; // 6 px clear of the outline, whose inner half is 2 px inside the lifted cell
+    for (const [l, tbl, pal] of [[layout, table, palette], [body, bodyTable, bodyPalette]] as const) {
+      for (const ringIndex of [0, 1]) {
+        const ring = l.rings[ringIndex]!;
+        const drawn = (i: number, opened: boolean) => {
+          const { canvas, ctx, rec } = fakeCanvas();
+          const r = createWheelRenderer(canvas, l, ctx);
+          r.setColors(tbl, pal);
+          r.resize(vp.width, vp.height, 1);
+          const cam = ringFocusCamera(l, ringIndex, vp, -l.segments[i]!.mid, o);
+          const lit = litMask(l, i);
+          r.draw({ cam, vp, lit, prevLit: lit, fadeT: 1, selected: i, opened, pulseT: 1, mode: 'ring', ring: ringIndex, remPx: 16, keyboardFocus: false });
+          return { rec, R: vp.radius * cam.scale };
+        };
+        for (const i of ring.segments) {
+          const s = l.segments[i]!;
+          const text = wheelCellLabel(s.node);
+          const isLine = (t: string) => t === text || text.startsWith(`${t} `) || text.endsWith(` ${t}`);
+          const before = drawn(i, false).rec;
+          const unopened = Math.max(...before.texts.flatMap((t, k) => (isLine(t) && before.fonts[k]!.startsWith('600 ') ? [pxOf(before.fonts[k]!)] : [])));
+          const { rec, R } = drawn(i, true);
+          const opened = rec.texts.flatMap((t, k) => (rec.fonts[k]!.startsWith('800 ') ? [{ text: t, px: pxOf(rec.fonts[k]!) }] : []));
+          const name = `${l.wheelId} ${s.path}`;
+          expect(opened.length, name).toBeGreaterThan(0);
+          for (const line of opened) expect(line.px, name).toBeGreaterThanOrEqual(unopened - 1e-9);
+          const box = (ring.outer - ring.inner) * R + 2 * LIFT_RADIAL_PX - 2 * CLEAR;
+          const fits = opened.every((x) => fakeWidth(x.text, `800 ${x.px}px`) <= box + 1e-6);
+          if (s.path === 'shoulders/weight-on-shoulders') expect(fits, 'Weight on shoulders fits its lifted cell').toBe(true);
+          // It fits, unless it can't even at its unopened size: then it's drawn at exactly that size.
+          if (!fits) for (const line of opened) expect(line.px, `${name} falls back to its unopened size`).toBeCloseTo(unopened, 9);
+        }
+      }
+    }
+  });
+
+  test('a long core label wraps to two lines in a ring view, as before the floors went (known issues, round two)', () => {
+    const vp: Viewport = { width: 393, height: 600, radius: 188.5 };
     const { canvas, ctx, rec } = fakeCanvas();
     const r = createWheelRenderer(canvas, body, ctx);
     r.setColors(bodyTable, bodyPalette);
-    r.resize(phone.width, phone.height, 1);
+    r.resize(vp.width, vp.height, 1);
+    const throat = body.byPath.get('throat')!;
+    const cam = ringFocusCamera(body, 0, vp, -body.segments[throat]!.mid, { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     const all = litMask(body, null);
-    const cam = ringFocusCamera(body, 0, phone, 0, { remPx, portrait: true, rest: 'whole' as const, openedY: null });
-    r.draw({ cam, vp: phone, lit: all, prevLit: all, fadeT: 1, selected: null, opened: false, pulseT: 1, mode: 'ring', ring: 0, remPx, keyboardFocus: false });
-    const sizes = (ring: number) => rec.texts.flatMap((t, k) => (labelsOn(ring).has(t) ? [pxOf(rec.fonts[k]!)] : []));
-    return { r, sizes };
-  }
-
-  test('ring view: 12 px floor on the focused ring and inside it, 10 px outside it', () => {
-    const { r, sizes } = drawRing0(16);
-    expect(r.stats.labelsByRing[2]).toBeGreaterThan(0);
-    expect(Math.min(...sizes(2))).toBeGreaterThanOrEqual(10);
-    expect(Math.min(...sizes(2))).toBeLessThan(12);
-    expect(Math.min(...sizes(0))).toBeGreaterThanOrEqual(12);
-  });
-
-  test('the floors scale with remPx', () => {
-    const { r, sizes } = drawRing0(20);
-    expect(r.stats.labelsByRing[2]).toBeGreaterThan(0);
-    expect(Math.min(...sizes(2))).toBeGreaterThanOrEqual(12.5);
+    r.draw({ cam, vp, lit: all, prevLit: all, fadeT: 1, selected: null, opened: false, pulseT: 1, mode: 'ring', ring: 0, remPx: 16, keyboardFocus: false });
+    expect(rec.texts).not.toContain('Throat / mouth');
+    expect(rec.texts).toContain('Throat');
+    expect(rec.texts).toContain('/ mouth');
   });
 
   test('a body outer cell is filled with its own ring\'s shade, like the feelings wheel (rework changes)', () => {
@@ -135,15 +172,19 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     expect(nodeLabel({ kind: 'area', id: 'urges' })).toBe('Urges');
   });
 
-  test('whole-wheel view keeps 8 px for every ring, and labelsByRing adds up', () => {
+  test('labels never disappear: a tiny whole wheel draws every label on both wheels, and labelsByRing adds up', () => {
     const tiny: Viewport = { width: 300, height: 300, radius: 142 };
-    const { canvas, ctx, rec } = fakeCanvas();
-    const r = createWheelRenderer(canvas, layout, ctx);
-    r.setColors(table, palette);
-    r.resize(300, 300, 1);
-    r.draw(frame(tiny));
-    expect(Math.min(...rec.fonts.map(pxOf))).toBeGreaterThanOrEqual(8);
-    expect(r.stats.labelsByRing.reduce((a, b) => a + b, 0)).toBe(r.stats.labelsDrawn);
+    for (const [l, tbl, pal] of [[layout, table, palette], [body, bodyTable, bodyPalette]] as const) {
+      const { canvas, ctx, rec } = fakeCanvas();
+      const r = createWheelRenderer(canvas, l, ctx);
+      r.setColors(tbl, pal);
+      r.resize(300, 300, 1);
+      const all = litMask(l, null);
+      r.draw({ ...frame(tiny), lit: all, prevLit: all });
+      expect(r.stats.labelsDrawn, l.wheelId).toBe(l.segments.length);
+      expect(Math.min(...rec.fonts.map(pxOf)), `${l.wheelId}: some labels under the old 8 px floor`).toBeLessThan(8);
+      expect(r.stats.labelsByRing.reduce((a, b) => a + b, 0)).toBe(r.stats.labelsDrawn);
+    }
   });
 });
 
@@ -164,7 +205,7 @@ describe('wheel renderer', () => {
     const r = createWheelRenderer(canvas, layout, ctx);
     r.setColors(table, palette);
     r.resize(375, 667, 3);
-    r.draw(frame(phone, { cam: ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, rest: 'whole' as const, openedY: null }), mode: 'ring' }));
+    r.draw(frame(phone, { cam: ringFocusCamera(layout, 2, phone, 0, { remPx: 16, portrait: true, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth }), mode: 'ring' }));
     expect(r.stats.segmentsDrawn).toBeGreaterThan(0);
     expect(r.stats.segmentsDrawn).toBeLessThan(40);
   });
@@ -175,16 +216,6 @@ describe('wheel renderer', () => {
     r.resize(333.3, 200.2, 2.625);
     expect(canvas.width).toBe(Math.round(333.3 * 2.625));
     expect(canvas.height).toBe(Math.round(200.2 * 2.625));
-  });
-
-  test('labels are never drawn below 8px in overview', () => {
-    const tiny: Viewport = { width: 200, height: 200, radius: 92 };
-    const { canvas, ctx } = fakeCanvas();
-    const r = createWheelRenderer(canvas, layout, ctx);
-    r.setColors(table, palette);
-    r.resize(200, 200, 1);
-    r.draw(frame(tiny));
-    expect(r.stats.labelsDrawn).toBeLessThan(130);
   });
 
   test('faded fill used for unlit segments once the fade completes', () => {
@@ -272,7 +303,7 @@ describe('wheel renderer', () => {
   test('opened: shadowBlur set exactly once per frame', () => {
     const hostile = layout.byPath.get('angry/aggressive/hostile')!;
     const sel = layout.segments[hostile]!;
-    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null });
+    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     const lit = litMask(layout, hostile);
     const { rec } = draw(desk, { cam, mode: 'ring', selected: hostile, opened: true, lit, prevLit: lit, pulseT: 0.5 });
     expect(rec.shadowSets).toBe(1);
@@ -282,7 +313,7 @@ describe('wheel renderer', () => {
   test('opened label uses weight 800 and a larger px than its neighbours', () => {
     const hostile = layout.byPath.get('angry/aggressive/hostile')!;
     const sel = layout.segments[hostile]!;
-    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null });
+    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     const lit = litMask(layout, hostile);
     const { rec } = draw(desk, { cam, mode: 'ring', selected: hostile, opened: true, lit, prevLit: lit });
     const at = (t: string) => rec.fonts[rec.texts.lastIndexOf(t)]!;
@@ -320,7 +351,7 @@ describe('wheel renderer', () => {
 
   test('inner outline line is a parallel 3px inset on an opened (lifted) core cell', () => {
     const angry = layout.byPath.get('angry')!;
-    const cam = ringFocusCamera(layout, 0, desk, -layout.segments[angry]!.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null });
+    const cam = ringFocusCamera(layout, 0, desk, -layout.segments[angry]!.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     const lit = litMask(layout, angry);
     const { rec } = draw(desk, { cam, mode: 'ring', selected: angry, opened: true, lit, prevLit: lit });
     for (const { start, end } of insets(rec)) {
@@ -391,7 +422,7 @@ describe('wheel renderer', () => {
   test('with a sprite cache, labels are blitted from it except the opened (pulsing) one', () => {
     const hostile = layout.byPath.get('angry/aggressive/hostile')!;
     const sel = layout.segments[hostile]!;
-    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null });
+    const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
     const lit = litMask(layout, hostile);
     const sprited: string[] = [];
     const scales: number[] = [];

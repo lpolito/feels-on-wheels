@@ -884,8 +884,9 @@ describe('viewport', () => {
   });
 
   test('setViewport with only drawWidth changed still takes the new viewport (spec v2.2 §3.1)', () => {
-    // 1024 × 768 with the column: the middle ring's 1rem safeguard pushes the outer ring past the aim width.
-    const narrow: Viewport = { width: 614, height: 768, radius: 299 };
+    // A tiny aim width where the 24 px floor beats the caps, so the opened view runs past the aim width. (Since the
+    // sideways zoom spec, roomier sideways stages keep the whole wheel inside it.)
+    const narrow: Viewport = { width: 220, height: 480, radius: 102 };
     setup(opened('angry/aggressive'));
     ctl.setViewport(narrow, opts);
     step(1500);

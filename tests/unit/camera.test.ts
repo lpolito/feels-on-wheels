@@ -95,10 +95,8 @@ describe('resting cameras', () => {
     for (const ring of [0, 1, 2]) {
       expect(innerX(ring, ringFocusCamera(layout, ring, narrow, 0, opts)), `ring ${ring}`).toBeGreaterThanOrEqual(16 - 1e-9);
     }
-    // The middle ring is where the safeguard bites: the edge rule alone would put its cell off the left edge.
-    const mid = ringFocusCamera(layout, 1, narrow, 0, opts);
-    expect(innerX(1, { ...mid, cx: narrow.width - narrow.radius * mid.scale - 12 })).toBeLessThan(0);
-    expect(innerX(1, mid)).toBeCloseTo(16, 6);
+    // Sideways zoom spec: here the middle ring's core-ring cap keeps its cell well clear, so this safeguard now bites
+    // only where that cap doesn't apply: the notched side view (see the safe-area inset tests above).
   });
 
   test('portrait ring camera centers the middle and outer rings horizontally, and the word vertically', () => {
@@ -256,6 +254,39 @@ describe('resting cameras', () => {
   test('shouldStartZoomed true for 375×667, false for 2560×1440', () => {
     expect(shouldStartZoomed(SHARED.outerArc, phone)).toBe(true);
     expect(shouldStartZoomed(SHARED.outerArc, { width: 2560, height: 1440, radius: 712 })).toBe(false);
+  });
+});
+
+describe('sideways zoom spec: the core word stays in view', () => {
+  // A sideways 1180 × 820 tablet: the aim width ends 1.5rem before the card.
+  const tablet: Viewport = { width: 708, height: 820, radius: 346 };
+  const wheels = loadData().wheels.map((w, i) => (i === 0 ? layout : buildLayout(w)));
+
+  test('a middle word keeps the whole core ring 1rem clear of the left, on both wheels', () => {
+    for (const l of wheels) {
+      for (const insetLeft of [0, 59]) {
+        const cam = ringFocusCamera(l, 1, tablet, 0, { ...opts, insetLeft });
+        const R = tablet.radius * cam.scale;
+        const name = `${l.wheelId} inset ${insetLeft}`;
+        expect(cam.cx + l.rings[0]!.inner * R, name).toBeGreaterThanOrEqual(insetLeft + 16 - 1e-9);
+        expect(cam.cx + R + 12, name).toBeCloseTo(tablet.width, 6);
+      }
+    }
+  });
+
+  test('the cap brings 1180 × 820 from 2.89 to 2.23', () => {
+    expect(ringFocusCamera(layout, 1, tablet, 0, opts).scale).toBeCloseTo(2.23, 2);
+  });
+
+  test('where the core ring already fits, the middle view is unchanged', () => {
+    expect(ringFocusCamera(layout, 1, { width: 996, height: 900, radius: 442 }, 0, opts).scale).toBeCloseTo(2.26, 2);
+  });
+
+  test('the 24 px floor beats the cap', () => {
+    const narrow: Viewport = { width: 500, height: 768, radius: 242 };
+    for (const l of wheels) {
+      expect(segHeight(l, 1, narrow, ringFocusCamera(l, 1, narrow, 0, opts).scale), l.wheelId).toBeGreaterThanOrEqual(24 - 1e-9);
+    }
   });
 });
 

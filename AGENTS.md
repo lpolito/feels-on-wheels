@@ -23,6 +23,10 @@ The rules for what the wheels say live in `src/data/README.md`. They cover `src/
 
 `main` is protected: changes reach it only through a pull request, and the `CI` workflow's checks (`checks` and `e2e` in five browsers) must pass to merge. Merging deploys the live site, unless the PR only changes `docs/` or top-level Markdown files: Cloudflare's GitHub integration builds and deploys it (`wrangler.jsonc`, with the build settings in Cloudflare's dashboard) as the built files plus a small Worker (`src/worker/`) that runs only for paths with no file, and posts a preview link on each PR. The end-to-end tests run under `wrangler dev`, so they use the same Worker. Work on a branch, push it, and open a PR; never push to `main`.
 
+## Screenshots
+
+`tests/screenshots/` captures every screen on 19 real device sizes for Chromatic (spec: `docs/superpowers/specs/2026-11-18-feels-on-wheels-screenshots-design.md`). To see how a change looks across phones, tablets and computers, use it rather than taking screenshots by hand: run `npm run screenshots && npm run screenshots:check`, then `npx chromatic --playwright` with `CHROMATIC_PROJECT_TOKEN` set (ask Lucas for it; never write it into the repo), and read the build in Chromatic. On a PR, the `screenshots` label does the same in CI. Each run is 120 of the free plan's 5,000 snapshots a month, so run it when the look matters, not on every push. Any other Playwright run clears `test-results/`, so capture right before uploading.
+
 ## Sources and credits
 
 `docs/reference/` has a note for every outside source the project draws on (wheels, word lists, research), plus the full Credits list.

@@ -1,0 +1,44 @@
+# Screenshots of every screen on 19 devices, in Chromatic (screenshots spec, 2026-11-18). Runs only on pull requests
+# with the "screenshots" label, or when started by hand: Chromatic's free plan is 5,000 snapshots a month and a run is
+# 120. Not a required check; a change shown in Chromatic doesn't block merging. Kept out of ci.yml on purpose.
+name: Screenshots
+
+on:
+  pull_request:
+    types: [labeled, synchronize, opened, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    name: screenshots
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'screenshots')
+    # macOS like the end-to-end tests: the wheel's canvas is captured here, with Apple's system font.
+    runs-on: macos-latest
+    env:
+      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+    steps:
+      - name: Check the Chromatic token
+        if: env.CHROMATIC_PROJECT_TOKEN == ''
+        run: |
+          echo "::error::Add the CHROMATIC_PROJECT_TOKEN secret (repository settings, Secrets and variables, Actions)."
+          exit 1
+      - uses: actions/checkout@v7
+        with:
+          # Chromatic reads git history to find each build's baseline.
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run screenshots
+      - run: npm run screenshots:check
+      - run: npx chromatic --playwright --exit-zero-on-changes

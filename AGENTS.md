@@ -25,7 +25,7 @@ The rules for what the wheels say live in `src/data/README.md`. They cover `src/
 
 ## Screenshots
 
-`tests/screenshots/` captures every screen on 19 real device sizes for Chromatic (spec: `docs/superpowers/specs/2026-11-18-feels-on-wheels-screenshots-design.md`). To see how a change looks across phones, tablets and computers, use it rather than taking screenshots by hand: run `npm run screenshots && npm run screenshots:check`, then `npx chromatic --playwright` with `CHROMATIC_PROJECT_TOKEN` set (ask Lucas for it; never write it into the repo), and read the build in Chromatic. On a PR, the `screenshots` label does the same in CI. Each run is 120 of the free plan's 5,000 snapshots a month, so run it when the look matters, not on every push. Any other Playwright run clears `test-results/`, so capture right before uploading.
+`tests/screenshots/` captures every screen on 19 real device sizes for Chromatic (spec: `docs/superpowers/specs/2026-11-18-feels-on-wheels-screenshots-design.md`). To see how a change looks across phones, tablets and computers, use it rather than taking screenshots by hand: run `npm run screenshots && npm run screenshots:check`, then `npx chromatic --playwright` with `CHROMATIC_PROJECT_TOKEN` set (ask Lucas for it; never write it into the repo), and read the build in Chromatic. On a PR, the `screenshots` label does the same in CI, and merging a labeled PR runs it once more on main, which is what later PRs compare against. Each run is 120 of the free plan's 5,000 snapshots a month, so a labeled PR costs at least 240; run it when the look matters, not on every push. Any other Playwright run clears `test-results/`, so capture right before uploading.
 
 ## Sources and credits
 

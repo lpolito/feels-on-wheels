@@ -12,6 +12,10 @@ What follows from Chromatic never running the app: anything the app measures, it
 
 The spec didn't say how snapshots are named. Chromatic names each from the Playwright test path and shows only its last part on a snapshot's page, which left the device out. The sidebar now groups by screen, and each snapshot's page reads "<device>, portrait or landscape, <size> : <screen>" (Lucas chose grouping by screen). Devices say portrait and landscape rather than upright and sideways.
 
+## A run on main after each labeled PR
+
+The spec planned no run on main, expecting Chromatic to follow a squash merge to the PR's accepted snapshots on its own. It doesn't: it links a squash commit to its PR's last build only when a build runs on that commit. With no build on main, the next labeled PR (#21, build 11) found only the spike's early builds on `6e4d852` and showed all 120 snapshots as new. Merging a PR that has the `screenshots` label now runs the workflow on main too, accepting whatever that build shows as main's baseline (`--auto-accept-changes main`); a merge without the label only looks up its PR's labels. A labeled PR costs at least 240 snapshots, 120 on the PR and 120 on main. Lucas chose this over merge commits, which would keep it at 120, and GitHub's merge queue isn't available to repositories owned by a personal account.
+
 ## Smaller calls
 
 - The workflow checks out the PR's own branch, so Chromatic records builds on the PR's commits rather than GitHub's merge commit. Confirmed on build 8.

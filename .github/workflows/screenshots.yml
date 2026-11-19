@@ -1,28 +1,61 @@
 # Screenshots of every screen on 19 devices, in Chromatic (screenshots spec, 2026-11-18). Runs only on pull requests
-# with the "screenshots" label, or when started by hand: Chromatic's free plan is 5,000 snapshots a month and a run is
-# 120. Not a required check; a change shown in Chromatic doesn't block merging. Kept out of ci.yml on purpose.
+# with the "screenshots" label, on main after one of them merges, or when started by hand: Chromatic's free plan is
+# 5,000 snapshots a month and a run is 120. Not a required check; a change shown in Chromatic doesn't block merging.
+# Kept out of ci.yml on purpose.
+#
+# The run on main is what carries a PR's screenshots forward. A squash merge leaves the PR's commits out of main's
+# history, so later branches can't find their builds; Chromatic only links the squash commit to the PR's last build
+# when a build runs on it.
 name: Screenshots
 
 on:
   pull_request:
     types: [labeled, synchronize, opened, reopened]
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
-concurrency:
-  group: screenshots-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
+  # On main, whether the PR that was just merged had the "screenshots" label. Looked up on Linux so a merge that
+  # doesn't need screenshots never starts a macOS runner.
+  merged-pr:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      labeled: ${{ steps.pr.outputs.labeled }}
+    steps:
+      - id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          labeled=$(gh api "repos/$REPO/commits/$SHA/pulls" \
+            --jq 'any(.[]; any(.labels[]; .name == "screenshots"))')
+          echo "labeled=$labeled" >> "$GITHUB_OUTPUT"
+
   screenshots:
     name: screenshots
-    # Labeled PRs only, and adding some other label to one doesn't start another run.
+    needs: merged-pr
+    # Labeled PRs only, and adding some other label to one doesn't start another run; on main, only after a labeled
+    # PR merges. !cancelled() because merged-pr is skipped on pull requests, which would otherwise skip this job too.
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (contains(github.event.pull_request.labels.*.name, 'screenshots') &&
-       (github.event.action != 'labeled' || github.event.label.name == 'screenshots'))
+      !cancelled() && (
+        github.event_name == 'workflow_dispatch' ||
+        (github.event_name == 'push' && needs.merged-pr.outputs.labeled == 'true') ||
+        (contains(github.event.pull_request.labels.*.name, 'screenshots') &&
+         (github.event.action != 'labeled' || github.event.label.name == 'screenshots')))
+    # A newer push to a PR replaces its run. On main, each merge gets its own group: one shared group would let a later
+    # merge cancel a labeled one's waiting run, and that squash commit would never get the build later branches need.
+    concurrency:
+      group: screenshots-${{ github.event_name == 'push' && github.sha || github.ref }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     # macOS like the end-to-end tests: the wheel's canvas is captured here, with Apple's system font.
     runs-on: macos-latest
     env:
@@ -36,8 +69,9 @@ jobs:
       - uses: actions/checkout@v7
         with:
           # The PR's own branch rather than GitHub's temporary merge commit, so Chromatic records the build on a commit
-          # in the branch's history and posts its status where the PR shows it.
-          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+          # in the branch's history and posts its status where the PR shows it. Otherwise the commit that started the run,
+          # not the branch's tip, since Chromatic files the build under that commit even if main has moved on.
+          ref: ${{ github.event.pull_request.head.ref || github.sha }}
           # Chromatic reads git history to find each build's baseline.
           fetch-depth: 0
       - uses: actions/setup-node@v7
@@ -48,4 +82,5 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run screenshots
       - run: npm run screenshots:check
-      - run: npx chromatic --playwright --exit-zero-on-changes
+      # On main, whatever the build shows becomes the baseline, even where a change wasn't accepted on its PR.
+      - run: npx chromatic --playwright --exit-zero-on-changes --auto-accept-changes main

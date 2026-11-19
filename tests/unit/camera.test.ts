@@ -95,10 +95,8 @@ describe('resting cameras', () => {
     for (const ring of [0, 1, 2]) {
       expect(innerX(ring, ringFocusCamera(layout, ring, narrow, 0, opts)), `ring ${ring}`).toBeGreaterThanOrEqual(16 - 1e-9);
     }
-    // The middle ring is where the safeguard bites: the edge rule alone would put its cell off the left edge.
-    const mid = ringFocusCamera(layout, 1, narrow, 0, opts);
-    expect(innerX(1, { ...mid, cx: narrow.width - narrow.radius * mid.scale - 12 })).toBeLessThan(0);
-    expect(innerX(1, mid)).toBeCloseTo(16, 6);
+    // Sideways zoom spec: here the middle ring's core-ring cap keeps its cell well clear, so this safeguard now bites
+    // only where that cap doesn't apply: the notched side view (see the safe-area inset tests above).
   });
 
   test('portrait ring camera centers the middle and outer rings horizontally, and the word vertically', () => {
@@ -256,6 +254,91 @@ describe('resting cameras', () => {
   test('shouldStartZoomed true for 375×667, false for 2560×1440', () => {
     expect(shouldStartZoomed(SHARED.outerArc, phone)).toBe(true);
     expect(shouldStartZoomed(SHARED.outerArc, { width: 2560, height: 1440, radius: 712 })).toBe(false);
+  });
+});
+
+describe('sideways zoom spec: the core word stays in view', () => {
+  // A sideways 1180 × 820 tablet: the aim width ends 1.5rem before the card.
+  const tablet: Viewport = { width: 708, height: 820, radius: 346 };
+  const wheels = loadData().wheels.map((w, i) => (i === 0 ? layout : buildLayout(w)));
+
+  test('a middle word keeps the whole core ring 1rem clear of the left, on both wheels', () => {
+    for (const l of wheels) {
+      for (const insetLeft of [0, 59]) {
+        const cam = ringFocusCamera(l, 1, tablet, 0, { ...opts, insetLeft });
+        const R = tablet.radius * cam.scale;
+        const name = `${l.wheelId} inset ${insetLeft}`;
+        expect(cam.cx + l.rings[0]!.inner * R, name).toBeGreaterThanOrEqual(insetLeft + 16 - 1e-9);
+        expect(cam.cx + R + 12, name).toBeCloseTo(tablet.width, 6);
+      }
+    }
+  });
+
+  test('the cap brings 1180 × 820 from 2.89 to 2.23', () => {
+    expect(ringFocusCamera(layout, 1, tablet, 0, opts).scale).toBeCloseTo(2.23, 2);
+  });
+
+  test('where the core ring already fits, the middle view is unchanged', () => {
+    expect(ringFocusCamera(layout, 1, { width: 996, height: 900, radius: 442 }, 0, opts).scale).toBeCloseTo(2.26, 2);
+  });
+
+  test('a core word zooms to the square root of the middle view', () => {
+    const core = ringFocusCamera(layout, 0, tablet, 0, opts).scale;
+    expect(core).toBeCloseTo(Math.sqrt(ringFocusCamera(layout, 1, tablet, 0, opts).scale), 6);
+    expect(core).toBeCloseTo(1.49, 2);
+  });
+
+  test('a core view that already zooms further keeps its own zoom', () => {
+    const body = wheels.find((l) => l.wheelId === 'body')!;
+    expect(ringFocusCamera(body, 0, { width: 600, height: 768, radius: 292 }, 0, opts).scale).toBeCloseTo(1.73, 2);
+  });
+
+  test('opening a middle word always zooms in at least 1.25× from its core word', () => {
+    // Aim widths for 720 × 480, 784 × 688, 1024 × 768, 1180 × 820, and 1440 × 900.
+    const stages: Viewport[] = [
+      { width: 432, height: 480, radius: 208 }, { width: 496, height: 688, radius: 240 },
+      { width: 600, height: 768, radius: 292 }, tablet, { width: 996, height: 900, radius: 442 },
+    ];
+    for (const l of wheels) {
+      for (const vp of stages) {
+        const core = ringFocusCamera(l, 0, vp, 0, opts).scale;
+        expect(ringFocusCamera(l, 1, vp, 0, opts).scale / core, `${l.wheelId} ${vp.width}`).toBeGreaterThanOrEqual(1.25 - 1e-9);
+      }
+    }
+  });
+
+  test('on a small sideways window the step wins over keeping the core ring in view (body, 720 × 480)', () => {
+    const small: Viewport = { width: 432, height: 480, radius: 208 };
+    const body = wheels.find((l) => l.wheelId === 'body')!;
+    expect(ringFocusCamera(body, 0, small, 0, opts).scale).toBeCloseTo(2.43, 2);
+    expect(ringFocusCamera(body, 1, small, 0, opts).scale).toBeCloseTo(1.25 * ringFocusCamera(body, 0, small, 0, opts).scale, 6);
+  });
+
+  test('the step never zooms further than the middle view did before (its target, fitted to the screen)', () => {
+    // A stage where the core view's own zoom is close to the middle view's target, so 1.25× would overshoot it.
+    const vp: Viewport = { width: 300, height: 480, radius: 142 };
+    for (const l of wheels) {
+      const before = ringFocusCamera(l, 1, vp, 0, { ...opts, rest: 'side' as const }).scale;
+      expect(ringFocusCamera(l, 1, vp, 0, opts).scale, l.wheelId).toBeLessThanOrEqual(before + 1e-9);
+    }
+  });
+
+  test('the side view is unchanged', () => {
+    const side = { ...opts, rest: 'side' as const };
+    for (const l of wheels) {
+      expect(ringFocusCamera(l, 0, { width: 476, height: 393, radius: 188.5 }, 0, side).scale, l.wheelId).toBeCloseTo(2.68, 2);
+    }
+  });
+
+  test('the 24 px floor beats the cap', () => {
+    // A tiny aim width, where neither keeping the core ring in view nor the opened ring fitting leaves 24 px cells.
+    const narrow: Viewport = { width: 120, height: 480, radius: 52 };
+    const cap = (narrow.width - 12 - 16) / ((1 - layout.rings[0]!.inner) * narrow.radius);
+    for (const l of wheels) {
+      const scale = ringFocusCamera(l, 1, narrow, 0, opts).scale;
+      expect(scale, l.wheelId).toBeGreaterThan(cap);
+      expect(segHeight(l, 1, narrow, scale), l.wheelId).toBeCloseTo(24, 6);
+    }
   });
 });
 

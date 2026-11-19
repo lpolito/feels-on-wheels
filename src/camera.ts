@@ -115,7 +115,8 @@ export function restRotation(layout: Layout): number {
   return -layout.segments[layout.start]!.mid;
 }
 
-export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rotation: number, o: CameraOpts): Camera {
+/** A ring view's zoom before the sideways rules: its target fitted to the screen (`fitted`) and its floors. */
+function ownScale(layout: Layout, ring: number, vp: Viewport, o: CameraOpts): { fitted: number; floor: number } {
   const r = layout.rings[ring]!;
   const rMid = ringMid(layout, ring);
   const width = ring === 0 && o.rest === 'side' ? o.sideCoreWidth : typicalWidth(layout, ring);
@@ -136,7 +137,36 @@ export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rota
   // Known issues, round two: on the portrait half-wheel, the core view is the rest view moved up, so it never zooms
   // out from it (an upright iPad would otherwise leave its right side empty).
   const restScale = o.portrait && ring === 0 && o.rest === 'half' ? (HALF_REACH * vp.width) / vp.radius : 0;
-  const scale = Math.max(Math.min(want, fit), MIN_CELL_PX / arcAtScale1, MIN_RING_SCALE, restScale);
+  return { fitted: Math.min(want, fit), floor: Math.max(MIN_CELL_PX / arcAtScale1, MIN_RING_SCALE, restScale) };
+}
+
+/** Sideways zoom spec: a middle word's view zooms in at least this much from its core word's own view. */
+const MIN_STEP = 1.25;
+
+/** A ring view's zoom: its own, plus the sideways zoom spec's rules on sideways stages that rest on the whole wheel. */
+function ringScale(layout: Layout, ring: number, vp: Viewport, o: CameraOpts): number {
+  const own = ownScale(layout, ring, vp, o);
+  const plain = Math.max(own.fitted, own.floor);
+  if (o.portrait || o.rest !== 'whole' || ring > 1) return plain;
+  if (ring === 0) {
+    // A core word's view zooms at least halfway, on a log scale, from the rest view (1×) to the middle word's view
+    // (Lucas picked this after comparing three amounts at 1180 × 820). It only raises.
+    return Math.max(plain, Math.sqrt(ringScale(layout, 1, vp, o)));
+  }
+  // A middle word's view keeps the whole core ring on screen, 1rem after the notch; the wheel meets the aim width on the
+  // right (Lucas, 2026-11-18, a sideways iPad). But it always zooms in at least MIN_STEP from the core word's own view,
+  // never past its own fitted target (Lucas, 2026-11-19: small windows would otherwise zoom out).
+  const keepCore = (vp.width - LIFT_RADIAL_PX - OUTLINE_OUTSIDE_PX - (o.insetLeft ?? 0) - o.remPx)
+    / ((1 - layout.rings[0]!.inner) * vp.radius);
+  const core = ownScale(layout, 0, vp, o);
+  const step = Math.min(MIN_STEP * Math.max(core.fitted, core.floor), own.fitted);
+  return Math.max(Math.min(own.fitted, keepCore), step, own.floor);
+}
+
+export function ringFocusCamera(layout: Layout, ring: number, vp: Viewport, rotation: number, o: CameraOpts): Camera {
+  const r = layout.rings[ring]!;
+  const rMid = ringMid(layout, ring);
+  const scale = ringScale(layout, ring, vp, o);
   const R = vp.radius * scale;
   // Spec v1.2 §4.1–§4.2: phones center the ring's middle; elsewhere the wheel meets the stage's right edge (the
   // card's column) — its outer edge plus the opened cell's lift and outline, so an opened outer word isn't clipped —

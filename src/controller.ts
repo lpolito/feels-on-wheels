@@ -64,6 +64,12 @@ export function createController(
   let spinTarget: number | null = null;
   /** A new opened y arrived while the wheel was turning: the camera moves to it once the turn settles. */
   let cyAfterTurn = false;
+  /**
+   * The camera's current move is a turn to another word in the same view (a spin, a key, a tap on a neighbor), set
+   * where the move starts. Opening and closing aren't turns, even when they only rotate: on the half-wheel, a core
+   * view keeps the rest zoom (Lucas, 2026-11-18).
+   */
+  let turning = false;
   const spinning = (): boolean => camera.moving && spinTarget !== null && camera.target.rotation === spinTarget;
 
   const cam = camera.current;
@@ -88,10 +94,14 @@ export function createController(
     return ringFocusCamera(layout, ring, vp, rotation, opts);
   }
 
-  const goToRest = (): void => camera.animateTo(restingCamera(store.get()));
+  const goToRest = (): void => {
+    turning = false;
+    camera.animateTo(restingCamera(store.get()));
+  };
 
   /** The user is about to rotate the camera directly. */
   function grab(): void {
+    turning = false;
     camera.stop();
   }
 
@@ -137,6 +147,7 @@ export function createController(
   function fling(v: number): void {
     const ring = ringOf(store.get());
     userSpin = ring !== null;
+    turning = true;
     camera.fling(v, ring, layout);
     spinTarget = camera.target.rotation;
   }
@@ -159,11 +170,13 @@ export function createController(
     }
     if (dragAxis !== null || s.selected === null || a.type === 'settled') return;
     if (s.selected !== prev.selected || camera.moving) {
+      if (s.selected !== prev.selected) turning = true;
       camera.animateTo({ rotation: rotationToCenter(seg(s.selected), cam.rotation) });
     }
   });
 
   camera.onSettle(() => {
+    turning = false;
     if (cyAfterTurn) {
       cyAfterTurn = false;
       if (ringOf(store.get()) !== null && !zoom) camera.animateTo({ cy: restingCamera(store.get()).cy });
@@ -286,9 +299,9 @@ export function createController(
     const s = store.get();
     if (ringOf(s) === null || zoom) return;
     // Known issues, round two (Lucas, 2026-11-18): while the wheel turns (a spin, a key, a tap on another word), its
-    // axis stays still; the word re-centers over its new card once the turn stops. Opening and closing zoom, so the
-    // vertical move joins them.
-    if (camera.moving && camera.target.rotation !== cam.rotation && camera.target.scale === cam.scale) {
+    // axis stays still; the word re-centers over its new card once the turn stops. Opening and closing aren't turns,
+    // so the vertical move joins them.
+    if (camera.moving && turning) {
       cyAfterTurn = true;
       return;
     }
@@ -301,6 +314,8 @@ export function createController(
       && o.remPx === opts.remPx && o.portrait === opts.portrait && o.rest === opts.rest
       && o.openedY === opts.openedY && (o.insetLeft ?? 0) === (opts.insetLeft ?? 0);
     if (unchanged) return;
+    // Every path below jumps, which ends any move without a settle.
+    turning = false;
     vp = next;
     opts = o;
     const s = store.get();

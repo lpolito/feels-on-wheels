@@ -820,6 +820,21 @@ describe('phone: the opened word above the card', () => {
     expect(camera.current.cy).toBeCloseTo(cy + 80, 6);
   });
 
+  test('opening a core word from the half-wheel moves cy while the card opens, even when it only turns (Lucas, 2026-11-18)', () => {
+    setupPhone();
+    // Bad isn't at 3 o'clock, so opening it turns the wheel; on the half-wheel the core view keeps the rest zoom.
+    store.dispatch({ type: 'open', segment: idx('bad') });
+    expect(camera.target.scale).toBeCloseTo(halfScale, 9);
+    expect(camera.target.rotation).not.toBeCloseTo(camera.current.rotation, 3);
+    // main.ts measures the card as soon as it renders.
+    ctl.setOpenedY(200);
+    step(100);
+    expect(camera.current.rotation).not.toBeCloseTo(camera.target.rotation, 3);
+    expect(camera.current.cy).toBeLessThan(phoneVp.height / 2 - 50);
+    step(2000);
+    expect(camera.current.cy).toBeCloseTo(200, 6);
+  });
+
   test('setOpenedY springs cy without moving rotation or scale', () => {
     setupPhone(opened('fearful'));
     step(2000);

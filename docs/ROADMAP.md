@@ -45,7 +45,6 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
-| [Half-wheel on tablets, card on the right](#half-wheel-on-tablets-card-on-the-right) | [Layout](#layout) | Idea |
 | [Check every test is worth keeping](#check-every-test-is-worth-keeping) | [Tests](#tests) | Idea |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
@@ -136,15 +135,6 @@ What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheel
 - To decide when designing: stable English slugs in every language (`/es/happy/…`) or translated ones (`/es/feliz/…`). The URL shape (a `/es/` prefix, English unprefixed) is set by the [URL redesign spec](superpowers/specs/2026-11-13-feels-on-wheels-urls-routing-design.md) §9.
 - The link preview's alt text lowercases the wheel's name in code (`src/og.ts`: "the feelings wheel"), which is wrong for languages that capitalize nouns, such as German. To decide when designing: a separate lowercase name per wheel in the locale, or alt text written whole per wheel.
 
-### Layout
-
-#### Half-wheel on tablets, card on the right
-
-- Lucas, 2026-11-18: use the phone's half-wheel on much larger displays, like tablets, but keep the opened word's card on the right, as the desktop layout does today, instead of the phone layout's card at the bottom.
-- He expects it to make [labels jumping while a word opens](#layout-and-labels) easier to fix.
-- Today the half-wheel rests only on portrait stages (`useHalfWheel` in `src/camera.ts`), upright iPads included, with the card at the bottom. Sideways tablets and laptops rest on the whole wheel, beside the card's column.
-- To decide when designing: which windows count (upright and sideways tablets, laptops), how the half-wheel and the opened view fit beside the card, whether opening a word still zooms, and how it meets the rest-view rules (`restView`, `useHalfWheel`, and `isPortrait` in `src/camera.ts`).
-
 ### Tests
 
 #### Check every test is worth keeping
@@ -160,7 +150,7 @@ Still open. None blocks the next change. The ones that get in someone's way are 
 ### Layout and labels
 
 - **The card's "Narrow it down" links wrap to two lines on landscape phones.** Found by Lucas 2026-11-18 in the [screenshots](superpowers/specs/2026-11-18-feels-on-wheels-screenshots-design.md) (iPhone 15 and iPhone 15 Pro Max, landscape, Chest opened): in the narrow side column, two links per row (`.fw-rows`, `grid-template-columns: 1fr 1fr` in `src/styles/app.css`) leave each too little room, so "Racing heart" and "Short breath" break onto two lines. Lucas: they shouldn't wrap; one link per line, scrolling to see more. Chromatic draws this text in a wider font than iPhones use, so a real phone may wrap fewer of them, but the column is the same width. To decide when designing: when the card switches to one column (always, or only when two would wrap), and how scrolling the list fits with the card's height cap. No fix chosen yet.
-- **Labels jump while a word opens.** Found by Lucas on his phone 2026-11-18, also on `main`. When a word opens, the size where labels wrap to two lines switches from 8 to 12 px at once, because it follows the app's mode, while the cells grow with the camera's zoom over about a second. A label between those sizes wraps to two lines at about double its size, then goes back to one line partway through the zoom: "Whole body" on the body wheel at 393 × 650 goes from 9.5 px, to 20.5 px on two lines, to 12 px. Lucas set it aside for the [half-wheel on tablets](#half-wheel-on-tablets-card-on-the-right), which he expects to make it easier. No fix chosen yet.
+- **Labels jump while a word opens.** Found by Lucas on his phone 2026-11-18, also on `main`. When a word opens, the size where labels wrap to two lines switches from 8 to 12 px at once, because it follows the app's mode, while the cells grow with the camera's zoom over about a second. A label between those sizes wraps to two lines at about double its size, then goes back to one line partway through the zoom: "Whole body" on the body wheel at 393 × 650 goes from 9.5 px, to 20.5 px on two lines, to 12 px. No fix chosen yet.
 - **At rest, the outer cells are smaller than WCAG AA's 24 px tap target.** Found 2026-11-18 while sorting these known issues ([spec](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-design.md)). At rest, tapping an outer cell selects that word, so each cell is a tap target, and at common sizes it's under WCAG 2.2 AA's 24 px (success criterion 2.5.8): on the half-wheel at 390 × 844 the outer cells are about 23 px tall on the feelings wheel and 15 px on the body wheel; on the whole wheel at 1440 × 900, about 27 px and 18 px. The cells touch, so the spacing exception doesn't apply. The "equivalent control" exception might: open a middle-ring word first (two taps), and every outer cell is then at least 24 px tall. Opening a core word isn't enough (its outer cells stay about 20 px). But reaching an outer word that way takes three taps instead of one. The cells are this small so the whole wheel fits, so a fix needs its own design. No fix chosen yet.
 
 ### Navigation

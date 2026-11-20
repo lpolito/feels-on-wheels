@@ -55,7 +55,7 @@ Show me the evidence for each change briefly. Ask me only where it's taste.
    - **Bittersweet** has no place, since rule 1 can't put a mixed feeling under one core. Is that acceptable?
    - **Worth a look:** Suspicious under Jealous, Frantic beside Panicked, and Stressed as a recorded exception to rule 4.
 3. **Then the rest of the rules that the wheel has to pass:**
-   - **Rule 15, the body wheel.** 20 of its 60 feelings aren't on the derived wheel; `python3 -I docs/opinionated-wheel/scripts/compare.py` lists them. Map each to its replacement and recheck its rules: 2 or 3 feelings per sensation, never a word with its own parent or child. Tired, Weak, and Violated need thought.
+   - **Rule 15, the body wheel.** 20 of its 60 feelings aren't on the derived wheel; `python3 -I docs/opinionated-wheel/scripts/compare.py` lists them. Map each to its replacement and recheck its rules: 2 or 3 feelings per sensation, never a word with its own parent or child. Tired, Weak, and Withdrawn need thought.
    - **Rule 14, translations.** Check where neighboring words translate to the same Spanish word.
    - **Definitions and "You might notice"** for the new words.
 

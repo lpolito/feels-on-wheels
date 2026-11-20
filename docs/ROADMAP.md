@@ -43,7 +43,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Strength](#strength) | New ways to identify an emotion | Shelved (2026-11-08) |
 | [Wheels for kids](#wheels-for-kids) | New ways to identify an emotion | Idea |
 | [Search for a word](#search-for-a-word) | New ways to identify an emotion | Idea |
-| [An opinionated feelings wheel](#an-opinionated-feelings-wheel) | [The wheels' content](#the-wheels-content) | Idea |
+| [An opinionated feelings wheel](#an-opinionated-feelings-wheel) | [The wheels' content](#the-wheels-content) | Brainstorming |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
@@ -93,6 +93,7 @@ What Lucas first asked for:
   - their URLs, and whether a kids' word links to the same word on the grown-up wheel;
   - where the words come from, since any new source gets a [reference note](reference/README.md) and a credit.
 - Overlaps with the [emoji wheel](#emoji-wheel), which is also a simplified wheel; worth designing them together.
+- A check for which words fit each age, from the opinionated wheel's brainstorm (2026-11-19): a published study of which feeling words children know, by age band (Baron-Cohen et al. 2010, UK, about 336 words; it counts a word as known when 75% of the band knew it). Words off its list need another check. See the [data notes](opinionated-wheel/learnings.md#data).
 
 #### Search for a word
 
@@ -112,12 +113,13 @@ What the wheels say: their words, definitions, and how feelings relate to sensat
 - Its rules go in `src/data/README.md` next to the body wheel's, so every later edit follows them.
 - **A word for accepting your situation.** Lucas, 2026-11-16: not fighting reality, going with the flow. The wheel's Accepted means being welcomed by others, so the body wheel's Nothing much uses Content and Peaceful for now (rework [changes](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md#flat); [radical acceptance](reference/linehan-dbt-model-of-emotions.md), [equanimity](reference/desbordes-equanimity.md)).
 - **Words that sit oddly under their parent,** such as Hesitant under Repelled, Embarrassed under Disapproving, and Inferior under Depressed (Lucas, 2026-11-16). The body wheel's rule about a word and its parent depends on this nesting.
-- To decide when designing:
-  - what makes a word earn a place: common, plain, distinct from its neighbors, and useful for naming what you feel;
-  - whether the core feelings and their order stay, since the colors, link previews and URLs are built on them;
-  - what a good definition says, and how "You might notice" is chosen, likely drawing on the [bodily maps research](reference/nummenmaa-bodily-maps.md);
-  - what happens to links to words that are removed or moved;
-  - where the words come from, since any new source gets a [reference note](reference/README.md) and a credit.
+- **Brainstormed 2026-11-19 and 2026-11-20.** The rules for which words the wheel has and where they go are settled, and a candidate wheel was built from those rules alone: 6 cores (Happy, Love, Sad, Scared, Angry, Bad) and about 165 words, keeping about half of today's. Everything is in [opinionated-wheel/](opinionated-wheel/):
+  - [the rules](opinionated-wheel/rules.md) and the research behind them;
+  - [the candidate wheel](opinionated-wheel/derived-wheel.md);
+  - [what the process taught](opinionated-wheel/learnings.md), including every decision Lucas made;
+  - [the handoff](opinionated-wheel/handoff.md) for the next session: scrutinize the rules, rule on the cores, then comb the words.
+- Settled along the way: the accepting word is At peace (under Happy → Calm), and the odd nestings are what rules 6 and 7 fix. Colors, link previews, and URLs don't weigh in the choices, and links to removed or moved words aren't a concern (Lucas, 2026-11-19).
+- Still to decide: definitions and "You might notice" for the new words, drawing on the [bodily maps research](reference/nummenmaa-bodily-maps.md); the body wheel's paths (rule 15); and reference notes and credits for the new sources (rule 16).
 - Meets [Strength](#strength), [Wheels for kids](#wheels-for-kids), [Languages](#languages), and the [definitions and sensations review](#before-launching), which all depend on which words the wheel has. Builds on the rules the [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) set in [src/data/README.md](../src/data/README.md).
 
 ### URLs, routing and hosting

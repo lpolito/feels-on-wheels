@@ -1,0 +1,370 @@
+{
+  "cores": [
+    {
+      "label": "Happy",
+      "middle": [
+        {
+          "label": "Joy",
+          "outer": [
+            "Delighted",
+            "Elated",
+            "Blissful"
+          ]
+        },
+        {
+          "label": "Cheerful",
+          "outer": [
+            "Amused",
+            "Playful"
+          ]
+        },
+        {
+          "label": "Excited",
+          "outer": [
+            "Thrilled",
+            "Exhilarated"
+          ]
+        },
+        {
+          "label": "Proud",
+          "outer": [
+            "Accomplished",
+            "Triumphant",
+            "Flattered"
+          ]
+        },
+        {
+          "label": "Confident",
+          "outer": [
+            "Brave",
+            "Empowered",
+            "Powerful"
+          ]
+        },
+        {
+          "label": "Satisfied",
+          "outer": [
+            "Fulfilled",
+            "Content",
+            "Blessed"
+          ]
+        },
+        {
+          "label": "Calm",
+          "outer": [
+            "Relaxed",
+            "At peace",
+            "Safe"
+          ]
+        },
+        {
+          "label": "Relieved",
+          "outer": [
+            "Reassured",
+            "Forgiven",
+            "Vindicated"
+          ]
+        },
+        {
+          "label": "Hopeful",
+          "outer": [
+            "Optimistic",
+            "Encouraged"
+          ]
+        },
+        {
+          "label": "Motivated",
+          "outer": [
+            "Inspired",
+            "Determined"
+          ]
+        },
+        {
+          "label": "Interested",
+          "outer": [
+            "Curious",
+            "Intrigued"
+          ]
+        },
+        {
+          "label": "Surprised",
+          "outer": [
+            "Amazed",
+            "Awe",
+            "Impressed"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Love",
+      "middle": [
+        {
+          "label": "Affection",
+          "outer": [
+            "Tenderness",
+            "Protective"
+          ]
+        },
+        {
+          "label": "Compassion",
+          "outer": [
+            "Sympathy",
+            "Moved"
+          ]
+        },
+        {
+          "label": "Connected",
+          "outer": [
+            "Loved",
+            "Understood",
+            "Valued",
+            "Accepted"
+          ]
+        },
+        {
+          "label": "Attracted",
+          "outer": [
+            "Desire",
+            "Aroused"
+          ]
+        },
+        {
+          "label": "Grateful",
+          "outer": [
+            "Honored",
+            "Cared for"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Sad",
+      "middle": [
+        {
+          "label": "Lonely",
+          "outer": [
+            "Left out",
+            "Misunderstood",
+            "Abandoned"
+          ]
+        },
+        {
+          "label": "Hurt",
+          "outer": [
+            "Betrayed",
+            "Rejected",
+            "Unappreciated"
+          ]
+        },
+        {
+          "label": "Disappointed",
+          "outer": [
+            "Let down",
+            "Discouraged",
+            "Regret",
+            "Disillusioned"
+          ]
+        },
+        {
+          "label": "Grief",
+          "outer": [
+            "Heartbroken",
+            "Devastated"
+          ]
+        },
+        {
+          "label": "Heartache",
+          "outer": [
+            "Homesick",
+            "Nostalgic",
+            "Sorry for someone"
+          ]
+        },
+        {
+          "label": "Down",
+          "outer": [
+            "Hopeless",
+            "Miserable",
+            "Defeated"
+          ]
+        },
+        {
+          "label": "Ashamed",
+          "outer": [
+            "Humiliated",
+            "Worthless"
+          ]
+        },
+        {
+          "label": "Guilty",
+          "outer": [
+            "Remorse",
+            "Apologetic"
+          ]
+        },
+        {
+          "label": "Embarrassed",
+          "outer": [
+            "Foolish",
+            "Mortified",
+            "Humbled",
+            "Cringe"
+          ]
+        },
+        {
+          "label": "Insecure",
+          "outer": [
+            "Inadequate",
+            "Inferior",
+            "Insignificant"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Scared",
+      "middle": [
+        {
+          "label": "Anxious",
+          "outer": [
+            "Worried",
+            "Uneasy",
+            "Dread"
+          ]
+        },
+        {
+          "label": "Nervous",
+          "outer": [
+            "Apprehensive",
+            "On edge"
+          ]
+        },
+        {
+          "label": "Terrified",
+          "outer": [
+            "Panicked",
+            "Frantic"
+          ]
+        },
+        {
+          "label": "Shocked",
+          "outer": [
+            "Startled",
+            "Stunned",
+            "Horrified"
+          ]
+        },
+        {
+          "label": "Vulnerable",
+          "outer": [
+            "Helpless",
+            "Exposed",
+            "Threatened"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Angry",
+      "middle": [
+        {
+          "label": "Annoyed",
+          "outer": [
+            "Irritable",
+            "Impatient",
+            "Provoked"
+          ]
+        },
+        {
+          "label": "Frustrated",
+          "outer": [
+            "Stuck",
+            "Trapped",
+            "Fed up"
+          ]
+        },
+        {
+          "label": "Furious",
+          "outer": [
+            "Outraged",
+            "Rage"
+          ]
+        },
+        {
+          "label": "Resentful",
+          "outer": [
+            "Cheated",
+            "Used",
+            "Hatred"
+          ]
+        },
+        {
+          "label": "Offended",
+          "outer": [
+            "Insulted",
+            "Indignant",
+            "Violated"
+          ]
+        },
+        {
+          "label": "Jealous",
+          "outer": [
+            "Envious",
+            "Suspicious"
+          ]
+        },
+        {
+          "label": "Disgusted",
+          "outer": [
+            "Repulsed",
+            "Appalled",
+            "Contempt"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Bad",
+      "middle": [
+        {
+          "label": "Bored",
+          "outer": [
+            "Restless",
+            "Unmotivated"
+          ]
+        },
+        {
+          "label": "Overwhelmed",
+          "outer": [
+            "Pressured",
+            "Burned out"
+          ]
+        },
+        {
+          "label": "Confused",
+          "outer": [
+            "Conflicted",
+            "Lost",
+            "Puzzled"
+          ]
+        },
+        {
+          "label": "Numb",
+          "outer": [
+            "Empty",
+            "Detached",
+            "Indifferent"
+          ]
+        },
+        {
+          "label": "Uncomfortable",
+          "outer": [
+            "Awkward",
+            "Out of place"
+          ]
+        }
+      ]
+    }
+  ]
+}

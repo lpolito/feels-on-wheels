@@ -9,5 +9,7 @@ Written by fresh agents during the 2026-11-19 and 2026-11-20 brainstorm, each ch
 | [3-word-data.md](3-word-data.md) | report 4 | Word datasets, with licenses and spot checks (its scratchpad paths are gone) |
 | [4-rule-drafts-refuted.md](4-rule-drafts-refuted.md) | the refutation | Checks the load-bearing sources again and merges two independent rule drafts. The rules have changed since; [rules.md](../rules.md) is the record. |
 | [5-derived-wheel-check.md](5-derived-wheel-check.md) | the check | A cold check of the first derived wheel, including the Basque study read in full |
+| [6-final-rules-refuted.md](6-final-rules-refuted.md) | the final refutation | A cold check of the final rule set (2026-11-21), given only the rules and reports 1 to 5 |
+| [7-looser-rules-refuted.md](7-looser-rules-refuted.md) | the second refutation | Two independent drafts of the looser rules, attacked and merged (2026-11-21) |
 
 Not kept: the brief, report 3 (a critique of the first nine rules), and the two rule drafts. They're superseded by the refutation and by [rules.md](../rules.md).

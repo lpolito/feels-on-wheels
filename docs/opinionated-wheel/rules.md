@@ -1,124 +1,141 @@
 # Rules for the feelings wheel's words
 
-Settled by Lucas on 2026-11-19 and refined on 2026-11-20, in a brainstorm for the [opinionated feelings wheel](../ROADMAP.md#an-opinionated-feelings-wheel). They aren't in force yet: the app's wheel predates them, and they move into [src/data/README.md](../../src/data/README.md) when the redesign is specced. Until then, this file is the record. [handoff.md](handoff.md) says what's still to check.
+Settled by Lucas on 2026-11-21, in a brainstorm for the [opinionated feelings wheel](../ROADMAP.md#an-opinionated-feelings-wheel). They replace the numbered rules of 2026-11-19 and 2026-11-20 (in git history before this change). They aren't in force yet: the app's wheel predates them. They move into [src/data/README.md](../../src/data/README.md) with the redesign, and until then this file is the record.
 
-How they were made: research claims were checked against primary sources by fresh agents, two rule sets were drafted independently, and a refuter merged them. Lucas then reviewed every rule in plain English. The evidence is in [research/](research/), and what that process taught is in [learnings.md](learnings.md).
+They're few and loose on purpose. Lucas, 2026-11-21: "It feels silly for some reason to codify this so specific when language really doesn't work in this way." So:
+
+- **Facts are checked by a script, strictly.**
+- **Usage counts are flags, never verdicts.** A flag means someone looks, then changes the word or writes one line of reason.
+- **Judgment is guided by five questions,** with no numbered order and no exact thresholds.
+- **Every word has a written reason, and the reason is the real record.**
+
+How they were made: after a cold refutation of the numbered rules ([research/6](research/6-final-rules-refuted.md)), two writers drafted the looser set independently, and a fresh refuter ran both on the candidate wheel and the datasets, then merged them ([research/7](research/7-looser-rules-refuted.md)). What the process taught is in [learnings.md](learnings.md).
 
 ## What the research supports
 
 | Finding | How solid | What it means for the wheel |
 |---|---|---|
-| **Valence is the first split.** It comes first in every sorting study, and it's the strongest predictor in 13 of 19 language families across 2,474 languages, with activation the strongest in the other 6 (Jackson et al. 2019). | Strong | One valence per family. |
-| **People sort feeling words into the same few families:** love, joy, anger, sadness, and fear, plus a small, pleasant surprise group. Within those, disgust and contempt sort under anger; envy and jealousy under anger; shame, guilt, embarrassment, humiliation, insecurity, rejection, and loneliness under sadness; shock and alarm under fear. This comes from Shaver et al. 1987, replicated in Indonesian (2001) and Basque (2006). In Chinese (1992), love wasn't its own family and shame was. | Strong in English, Indonesian, and Basque | The best evidence of where people look for a word. |
-| **Family membership is fuzzy.** Some words are closer to the center of their family than others (Russell and Fehr 1994). Categories shade into each other (Cowen and Keltner 2017). | Strong | Test whether a word fits its parent better than anywhere else, not whether it fits perfectly. Cards can name a second home. |
-| **Some "feelings" name what happened.** "Being angry is an emotion, but being abandoned is not": "feeling abandoned" reports the cause, which might be hurt, fear, or anger (Ortony, Clore, and Foss 1987). The distinction holds on average across many words, but it isn't a test you can apply to one word at a time. | Moderate | Words like Betrayed and Rejected go on the outer ring, under the feeling they cause. |
-| **Body states aren't feelings, and stress is an umbrella.** Tired and Sleepy are body states (Ortony; Clore). Knowing someone is angry, anxious, guilty, or sad tells you more than knowing they're stressed (Lazarus 1993). Boredom is an emotion (Danckert et al. 2018). | Moderate | Body states belong on the body wheel. One catch-all core can be a door, as long as what's inside it is specific. |
-| **Shame and guilt are different feelings, and embarrassment is milder** (Tangney). Shame isn't always about hiding: it goes with repair when the harm can be fixed (Leach and Cidam 2015, 90 samples). | Moderate | They belong together, near sadness. Definitions shouldn't say shame makes you hide. |
+| **Pleasant or unpleasant is the first split.** It comes first in every sorting study. Across 2,474 languages, it's the strongest predictor in most language families, with energy the strongest in the rest (Jackson et al. 2019; the "13 of 19" figure is from secondary sources). | Strong | Each core is all pleasant or all unpleasant. |
+| **People sort feeling words into the same few families:** love, joy, anger, sadness, and fear, plus a small, pleasant surprise group. Within those, disgust and contempt sort under anger; envy and jealousy under anger; shame, guilt, embarrassment, humiliation, insecurity, rejection, and loneliness under sadness; shock and alarm under fear. This is Shaver et al. 1987, as restated by Parrott (a secondary reformat). Indonesian (2001) and Basque (2006) replicate the five families and disgust under anger. In Basque, shame fell near fear and surprise words often sorted with fear; in Chinese (1992), love wasn't its own family and shame was. | Strong in English; the families replicate in Indonesian and Basque | The best evidence of where people look for a word. |
+| **Family membership is fuzzy.** Some words are closer to the center of their family than others (Russell and Fehr 1994). Categories shade into each other (Cowen and Keltner 2017). | Strong | Ask whether a word fits its parent better than anywhere else, not whether it fits perfectly. Cards can name a second home. |
+| **Some "feelings" name what happened.** "Being angry is an emotion, but being abandoned is not": "feeling abandoned" reports the cause, which might be hurt, fear, or anger (Ortony, Clore, and Foss 1987). The distinction holds on average, not as a test of one word. Betrayed and Rejected aren't on their list; treating them the same way is our inference, and the sorting puts rejection with sadness. | Moderate | Words for what happened to you are a tagged list, on the outer ring, under the feeling they most often cause. |
+| **Body states aren't feelings, and stress is an umbrella.** Tired and Sleepy are body states (Ortony; Clore). Knowing someone is angry, anxious, guilty, or sad tells you more than knowing they're stressed (Lazarus 1993). Boredom is an emotion (Danckert et al. 2018). | Moderate | Body states belong on the body wheel. Words inside the catch-all core are specific, not umbrellas. |
+| **A catch-all core is a design choice.** No research list has one. | None | Bad is allowed as a door for when you can't tell what you feel, as long as what's inside it is specific. |
+| **Shame and guilt are different feelings, and embarrassment is milder** (Tangney). Shame isn't always about hiding: it goes with trying to fix things when the failure can be fixed (Leach and Cidam 2015, 90 samples). | Moderate | They belong together, near sadness. Definitions shouldn't say shame makes you hide. |
 | **States of mind count.** Confused, Curious, and Bored are states of mind rather than emotions in Ortony's taxonomy, but people use them as feelings, and confusion and interest are among Cowen and Keltner's categories. | Moderate | They stay. |
 | **Naming a feeling eases it a little** (Lieberman et al. 2011). Telling hard feelings apart goes with slightly better coping (r ≈ −.15, mostly correlational). Two small training trials had mixed results. | Weak to moderate | No rule should rest on "more precise words help". |
 | **No study shows that feelings wheels help.** | None found | The wheel's case is that it helps people find a word, not that it heals. |
-| **Being moved** ("touched") is treated as its own emotion (Zickfeld et al. 2019, 19 countries), but nearly all the evidence comes from one group. | Weak to moderate | A candidate word, not a family. |
-| **Energy doesn't organize families.** Irritation and rage both sort under anger. What separates anger from fear is a sense of power, not energy (Fontaine 2007). 47 of 110 parent-child pairs on today's wheel differ widely in energy. | Contradicted | No energy rule. |
-| **The cores are a list built from faces.** The six non-Bad cores match Ekman's basic emotions, which were confirmed by face-recognition studies. That makes them a list of signals, not a sort of self-report words. Nothing shows Roberts drew on Ekman, and the wheel's own lineage runs through Willcox. | Moderate | Familiarity is the reason to keep them, not research. |
-| **Languages differ.** Emotion words vary across languages more than color words do (Jackson 2019). English Mad and Angry are both *enojado*. | Strong | Translations need a check for neighboring words that collapse into one. |
+| **Being moved** ("touched") is treated as its own emotion (Zickfeld et al. 2019, 19 countries), but nearly all the evidence comes from one group, and Indonesian sorts moved and touched with sadness. | Weak to moderate | A candidate word, not a family. |
+| **Energy doesn't organize families.** Irritation and rage both sort under anger. What separates anger from fear is a sense of power, not energy (Fontaine 2007). | Contradicted | No energy rule. |
+| **The old cores were a list built from faces.** The six non-Bad cores of the usual wheel match Ekman's basic emotions, which face-recognition studies supported (and which Barrett et al. 2019 dispute). That's a list of signals, not a sort of self-report words. | Moderate | Not a reason to keep them. |
+| **Languages differ.** Emotion words vary across languages more than color words do (Jackson 2019). English Mad and Angry are both *enojado*. | Strong | Translations need a check for positions that collapse into one word. |
+| **The pleasantness lists rate the word, not the feeling.** Smug rates unpleasant though smugness feels good to the person feeling it; Blue rates pleasant because of the color. | Shown in the data ([research/6](research/6-final-rules-refuted.md)) | Reliable for most words, a hint for words like those, and a written reason can beat them. |
+| **Book counts skew both ways.** "Feel ___" counts non-feelings ("feel free to" is 90% of "feel free", "feel sorry for" 98% of "feel sorry") and misses how people talk ("was worried" outnumbers "felt worried" by far; slang barely shows). | Shown in the data ([research/6](research/6-final-rules-refuted.md), [7](research/7-looser-rules-refuted.md)) | Counts are flags. Large gaps are trustworthy; small ones aren't. |
 
-## The rules
+## Always
 
-Lucas settled these on 2026-11-19.
+1. **Build from the rules, not from today's wheel.** That includes the cores. Familiarity with today's wheel or other wheels is never a reason; some familiarity comes anyway from using the words people use.
+2. **Every word has a written reason, and the reason is the record.** One or two sentences: why it's here and not nearby, what alternatives were considered, and a line answering each flag it raised. *Lucas, 2026-11-20:* Resentful heads Cheated and Used, not Bitter, because Bitter means a souring that lingers, which isn't true of being cheated or used.
+3. **Each word is on the wheel once.** Two forms of one word (Love and Loved) count as the same word. A repeat is one of two cases:
+   - **one feeling that fits two families:** it goes where most people would look, and its card names the other ("Betrayed often comes with anger");
+   - **two feelings that share a spelling** (embarrassed about yourself, embarrassed for someone else): each that earns a place gets its own label and definition, and each is counted with a phrase that pins its meaning.
+4. **The layout.** Each middle word has 2 or 3 outer words, and 2 is the default. *Lucas, 2026-11-20:* going by how the body wheel works, even 3 is pushing it. A third word's reason names an everyday situation where it's the word you'd reach for and neither its siblings nor its parent fits. If a fourth seems needed, split the middle word or move a word; never break the cap.
+5. **Every language uses the English wheel's shape.** Each position gets that language's most natural word or phrase for the position's meaning (*tengo miedo* is fine). Never re-sort a language, even where its own sorting differs. If two positions collide, use another word or a short qualifier; if that fails, record it as a known limit. *Lucas, 2026-11-19:* a shape for each language is possible long term, given AI reliable enough at this, or a fluent speaker willing to scrutinize every word the way he does.
+6. **Fix the body wheel in the same change.** Moving or removing a word means rechecking every body wheel path that uses it.
+7. **Credit every new source** with a note in [reference/](../reference/README.md) and a Credits entry. Datasets and published situation sets stay out of the repo, and nothing is transcribed from them.
 
-When two rules disagree, the lower number wins. Rules 0, 15, and 16 always apply. Other languages use the English wheel's shape (rule 14).
+**No size limit** beyond the layout: the wheel is as comprehensive as is reasonable.
 
-0. **Build from the rules, not from today's wheel.** A word earns its place by passing the rules, whether or not it's on today's wheel. Every change says which rule it serves. *Lucas, 2026-11-19: consistency with today's wheel and with other wheels isn't a goal. Some familiarity is nice, and rule 10 (words people already use) is where it comes from.*
+## What the script checks
 
-1. **Pleasant stays with pleasant.** Every word under a core feels the same way the core does: all pleasant, or all unpleasant.
-   - *How to check:* two published lists rate how pleasant thousands of English words are. If every list that has the word puts it on the wrong side, it moves.
-   - If no list has the word, or it's close to neutral, write down why it belongs.
-   - *Today:* Startled and Confused are unpleasant, but they sit under Surprised, which is pleasant.
+A failure blocks the change until it's fixed. Two checks can instead be cleared by a recorded reason, and the script prints the reason beside the result.
 
-2. **It has to be a feeling.** It's something you can be feeling right now, including states of mind like Confused or Curious. It isn't any of these:
-   - your body's condition (Tired, Sleepy, Hungry, Sick). Those belong on the body wheel. The mood your body's condition puts you in can still be a feeling: hunger can make you irritable, and Irritable belongs on the feelings wheel;
-   - something happening around you (Busy, Rushed);
-   - a description of a thing (Detestable);
-   - just a way of treating other people (Critical, Judgmental).
+The checks that need only the wheel files run in CI with the app's data tests. The pleasantness check and the flags need datasets that can't be committed (NRC asks not to be redistributed), so they run in the local scripts whenever words change.
 
-3. **Words for what someone did to you go on the outside.** Betrayed, Rejected, and Abandoned describe what happened, not the feeling.
-   - People reach for them, so they stay, but only on the outer ring.
-   - Each goes under the feeling it usually causes, and its definition names that feeling: Betrayed → Hurt → Sad.
+| | Check | Runs | When a word fails |
+|---|---|---|---|
+| **Pleasantness** | No word under a core is on the other side from it, both ways: a word fails when every list that scores it (Warriner et al. 2013; NRC VAD v2.1) puts it there. Lookups try the word as written, lowercase, with the hyphen as a space, and with the hyphen removed, so nothing passes silently as unscored. | Local | Move it to the family on its side that question 2 picks, or record a reason naming the meaning and why the lists misread it. |
+| **Once** | Each label appears once, comparing base forms (Love and Loved are the same). | CI | Rename one meaning (Always 3), or remove one. |
+| **Layout** | Every middle word has 2 or 3 outer words. | CI | Add, remove, split, or move (Always 4). |
+| **Body wheel** | Every sensation has 2 or 3 feelings, all on the feelings wheel, and no two from the same line (parent, child, or grandparent). A core word can be one of them where it really is the best fit. | CI | Pick the nearest feeling by question 2, or remove the sensation with a note. |
+| **What happened** | Every word tagged as what happened to you is on the outer ring, and its definition ends by naming the feeling. | CI | Move it out, or fix the definition. |
+| **Translations** | No two positions in one language share a translation, comparing base and gendered forms (*avergonzado* and *avergonzada*), neighbors or not. | CI | Another word or a short qualifier, or record a known limit. |
+| **Situations** | Each situation on the list records 1 to 3 feelings in its source's words, and the wheel word each maps to. Every mapped word is on the wheel. Mapping is judgment, written down with it. | CI | Add the missing feeling, or map it to an existing word with a reason. |
 
-4. **One "I just feel bad" core is allowed.** Bad can be the door for when you can't tell what it is, as long as the words inside it are specific feelings.
+## What the script flags, never decides
 
-5. **A core is a big, everyday family of feelings.** It's one of the families people naturally sort feelings into, or the Bad door. Each core:
-   - is all pleasant or all unpleasant (rule 1);
-   - has at least 4 middle words;
-   - is named with a word small children know;
-   - is named with the most common word people use for that feeling, or one close to it (rule 10's check).
+**Pleasantness** (same lists, local):
+- unscored in both lists, with the base form's score shown as a hint (Cheated → cheat);
+- the two lists disagree on its side (Awe, Nostalgic);
+- near neutral: Warriner between 4 and 6, or NRC between −0.2 and 0.2 (Startled);
+- a translation on the other side in that language's ratings, where they exist (Stadthagen-González 2017 for Spanish, not NRC's machine-translated Spanish).
 
-   *Today:* Fearful fails the last one. Books say "feel afraid" about 6 times as often as "feel fearful".
+**Usage** (Google Books, 2018 to 2022, per billion, local):
+- Two counts, both printed: "feel / feeling / felt ___", and "I was ___" for adjectives and phrases (nouns like Grief and Rage have no "I was" form). Books can't be searched for "I'm ___", and "I am ___" picks up set phrases ("I am afraid that…", "I am grateful to…").
+- Phrases recorded in the word's reason as not feelings ("feel free to", "felt sure", "I was used to") are subtracted from both counts. If one is most of a count, that count is dropped for the word, and the script says so.
+- The script flags:
+  - **rare:** both counts under 15;
+  - **a more common synonym:** a word with the same meaning used at least twice as often. Candidates are the ones the reason lists, plus the word's strongest associations that are feeling words (Small World of Words). *Lucas, 2026-11-20:* commonness only decides between words that mean the same thing; it never removes a word that names something no other word does (Understood stayed beside Valued).
+- The ratio between the two counts is printed, never flagged: it doesn't tell what-happened words from feelings.
 
-6. **Put a word in the family where people would look for it.** In studies, people sorted feeling words into piles. Those piles tell us where most words go: Embarrassed and Guilty with Sad, Jealous with Angry, and Shocked with Fearful.
+**Core labels:** the share of 4- to 6-year-olds who knew each label (Baron-Cohen et al. 2010), or "not listed".
 
-   If no study covers a word, ask what happened. Each core answers one question:
-   - Fearful: something might hurt you.
-   - Angry: something's unfair, or in your way.
-   - Disgusted: something's gross or wrong, and you want it away.
-   - Sad: you lost something or someone.
-   - Happy: something good happened, or things are going well.
-   - Surprised: something you didn't expect happened.
-   - Bad: something's off, and you can't say what.
+## The questions each word's reason answers
 
-   Each question follows the appraisal research: Richard Lazarus (1991) described each emotion by the kind of situation it answers. If the cores change, the questions change with them.
+1. **Can you be feeling it right now?** Emotions and states of mind count (Confused, Curious, Bored). A word with a trait meaning and a right-now meaning is judged by the right-now one (Shy, Anxious, Confident). It isn't:
+   - the body itself (Tired, Sleepy, Hungry, Sore): those go on the body wheel. The mood a body state brings still counts (Irritable, Burned out);
+   - a schedule or workload (Busy, Rushed);
+   - a description of a thing ("that's cringe");
+   - only a way of treating people (Critical, Judgmental).
 
-7. **Within its family, a word goes under the middle word it's most a kind of.** "[Word] is a kind of [middle word]" reads true, and truer than for any other middle word in that family. Rule 6 picks the family, so this rule only ever compares a word against a handful of middle words. Word-association data (how strongly people link two words) can flag a word that seems to be in the wrong place.
+   Words for what happened to you, or the situation you're in (Betrayed, Trapped, Safe), are feelings people reach for: they stay, as tagged outer words (see below).
+2. **Where would most people look for it?** Where the sorting studies cover a word, follow them: Embarrassed, Guilty, Ashamed, Insecure, Rejected, and Lonely with sadness; Jealous, Envious, Disgusted, and Contempt with anger; Shocked with fear; pleasant surprise with joy. Where they don't, ask what happened, using the cores' questions below. Word associations can flag a word that seems out of place, but they're skewed by other meanings (mad also means crazy).
+3. **Does this parent describe it better than any other parent would?** Most people who feel the word would also say they feel its parent, and the word reads as the parent plus something specific: a cause, a target, or a strength. Words for what happened go under the feeling their definition names.
+4. **Is each word a real choice?** Siblings pass "I feel A but not B" both ways (Curious and Inquisitive fail). Siblings can be different strengths of their parent (Annoyed and Furious under Angry), but a stronger word that keeps one sibling's specific cause or target is that sibling's strong form, so it goes under that sibling or leaves. *Lucas, 2026-11-20:* Lust ("strong physical desire") beside Desire was this trap. For a parent and its word, only one direction has to hold: you can feel scared without feeling terrified.
+5. **After "I feel", does it name your own feeling, in everyday words?** Its usual meaning after "I feel" is the feeling (Down passes; Sensitive and Free don't), and it's something people say about themselves, not mostly about others (Persecuted). Everyday words beat medical ones (Down, not Depressed). Heavy words people really say stay (Hopeless, Worthless). Slang is in when the reason shows people say it about themselves; book counts barely see it. *Lucas, 2026-11-20:* Cringe joined this way.
 
-   **The parent fits all its children.** The parent's meaning is true of every word under it, and each child reads as the parent plus something specific: a cause, a target, or a strength. Every word has some flavor; the test is whether the parent's meaning holds for each child. *Lucas, 2026-11-20:* Bitter means a souring that lingers, which isn't true of Cheated or Used, so Resentful (anger at unfair treatment) heads them.
+## Design notes
 
-8. **Every word is a real choice.**
-   - Words side by side shouldn't mean the same thing (Curious and Inquisitive).
-   - A word and the word above it can overlap, but the one further out has to be more specific. You can feel scared without feeling terrified, but you can't feel terrified without feeling scared.
-   - **No sibling is a stronger form of another sibling.** Siblings can differ in strength only when each is a different strength of their parent: Annoyed and Furious are the mild and strong ends of Angry. A word that's a stronger form of one particular sibling goes under that sibling, or leaves, and no definition leans on a sibling's word. *Lucas, 2026-11-20:* Lust ("strong physical desire") beside Desire was this trap.
+**Cores.** A core is one of the families people sort feelings into (love, joy, anger, sadness, fear) or the one catch-all door. Each is all pleasant or all unpleasant. A core with fewer than 4 middle words needs a line in its reason. Its label is a word young children know: prefer one that at least 75% of 4- to 6-year-olds knew, and let counts only break ties (Afraid outnumbers Scared in books mostly through "afraid that", a hedge).
 
-9. **Each word is on the wheel once.** A repeat is one of two cases:
-   - **The same feeling, fitting two families** (Inferior under Insecure and under Depressed). It goes where most people would look (rule 6), and its card says what it often comes with: "Betrayed often comes with anger."
-   - **Two feelings that share a spelling** (Embarrassed for someone else, and embarrassed about yourself). Each meaning that earns a place gets its own label and definition (rule 11).
+The catch-all's words are specific feelings, not all from one other family. Its card points to Guilty and Sorry for someone, since nearly half of "feel bad" is "feel bad about" or "feel bad for".
 
-   Lucas, 2026-11-19: keep it once.
+Each core answers a question about what happened. These are guides adapted from appraisal theory (Lazarus 1991 and others), not evidence: Lazarus has no theme for surprise or a catch-all, and his anger is "a demeaning offense against me and mine".
 
-10. **Use the words people use for their feelings.** A word stays if people use it about their feelings, and if no plainer word means the same thing.
-    - *How to check:* how often books say "feel ___", "feeling ___", or "felt ___" with the word (Google Books, 2018 to 2022). This counts the word only when it's used about a feeling, so Mad isn't counted when it means crazy.
-    - Flag a word that's barely used this way (Detestable), or a plainer word for the same feeling that's used about 5 times as often (Afraid for Fearful).
-    - Commonness only decides between words that mean the same thing. It never removes a word that names something no other word does. *Lucas, 2026-11-20:* Understood was dropped for being less used than Valued, though they mean different things; it came back.
+| Core | What happened |
+|---|---|
+| Love | You want closeness or affection, or you're sharing it. |
+| Joy | Something good happened, things are going well, or something draws your interest. |
+| Anger | You or yours were wronged or blocked, or something gross or wrong should go away. |
+| Sadness | You lost something or someone, fell short, did wrong, or were left out. |
+| Fear | Something might hurt you, or something sudden just jolted you. |
+| Catch-all | It's unpleasant, but it isn't loss, danger, or unfairness: too much, unsettled, out of sorts. |
 
-11. **One meaning, about yourself, and it reads naturally after "I feel".** Avoid:
-    - words whose usual meaning is something else (Sensitive, Free);
-    - words people mostly say about someone else (Persecuted).
+**Words for what happened to you, or the situation you're in** (Betrayed, Abandoned, Cheated, Trapped, Safe). A tagged list, starting from Ortony, Clore, and Foss's "objective descriptions"; each addition gets a reason. Each goes on the outer ring, under the feeling its definition names, and the definition ends with it. *Lucas, 2026-11-20:* intent matters. Shut out on purpose is Rejected (hurt); left out, maybe by accident, is Left out (lonely). Hurt, Lonely, Threatened, and Guilty in its feeling sense are feelings, not tagged.
 
-    "I feel grief" and "I feel awe" read fine, so nouns are fine.
+**Mixed feelings** (Bittersweet, Nostalgic, Awe). The word goes on the side most people feel more strongly. Its reason says what's mixed and why it chose that side, and its card names the other side.
 
-12. **Everyday words over medical ones.** "Down" rather than "Depressed", and definitions describe a moment, not a condition. Heavy words people really say, like Hopeless and Worthless, stay.
+**Definitions.** One sentence, to "you", about a moment, not a condition: the parent's feeling plus a cause, a target, or a strength. Never a sibling's word. A word for what happened ends by naming the feeling ("Someone you trusted broke that trust, and you feel hurt"). Don't say shame makes you hide.
 
-13. **Every common situation has a word.** We keep our own list of everyday situations, each with the feeling it usually brings: a pet dying, good news, embarrassing yourself. A test checks that each of those feelings is on the wheel.
+**Situations.** A list of everyday situations, written without looking at the wheel. A list written one situation per word can't find a missing feeling. Published sets where real people described situations (EmpatheticDialogues, CC BY-NC 4.0; ISEAR, shared for non-commercial research) can be run as a local check after their licenses are confirmed. Both asked people to describe a time they felt one of a fixed list of feelings, so use their situations, not their labels.
 
-    The other rules only judge words already on the wheel; nothing in them would notice a feeling that's missing. This is the rule that checks the wheel covers the whole range. The situations follow from the same appraisal research as rule 6.
+**Open:** whether NRC's request for an About-page credit "in a product" covers a design-time check, and whether the non-commercial licenses fit the app, both turn on whether Feels on Wheels stays non-commercial. That's Lucas's call.
 
-14. **Every language uses the English wheel's shape and translates its words.** Each position gets the most natural word in that language for that position's meaning.
-    - *How to check:* a test flags any place where neighboring words translate to the same word. In Spanish, for example, Mad and Angry are both *enojado*.
-    - A flagged place gets a different word or a short qualifier, or it's recorded as a known limit.
-    - Small changes for one language, such as merging or hiding a position, are a last resort, used only when a real language forces it.
+## Considered and dropped
 
-15. **Fix the body wheel in the same change.** Moving or removing a word means rechecking every body wheel path that uses it.
-
-16. **Credit new sources.** Any new research or data the wheel relies on gets a note in [reference/](../reference/README.md) and a credit.
-
-**No size limit.** The wheel is as comprehensive as is reasonable. The one limit is the layout: a middle word has 2 or 3 outer words, never more. Lucas, 2026-11-20: going by how the body wheel works, even 3 is pushing it, so 3 is only for when a third word earns its place. A word earns its place by passing the rules and naming something no other word on the wheel does (rules 8 and 13).
-
-**Considered and dropped:**
-
-- Matching a word's energy to its parent's: the evidence contradicts it.
-- Ordering words from mild to strong: there's no evidence it helps.
-- Giving each core its own urge: the urge lists would allow ten cores.
-- Giving hard feelings at least as many words as good ones: they already outnumber good ones about three to one.
-- Grouping surprise, curiosity, confusion, and awe as one family: it mixes pleasant and unpleasant.
-- A fixed size: Lucas wants the wheel as comprehensive as is reasonable.
-- A Spanish-only rule: the app will support many languages. It's replaced by rule 14: one shape for every language, with translated words.
-- A wheel shaped differently for each language, for now: word data exists for only about a dozen languages, Lucas can't review wheels in languages he doesn't speak, and each shape would need its own body wheel paths and definitions. Lucas, 2026-11-19: possible long term, given AI that's reliable enough at this, or a fluent speaker willing to scrutinize every word choice the way he does. Translation requests are welcome, but they aren't that.
-- Words for kids' wheels: they belong with the [kids' wheels idea](../ROADMAP.md#wheels-for-kids). A published study of which feeling words children know, by age (Baron-Cohen et al. 2010), can check them there.
+- **A numbered order where the lower number wins, and exact thresholds for judgment.** They came from trying to make judgment mechanical, and they were most of what [research/6](research/6-final-rules-refuted.md) attacked.
+- **"The parent's meaning is true of every word under it."** Too absolute: it fails every word for what happened (you can feel betrayed and only furious), and membership is fuzzy. Question 3 compares parents instead.
+- **Flagging a gap between the "feel" and "I was" counts:** it flagged 40% of the wheel and can't tell what-happened words from feelings.
+- **Flagging a wide spread of ratings as mixed:** Bittersweet doesn't trip it; Proud does.
+- **"If rest or food would end it, it's a body state":** it would send Burned out to the body wheel.
+- **A strict minimum of 4 middle words per core:** a core is a family by the sorting, not by a count.
+- **Letting a reason override every check:** only pleasantness and translations are judgment calls.
+- **Counting "I'm ___":** books can't be searched for it.
+- **Matching a word's energy to its parent's:** the evidence contradicts it.
+- **Ordering words from mild to strong:** there's no evidence it helps.
+- **Giving each core its own urge:** the urge lists would allow ten cores.
+- **Giving hard feelings at least as many words as good ones:** they already outnumber good ones about three to one.
+- **Grouping surprise, curiosity, confusion, and awe as one family:** it mixes pleasant and unpleasant.
+- **A fixed size:** Lucas wants the wheel as comprehensive as is reasonable.
+- **A Spanish-only rule, or a wheel shaped differently for each language, for now:** word data exists for only about a dozen languages, Lucas can't review languages he doesn't speak, and each shape would need its own body wheel paths and definitions.
+- **Words for kids' wheels:** they belong with the [kids' wheels idea](../ROADMAP.md#wheels-for-kids), where Baron-Cohen et al. 2010 can check them.

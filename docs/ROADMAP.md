@@ -118,8 +118,10 @@ What the wheels say: their words, definitions, and how feelings relate to sensat
   - [the candidate wheel](opinionated-wheel/derived-wheel.md);
   - [what the process taught](opinionated-wheel/learnings.md), including every decision Lucas made;
   - [the handoff](opinionated-wheel/handoff.md) for the next session: scrutinize the rules, rule on the cores, then comb the words.
-- Settled along the way: the accepting word is At peace (under Happy → Calm), and the odd nestings are what rules 6 and 7 fix. Colors, link previews, and URLs don't weigh in the choices, and links to removed or moved words aren't a concern (Lucas, 2026-11-19).
-- Still to decide: definitions and "You might notice" for the new words, drawing on the [bodily maps research](reference/nummenmaa-bodily-maps.md); the body wheel's paths (rule 15); and reference notes and credits for the new sources (rule 16).
+- **Rules rethought 2026-11-21.** A cold refutation of the numbered rules led Lucas to replace them with a looser set: strict script checks for facts, usage counts as flags, five questions for judgment, and a written reason for every word. Two independent drafts and a refuter checked it.
+- Settled along the way: the accepting word is At peace (under Happy → Calm), and the odd nestings are what the placement questions fix. Colors, link previews, and URLs don't weigh in the choices, and links to removed or moved words aren't a concern (Lucas, 2026-11-19).
+- Cores settled 2026-11-21: Happy, Love, Sad, Scared, Angry, and Bad.
+- Still to decide: the comb pass over every word; definitions and "You might notice" for the new words, drawing on the [bodily maps research](reference/nummenmaa-bodily-maps.md); the body wheel's paths; reference notes and credits for the new sources; and whether the app stays non-commercial, which NRC's credit request and the published situation sets' licenses turn on.
 - Meets [Strength](#strength), [Wheels for kids](#wheels-for-kids), [Languages](#languages), and the [definitions and sensations review](#before-launching), which all depend on which words the wheel has. Builds on the rules the [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) set in [src/data/README.md](../src/data/README.md).
 
 ### URLs, routing and hosting

@@ -26,6 +26,8 @@ From the brainstorm of 2026-11-19 and 2026-11-20. Choosing feeling words well tu
   3. A second writer drafts independently from the same evidence; where the two drafts disagree is where to look.
   4. A fresh refuter rules on every disagreement and re-runs the data checks.
 - **To avoid anchoring, hide what shouldn't steer.** The wheel derived from the rules was built by an agent that never saw today's wheel. The first brief told every agent "not a complete rewrite; don't be jarring", and that quietly biased rule 0 and three core picks toward keeping today's wheel. Lucas caught it.
+- **Don't make judgment mechanical.** The numbered rules grew precedence orders, thresholds, and absolute tests to make judgment repeatable, and those were most of what the refuter attacked. Lucas replaced them with questions and a written reason per word (2026-11-21). Keep strictness for facts a script can check.
+- **Counts flood when the frame doesn't fit the word.** A flag for the gap between "feel ___" and "I was ___" tripped 40% of the wheel, because nouns have no "I was" form. Run a flag on the real wheel before adopting it.
 - **Test a rule on real words before adopting it.** Several rules looked right and misfired on the first example:
   - "I'm ___ means the same as I feel ___" would have demoted Hurt and Guilty.
   - "No sibling is stronger than another" would have split Annoyed from Furious.
@@ -64,6 +66,9 @@ From the brainstorm of 2026-11-19 and 2026-11-20. Choosing feeling words well tu
 | 2026-11-20 | Cringe joins under Embarrassed, for cringing at what someone else did. |
 | 2026-11-20 | At most 3 outer words per middle word. |
 | 2026-11-20 | Valued and Understood are different; Understood stays. |
+| 2026-11-21 | The numbered rules are replaced, not patched ([rules.md](rules.md)): "It feels silly for some reason to codify this so specific when language really doesn't work in this way." Facts are strict script checks; usage counts are flags, never verdicts ("only loosely trustworthy, but still something to consider"); judgment is five questions with no numbered order or exact thresholds; every word's written reason is the record. Checked by two independent drafts and a refuter ([research/7](research/7-looser-rules-refuted.md)). |
+| 2026-11-21 | The cores are settled: Happy, Love, Sad, Scared, Angry, and Bad. Surprised is a middle word under Happy and Disgusted under Angry (the sorting studies); Scared, not Fearful or Afraid, because children know it best and Afraid's extra uses are hedging ("afraid that"). Bad keeps its name over Off: it's what people say when they can't tell, and its card points to Guilty and Sorry for someone for "feel bad about". |
+| 2026-11-21 | Wheel-file checks run in CI with the data tests; the pleasantness check and the flags run in the local scripts, since the datasets can't be committed. Core words may be on the body wheel where they're the best fit, as `src/data/README.md` already allows. |
 
 Placements settled by research on 2026-11-20 are in [derived-wheel.md](derived-wheel.md), each with its reason and source:
 

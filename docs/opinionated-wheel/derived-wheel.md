@@ -2,6 +2,8 @@
 
 The candidate wheel, built from [rules.md](rules.md), the research in [research/](research/), the word data, and Lazarus (1991), not from the app's current wheel. Scripts are in [scripts/](scripts/) (`check.py`'s output is `check-report.txt`). Open items are in [handoff.md](handoff.md).
 
+**Rule numbers below are the old numbered rules** (in `rules.md` at commit 0107189), replaced on 2026-11-21 by the looser set in [rules.md](rules.md). In the new set: 1 is the pleasantness check; 2 is question 1; 3 is the what-happened words; 4 and 5 are the cores; 6 is question 2; 7 is question 3; 8 is question 4; 9 is Always 3; 10 is the usage flags; 11 and 12 are question 5; 13 is the situations; 14, 15, and 16 are Always 5, 6, and 7. The placements here haven't been rechecked against the new set yet.
+
 **6 cores, 44 middle words, 116 outer words: 166 words.** Three spots hold 4 outer words, one more than the layout allows: Connected (Understood came back), Disappointed, and Embarrassed. See [handoff.md](handoff.md). (Before Lucas's decisions of 2026-11-20: 6/44/112, 162. First draft 6/43/109, 158.)
 
 **Moved in the revision before:** Insecure (with its outer words) to Sad; Valued to Connected; Regret to Disappointed; Horrified to Shocked; Homesick and Nostalgic to Heartache; Abandoned to Lonely; Unappreciated to Hurt; Hatred to Resentful; Eager to Motivated; Moved to Compassion; Blessed to Satisfied; Overwhelmed to a middle word.
@@ -64,6 +66,8 @@ The additions left four middle words with 4 outer words. Each was resolved in th
 - Numb: Detached is the only word for being cut off from yourself, and Indifferent the only one for not caring either way.
 
 ## The cores and why
+
+**Settled by Lucas, 2026-11-21:** these six, with Bad keeping its name over Off.
 
 Rule 5: a core is a family people sort feelings into, or the Bad door. Evidence: card sorts in English (Shaver et al. 1987), Indonesian (2001) and Basque (Alonso-Arbiol et al. 2006, which restates all three trees).
 

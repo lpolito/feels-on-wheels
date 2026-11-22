@@ -17,6 +17,8 @@ Use the brainstorming skill. Fetch and branch from the latest `main`, or continu
 
 ## Part 1: the rules
 
+**Done 2026-11-21.** The refutation ([research/6](research/6-final-rules-refuted.md)) led Lucas to replace the numbered rules with a looser set, checked by two independent drafts and a refuter ([research/7](research/7-looser-rules-refuted.md)); [rules.md](rules.md) is the record. Still to do: move them into `src/data/README.md` with notes and credits for their sources, and decide whether the app stays non-commercial (NRC's About-page credit and the published situation sets' licenses turn on it). The rest of this part is the original brief.
+
 Several rules changed late, after the refuter had checked them, so the set has never been checked whole. These were rules 0, 7, 8, 9, 10, 11, and 14, plus the cap of 3 outer words.
 
 - Send a fresh agent to refute the final rule set. Give it only `rules.md` and the research reports, not the learnings or the wheel.
@@ -28,6 +30,8 @@ Several rules changed late, after the refuter had checked them, so the set has n
 - When the rules are settled, they move into `src/data/README.md`'s feelings wheel section (the project's home for content rules). Every source they cite then needs a note in `docs/reference/` and a credit (rule 16, and the root `AGENTS.md`). The sources are listed in the research reports.
 
 ## Part 2: the cores
+
+**Done 2026-11-21.** Lucas settled Happy, Love, Sad, Scared, Angry, and Bad (see [learnings.md](learnings.md#lucass-decisions)). The rest of this part is the original brief.
 
 I haven't ruled on the derived wheel's six cores: Happy, Love, Sad, Scared, Angry, and Bad.
 

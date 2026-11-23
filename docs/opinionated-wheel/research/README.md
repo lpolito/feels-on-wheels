@@ -15,5 +15,6 @@ Written by fresh agents during the 2026-11-19 and 2026-11-20 brainstorm, each ch
 | [9-disgust.md](9-disgust.md) | the disgust report | Where disgust belongs: sorting studies read in full, what people mean by "disgusted", and a second agent's check (2026-11-21) |
 | [10-which-core-people-tap.md](10-which-core-people-tap.md) | the which-core report | Which core people would tap first for 17 words, from rating and daily-report data, re-derived by a second agent (2026-11-22) |
 | [11-fresh-comb-pass.md](11-fresh-comb-pass.md) | the fresh comb pass | The current wheel checked against the current rules: which core people would tap for all 45 middle words, situations, missing words, and the 2019–20 spike in book counts (2026-11-22) |
+| [12-cringe.md](12-cringe.md) | the Cringe report | Whether people say "cringe" about their own feeling, and what they mean by it, re-checked by a second agent (2026-11-22) |
 
 Not kept: the brief, report 3 (a critique of the first nine rules), and the two rule drafts. They're superseded by the refutation and by [rules.md](../rules.md).

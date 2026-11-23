@@ -77,7 +77,7 @@ The checks that need only the wheel files run in CI with the app's data tests. T
 - Phrases recorded in the word's reason as not feelings ("feel free to", "felt sure", "I was used to") are subtracted from both counts. If one is most of a count, that count is dropped for the word, and the script says so.
 - The script flags:
   - **rare:** both counts under 15;
-  - **a more common synonym:** a word with the same meaning used at least twice as often. Candidates are the ones the reason lists, plus the word's strongest associations that are feeling words (Small World of Words). *Lucas, 2026-11-20:* commonness only decides between words that mean the same thing; it never removes a word that names something no other word does (Understood stayed beside Valued).
+  - **a more common synonym:** a word with the same meaning used at least twice as often. Candidates are the ones the reason lists, plus the word's strongest associations that are feeling words (Small World of Words), where the link runs both ways and both words are on the same side. Run on the wheel on 2026-11-22, plain associations raised 29 synonym flags, mostly with words that aren't synonyms (tired for Relaxed, fear for Hatred); the narrower test flags 10. *Lucas, 2026-11-20:* commonness only decides between words that mean the same thing; it never removes a word that names something no other word does (Understood stayed beside Valued).
 - The ratio between the two counts is printed, never flagged: it doesn't tell what-happened words from feelings.
 
 **Core labels:** the share of 4- to 6-year-olds who knew each label (Baron-Cohen et al. 2010), or "not listed".

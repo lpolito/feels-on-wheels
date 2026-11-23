@@ -25,6 +25,10 @@ Continue on the branch `opinionated-wheel-rules`, or branch from the latest `mai
 
 **Scope:** translations are out of this work entirely.
 
+**Done on 2026-11-22:** `check.py` follows the rules' flags; Cringe is settled ([research/12](research/12-cringe.md)); every definition is a sentence to "you". Next is Lucas's own pass.
+
+**Order** (Lucas, 2026-11-22): the body wheel comes only after the feelings wheel and its definitions are 100% decided. So: `check.py` (Part 2), Cringe, the definitions, then Lucas's own pass over words and definitions together; then the body wheel (Part 1); then "You might notice", which `src/data/README.md` drafts to agree with the body wheel's paths; then Part 3.
+
 ## Part 1: the body wheel
 
 The body wheel (`src/data/wheels/body.json`) maps each body sensation to 2 or 3 feelings by name, and today it points at today's feelings wheel. 21 of its 60 feelings aren't on the new wheel: `python3 -I docs/opinionated-wheel/scripts/compare.py` lists them (apathetic, depressed, despair, disapproving, dismayed, eager, fragile, frightened, let-down, loving, mad, out-of-control, peaceful, powerless, repelled, revolted, stressed, thankful, tired, weak, withdrawn). A cold check found that against the new wheel, 14 sensations drop below 2 feelings (Drained and Back away to none), 8 hold a feeling with its own parent or child, and 2 hold a feeling with its grandparent ([research/7](research/7-looser-rules-refuted.md), section 3).
@@ -51,8 +55,8 @@ The body wheel (`src/data/wheels/body.json`) maps each body sensation to 2 or 3 
 None of the datasets is in the repo; their licenses limit redistribution. Download them into one folder outside the repo and set `WHEEL_DATA` for `docs/opinionated-wheel/scripts/`. The table in `learnings.md` ("Data") and [research/3](research/3-word-data.md) list them. Known-good sources:
 - NRC VAD v2.1: https://saifmohammad.com/WebDocs/Lexicons/NRC-VAD-Lexicon-v2.1.zip, unzipped to `nrc-vad/extracted/`.
 - Warriner 2013: the Springer supplement zip in research/3, unzipped to `warriner2013/springer/`.
-- Baron-Cohen 2010: Europe PMC's full text, `https://www.ebi.ac.uk/europepmc/webservices/rest/PMC2996255/fullTextXML`, saved as `paper-fulltext/baron-cohen-2010.xml`.
+- Baron-Cohen 2010: the full text from NCBI, `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=2996255`, saved as `paper-fulltext/baron-cohen-2010.xml` (Europe PMC's `fullTextXML` returned errors on 2026-11-22).
 - Glasgow Norms: `https://static-content.springer.com/esm/art%3A10.3758%2Fs13428-018-1099-3/MediaObjects/13428_2018_1099_MOESM2_ESM.csv` (MOESM1 is refused), saved as `glasgow/glasgow_norms.csv`.
-- Small World of Words: `SWOW-EN18.zip` is in the repo root of my checkout, excluded from git there; never commit it.
+- Small World of Words: `SWOW-EN18.zip` is in the repo root of my checkout, excluded from git there; never commit it. Unzip it to `swow/`; `check.py` reads `strength.SWOW-EN.R123.20180827.csv`.
 - Zupan et al. 2022 ratings and Trampe et al. 2015 table S1: the URLs are in [research/10](research/10-which-core-people-tap.md).
 - Book counts come from the Google Books Ngram endpoint, cached in `scripts/ngram-cache.json` by median year (2019 and 2020 spike for many phrases).

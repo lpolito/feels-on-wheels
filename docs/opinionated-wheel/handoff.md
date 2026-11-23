@@ -25,7 +25,7 @@ Continue on the branch `opinionated-wheel-rules`, or branch from the latest `mai
 
 **Scope:** translations are out of this work entirely.
 
-**Done on 2026-11-22:** `check.py` follows the rules' flags; Cringe is settled ([research/12](research/12-cringe.md)); every definition is a sentence to "you". Next is Lucas's own pass.
+**Done on 2026-11-22:** `check.py` follows the rules' flags; Cringe is settled ([research/12](research/12-cringe.md)); every definition is a sentence to "you". Next is Lucas's own pass. The branch's preview deploy (https://opinionated-wheel-rules-feels-on-wheels.politolu.workers.dev/) shows the derived wheel, with the body wheel off: after changing `derived-wheel.json` or a definition in `derived-wheel.md`, run `python3 -I docs/opinionated-wheel/scripts/app-wheel.py` and push. Tests that name today's words fail until Part 3.
 
 **Order** (Lucas, 2026-11-22): the body wheel comes only after the feelings wheel and its definitions are 100% decided. So: `check.py` (Part 2), Cringe, the definitions, then Lucas's own pass over words and definitions together; then the body wheel (Part 1); then "You might notice", which `src/data/README.md` drafts to agree with the body wheel's paths; then Part 3.
 

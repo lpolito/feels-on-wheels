@@ -76,6 +76,8 @@ const JUMP = { fwJump: true };
 let backGoing = false;
 const wheelSwitch = $<FwWheelSwitch>('fw-wheel-switch');
 wheelSwitch.wheels = data.wheels.map((w) => ({ id: w.id, label: wheelText(w.id).switch, name: wheelText(w.id).switchName }));
+// Temporary (opinionated wheel preview): one wheel needs no switch.
+wheelSwitch.hidden = data.wheels.length < 2;
 const themeMeta = $<HTMLMetaElement>('#theme-color');
 const announce = createAnnouncer($<HTMLElement>('#announcer'));
 const storage = safeStorage();
@@ -264,9 +266,15 @@ function hintContent(s: State): HintContent {
   if (s.selected !== null) return null;
   const text = wheelText(layout.wheelId);
   const wheel = data.suggests[layout.wheelId]!;
+  const about = { label: t('about'), href: formatRoute(table, { kind: 'about' }) };
+  // Temporary (opinionated wheel preview): with the body wheel off, there's no other wheel to link to.
+  if (!table.wheels.has(wheel)) {
+    const usual = { title: text.hintTitle, text: hintFor(text).replace(/,? or \{link\}/, ''), about };
+    if (notFound === null) return usual;
+    return { ...usual, title: t('notFoundTitle'), lead: `${t('notFoundText', { word: notFound.word })} `, variant: 'notFound' };
+  }
   // Spec v2.1 §6.3: the other wheel's own URL, so a new tab opens that wheel.
   const href = formatRoute(table, { kind: 'wheel', wheel, path: null });
-  const about = { label: t('about'), href: formatRoute(table, { kind: 'about' }) };
   const usual = { title: text.hintTitle, text: hintFor(text), link: { label: text.hintLink, wheel, href }, about };
   if (notFound === null) return usual;
   return { ...usual, title: t('notFoundTitle'), lead: `${t('notFoundText', { word: notFound.word })} `, variant: 'notFound' };

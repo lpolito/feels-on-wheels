@@ -121,6 +121,8 @@ fw-wheel-switch {
   border-radius: 999px;
   isolation: isolate;
 }
+/* Temporary (opinionated wheel preview): hidden while there is only one wheel. */
+fw-wheel-switch[hidden] { display: none; }
 fw-wheel-switch button {
   min-height: 44px;
   padding: 0 1rem;

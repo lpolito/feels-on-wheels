@@ -39,7 +39,7 @@ NEAR_NEUTRAL_NRC = 0.15
 NEAR_NEUTRAL_WAR = 0.5
 MAX_OUTER = 3          # Lucas, 2026-11-20: never 4, and 3 only when the third word earns its place
 # Words on the wheel twice on purpose (rules.md, Always 3): each meaning under the core its own users would tap.
-SPLITS = {"disgusted", "betrayed"}  # Lucas, 2026-11-22: Disgusted physical under Bad, moral under Angry; Betrayed under Sad and Angry, as people split
+SPLITS = {"disgusted", "betrayed", "empty"}  # Lucas, 2026-11-22: Disgusted physical under Bad, moral under Angry; Betrayed under Sad and Angry, and Empty under Bad and Sad, as people split
 MIN_OUTER = 2
 
 # Words whose phrase count can't measure them, kept by Lucas's decision.

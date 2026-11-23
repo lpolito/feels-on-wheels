@@ -7,8 +7,7 @@
           "label": "Joy",
           "outer": [
             "Delighted",
-            "Elated",
-            "Blissful"
+            "Elated"
           ]
         },
         {
@@ -45,8 +44,7 @@
           "label": "Satisfied",
           "outer": [
             "Fulfilled",
-            "Content",
-            "Blessed"
+            "Content"
           ]
         },
         {
@@ -83,7 +81,7 @@
           "label": "Interested",
           "outer": [
             "Curious",
-            "Intrigued"
+            "Fascinated"
           ]
         },
         {
@@ -97,7 +95,7 @@
           "label": "Grateful",
           "outer": [
             "Honored",
-            "Cared for"
+            "Blessed"
           ]
         }
       ]
@@ -109,7 +107,8 @@
           "label": "Affection",
           "outer": [
             "Tenderness",
-            "Protective"
+            "Protective",
+            "Cared for"
           ]
         },
         {
@@ -167,7 +166,8 @@
           "label": "Grief",
           "outer": [
             "Heartbroken",
-            "Devastated"
+            "Devastated",
+            "Empty"
           ]
         },
         {
@@ -209,31 +209,31 @@
           "label": "Anxious",
           "outer": [
             "Worried",
-            "Uneasy",
-            "Dread"
+            "Dread",
+            "Suspicious"
           ]
         },
         {
           "label": "Nervous",
           "outer": [
-            "Apprehensive",
             "On edge",
-            "Insecure"
+            "Insecure",
+            "Uneasy"
           ]
         },
         {
           "label": "Terrified",
           "outer": [
             "Panicked",
-            "Frantic"
+            "Petrified",
+            "Horrified"
           ]
         },
         {
           "label": "Shocked",
           "outer": [
             "Startled",
-            "Stunned",
-            "Horrified"
+            "Stunned"
           ]
         },
         {
@@ -260,7 +260,6 @@
         {
           "label": "Frustrated",
           "outer": [
-            "Stuck",
             "Trapped",
             "Fed up"
           ]
@@ -269,7 +268,8 @@
           "label": "Furious",
           "outer": [
             "Outraged",
-            "Rage"
+            "Rage",
+            "Violated"
           ]
         },
         {
@@ -284,15 +284,14 @@
           "label": "Offended",
           "outer": [
             "Insulted",
-            "Indignant",
-            "Violated"
+            "Indignant"
           ]
         },
         {
           "label": "Jealous",
           "outer": [
             "Envious",
-            "Suspicious"
+            "Possessive"
           ]
         },
         {
@@ -326,16 +325,14 @@
           "label": "Confused",
           "outer": [
             "Conflicted",
-            "Lost",
-            "Puzzled"
+            "Lost"
           ]
         },
         {
           "label": "Numb",
           "outer": [
             "Empty",
-            "Detached",
-            "Indifferent"
+            "Disconnected"
           ]
         },
         {

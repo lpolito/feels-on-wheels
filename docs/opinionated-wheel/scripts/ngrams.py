@@ -2,13 +2,14 @@
 
 Usage: python3 -I ngrams.py WORDLIST.txt
 WORDLIST has one word or short phrase per line (as it would follow "I feel").
-For each, sums the mean 2018-2022 frequency of "feel X", "feeling X" and "felt X"
+For each, sums the median 2018-2022 frequency of "feel X", "feeling X" and "felt X"
 in the English corpus, and stores it in ngram-cache.json next to this script,
 in phrases per billion n-grams of the same length. Already-cached phrases are
 not fetched again. About 12 phrases per request, one second between requests.
 """
 import json
 import os
+import statistics
 import sys
 import time
 import urllib.parse
@@ -37,7 +38,9 @@ def fetch(phrases):
     for item in data:
         ts = item.get("timeseries") or []
         if ts and item.get("ngram") in out:
-            out[item["ngram"]] = sum(ts) / len(ts) * 1e9
+            # The median year, not the mean: 2019 and 2020 spike for many phrases
+            # ("feel heartache" 1.3, 62, 189, 2.5, 1.6 per billion), research/11.
+            out[item["ngram"]] = statistics.median(ts) * 1e9
     return out
 
 

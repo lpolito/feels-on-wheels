@@ -87,7 +87,7 @@
 "builder-1",
 "Loss",
 "You lose a contest you worked hard for",
-"Defeated"
+"Disappointed"
 ],
 [
 "builder-1",
@@ -269,7 +269,7 @@
 "builder-1",
 "Obstacle",
 "You can't see a way to move forward",
-"Stuck"
+"Frustrated"
 ],
 [
 "builder-1",
@@ -324,7 +324,7 @@
 [
 "builder-1",
 "Unfair",
-"Someone hurts you so badly you want them to suffer",
+"Someone has shown you who they really are, and you can't stand them",
 "Hatred"
 ],
 [
@@ -397,7 +397,7 @@
 "builder-1",
 "Good",
 "Someone praises your work",
-"Valued"
+"Proud"
 ],
 [
 "builder-1",
@@ -541,7 +541,7 @@
 "builder-1",
 "Close",
 "A kind act or a reunion brings tears to your eyes",
-"Moved"
+"Connected"
 ],
 [
 "builder-1",
@@ -723,7 +723,7 @@
 "checker",
 "love",
 "Your partner forgets your birthday",
-"Unappreciated"
+"Hurt"
 ],
 [
 "checker",
@@ -815,7 +815,7 @@
 "checker",
 "uncertainty",
 "Weeks of waiting to hear about a job offer",
-"Restless"
+"Anxious"
 ],
 [
 "checker",
@@ -839,7 +839,7 @@
 "checker",
 "moral",
 "News of a disaster far away and you can't help",
-"Helpless"
+"Sorry for someone"
 ],
 [
 "checker",
@@ -887,7 +887,7 @@
 "builder-2",
 "work",
 "You win an award at work",
-"Honored"
+"Proud"
 ],
 [
 "builder-2",
@@ -1033,7 +1033,7 @@ null,
 "builder-2",
 "friendship",
 "A friend remembers a small thing you said and gives you a gift about it",
-"Touched",
+"Grateful",
 "Moved",
 "rule 11: Touched's other meanings"
 ],
@@ -1099,7 +1099,7 @@ null,
 "builder-2",
 "boredom",
 "The same routine every day for months",
-"Stuck"
+"Bored"
 ],
 [
 "builder-2",
@@ -1118,5 +1118,77 @@ null,
 "body",
 "You see blood or a bad injury, and your stomach turns",
 "Squeamish"
+],
+[
+"main-2026-11-22",
+"place",
+"A quiet street at night feels off, though nothing has happened",
+"Uneasy"
+],
+[
+"main-2026-11-22",
+"privacy",
+"Someone reads your private messages",
+"Violated"
+],
+[
+"main-2026-11-22",
+"close",
+"A friend asks you to be godparent to their child",
+"Honored"
+],
+[
+"main-2026-11-22",
+"self",
+"A friend's wedding toast goes badly while everyone watches",
+"Cringe"
+],
+[
+"main-2026-11-22",
+"family",
+"A sibling keeps poking at you to get a rise out of you",
+"Provoked"
+],
+[
+"main-2026-11-22",
+"good",
+"You look around the table at a holiday dinner and feel lucky to have them all",
+"Blessed"
+],
+[
+"main-2026-11-22",
+"good",
+"You can't look away from a storm, a fire, or someone skilled at work",
+"Fascinated"
+],
+[
+"main-2026-11-22",
+"loss",
+"After months of fighting it, you give up",
+"Defeated"
+],
+[
+"main-2026-11-22",
+"loss",
+"You've felt empty ever since someone close to you died",
+"Empty"
+],
+[
+"main-2026-11-22",
+"close",
+"Your partner brings you soup when you're sick",
+"Cared for"
+],
+[
+"main-2026-11-22",
+"close",
+"You hear how someone faced a terrible illness with courage, and it brings you to tears",
+"Moved"
+],
+[
+"main-2026-11-22",
+"work",
+"You lead a meeting and everyone follows your call",
+"Powerful"
 ]
 ]

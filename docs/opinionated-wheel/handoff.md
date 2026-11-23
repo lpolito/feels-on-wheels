@@ -1,66 +1,58 @@
-# Handoff: scrutinize the rules, then the words
+# Handoff: the body wheel, then the rest
 
-The prompt for the next session on the [opinionated feelings wheel](../ROADMAP.md#an-opinionated-feelings-wheel). Paste everything below the line.
+The prompt for the next session on the [opinionated feelings wheel](../ROADMAP.md#an-opinionated-feelings-wheel). Paste everything below the line. The previous handoff (scrutinize the rules, rule on the cores, comb the words) is done; it's in git history before this change.
 
 ---
 
-We're continuing the opinionated feelings wheel for Feels on Wheels. Last session (2026-11-19 and 2026-11-20) settled a set of rules for which words the feelings wheel has and where they go, and built a candidate wheel from those rules alone. This session scrutinizes both: the rules first, then the words. What survives long term is the rules, the words, and the research behind them, so that's where the effort goes.
+We're continuing the opinionated feelings wheel for Feels on Wheels. The rules, the cores, and the words are settled for now: a 162-word wheel, every check passing. I'll do my own pass over the words at some point. This session fixes the body wheel to match the new words, then tidies the loose ends in the words, then turns the work into something the app can ship.
 
 Start by reading, in this order:
 
-1. `docs/opinionated-wheel/learnings.md`: how I want to work, what went wrong last time, and every decision I've made. Follow it. In short: research decides where words go, and I decide only real taste calls, asked with full context (the spot, its neighbors, definitions, and usage counts).
-2. `docs/opinionated-wheel/rules.md`: the rules and the research that backs them.
-3. `docs/opinionated-wheel/derived-wheel.md` (and `.json`): the candidate wheel, with each word's definition, data, and reasons.
-4. `docs/opinionated-wheel/research/`: the verified research reports, the refutation of the first rule drafts, and the check of the derived wheel.
+1. `docs/opinionated-wheel/learnings.md`: how I work, what went wrong before, and every decision I've made, with dates. Follow it.
+2. `docs/opinionated-wheel/rules.md`: the rules. Their north star is how people use the wheel: they start at the center, tap the core that matches what they feel, tap a middle word, find their word, and read its card. Anything I decided earlier can be rechecked against that.
+3. `docs/opinionated-wheel/derived-wheel.md` (and `.json`): the wheel, with each word's definition, data, and reason. Its older entries cite old rule numbers; the note at the top maps them.
+4. `docs/opinionated-wheel/research/`: reports 1 to 11. The newest (9 to 11) matter most: disgust, which core people tap, and the fresh comb pass.
+5. `src/data/README.md` and `src/data/AGENTS.md`: the project's rules for wheel content, including the body wheel's, and the steps for changing wheel files.
 
-Use the brainstorming skill. Fetch and branch from the latest `main`, or continue on `opinionated-wheel-rules` if it hasn't merged.
+Continue on the branch `opinionated-wheel-rules`, or branch from the latest `main` if it has merged. Use the brainstorming skill.
 
-## Part 1: the rules
+**How I want to work** (it's in the learnings too, but it matters most):
+- One decision per message, short, with only the context it needs: the spot, its neighbors, definitions, counts. Never a long list of findings and questions at once. Keep a "decided so far" line I can check.
+- Research and the rules decide placement; ask me only real coin flips. When the evidence and "which core / word would you tap first?" agree, make the call and tell me in a line.
+- Push back when a rule or one of my calls looks wrong, with the case.
+- Plain English: pleasant or unpleasant, not "valence".
+- Separate writers from checkers, and keep checkers cold. Have important research checked by a second agent before it reaches me.
 
-**Done 2026-11-21.** The refutation ([research/6](research/6-final-rules-refuted.md)) led Lucas to replace the numbered rules with a looser set, checked by two independent drafts and a refuter ([research/7](research/7-looser-rules-refuted.md)); [rules.md](rules.md) is the record. Still to do: move them into `src/data/README.md` with notes and credits for their sources, and decide whether the app stays non-commercial (NRC's About-page credit and the published situation sets' licenses turn on it). The rest of this part is the original brief.
+**Scope:** translations are out of this work entirely.
 
-Several rules changed late, after the refuter had checked them, so the set has never been checked whole. These were rules 0, 7, 8, 9, 10, 11, and 14, plus the cap of 3 outer words.
+## Part 1: the body wheel
 
-- Send a fresh agent to refute the final rule set. Give it only `rules.md` and the research reports, not the learnings or the wheel.
-  - Look for rules that contradict each other or the evidence.
-  - Look for rules that misfire on real words (test each on examples).
-  - Look for tests someone who isn't an expert can't apply.
-  - Look for gaps: what a careful designer would want that isn't there.
-- Bring me what it finds in plain English, with your view on each. Push back where you think a rule is wrong; I want that.
-- When the rules are settled, they move into `src/data/README.md`'s feelings wheel section (the project's home for content rules). Every source they cite then needs a note in `docs/reference/` and a credit (rule 16, and the root `AGENTS.md`). The sources are listed in the research reports.
+The body wheel (`src/data/wheels/body.json`) maps each body sensation to 2 or 3 feelings by name, and today it points at today's feelings wheel. 21 of its 60 feelings aren't on the new wheel: `python3 -I docs/opinionated-wheel/scripts/compare.py` lists them (apathetic, depressed, despair, disapproving, dismayed, eager, fragile, frightened, let-down, loving, mad, out-of-control, peaceful, powerless, repelled, revolted, stressed, thankful, tired, weak, withdrawn). A cold check found that against the new wheel, 14 sensations drop below 2 feelings (Drained and Back away to none), 8 hold a feeling with its own parent or child, and 2 hold a feeling with its grandparent ([research/7](research/7-looser-rules-refuted.md), section 3).
 
-## Part 2: the cores
+- Map every sensation to 2 or 3 feelings on the new wheel. The rules (`rules.md`'s body wheel check and `src/data/README.md`): every feeling is on the feelings wheel, no two from the same line (parent, child, or grandparent), and a core word can be one where it's the best fit.
+- Judge it the same way as the feelings wheel: someone notices a sensation and looks for what they feel. Body states like Tired go on the body wheel's side, not the feelings wheel; Tired, Weak, and Withdrawn need thought.
+- Draft the whole mapping, have a cold agent check it, then bring me only the real choices, one at a time.
 
-**Done 2026-11-21.** Lucas settled Happy, Love, Sad, Scared, Angry, and Bad (see [learnings.md](learnings.md#lucass-decisions)). The rest of this part is the original brief.
+## Part 2: loose ends in the words
 
-I haven't ruled on the derived wheel's six cores: Happy, Love, Sad, Scared, Angry, and Bad.
+- **Definitions.** 43 are fragments rather than one sentence to "you" about a moment ([research/11](research/11-fresh-comb-pass.md), fix 14 lists them). Rewrite them by the rules' definitions note. Then write "You might notice" for the new words, drawing on the [bodily maps research](../reference/nummenmaa-bodily-maps.md).
+- **Cringe** needs evidence that people say it about themselves ("I'm cringing", "secondhand embarrassment"), since "that's cringe" describes a thing.
+- **`check.py`** still counts only "feel ___", not "I was ___", and flags by the old thresholds, so its rare-word flags overstate (Fascinated and Petrified look rare; "I was fascinated" is 216). Bring it in line with `rules.md`'s flags: both counts, median year, rare only when both are under 15.
+- **Jealous** (with Envious and Possessive): I said it doesn't work very well. If my pass or new evidence changes that, revisit it; otherwise leave it.
 
-- Surprised becomes a middle word under Happy.
-- Disgusted becomes a middle word under Angry.
-- Fearful is renamed Scared.
+## Part 3: make it real
 
-Show me the evidence for each change briefly. Ask me only where it's taste.
+- Move the rules into `src/data/README.md`'s content rules (it wins over a spec). The CI-side checks (each word once, layout, body wheel, what-happened tags, situations) become data tests; the pleasantness check and usage flags stay in the local scripts, since the datasets can't be committed.
+- Every source the rules and wheel lean on gets a note in `docs/reference/` and a credit in `docs/reference/README.md` and the root `README.md` (root `AGENTS.md`, "Sources and credits"). The research reports list them; there are many now. One open question for me: whether NRC's request for an About-page credit covers using it only as a design-time check.
+- Write the spec in `docs/superpowers/specs/` and update the roadmap. Once their content is in the spec, `src/data/README.md`, and `docs/reference/`, the files in `docs/opinionated-wheel/` can go.
 
-## Part 3: the words
+## Data
 
-1. **Comb pass.** A fresh agent checks every sibling group and every parent with the two tests in rules 7 and 8:
-   - the parent's meaning holds for each child;
-   - no sibling is a stronger form of another particular sibling, and no definition leans on a sibling's word.
-
-   It should use the Small World of Words association data (ask me for `SWOW-EN18.zip`; never commit it) to flag words more linked to another parent. Last session started this pass but ended before it reported.
-2. **Open items:**
-   - **Three middle words hold 4 outer words; the layout allows 3, and 2 is better.**
-     - Connected: Loved, Understood, Valued, and Accepted. It needs a move or a split, not a drop, since all four mean different things.
-     - Disappointed: Let down, Discouraged, Regret, and Disillusioned.
-     - Embarrassed: Foolish, Cringe, Mortified, and Humbled.
-   - **Hatred under Resentful.** Hate is about who someone is, not unfair treatment (Fischer et al. 2018). English sorting puts hate with rage; Indonesian and Basque put it with disgust and contempt.
-   - **"Feel wronged"** is used 408 times per billion and isn't on the wheel. Look for other common feeling words that are missing, from usage data, not from memory.
-   - **Words dropped in the last rebalancing:** Disrespected, Eager, and Frazzled. Confirm each really means the same as a word still there; if not, it comes back (rule 10).
-   - **Bittersweet** has no place, since rule 1 can't put a mixed feeling under one core. Is that acceptable?
-   - **Worth a look:** Suspicious under Jealous, Frantic beside Panicked, and Stressed as a recorded exception to rule 4.
-3. **Then the rest of the rules that the wheel has to pass:**
-   - **Rule 15, the body wheel.** 20 of its 60 feelings aren't on the derived wheel; `python3 -I docs/opinionated-wheel/scripts/compare.py` lists them. Map each to its replacement and recheck its rules: 2 or 3 feelings per sensation, never a word with its own parent or child. Tired, Weak, and Withdrawn need thought.
-   - **Rule 14, translations.** Check where neighboring words translate to the same Spanish word.
-   - **Definitions and "You might notice"** for the new words.
-
-When the rules and words are settled, write the spec (`docs/superpowers/specs/`) and update the roadmap. The files in `docs/opinionated-wheel/` are working files: once their content is in the spec, `src/data/README.md`, and `docs/reference/`, they can go. The scripts in `docs/opinionated-wheel/scripts/` re-run every mechanical check; set `WHEEL_DATA` to a folder with the datasets listed in `learnings.md`.
+None of the datasets is in the repo; their licenses limit redistribution. Download them into one folder outside the repo and set `WHEEL_DATA` for `docs/opinionated-wheel/scripts/`. The table in `learnings.md` ("Data") and [research/3](research/3-word-data.md) list them. Known-good sources:
+- NRC VAD v2.1: https://saifmohammad.com/WebDocs/Lexicons/NRC-VAD-Lexicon-v2.1.zip, unzipped to `nrc-vad/extracted/`.
+- Warriner 2013: the Springer supplement zip in research/3, unzipped to `warriner2013/springer/`.
+- Baron-Cohen 2010: Europe PMC's full text, `https://www.ebi.ac.uk/europepmc/webservices/rest/PMC2996255/fullTextXML`, saved as `paper-fulltext/baron-cohen-2010.xml`.
+- Glasgow Norms: `https://static-content.springer.com/esm/art%3A10.3758%2Fs13428-018-1099-3/MediaObjects/13428_2018_1099_MOESM2_ESM.csv` (MOESM1 is refused), saved as `glasgow/glasgow_norms.csv`.
+- Small World of Words: `SWOW-EN18.zip` is in the repo root of my checkout, excluded from git there; never commit it.
+- Zupan et al. 2022 ratings and Trampe et al. 2015 table S1: the URLs are in [research/10](research/10-which-core-people-tap.md).
+- Book counts come from the Google Books Ngram endpoint, cached in `scripts/ngram-cache.json` by median year (2019 and 2020 spike for many phrases).

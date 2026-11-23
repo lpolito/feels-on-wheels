@@ -72,7 +72,7 @@ The checks that need only the wheel files run in CI with the app's data tests. T
 - near neutral: Warriner between 4 and 6, or NRC between −0.2 and 0.2 (Startled);
 - a translation on the other side in that language's ratings, where they exist (Stadthagen-González 2017 for Spanish, not NRC's machine-translated Spanish).
 
-**Usage** (Google Books, 2018 to 2022, per billion, local):
+**Usage** (Google Books, 2018 to 2022, per billion, the median year, local: many phrases spike in 2019 and 2020, "feel heartache" from about 2 to 189, [research/11](research/11-fresh-comb-pass.md)):
 - Two counts, both printed: "feel / feeling / felt ___", and "I was ___" for adjectives and phrases (nouns like Grief and Rage have no "I was" form). Books can't be searched for "I'm ___", and "I am ___" picks up set phrases ("I am afraid that…", "I am grateful to…").
 - Phrases recorded in the word's reason as not feelings ("feel free to", "felt sure", "I was used to") are subtracted from both counts. If one is most of a count, that count is dropped for the word, and the script says so.
 - The script flags:

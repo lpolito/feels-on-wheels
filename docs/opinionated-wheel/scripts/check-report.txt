@@ -1,169 +1,166 @@
 core|ring|parent|word|NRC|Warriner|feel-count|valence note|alternatives (count)
-Happy|core|-|Happy|+0.98|8.47|1030.4||
-Happy|middle|Happy|Joy|+0.96|8.21|153.5||joyful 30
-Happy|outer|Joy|Delighted|+0.94|7.74|27.6||pleased 148
-Happy|outer|Joy|Elated|+0.58|6.56|92.4||overjoyed 23; ecstatic 23
-Happy|outer|Joy|Blissful|+0.77|7.67|10.5||
+Happy|core|-|Happy|+0.98|8.47|972.8||
+Happy|middle|Happy|Joy|+0.96|8.21|144.6||joyful 30
+Happy|outer|Joy|Delighted|+0.94|7.74|28.0||pleased 128
+Happy|outer|Joy|Elated|+0.58|6.56|89.2||overjoyed 14; ecstatic 21
 Happy|middle|Happy|Cheerful|+0.99|8.00|21.4||
-Happy|outer|Cheerful|Amused|+0.88|7.05|20.1||
-Happy|outer|Cheerful|Playful|+0.78|7.63|11.7||
-Happy|middle|Happy|Excited|+0.82|8.11|256.1||excitement 42
-Happy|outer|Excited|Thrilled|+0.80||20.1||
-Happy|outer|Excited|Exhilarated|+0.78|6.90|47.0||thrilled 20
-Happy|middle|Happy|Proud|+0.81|7.00|581.3||pride 87
-Happy|outer|Proud|Accomplished|+0.74||33.9||
-Happy|outer|Proud|Triumphant|+0.90|7.45|36.3||
-Happy|outer|Proud|Flattered|+0.73|6.32|75.6||
-Happy|middle|Happy|Confident|+0.53|7.56|1149.5||
-Happy|outer|Confident|Brave|+0.67|7.38|102.5||courageous 10
-Happy|outer|Confident|Empowered|||282.3|NO-DATA|
+Happy|outer|Cheerful|Amused|+0.88|7.05|19.4||
+Happy|outer|Cheerful|Playful|+0.78|7.63|11.8||
+Happy|middle|Happy|Excited|+0.82|8.11|237.3||excitement 42
+Happy|outer|Excited|Thrilled|+0.80||20.5||
+Happy|outer|Excited|Exhilarated|+0.78|6.90|46.5||thrilled 21
+Happy|middle|Happy|Proud|+0.81|7.00|565.0||pride 86
+Happy|outer|Proud|Accomplished|+0.74||34.6||
+Happy|outer|Proud|Triumphant|+0.90|7.45|36.4||
+Happy|outer|Proud|Flattered|+0.73|6.32|72.5||
+Happy|middle|Happy|Confident|+0.53|7.56|1124.8||
+Happy|outer|Confident|Brave|+0.67|7.38|99.7||courageous 10
+Happy|outer|Confident|Empowered|||281.7|NO-DATA|
 Happy|outer|Confident|Powerful|+0.57|6.46|187.6||
-Happy|middle|Happy|Satisfied|+0.92|7.16|307.6||content 104
-Happy|outer|Satisfied|Fulfilled|+0.79||82.0||
-Happy|outer|Satisfied|Content|+0.53|6.70|104.4||contented 17
-Happy|outer|Satisfied|Blessed|+0.82|7.50|156.0||lucky 253
-Happy|middle|Happy|Calm|+0.75|6.89|253.4||
-Happy|outer|Calm|Relaxed|+0.73|7.25|319.2||at ease 646
-Happy|outer|Calm|At peace|+0.48||172.2||peaceful 71; serene 11
-Happy|outer|Calm|Safe|+0.80|7.70|2923.4||secure 497
-Happy|middle|Happy|Relieved|+0.79||801.1||relief 250
-Happy|outer|Relieved|Reassured|+0.71||139.3||
+Happy|middle|Happy|Satisfied|+0.92|7.16|290.9||content 102
+Happy|outer|Satisfied|Fulfilled|+0.79||82.7||
+Happy|outer|Satisfied|Content|+0.53|6.70|101.7||contented 16
+Happy|middle|Happy|Calm|+0.75|6.89|243.1||
+Happy|outer|Calm|Relaxed|+0.73|7.25|278.7||at ease 378
+Happy|outer|Calm|At peace|+0.48||174.9||peaceful 71; serene 11
+Happy|outer|Calm|Safe|+0.80|7.70|2832.4||secure 502
+Happy|middle|Happy|Relieved|+0.79||606.4||relief 249
+Happy|outer|Relieved|Reassured|+0.71||112.6||
 Happy|outer|Relieved|Forgiven|+0.50||8.9||
-Happy|outer|Relieved|Vindicated|+0.23||61.9||
-Happy|middle|Happy|Hopeful|+0.89|7.44|124.2||hope 67
-Happy|outer|Hopeful|Optimistic|+0.96|7.45|65.7||
-Happy|outer|Hopeful|Encouraged|+0.91||92.2||
-Happy|middle|Happy|Motivated|+0.67||93.5||
-Happy|outer|Motivated|Inspired|+0.93|6.89|140.7||
-Happy|outer|Motivated|Determined|+0.47||18.3||
-Happy|middle|Happy|Interested|+0.50|6.83|26.6||curious 53
-Happy|outer|Interested|Curious|+0.27|6.58|52.6||curiosity 6; inquisitive 1
-Happy|outer|Interested|Intrigued|+0.54||9.9||fascinated 3
-Happy|middle|Happy|Amazed|+0.59|7.55|16.1||astonished 22
-Happy|outer|Amazed|Awe|-0.06|6.85|20.7|LISTS-DISAGREE NEAR-NEUTRAL|awed 12; in awe 7
-Happy|outer|Amazed|Impressed|+0.61|6.66|18.0||
-Happy|middle|Happy|Grateful|+0.92|7.50|338.5||thankful 67; gratitude 86
-Happy|outer|Grateful|Honored|+0.88||126.3||
-Happy|outer|Grateful|Cared for|||57.9|NO-DATA|
-Love|core|-|Love|+1.00|8.00|215.6||loving 10
-Love|middle|Love|Affection|+0.80|7.89|38.5||affectionate 5; fond 4; fondness 2; warmth 120
-Love|outer|Affection|Tenderness|+0.90|6.89|7.6||tender 40
-Love|outer|Affection|Protective|+0.69|6.53|93.8||
-Love|middle|Love|Compassion|+0.47|7.90|139.7||compassionate 7; caring 2
-Love|outer|Compassion|Sympathy|+0.65|6.57|166.8||sympathetic 27
-Love|outer|Compassion|Moved|+0.52||104.9||touched 71
-Love|middle|Love|Connected|+0.63||405.2||
-Love|outer|Connected|Understood|+0.56||76.4||
-Love|outer|Connected|Valued|+1.00||197.0||appreciated 72; respected 63
-Love|outer|Connected|Accepted|||103.6|NO-DATA|included 99; welcome 320
-Love|middle|Love|Attracted|||74.2|NO-DATA|infatuated 1; smitten 1
-Love|outer|Attracted|Desire|+0.79|7.05|58.2||passion 20; passionate 45
-Love|outer|Attracted|Aroused|+0.42|5.95|34.9||
-Sad|core|-|Sad|-0.55|2.10|1128.4||unhappy 102; down 272
-Sad|middle|Sad|Lonely|-0.50|2.67|565.5||loneliness 12; isolated 262
-Sad|outer|Lonely|Left out|-0.70||240.0||excluded 132; ignored 47
-Sad|outer|Lonely|Misunderstood|-0.65||41.4||
-Sad|outer|Lonely|Abandoned|-0.91||207.0||
-Sad|middle|Sad|Hurt|-0.88|2.45|264.5||
-Sad|outer|Hurt|Betrayed|-0.76||337.1||
-Sad|outer|Hurt|Rejected|-0.80|2.40|134.1||
-Sad|outer|Hurt|Unappreciated|-0.54|2.65|23.3||taken for granted 5
-Sad|middle|Sad|Disappointed|-0.86|2.65|227.6||
-Sad|outer|Disappointed|Discouraged|-0.56|3.18|107.2||
-Sad|outer|Disappointed|Regret|-0.54|3.41|126.1||regretful 26
-Sad|outer|Disappointed|Disillusioned|||15.1|NO-DATA|
-Sad|middle|Sad|Grief|-0.86|2.33|48.9||grieving 0; sadness 67
-Sad|outer|Grief|Heartbroken|-0.84|1.95|34.4||
-Sad|outer|Grief|Devastated|-0.76||34.3||crushed 51
-Sad|middle|Sad|Heartache|-0.82|3.23|89.8||sorrow 62; heartsick 6
-Sad|outer|Heartache|Homesick|-0.13|3.00|52.3|NEAR-NEUTRAL|
-Sad|outer|Heartache|Nostalgic|-0.08|6.68|59.6|LISTS-DISAGREE NEAR-NEUTRAL|nostalgia 10; sentimental 15
-Sad|outer|Heartache|Sorry for someone|-0.19|4.81|2896.7|NEAR-NEUTRAL|pity 290; sad for 122
-Sad|middle|Sad|Down|-0.58||272.5||depressed 391; gloomy 24; blue 51
-Sad|outer|Down|Hopeless|-0.81|2.20|163.1||despair 86
-Sad|outer|Down|Miserable|-0.88|2.60|149.5||
-Sad|outer|Down|Defeated|-0.79|2.59|146.7||
-Sad|middle|Sad|Ashamed|-0.69|2.52|936.6||shame 279
-Sad|outer|Ashamed|Humiliated|-0.79||155.8||
-Sad|outer|Ashamed|Worthless|-0.83|1.89|89.6||
-Sad|middle|Sad|Inadequate|-0.76|2.57|196.2||
-Sad|outer|Inadequate|Inferior|-0.48|3.43|199.4||
-Sad|outer|Inadequate|Insignificant|-0.83|3.64|36.8||
-Scared|core|-|Scared|-0.71|2.80|290.4||afraid 284; fear 409; fearful 49; frightened 97
-Scared|middle|Scared|Anxious|-0.44|3.80|643.9||anxiety 71
-Scared|outer|Anxious|Worried|-0.81|3.27|137.4||
-Scared|outer|Anxious|Uneasy|-0.77|2.86|759.1||
-Scared|outer|Anxious|Dread|-0.69|3.00|27.2||
-Scared|middle|Scared|Nervous|-0.58|3.56|487.4||
-Scared|outer|Nervous|Apprehensive|-0.19|3.32|73.6||
-Scared|outer|Nervous|On edge|-0.31||43.2||tense 88; jittery 34
-Scared|outer|Nervous|Insecure|-0.77|2.30|252.0||self-doubt 3
-Scared|middle|Scared|Terrified|-0.82|2.51|79.5||terror 24; petrified 5
-Scared|outer|Terrified|Panicked|-0.80||35.4||panic 91
-Scared|outer|Terrified|Frantic|-0.58|3.79|14.2||desperate 106
-Scared|middle|Scared|Shocked|-0.42||79.7||
-Scared|outer|Shocked|Startled|-0.33|4.53|8.6|NEAR-NEUTRAL|
-Scared|outer|Shocked|Stunned|-0.39||38.6||
-Scared|outer|Shocked|Horrified|-0.92||17.2||horror 12
-Scared|middle|Scared|Vulnerable|-0.60|3.57|334.3||
-Scared|outer|Vulnerable|Helpless|-0.79|2.24|716.7||powerless 301
-Scared|outer|Vulnerable|Exposed|-0.06||189.6|NEAR-NEUTRAL|
-Scared|outer|Vulnerable|Threatened|-0.90||639.7||unsafe 182
-Angry|core|-|Angry|-0.76|2.53|551.5||mad 28
-Angry|middle|Angry|Annoyed|-0.79|2.80|170.9||irritated 85
-Angry|outer|Annoyed|Irritable|-0.78|2.85|25.1||grumpy 13; cranky 6
-Angry|outer|Annoyed|Impatient|-0.50|3.53|45.4||
-Angry|outer|Annoyed|Provoked|-0.46||10.1||
-Angry|middle|Angry|Frustrated|-0.84|2.55|305.3||
-Angry|outer|Frustrated|Stuck|-0.69||214.4||
-Angry|outer|Frustrated|Trapped|-0.73||426.7||
-Angry|outer|Frustrated|Fed up|-0.50||7.9||exasperated 20
-Angry|middle|Angry|Furious|-0.88|2.57|26.6||livid 1; enraged 12; fury 10
-Angry|outer|Furious|Outraged|-0.69|3.21|19.3||indignant 66
-Angry|outer|Furious|Rage|-0.84|2.50|42.7||enraged 12
-Angry|middle|Angry|Resentful|-0.76|3.00|75.9||bitter 104
-Angry|outer|Resentful|Cheated|||128.9|NO-DATA|
-Angry|outer|Resentful|Used|-0.29||72.0||
-Angry|outer|Resentful|Betrayed|-0.76||337.1||
-Angry|middle|Angry|Offended|-0.62||89.4||
-Angry|outer|Offended|Insulted|||89.4|NO-DATA|
-Angry|outer|Offended|Indignant|-0.48|3.32|66.0||outraged 19
-Angry|outer|Offended|Violated|-1.00||60.2||
-Angry|middle|Angry|Jealous|-0.65|2.38|204.5||jealousy 27
-Angry|outer|Jealous|Envious|-0.78|3.52|67.2||envy 26
-Angry|outer|Jealous|Suspicious|-0.69|3.48|62.8||distrustful 3; wary 21
-Angry|middle|Angry|Disgusted|-0.90|2.68|251.9||disgust 47
-Angry|outer|Disgusted|Appalled|-0.61|3.62|7.4||
-Angry|outer|Disgusted|Contempt|-0.59|3.22|26.0||contemptuous 3
-Angry|outer|Disgusted|Hatred|-0.93|2.38|41.0||hate 13; hateful 2
-Bad|core|-|Bad|-0.75|3.24|3102.7||
-Bad|middle|Bad|Bored|-0.69|2.95|176.5||boredom 4
-Bad|outer|Bored|Restless|-0.56|3.63|150.4||
-Bad|outer|Bored|Unmotivated|-0.67||9.1||listless 11; apathetic 5
-Bad|middle|Bad|Overwhelmed|-0.32|2.80|661.5||stressed 206
-Bad|outer|Overwhelmed|Pressured|||260.8|NO-DATA|
-Bad|outer|Overwhelmed|Burned out|-0.73||19.9||burnt out 9
-Bad|middle|Bad|Confused|-0.56|3.11|259.3||confusion 11
-Bad|outer|Confused|Conflicted|||109.3|NO-DATA|torn 102
+Happy|outer|Relieved|Vindicated|+0.23||60.8||
+Happy|middle|Happy|Hopeful|+0.89|7.44|119.2||hope 66
+Happy|outer|Hopeful|Optimistic|+0.96|7.45|65.6||
+Happy|outer|Hopeful|Encouraged|+0.91||90.1||
+Happy|middle|Happy|Motivated|+0.67||87.0||
+Happy|outer|Motivated|Inspired|+0.93|6.89|138.6||
+Happy|outer|Motivated|Determined|+0.47||18.2||
+Happy|middle|Happy|Interested|+0.50|6.83|26.8||curious 41
+Happy|outer|Interested|Curious|+0.27|6.58|40.7||curiosity 6; inquisitive 1
+Happy|outer|Interested|Fascinated|+0.62||3.1||
+Happy|middle|Happy|Amazed|+0.59|7.55|16.0||astonished 17
+Happy|outer|Amazed|Awe|-0.06|6.85|20.3|LISTS-DISAGREE NEAR-NEUTRAL|awed 11; in awe 8
+Happy|outer|Amazed|Impressed|+0.61|6.66|17.5||
+Happy|middle|Happy|Grateful|+0.92|7.50|328.4||thankful 64; gratitude 85
+Happy|outer|Grateful|Honored|+0.88||115.9||
+Happy|outer|Grateful|Blessed|+0.82|7.50|155.6||lucky 238
+Love|core|-|Love|+1.00|8.00|216.8||loving 10
+Love|middle|Love|Affection|+0.80|7.89|37.3||affectionate 5; fond 4; fondness 2; warmth 94
+Love|outer|Affection|Tenderness|+0.90|6.89|7.6||tender 33
+Love|outer|Affection|Protective|+0.69|6.53|94.9||
+Love|outer|Affection|Cared for|||53.8|NO-DATA|
+Love|middle|Love|Compassion|+0.47|7.90|138.0||compassionate 7; caring 2
+Love|outer|Compassion|Sympathy|+0.65|6.57|142.4||sympathetic 28
+Love|outer|Compassion|Moved|+0.52||88.4||touched 35
+Love|middle|Love|Connected|+0.63||387.7||
+Love|outer|Connected|Understood|+0.56||76.6||
+Love|outer|Connected|Valued|+1.00||190.4||appreciated 71; respected 62
+Love|outer|Connected|Accepted|||100.9|NO-DATA|included 97; welcome 324
+Love|middle|Love|Attracted|||73.3|NO-DATA|infatuated 1; smitten 1
+Love|outer|Attracted|Desire|+0.79|7.05|57.9||passion 20; passionate 44
+Love|outer|Attracted|Aroused|+0.42|5.95|32.6||
+Sad|core|-|Sad|-0.55|2.10|953.7||unhappy 84; down 271
+Sad|middle|Sad|Lonely|-0.50|2.67|574.7||loneliness 12; isolated 262
+Sad|outer|Lonely|Left out|-0.70||236.4||excluded 129; ignored 46
+Sad|outer|Lonely|Misunderstood|-0.65||42.1||
+Sad|outer|Lonely|Abandoned|-0.91||205.2||
+Sad|middle|Sad|Hurt|-0.88|2.45|258.1||
+Sad|outer|Hurt|Betrayed|-0.76||339.9||
+Sad|outer|Hurt|Rejected|-0.80|2.40|132.0||
+Sad|outer|Hurt|Unappreciated|-0.54|2.65|22.9||taken for granted 5
+Sad|middle|Sad|Disappointed|-0.86|2.65|203.8||
+Sad|outer|Disappointed|Discouraged|-0.56|3.18|105.1||
+Sad|outer|Disappointed|Regret|-0.54|3.41|91.4||regretful 15
+Sad|outer|Disappointed|Disillusioned|||14.7|NO-DATA|
+Sad|middle|Sad|Grief|-0.86|2.33|48.6||grieving 0; sadness 66
+Sad|outer|Grief|Heartbroken|-0.84|1.95|22.6||
+Sad|outer|Grief|Devastated|-0.76||33.2||crushed 51
+Sad|outer|Grief|Empty|-0.62|3.78|372.9||
+Sad|middle|Sad|Heartache|-0.82|3.23|5.0||sorrow 61; heartsick 6
+Sad|outer|Heartache|Homesick|-0.13|3.00|51.4|NEAR-NEUTRAL|
+Sad|outer|Heartache|Nostalgic|-0.08|6.68|56.6|LISTS-DISAGREE NEAR-NEUTRAL|nostalgia 10; sentimental 15
+Sad|outer|Heartache|Sorry for someone|-0.19|4.81|2654.5|NEAR-NEUTRAL|pity 201; sad for 94
+Sad|middle|Sad|Down|-0.58||270.6||depressed 271; gloomy 19; blue 51
+Sad|outer|Down|Hopeless|-0.81|2.20|162.8||despair 45
+Sad|outer|Down|Miserable|-0.88|2.60|148.1||
+Sad|outer|Down|Defeated|-0.79|2.59|146.0||
+Sad|middle|Sad|Ashamed|-0.69|2.52|866.4||shame 274
+Sad|outer|Ashamed|Humiliated|-0.79||144.4||
+Sad|outer|Ashamed|Worthless|-0.83|1.89|88.7||
+Sad|middle|Sad|Inadequate|-0.76|2.57|199.3||
+Sad|outer|Inadequate|Inferior|-0.48|3.43|172.6||
+Sad|outer|Inadequate|Insignificant|-0.83|3.64|36.9||
+Scared|core|-|Scared|-0.71|2.80|270.1||afraid 275; fear 273; fearful 48; frightened 98
+Scared|middle|Scared|Anxious|-0.44|3.80|621.4||anxiety 69
+Scared|outer|Anxious|Worried|-0.81|3.27|127.5||
+Scared|outer|Anxious|Dread|-0.69|3.00|26.8||
+Scared|outer|Anxious|Suspicious|-0.69|3.48|32.2||distrustful 3; wary 20
+Scared|middle|Scared|Nervous|-0.58|3.56|469.0||
+Scared|outer|Nervous|On edge|-0.31||40.9||tense 87; jittery 34
+Scared|outer|Nervous|Insecure|-0.77|2.30|250.2||self-doubt 3
+Scared|outer|Nervous|Uneasy|-0.77|2.86|589.8||
+Scared|middle|Scared|Terrified|-0.82|2.51|56.8||terror 23; petrified 4
+Scared|outer|Terrified|Panicked|-0.80||34.6||panic 85
+Scared|outer|Terrified|Petrified|-0.56|3.37|4.4||
+Scared|outer|Terrified|Horrified|-0.92||15.2||horror 12
+Scared|middle|Scared|Shocked|-0.42||56.7||
+Scared|outer|Shocked|Startled|-0.33|4.53|8.4|NEAR-NEUTRAL|
+Scared|outer|Shocked|Stunned|-0.39||38.7||
+Scared|middle|Scared|Vulnerable|-0.60|3.57|331.3||
+Scared|outer|Vulnerable|Helpless|-0.79|2.24|516.4||powerless 274
+Scared|outer|Vulnerable|Exposed|-0.06||188.6|NEAR-NEUTRAL|
+Scared|outer|Vulnerable|Threatened|-0.90||652.8||unsafe 175
+Angry|core|-|Angry|-0.76|2.53|510.6||mad 28
+Angry|middle|Angry|Annoyed|-0.79|2.80|136.5||irritated 84
+Angry|outer|Annoyed|Irritable|-0.78|2.85|25.8||grumpy 12; cranky 6
+Angry|outer|Annoyed|Impatient|-0.50|3.53|44.2||
+Angry|outer|Annoyed|Provoked|-0.46||10.0||
+Angry|middle|Angry|Frustrated|-0.84|2.55|299.9||
+Angry|outer|Frustrated|Trapped|-0.73||419.3||
+Angry|outer|Frustrated|Fed up|-0.50||8.0||exasperated 20
+Angry|middle|Angry|Furious|-0.88|2.57|25.4||livid 1; enraged 12; fury 10
+Angry|outer|Furious|Outraged|-0.69|3.21|18.3||indignant 36
+Angry|outer|Furious|Rage|-0.84|2.50|42.9||enraged 12
+Angry|outer|Furious|Violated|-1.00||58.6||
+Angry|middle|Angry|Resentful|-0.76|3.00|74.2||bitter 71
+Angry|outer|Resentful|Cheated|||128.6|NO-DATA|
+Angry|outer|Resentful|Used|-0.29||71.4||
+Angry|outer|Resentful|Betrayed|-0.76||339.9||
+Angry|middle|Angry|Offended|-0.62||90.5||
+Angry|outer|Offended|Insulted|||90.1|NO-DATA|
+Angry|outer|Offended|Indignant|-0.48|3.32|35.9||outraged 18
+Angry|middle|Angry|Jealous|-0.65|2.38|185.1||jealousy 26
+Angry|outer|Jealous|Envious|-0.78|3.52|51.3||envy 23
+Angry|outer|Jealous|Possessive|-0.44|3.26|20.9||
+Angry|middle|Angry|Disgusted|-0.90|2.68|88.6||disgust 40
+Angry|outer|Disgusted|Appalled|-0.61|3.62|7.0||
+Angry|outer|Disgusted|Contempt|-0.59|3.22|25.5||contemptuous 2
+Angry|outer|Disgusted|Hatred|-0.93|2.38|28.0||hate 13; hateful 2
+Bad|core|-|Bad|-0.75|3.24|3090.5||
+Bad|middle|Bad|Bored|-0.69|2.95|114.9||boredom 3
+Bad|outer|Bored|Restless|-0.56|3.63|149.8||
+Bad|outer|Bored|Unmotivated|-0.67||8.6||listless 11; apathetic 5
+Bad|middle|Bad|Overwhelmed|-0.32|2.80|642.9||stressed 200
+Bad|outer|Overwhelmed|Pressured|||246.1|NO-DATA|
+Bad|outer|Overwhelmed|Burned out|-0.73||22.1||burnt out 7
+Bad|middle|Bad|Confused|-0.56|3.11|248.1||confusion 11
+Bad|outer|Confused|Conflicted|||86.5|NO-DATA|torn 101
 Bad|outer|Confused|Lost|-0.64|2.53|451.2||
-Bad|outer|Confused|Puzzled|-0.59|4.60|47.4|NEAR-NEUTRAL|unsure 100; uncertain 104
-Bad|middle|Bad|Numb|-0.78|3.79|358.1||
-Bad|outer|Numb|Empty|-0.62|3.78|408.4||
-Bad|outer|Numb|Detached|-0.44|3.65|49.0||
-Bad|outer|Numb|Indifferent|-0.21|4.28|20.3||apathetic 5
-Bad|middle|Bad|Uncomfortable|-0.62|2.70|1888.3||unsettled 95; off 200
-Bad|outer|Uncomfortable|Awkward|-0.41|2.95|726.8||
-Bad|outer|Uncomfortable|Out of place|||224.7|NO-DATA|
-Bad|middle|Bad|Embarrassed|-0.63|3.51|828.1||embarrassment 21
-Bad|outer|Embarrassed|Foolish|-0.37|3.00|255.0||stupid 329
-Bad|outer|Embarrassed|Mortified|-0.67||25.7||
+Bad|middle|Bad|Numb|-0.78|3.79|332.5||
+Bad|outer|Numb|Empty|-0.62|3.78|372.9||
+Bad|outer|Numb|Disconnected|-0.42||110.8||
+Bad|middle|Bad|Uncomfortable|-0.62|2.70|1386.6||unsettled 96; off 192
+Bad|outer|Uncomfortable|Awkward|-0.41|2.95|604.7||
+Bad|outer|Uncomfortable|Out of place|||223.3|NO-DATA|
+Bad|middle|Bad|Embarrassed|-0.63|3.51|567.4||embarrassment 18
+Bad|outer|Embarrassed|Foolish|-0.37|3.00|257.0||stupid 328
+Bad|outer|Embarrassed|Mortified|-0.67||26.4||
 Bad|outer|Embarrassed|Cringe|-0.51|3.24|0.0||
-Bad|middle|Bad|Guilty|-0.73|3.09|3495.6||guilt 204; sorry 2918
-Bad|outer|Guilty|Remorse|-0.79|3.63|100.7||remorseful 22
-Bad|outer|Guilty|Apologetic|-0.04|6.65|21.1|LISTS-DISAGREE NEAR-NEUTRAL|sorry 2918
-Bad|middle|Bad|Disgusted|-0.90|2.68|251.9||disgust 47
-Bad|outer|Disgusted|Repulsed|||15.6|NO-DATA|grossed out 1; revolted 4; sickened 17
-Bad|outer|Disgusted|Squeamish|-0.65|3.63|9.0||
+Bad|middle|Bad|Guilty|-0.73|3.09|3254.7||guilt 205; sorry 2678
+Bad|outer|Guilty|Remorse|-0.79|3.63|101.2||remorseful 22
+Bad|outer|Guilty|Apologetic|-0.04|6.65|13.2|LISTS-DISAGREE NEAR-NEUTRAL|sorry 2678
+Bad|middle|Bad|Disgusted|-0.90|2.68|88.6||disgust 40
+Bad|outer|Disgusted|Repulsed|||15.4|NO-DATA|grossed out 1; revolted 4; sickened 16
+Bad|outer|Disgusted|Squeamish|-0.65|3.63|8.9||
 
 Core labels, Baron-Cohen % knew at ages 4-6/7-8/9-10/11-12/13-14/15-16:
   Happy: 96.7/100/96.2/98.6/100/98.4
@@ -181,8 +178,8 @@ Core labels, Baron-Cohen % knew at ages 4-6/7-8/9-10/11-12/13-14/15-16:
   (disgust): 43.8/52.6/72.2/98.3/97/98.4
   (love): 96.7/100/96.2/98.6/98.9/100
 
-Words: {'core': 6, 'middle': 45, 'outer': 114}, total 165
-Situations: 182 {'builder-1': 101, 'checker': 40, 'builder-2': 40, 'main-2026-11-22': 1}; unplaced 0; named by another word 13; gaps the rules forbid filling 1
+Words: {'core': 6, 'middle': 45, 'outer': 111}, total 162
+Situations: 194 {'builder-1': 101, 'checker': 40, 'builder-2': 40, 'main-2026-11-22': 13}; unplaced 0; named by another word 12; gaps the rules forbid filling 1
   mapped: Self-conscious -> Embarrassed (Self-conscious was dropped (rule 1); being watched is embarrassment)
   mapped: Disrespected -> Offended (Disrespected was dropped (rule 8): Offended now names being disrespected or wronged, and a crossed boundary is Violated)
   mapped: Self-conscious -> Insecure (Self-conscious was dropped; disliking how you look is insecurity)
@@ -193,59 +190,56 @@ Situations: 182 {'builder-1': 101, 'checker': 40, 'builder-2': 40, 'main-2026-11
   mapped: Longing -> Heartache (Longing is pleasant in its one list (rule 1) and rare (rule 10))
   mapped: Upset -> Sad (an umbrella word; the core names it)
   mapped: Ignored -> Left out (rule 8: the same feeling)
-  mapped: Touched -> Moved (rule 11: Touched's other meanings)
   mapped: Irritated -> Annoyed (rule 8: the same feeling)
   mapped: Torn -> Conflicted (rule 11: Torn usually means ripped)
   gap: Bittersweet: 'Your youngest leaves home for college' (mixed: rule 1 can't put a word that's both pleasant and unpleasant under one core (NRC -.06, Warriner 5.09). Covered in part by Proud and Heartache)
-Wheel words no situation names: ['angry', 'apologetic', 'apprehensive', 'aroused', 'at peace', 'bad', 'blessed', 'blissful', 'brave', 'calm', 'cared for', 'cheerful', 'cringe', 'desire', 'detached', 'determined', 'disgusted', 'down', 'empowered', 'exhilarated', 'frantic', 'happy', 'indifferent', 'insignificant', 'interested', 'intrigued', 'joy', 'love', 'motivated', 'on edge', 'optimistic', 'playful', 'powerful', 'provoked', 'puzzled', 'rage', 'reassured', 'satisfied', 'sorry for someone', 'stunned', 'tenderness', 'uncomfortable', 'understood', 'uneasy', 'unmotivated', 'violated', 'vulnerable']
+Wheel words no situation names: ['angry', 'apologetic', 'aroused', 'at peace', 'bad', 'brave', 'calm', 'cheerful', 'desire', 'determined', 'disconnected', 'disgusted', 'down', 'empowered', 'exhilarated', 'happy', 'insignificant', 'interested', 'joy', 'love', 'motivated', 'on edge', 'optimistic', 'petrified', 'playful', 'possessive', 'rage', 'reassured', 'satisfied', 'stunned', 'tenderness', 'uncomfortable', 'understood', 'unmotivated', 'vulnerable']
 
-Middle words with 3 outer words (24); each third word needs a reason in derived-wheel.md:
-  Happy > Joy: Delighted, Elated, Blissful
+Middle words with 3 outer words (21); each third word needs a reason in derived-wheel.md:
   Happy > Proud: Accomplished, Triumphant, Flattered
   Happy > Confident: Brave, Empowered, Powerful
-  Happy > Satisfied: Fulfilled, Content, Blessed
   Happy > Calm: Relaxed, At peace, Safe
   Happy > Relieved: Reassured, Forgiven, Vindicated
+  Love > Affection: Tenderness, Protective, Cared for
   Love > Connected: Understood, Valued, Accepted
   Sad > Lonely: Left out, Misunderstood, Abandoned
   Sad > Hurt: Betrayed, Rejected, Unappreciated
   Sad > Disappointed: Discouraged, Regret, Disillusioned
+  Sad > Grief: Heartbroken, Devastated, Empty
   Sad > Heartache: Homesick, Nostalgic, Sorry for someone
   Sad > Down: Hopeless, Miserable, Defeated
-  Scared > Anxious: Worried, Uneasy, Dread
-  Scared > Nervous: Apprehensive, On edge, Insecure
-  Scared > Shocked: Startled, Stunned, Horrified
+  Scared > Anxious: Worried, Dread, Suspicious
+  Scared > Nervous: On edge, Insecure, Uneasy
+  Scared > Terrified: Panicked, Petrified, Horrified
   Scared > Vulnerable: Helpless, Exposed, Threatened
   Angry > Annoyed: Irritable, Impatient, Provoked
-  Angry > Frustrated: Stuck, Trapped, Fed up
+  Angry > Furious: Outraged, Rage, Violated
   Angry > Resentful: Cheated, Used, Betrayed
-  Angry > Offended: Insulted, Indignant, Violated
   Angry > Disgusted: Appalled, Contempt, Hatred
-  Bad > Confused: Conflicted, Lost, Puzzled
-  Bad > Numb: Empty, Detached, Indifferent
   Bad > Embarrassed: Foolish, Mortified, Cringe
 
 NOTED:
-  rule 10: Cringe (0.02) is exempt: Lucas, 2026-11-20: chosen over 'Embarrassed for them'; books barely use it, so rule 10's counts can't measure it
+  rule 10: Cringe (0.00) is exempt: Lucas, 2026-11-20: chosen over 'Embarrassed for them'; books barely use it, so rule 10's counts can't measure it
 
 FLAGS:
-  rule 10: 'pleased' (147.9) is used 5.4x as often as Delighted (27.6)
-  rule 10 (needs a reason): Blissful is under 15 per billion (10.5)
-  rule 10 (needs a reason): Playful is under 15 per billion (11.7)
+  rule 10: 'pleased' (128.2) is used 4.6x as often as Delighted (28.0)
+  rule 10 (needs a reason): Playful is under 15 per billion (11.8)
   rule 10 (needs a reason): Forgiven is under 15 per billion (8.9)
-  rule 10 (needs a reason): Intrigued is under 15 per billion (9.9)
+  rule 10: Fascinated is barely used after feel/feeling/felt (3.1)
   rule 10 (needs a reason): Tenderness is under 15 per billion (7.6)
-  rule 10: 'tender' (39.6) is used 5.2x as often as Tenderness (7.6)
-  rule 10 (needs a reason): Frantic is under 15 per billion (14.2)
-  rule 10: 'desperate' (106.0) is used 7.5x as often as Frantic (14.2)
-  rule 10 (needs a reason): Startled is under 15 per billion (8.6)
-  rule 10 (needs a reason): Provoked is under 15 per billion (10.1)
-  rule 10 (needs a reason): Fed up is under 15 per billion (7.9)
-  rule 10 (needs a reason): Appalled is under 15 per billion (7.4)
+  rule 10 (needs a reason): Disillusioned is under 15 per billion (14.7)
+  rule 10: Heartache is barely used after feel/feeling/felt (5.0)
+  rule 10: 'sorrow' (60.9) is used 12.3x as often as Heartache (5.0)
+  rule 10: Petrified is barely used after feel/feeling/felt (4.4)
+  rule 10 (needs a reason): Startled is under 15 per billion (8.4)
+  rule 10 (needs a reason): Provoked is under 15 per billion (10.0)
+  rule 10 (needs a reason): Fed up is under 15 per billion (8.0)
+  rule 10 (needs a reason): Appalled is under 15 per billion (7.0)
   rule 5: Baron-Cohen does not list core label Bad
-  rule 10 (needs a reason): Unmotivated is under 15 per billion (9.1)
-  rule 10: 'sorry' (2917.6) is used 138.2x as often as Apologetic (21.1)
-  rule 10 (needs a reason): Squeamish is under 15 per billion (9.0)
+  rule 10 (needs a reason): Unmotivated is under 15 per billion (8.6)
+  rule 10 (needs a reason): Apologetic is under 15 per billion (13.2)
+  rule 10: 'sorry' (2677.9) is used 202.9x as often as Apologetic (13.2)
+  rule 10 (needs a reason): Squeamish is under 15 per billion (8.9)
 
 FAILURES:
   none

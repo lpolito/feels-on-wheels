@@ -4,7 +4,7 @@ The candidate wheel, built from [rules.md](rules.md), the research in [research/
 
 **Rule numbers below are the old numbered rules** (in `rules.md` at commit 0107189), replaced on 2026-11-21 by the looser set in [rules.md](rules.md). In the new set: 1 is the pleasantness check; 2 is question 1; 3 is the what-happened words; 4 and 5 are the cores; 6 is question 2; 7 is question 3; 8 is question 4; 9 is Always 3; 10 is the usage flags; 11 and 12 are question 5; 13 is the situations; 14, 15, and 16 are Always 5, 6, and 7. The placements here haven't been rechecked against the new set yet.
 
-**6 cores, 45 middle words, 115 outer words: 166 words, with Disgusted twice on purpose.** (Lucas, 2026-11-22: Amazed replaced Surprised; Humbled left; Disgusted split into physical, under Bad, and moral, under Angry.) **Before that: 6 cores, 44 middle words, 116 outer words.** Three spots hold 4 outer words, one more than the layout allows: Connected (Understood came back), Disappointed, and Embarrassed. See [handoff.md](handoff.md). (Before Lucas's decisions of 2026-11-20: 6/44/112, 162. First draft 6/43/109, 158.)
+**6 cores, 45 middle words, 111 outer words: 162 words, with Disgusted, Betrayed, and Empty twice on purpose.** (2026-11-22: Lucas's calls and the comb pass; see [learnings.md](learnings.md#lucass-decisions) and [research/8](research/8-comb-pass.md).) **Before that: 6 cores, 44 middle words, 116 outer words.** Three spots hold 4 outer words, one more than the layout allows: Connected (Understood came back), Disappointed, and Embarrassed. See [handoff.md](handoff.md). (Before Lucas's decisions of 2026-11-20: 6/44/112, 162. First draft 6/43/109, 158.)
 
 **Moved in the revision before:** Insecure (with its outer words) to Sad; Valued to Connected; Regret to Disappointed; Horrified to Shocked; Homesick and Nostalgic to Heartache; Abandoned to Lonely; Unappreciated to Hurt; Hatred to Resentful; Eager to Motivated; Moved to Compassion; Blessed to Satisfied; Overwhelmed to a middle word.
 
@@ -107,29 +107,27 @@ Brackets: NRC valence (−1 to 1) / Warriner valence (1–9, 5 neutral) / Google
   - **Joy**: strong, bright happiness. (+.96/8.21/154) Rule 10: 5.1x as common as "joyful".
     - **Delighted**: something good just happened, and you feel very happy. (+.94/7.74/28) Flag: "pleased" (148) is milder, so it's not the same feeling.
     - **Elated**: joy so big you feel lifted up. (+.58/6.56/92)
-    - **Blissful**: deep, peaceful joy, with nothing missing. (+.77/7.67/11) Under 15: said as "bliss".
   - **Cheerful**: a light, upbeat mood. (+.99/8.00/21)
     - **Amused**: something strikes you as funny. (+.88/7.05/20)
     - **Playful**: in the mood to joke and have fun. (+.78/7.63/12) Under 15: said with "I'm".
-  - **Excited**: happy and full of energy about what's coming. (+.82/8.11/256)
+  - **Excited**: happy and full of energy. (+.82/8.11/256) Definition: "about what's coming" contradicted Exhilarated's "in the moment" (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
     - **Thrilled**: great news came, or something great is ahead, and you feel excited. (+.80/–/20)
     - **Exhilarated**: a rush of excitement in the moment. (+.78/6.90/47)
-  - **Proud**: happy about something you or someone close to you did. (+.81/7.00/581)
+  - **Proud**: happy about something you or someone close to you did, or about how others see you. (+.81/7.00/581) Widened so Flattered reads as Proud plus a cause (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
     - **Accomplished**: you finished something hard, and you feel proud. (+.74/–/34)
     - **Triumphant**: you won or beat what stood in your way, and you feel proud. (+.90/7.45/36)
     - **Flattered**: R3. Someone's praise or interest pleases you, and you feel a little proud. (+.73/6.32/76) New (coverage gap).
   - **Confident**: sure you can handle what's in front of you. (+.53/7.56/1149)
     - **Brave**: ready to face something that scares you. (+.67/7.38/103)
     - **Empowered**: able to act and make things change. (–/–/282) Unscored; empowerment +1.00. Lucas, 2026-11-20: kept over Powerful, which means something else.
-    - **Powerful**: strong and in charge. (+.57/6.46/188) New. Lucas, 2026-11-20. Indonesian sorts power with confidence under happiness; "Powerful is a kind of Confident" reads truer than "a kind of Proud" (rule 7).
+    - **Powerful**: strong and in charge. (+.57/6.46/188) New. Lucas, 2026-11-20. Indonesian sorts power with confidence under happiness; "Powerful is a kind of Confident" reads truer than "a kind of Proud" (rule 7). Lucas, 2026-11-22: kept. Its third-word situation: you lead a meeting and everyone follows your call. People don't link it to Empowered (0/.004), so they're different feelings despite the shared "power" ([research/11](research/11-fresh-comb-pass.md)).
   - **Satisfied**: what you wanted or needed has been met. (+.92/7.16/308)
     - **Fulfilled**: your life or work feels meaningful. (+.79/–/82)
     - **Content**: at ease with what you have, wanting nothing more. (+.53/6.70/104) 6x contented; rule 10 outranks 11.
-    - **Blessed**: you feel lucky to have the good things in your life. (+.82/7.50/156) Moved from Grateful.
   - **Calm**: settled and steady inside. (+.75/6.89/253)
     - **Relaxed**: loose and unhurried, with your guard down. (+.73/7.25/319)
     - **At peace**: nothing troubles you deep down. (+.48/–/172) 2.4x as common as "peaceful".
-    - **Safe**: calm because nothing can hurt you here. (+.80/7.70/2923)
+    - **Safe**: R3. Nothing can hurt you here, and you feel calm. (+.80/7.70/2923) Tagged as the situation you're in (rules.md names it) (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
   - **Relieved**: a worry or danger passed, and you feel lighter. (+.79/–/801)
     - **Reassured**: R3. Someone or something eased your worry, and you feel relieved. (+.71/–/139)
     - **Forgiven**: R3. Someone let go of your mistake, and you feel relieved. (+.50/–/9) Under 15: said as "they forgave me".
@@ -142,32 +140,33 @@ Brackets: NRC valence (−1 to 1) / Warriner valence (1–9, 5 neutral) / Google
     - **Determined**: set on doing it, whatever it takes. (+.47/–/18)
   - **Interested**: something has your attention. (+.50/6.83/27)
     - **Curious**: you want to know more. (+.27/6.58/53)
-    - **Intrigued**: something puzzling draws you in. (+.54/–/10) Under 15; fascinated is 3.
+    - **Fascinated**: something holds your attention so fully you can't look away. (+.62/–/3.1; "I was fascinated" 216) Replaces Intrigued, which is Curious's strong form (intrigued → curious .176): you can't feel intrigued without feeling curious. "Fascinated but not curious" (watching a fire) and the reverse both pass. The old rule cut it as rare in the "feel" frame alone (2026-11-22, fresh comb pass, [research/11](research/11-fresh-comb-pass.md)).
   - **Amazed**: something you didn't expect or think possible happened, and it delights you. (+.59/7.55/16; "I was amazed" 506) Lucas, 2026-11-22: replaces Surprised, which is both pleasant and unpleasant ("I was surprised" mostly means only "I didn't expect it"), an umbrella like Stressed. Its card points to Shocked (Scared) for a bad surprise. Lucas, 2026-11-20: kept over Astonished.
     - **Awe**: something vast or beautiful leaves you amazed. (−.06/6.85/21) Lists disagree; stays.
     - **Impressed**: someone did better than you expected, and you feel amazed. (+.61/6.66/18) The loosest fit in the group: milder than its parent.
   - **Grateful**: someone did or gave you something good, and you feel thankful. (+.92/7.50/339) Lucas, 2026-11-22: moved from Love by question 2. In daily reports gratitude comes with joy five times as strongly as with love (.15 against .03), recalled gratitude is most often called "happiness" (42%), and people link grateful to happy about six times as strongly as to love ([research/10](research/10-which-core-people-tap.md)). Algoe's "find, remind, and bind" is what gratitude does, not which core people tap.
     - **Honored**: R3. Someone chose or recognized you, and you feel grateful. (+.88/–/126)
-    - **Cared for**: R3. Someone looks after you, and you feel grateful. (–/–/58) Unscored; care +.46/7.64.
+    - **Blessed**: you have good things in your life that no one in particular gave you, and you feel grateful. (+.82/7.50/156) Moved from Satisfied: it's gratitude with no one to thank (blessed → grateful .011/.004, satisfied 0/0). Its third-word situation: looking around the table at a holiday dinner (2026-11-22, fresh comb pass, [research/11](research/11-fresh-comb-pass.md)).
 - **Love**: warm feeling toward someone, and wanting closeness. (+1.00/8.00/216)
   - **Affection**: fondness for someone. (+.80/7.89/38) 8x as common as "affectionate".
     - **Tenderness**: gentle, caring affection. (+.90/6.89/8) Flag, under 15: "tender" (40) mostly means sore; with "toward" it's 2.5x (7.4 vs 3.0), so rule 11 keeps the noun.
     - **Protective**: wanting to keep someone you love safe. (+.69/6.53/94)
+    - **Cared for**: R3. Someone looks after you with care, and you feel their affection. (–/–/58) Unscored; care +.46/7.64. Lucas, 2026-11-22: moved from Happy → Grateful. With Loved gone, Love had no word for being loved outside Connected's group, and people link caring to love (.084) and loving (.073) ([research/11](research/11-fresh-comb-pass.md)). Its third-word situation: your partner brings you soup when you're sick.
   - **Compassion**: feeling for someone who suffers, and wanting to help. (+.47/7.90/140) Lazarus's theme.
-    - **Sympathy**: you share in someone's pain and want to comfort them. (+.65/6.57/167)
-    - **Moved**: someone's pain or kindness stirred you, maybe to tears, and you feel for them. (+.52/–/105)
+    - **Sympathy**: you're with someone in their pain, and you want to comfort them. (+.65/6.57/167) Sharpened against Sorry for someone (Sad), which is from a distance ([research/11](research/11-fresh-comb-pass.md)).
+    - **Moved**: someone's suffering or courage stirred you, maybe to tears, and you feel for them. (+.52/–/105) Lucas, 2026-11-22: narrowed. Being moved by a kind act or a gift isn't compassion, so those situations map to Grateful and Connected ([research/11](research/11-fresh-comb-pass.md)). Its situation: a story of someone facing an illness bravely.
   - **Connected**: close to someone, part of something. (+.63/–/405) 2026-11-22: Loved left, since it's the same word as the core Love (the Once check compares base forms; research/8); "I love you" maps to Connected.
-    - **Understood**: R3. Someone really gets you, and you feel close. (+.56/–/76) Back, 2026-11-20 (see above).
-    - **Valued**: R3. Others show you matter, and you feel appreciated. (+1.00/–/197) Lucas, 2026-11-20: kept over Respected (63).
-    - **Accepted**: R3. Others welcomed you as you are, and you feel you belong. (–/–/104) New. Unscored; acceptance +.67/6.84. Lucas, 2026-11-20: being welcomed as you are isn't being understood or loved (rule 8), and it's an everyday situation (rule 13).
+    - **Understood**: R3. Someone really gets you, and you feel connected. (+.56/–/76) Back, 2026-11-20 (see above). Ends with its parent (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
+    - **Valued**: R3. Others show you matter, and you feel connected. (+1.00/–/197) Lucas, 2026-11-20: kept over Respected (63). Ends with its parent (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
+    - **Accepted**: R3. Others welcomed you as you are, and you feel connected. (–/–/104) New. Unscored; acceptance +.67/6.84. Lucas, 2026-11-20: being welcomed as you are isn't being understood or loved (rule 8), and it's an everyday situation (rule 13).
   - **Attracted**: drawn to someone. (–/–/74) Unscored; attraction +.81/7.00.
-    - **Desire**: wanting someone, and wanting to be close to them. (+.79/7.05/58) The wanting; Aroused is the body's side.
-    - **Aroused**: your body responds to someone you want. (+.42/5.95/35) New. Lucas, 2026-11-20: replaces Lust, a stronger Desire (rules 7 and 8). Rule 11's example list no longer names Aroused (fixed 2026-11-20).
+    - **Desire**: you want someone, romantically or physically. (+.79/7.05/58) Not "wanting to be close", which restated the core Love (2026-11-22, fresh comb pass, [research/11](research/11-fresh-comb-pass.md)).
+    - **Aroused**: you feel sexually stirred by someone. (+.42/5.95/35) Lucas, 2026-11-20: replaces Lust, a stronger Desire. Redefined without "someone you want", Desire's target, and without "your body responds", which read as a body state (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
 - **Sad**: low and heavy, often after a loss. (−.55/2.10/1128)
   - **Lonely**: wanting company or closeness you don't have. (−.50/2.67/565)
     - **Left out**: R3. You weren't included, maybe by accident, and you feel lonely. (−.70/–/240) Lucas, 2026-11-20: kept over Excluded; deliberately shut out is Rejected. Hurt from exclusion comes from feeling others don't value you (Leary et al. 1998), and how people explain it changes how they recover (Williams 2007).
-    - **Misunderstood**: R3. Others don't get you, and you feel alone. (−.65/–/41)
-    - **Abandoned**: R3. Someone you counted on left, and you feel alone. (−.91/–/207)
+    - **Misunderstood**: R3. Others don't get you, and you feel lonely. (−.65/–/41)
+    - **Abandoned**: R3. Someone you counted on left, and you feel lonely. (−.91/–/207)
   - **Hurt**: someone's words or actions wounded you, and you feel pain. (−.88/2.45/265)
     - **Betrayed**: R3. Someone you trusted broke that trust, and you feel hurt, angry, or both. (−.76/–/337) Lucas, 2026-11-22: also under Angry → Resentful, since people split: raters picked Angry 54%, Sad 32% ([research/10](research/10-which-core-people-tap.md)).
     - **Rejected**: R3. Someone turned you away or shut you out on purpose, and you feel hurt. (−.80/2.40/134)
@@ -177,96 +176,94 @@ Brackets: NRC valence (−1 to 1) / Warriner valence (1–9, 5 neutral) / Google
     - **Regret**: disappointed in a choice you made. (−.54/3.41/126)
     - **Disillusioned**: someone or something you believed in turned out not to deserve it, and you feel disappointed. (–/–/15) New. Unscored; disillusionment −.90, disillusion −.67. Lucas, 2026-11-20: losing a belief isn't being let down by someone (rule 8).
   - **Grief**: you lost someone or something, and you feel deep sorrow. (−.86/2.33/49)
-    - **Heartbroken**: a love or a close bond ended, and you feel deep grief. (−.84/1.95/34)
-    - **Devastated**: a huge loss knocked you flat, and you feel overwhelmed by grief. (−.76/–/34)
-  - **Heartache**: an aching sadness for someone or something out of reach. (−.82/3.23/90) New: missing or caring, not a finished loss.
+    - **Heartbroken**: a love or a close bond ended, and you feel deep grief. (−.84/1.95/34) Lucas, 2026-11-22: stays under Grief, though someone heartbroken may tap Heartache first (heartache → broken .021, breakup .017; [research/11](research/11-fresh-comb-pass.md)).
+    - **Devastated**: a huge loss knocked you flat, and you feel deep grief. (−.76/–/34) Not "overwhelmed by grief", which borrowed Bad's Overwhelmed (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
+    - **Empty**: you feel hollow, as if something is missing. (−.62/3.78/406) The same word as under Bad → Numb (Lucas, 2026-11-22). Its third-word situation: you've felt empty since someone died.
+  - **Heartache**: an aching sadness for someone or something: missed, out of reach, or in pain. (−.82/3.23/90) Missing or caring, not a finished loss. Widened so Sorry for someone fits (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
     - **Homesick**: heartache for home and the people there. (−.13/3.00/52)
     - **Nostalgic**: a wistful ache for times gone by, often with warmth. (−.08/6.68/60) Lists disagree; Basque sorts it with sadness.
-    - **Sorry for someone**: heartache over someone else's pain. (−.19/4.81/2897; data for "sorry") New (coverage gap). Rule 10 picks it over pity (290) and sad for (122); rule 9 gives this "sorry" its own label.
-  - **Down**: low, with little energy or joy. (−.58/–/272)
+    - **Sorry for someone**: someone else's pain saddens you, even from a distance. (−.19/4.81/2897; data for "sorry") New (coverage gap). Rule 10 picks it over pity (290) and sad for (122); rule 9 gives this "sorry" its own label.
+  - **Down**: low, with little energy or joy. (−.58/–/272) Narrower than Sad by its "little energy": the one Sad word for the flat, low kind.
     - **Hopeless**: you can't see things getting better. (−.81/2.20/163) Lucas, 2026-11-20: kept over Despair.
     - **Miserable**: deeply unhappy right now. (−.88/2.60/150)
     - **Defeated**: you lost or failed, and you feel beaten. (−.79/2.59/147)
-  - **Ashamed**: you feel bad about yourself, not just about what you did. (−.69/2.52/937)
+  - **Ashamed**: you feel low about who you are, not just about something you did. (−.69/2.52/937) Not "you feel bad about yourself", which used the Bad core's label and Guilty's wording (2026-11-22, fresh comb pass, [research/11](research/11-fresh-comb-pass.md)).
     - **Humiliated**: R3. You were made to look small in front of others, and you feel ashamed. (−.79/–/156)
     - **Worthless**: you feel you have no value. (−.83/1.89/90)
   - **Inadequate**: you feel you're not good enough. (−.76/2.57/196) Lucas, 2026-11-22: a middle word for worth, replacing Insecure, which moved to Scared → Nervous. People link inadequate, inferior, and insignificant to "not enough", "less", and "worthless", and to fear words almost not at all.
     - **Inferior**: less than other people. (−.48/3.43/199)
-    - **Insignificant**: you feel you don't matter. (−.83/3.64/37) Lucas, 2026-11-20: not feeling less than others (Inferior) or not up to a task (Inadequate).
+    - **Insignificant**: you feel you don't matter to the people around you. (−.83/3.64/37) Lucas, 2026-11-20: not feeling less than others (Inferior) or not up to a task (Inadequate). Sharpened against Worthless ("no value") (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)). "Feel small" (304) is more common but has other meanings (small next to someone, physically small).
 - **Scared**: afraid something might hurt you. (−.71/2.80/290)
-  - **Anxious**: uneasy about what might go wrong. (−.44/3.80/644)
+  - **Anxious**: tense inside about what might go wrong. (−.44/3.80/644) Was defined with its own child's word, Uneasy (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
     - **Worried**: your mind keeps returning to one thing that might go wrong. (−.81/3.27/137)
-    - **Uneasy**: a sense that something threatening is near. (−.77/2.86/759)
     - **Dread**: heavy fear of something coming. (−.69/3.00/27)
-  - **Nervous**: jittery about something you're about to do. (−.58/3.56/487)
-    - **Apprehensive**: uneasy as something approaches. (−.19/3.32/74)
+    - **Suspicious**: you sense someone is hiding something or up to no good, and you feel anxious. (−.69/3.48/32; "I was suspicious" 46) Lucas, 2026-11-22: "suspicious doesn't belong under jealous period." Raters put it 53% Scared, 18% Angry, and people link it to criminal, suspect, and shifty, not jealous ([research/11](research/11-fresh-comb-pass.md)). Its third-word situation: you think your partner is lying to you.
+  - **Nervous**: jittery about something ahead. (−.58/3.56/487) Widened: "something you're about to do" didn't cover Apprehensive or On edge (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
     - **On edge**: jumpy, braced for something to go wrong. (−.31/–/43)
     - **Insecure**: unsure you're good enough or liked, and you feel nervous. (−.77/2.30/252) Lucas, 2026-11-22: moved from Sad by question 2. Raters' first picks went 46% Scared, 37% Sad; people link insecure to fear words about 5 times as strongly as to sad ones (.23 against .05; [research/10](research/10-which-core-people-tap.md) and a check of Small World of Words). Its third-word situation: unsure whether people like you, which Apprehensive and On edge don't cover.
+    - **Uneasy**: something feels wrong, though nothing has happened, and you feel nervous. (−.77/2.86/590; "I was uneasy" 30) Lucas, 2026-11-22: moved from Bad → Uncomfortable, replacing Apprehensive, which Dread covers. Raters put uneasy 76% Scared, more than Anxious or Nervous themselves, and its definition is sensing danger ([research/11](research/11-fresh-comb-pass.md)); people link it to nervous (.077). Its third-word situation: a quiet street at night feels off.
   - **Terrified**: extremely scared. (−.82/2.51/79)
     - **Panicked**: so scared you can't think. (−.80/–/35)
-    - **Frantic**: so scared you rush about, unable to stop. (−.58/3.79/14) New. Under 15; flag against desperate (106), a different feeling; petrified is 4.6.
+    - **Petrified**: so scared you can't move. (−.56/3.37/4.6; "I was petrified" 63) Replaces Frantic, whose usual meaning isn't fear (a frantic rush, frantic with worry). The old rule's 5 per billion cut it; it passes the two-count rule (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
+    - **Horrified**: you saw or heard something awful, and you feel terrified. (−.92/–/17) Moved from Shocked: people link it to terrified (.061/.083) more than to shocked (.054/.024), and Parrott puts horror with terror. Its third-word situation: violence. Also no longer near Appalled ("cruel or wrong") (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
   - **Shocked**: something sudden and bad happened, and you feel shaken. (−.42/–/80)
     - **Startled**: something sudden made you jump, and you feel a quick jolt. (−.33/4.53/9) Near neutral. Under 15: said as "it startled me".
     - **Stunned**: so shocked you can't react. (−.39/–/39)
-    - **Horrified**: you saw or heard something awful, and you feel shocked and sickened. (−.92/–/17)
   - **Vulnerable**: open to being hurt. (−.60/3.57/334)
-    - **Helpless**: you can't stop what's happening, and you feel scared. (−.79/2.24/717)
-    - **Exposed**: others can see more of you than you want, and you feel unsafe. (−.06/–/190) Near neutral (physical sense); the definition fixes it.
-    - **Threatened**: R3. Someone or something might harm you, and you feel scared. (−.90/–/640)
+    - **Helpless**: you can't stop something bad from happening, and you feel vulnerable. (−.79/2.24/717) Ended with the core, Scared; a far-away disaster now maps to Sorry for someone (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
+    - **Exposed**: others can see more of you than you want, and you feel vulnerable. (−.06/–/190) Near neutral (physical sense); the definition fixes it.
+    - **Threatened**: someone or something could harm you, and you feel vulnerable. (−.90/–/640) A feeling, not tagged. Its definition no longer restates the core Scared (2026-11-22, fresh comb pass, [research/11](research/11-fresh-comb-pass.md)).
 - **Angry**: something's unfair or in your way. (−.76/2.53/551)
   - **Annoyed**: something bothered you, and you feel mildly angry. (−.79/2.80/171)
     - **Irritable**: everything is getting on your nerves right now. (−.78/2.85/25)
     - **Impatient**: you're kept waiting, and you feel annoyed. (−.50/3.53/45)
-    - **Provoked**: R3. Someone deliberately pushed your buttons, and you feel annoyed. (−.46/–/10) New. Lucas, 2026-11-20: a cause word (rule 3); Irritable is a mood, not a cause. Under 15: usually said as "I was provoked".
+    - **Provoked**: R3. Someone deliberately pushed your buttons, and you feel annoyed. (−.46/–/10) New. Lucas, 2026-11-20: a cause word (rule 3); Irritable is a mood, not a cause. Under 15 in both counts (10 "feel", 10 "I was"); kept because no other word names being needled on purpose (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)). Its third-word situation: a sibling keeps poking at you to get a rise out of you.
   - **Frustrated**: something keeps blocking you, and you feel angry. (−.84/2.55/305)
-    - **Stuck**: nothing moves forward, and you feel frustrated. (−.69/–/214)
-    - **Trapped**: you can't get out, and you feel frustrated. (−.73/–/427)
+    - **Trapped**: R3. You can't get out, and you feel frustrated. (−.73/–/427) Tagged as the situation you're in. Stuck left: you can't feel trapped without feeling stuck, so Trapped was Stuck's strong form, and Stuck ("nothing moves forward") was barely narrower than Frustrated (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
     - **Fed up**: the same problem keeps coming back, and you feel you've had enough. (−.50/–/8) Under 15: said with "I'm"; plainer than exasperated (20).
   - **Furious**: very angry. (−.88/2.57/27) Lucas, 2026-11-20: kept over Infuriated.
     - **Outraged**: something wrong or unjust happened, and you feel furious. (−.69/3.21/19)
     - **Rage**: anger so strong you might lose control. (−.84/2.50/43)
+    - **Violated**: R3. Someone crossed a line with you they had no right to cross, and you feel furious. (−1.00/–/60) Lucas, 2026-11-20. Anger is the emotion of rights being violated (Rozin et al. 1999). Moved from Offended: "and you feel offended" understates it. Its third-word situation: someone reads your private messages (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
   - **Resentful**: you were treated unfairly, and you feel anger that lingers. (−.76/3.00/76) Lucas, 2026-11-20: kept over Bitter.
     - **Cheated**: R3. Someone took what was fairly yours, and you feel resentful. (–/–/129) Unscored; cheat −.75/3.05.
     - **Used**: R3. Someone took advantage of you, and you feel resentful. (−.29/–/72)
     - **Betrayed**: R3. Someone you trusted broke that trust, and you feel hurt, angry, or both. (−.76/–/337) The same word as under Sad → Hurt (Lucas, 2026-11-22).
   - **Offended**: someone's words or actions disrespected or wronged you, and you feel angry. (−.62/–/89)
-    - **Insulted**: R3. Someone said something meant to hurt, and you feel offended. (–/–/89) Unscored; insult −.83/2.62. English sorted insult under sadness; kept in anger because it's the plainest case of Lazarus's anger theme, a demeaning offense.
-    - **Indignant**: you were treated unfairly, such as blamed for what you didn't do, and you feel offended. (−.48/3.32/66) New (situation gap).
-    - **Violated**: R3. Someone crossed a line with you they had no right to cross, and you feel angry. (−1.00/–/60) New. Lucas, 2026-11-20. Anger is the emotion of rights being violated (Rozin et al. 1999). Often comes with fear and shame.
-  - **Jealous**: afraid someone will take a person you love, and angry about it. (−.65/2.38/204)
+    - **Insulted**: R3. Someone said something to put you down, and you feel offended. (–/–/89) Unscored; insult −.83/2.62. English sorted insult under sadness; kept in anger because it's the plainest case of Lazarus's anger theme, a demeaning offense.
+    - **Indignant**: someone questioned your honesty or dignity, such as blaming you for what you didn't do, and you feel offended. (−.48/3.32/66) No longer opens with Resentful's cause (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
+  - **Jealous**: someone has, or might take, something or someone you want, and you feel angry about it. (−.65/2.38/204) Widened: everyday "jealous" covers envy too (jealous ↔ envious .238/.046) (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
     - **Envious**: wanting what someone else has. (−.78/3.52/67)
-    - **Suspicious**: you sense someone close is hiding something. (−.69/3.48/63) New (situation gap); often comes with fear.
+    - **Possessive**: you want to keep someone you love to yourself, and you feel jealous of anyone near them. (–/–/21; "I was possessive" 1.6) Replaces Suspicious, which moved to Anxious. Jealous covers both everyday kinds: Envious (someone has what you want) and Possessive (you're afraid of losing someone); possessive → jealous .073. Lucas, 2026-11-22: kept this way, though "I just don't think it works very well"; an outer word under Resentful was the alternative.
   - **Disgusted**: someone did something cruel or wrong, and you can't stand it. (−.90/2.68/251; "I was disgusted" 56) Moral disgust. Lucas, 2026-11-22: the same label as physical disgust under Bad, since most people who say "disgusted" mean this one and tap Angry ([research/9](research/9-disgust.md): 74% of recalled "disgusted" stories were about anger, 8% of "grossed out" ones).
-    - **Appalled**: you saw something cruel or wrong, and you feel disgusted. (−.61/3.62/7) Under 15: said as "I was appalled".
+    - **Appalled**: you can't believe how cruel or wrong something was, and you feel disgusted. (−.61/3.62/7) Under 15: said as "I was appalled".
     - **Contempt**: feeling someone is beneath you. (−.59/3.22/26)
     - **Hatred**: you can't stand who someone is, not just what they did, and it lasts. (−.93/2.38/41) Lucas, 2026-11-22: moved from Resentful to make room for Betrayed. Hate is conceptually closer to disgust and contempt than to anger (Martínez et al. 2022), and the Basque sort mixed the disgust words with hate ([research/9](research/9-disgust.md), [10](research/10-which-core-people-tap.md)); raters still put "hateful" 87% under Angry, which this keeps. Hate targets who someone is (Fischer et al. 2018). Its third-word situation: someone who badly hurt you.
 - **Bad**: something's off, and it's hard to say what. (−.75/3.24/3103)
   - **Bored**: nothing holds your interest. (−.69/2.95/177)
-    - **Restless**: keyed up and unable to settle. (−.56/3.63/150) Often comes with anxiety.
+    - **Restless**: bored and unable to sit still. (−.56/3.63/150) Its old definition was anxious; waiting on a job offer now maps to Anxious (2026-11-22, comb pass, [research/8](research/8-comb-pass.md)).
     - **Unmotivated**: no drive to start anything. (−.67/–/9) Under 15; listless 11, apathetic 5.
-  - **Overwhelmed**: too much came at you at once, and you feel you can't cope. (−.32/2.80/662) Replaces Stressed, an umbrella (rule 4).
+  - **Overwhelmed**: too much is coming at you, and you feel you can't cope. (−.32/2.80/662) Replaces Stressed, an umbrella (rule 4). "At once" ruled out its own child, Burned out. Its card names "stressed", which it covers (2026-11-22, fresh comb pass, [research/11](research/11-fresh-comb-pass.md)).
     - **Pressured**: R3. Others push you harder than you can go, and you feel overwhelmed. (–/–/261) Unscored; pressure −.28/3.56.
     - **Burned out**: months of strain have worn you down, and you feel you have nothing left to give. (−.73/–/20, plus "burnt out" 9) New. ICD-11: occupational, not medical (rule 12).
   - **Confused**: things don't make sense. (−.56/3.11/259)
-    - **Conflicted**: pulled two ways at once. (–/–/109) Unscored; conflict −.33/3.05.
+    - **Conflicted**: pulled two ways at once. (–/–/109) Unscored; conflict −.33/3.05. Torn is about as common (102 "feel", 111 "I was"); Conflicted stays as the word that doesn't also mean ripped. Its old reason, that Torn "usually means ripped", is false in these frames.
     - **Lost**: no sense of direction. (−.64/2.53/451)
-    - **Puzzled**: something doesn't add up. (−.59/4.60/47)
   - **Numb**: you can't feel much of anything. (−.78/3.79/358)
-    - **Empty**: hollow, as if something is missing. (−.62/3.78/408)
-    - **Detached**: cut off from yourself or what's around you. (−.44/3.65/49)
-    - **Indifferent**: you don't care either way. (−.21/4.28/20)
+    - **Empty**: you feel hollow, as if something is missing. (−.62/3.78/406) Lucas, 2026-11-22: also under Sad → Grief, since people split: raters put empty 69% Sad, and people link it to lonely, not numb ([research/11](research/11-fresh-comb-pass.md)).
+    - **Disconnected**: cut off from yourself or what's around you. (−.42/–/111; "I was disconnected" 6) Replaces Detached, the same feeling, used less than half as often (49) (2026-11-22, fresh comb pass, [research/11](research/11-fresh-comb-pass.md)).
   - **Uncomfortable**: ill at ease with a place or the people around you. (−.62/2.70/1888)
     - **Awkward**: unsure how to act around others. (−.41/2.95/727)
     - **Out of place**: you don't fit in here. (–/–/225) Unscored; not belonging is unpleasant.
-  - **Embarrassed**: something awkward happened in front of others, and you wish no one had seen it. (−.63/3.51/828) Covers your own awkward moments and someone else's (Cringe). Lucas, 2026-11-22: moved from Sad. In daily reports embarrassment comes with guilt and fear, almost never sadness, and it isn't loss, danger, or unfairness ([research/10](research/10-which-core-people-tap.md)). Its old definition ended "uncomfortable", now a sibling's word.
-    - **Foolish**: you made a silly mistake, and you feel embarrassed. (−.37/3.00/255)
+  - **Embarrassed**: something you did looked silly in front of others, and you wish no one had seen it. (−.63/3.51/828) Covers your own awkward moments and someone else's (Cringe). Lucas, 2026-11-22: moved from Sad. In daily reports embarrassment comes with guilt and fear, almost never sadness, and it isn't loss, danger, or unfairness ([research/10](research/10-which-core-people-tap.md)). Its old definition ended "uncomfortable", now a sibling's word.
+    - **Foolish**: you made a silly mistake, and you feel embarrassed. (−.37/3.00/255) "Stupid" is more common after "I was" (200 against 69), but much of that is judging yourself, not a feeling.
     - **Mortified**: so embarrassed you want to vanish. (−.67/–/26) English sorted mortification with fear (older sense); conflict recorded.
-    - **Cringe**: someone else did something awkward, and you feel embarrassed for them. (−.51/3.24/0.02) New. Lucas, 2026-11-20: chosen over "Embarrassed for them" (36). Books barely use it, so rule 10's counts can't measure it; `check.py` exempts it with that reason.
+    - **Cringe**: someone else did something embarrassing, and you feel embarrassed for them. (−.51/3.24/0.02) New. Lucas, 2026-11-20: chosen over "Embarrassed for them" (36). Books barely use it, so rule 10's counts can't measure it; `check.py` exempts it with that reason. Not "awkward", a sibling family's label. Its third-word situation: a friend's wedding toast goes badly. It still needs evidence that people say it about themselves ("I'm cringing", "secondhand embarrassment"), since "that's cringe" describes a thing (2026-11-22, fresh comb pass, [research/11](research/11-fresh-comb-pass.md)).
   - **Guilty**: you feel bad about something you did. (−.73/3.09/3496) Lucas, 2026-11-22: moved from Sad. People say guilt as "I feel bad about it" ("feel bad about" 742 per billion, and "bad" is the word most linked to guilty), so Bad is the door they'd tap; raters offered no catch-all split between Scared (45%) and Sad (36%) ([research/10](research/10-which-core-people-tap.md)).
     - **Remorse**: deep guilt, wishing you hadn't caused harm. (−.79/3.63/101)
     - **Apologetic**: guilty and wanting to make amends. (−.04/6.65/21) New. Lists disagree. Flag: "sorry" (2,918) is mostly sorry-for; the apologetic sense (sorry about 27, sorry that 36) is 3x, and "Sorry" alone reads both ways.
   - **Disgusted**: something gross, like a smell or something slimy, makes you want to pull away. (−.90/2.68/251) Physical disgust. Lucas, 2026-11-22: physical disgust isn't anger, so its door is Bad; the same label as moral disgust under Angry ([research/9](research/9-disgust.md)).
-    - **Repulsed**: something makes you want to get away from it. (–/–/16; "I was repulsed" 9) Unscored; repulsive −.71/1.95. Moved from Angry.
+    - **Repulsed**: so disgusted you have to get away from it. (–/–/16; "I was repulsed" 9) Unscored; repulsive −.71/1.95. Moved from Angry.
     - **Squeamish**: blood, injury, or bugs make your stomach turn. (−.65/–/9; "I was squeamish" 1.5) New. Under 15 in both counts: said as "I'm squeamish".
 
 Sorting conflicts recorded: English and Indonesian put sympathy, compassion and being moved under sadness, but rule 1 outranks rule 6. Indonesian puts bored with anger and confused with fear; English doesn't cover them.

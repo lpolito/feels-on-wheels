@@ -9,6 +9,8 @@ They're few and loose on purpose. Lucas, 2026-11-21: "It feels silly for some re
 - **Judgment is guided by five questions,** with no numbered order and no exact thresholds.
 - **Every word has a written reason, and the reason is the real record.**
 
+**The north star is how people use the wheel** (Lucas, 2026-11-21). Someone opens it, taps the core that matches what they feel, taps a middle word, finds their word, and reads its card to confirm. Every rule serves that, and anything decided earlier can be rechecked against it.
+
 How they were made: after a cold refutation of the numbered rules ([research/6](research/6-final-rules-refuted.md)), two writers drafted the looser set independently, and a fresh refuter ran both on the candidate wheel and the datasets, then merged them ([research/7](research/7-looser-rules-refuted.md)). What the process taught is in [learnings.md](learnings.md).
 
 ## What the research supports
@@ -16,7 +18,7 @@ How they were made: after a cold refutation of the numbered rules ([research/6](
 | Finding | How solid | What it means for the wheel |
 |---|---|---|
 | **Pleasant or unpleasant is the first split.** It comes first in every sorting study. Across 2,474 languages, it's the strongest predictor in most language families, with energy the strongest in the rest (Jackson et al. 2019; the "13 of 19" figure is from secondary sources). | Strong | Each core is all pleasant or all unpleasant. |
-| **People sort feeling words into the same few families:** love, joy, anger, sadness, and fear, plus a small, pleasant surprise group. Within those, disgust and contempt sort under anger; envy and jealousy under anger; shame, guilt, embarrassment, humiliation, insecurity, rejection, and loneliness under sadness; shock and alarm under fear. This is Shaver et al. 1987, as restated by Parrott (a secondary reformat). Indonesian (2001) and Basque (2006) replicate the five families and disgust under anger. In Basque, shame fell near fear and surprise words often sorted with fear; in Chinese (1992), love wasn't its own family and shame was. | Strong in English; the families replicate in Indonesian and Basque | The best evidence of where people look for a word. |
+| **People sort feeling words into the same few families:** love, joy, anger, sadness, and fear, plus a small, pleasant surprise group. Within those, disgust and contempt sort under anger; envy and jealousy under anger; shame, guilt, embarrassment, humiliation, insecurity, rejection, and loneliness under sadness; shock and alarm under fear. This is Shaver et al. 1987, as restated by Parrott (a secondary reformat). Indonesian (2001) and Basque (2006) replicate the five families and disgust under anger. In Basque, shame fell near fear and surprise words often sorted with fear; in Chinese (1992), love wasn't its own family and shame was. | Strong in English; the families replicate in Indonesian and Basque | Evidence of which words people think are alike. It informs which core someone would tap, but sorting cards isn't the same as looking for your own feeling from the center (question 2). |
 | **Family membership is fuzzy.** Some words are closer to the center of their family than others (Russell and Fehr 1994). Categories shade into each other (Cowen and Keltner 2017). | Strong | Ask whether a word fits its parent better than anywhere else, not whether it fits perfectly. Cards can name a second home. |
 | **Some "feelings" name what happened.** "Being angry is an emotion, but being abandoned is not": "feeling abandoned" reports the cause, which might be hurt, fear, or anger (Ortony, Clore, and Foss 1987). The distinction holds on average, not as a test of one word. Betrayed and Rejected aren't on their list; treating them the same way is our inference, and the sorting puts rejection with sadness. | Moderate | Words for what happened to you are a tagged list, on the outer ring, under the feeling they most often cause. |
 | **Body states aren't feelings, and stress is an umbrella.** Tired and Sleepy are body states (Ortony; Clore). Knowing someone is angry, anxious, guilty, or sad tells you more than knowing they're stressed (Lazarus 1993). Boredom is an emotion (Danckert et al. 2018). | Moderate | Body states belong on the body wheel. Words inside the catch-all core are specific, not umbrellas. |
@@ -36,15 +38,15 @@ How they were made: after a cold refutation of the numbered rules ([research/6](
 
 1. **Build from the rules, not from today's wheel.** That includes the cores. Familiarity with today's wheel or other wheels is never a reason; some familiarity comes anyway from using the words people use.
 2. **Every word has a written reason, and the reason is the record.** One or two sentences: why it's here and not nearby, what alternatives were considered, and a line answering each flag it raised. *Lucas, 2026-11-20:* Resentful heads Cheated and Used, not Bitter, because Bitter means a souring that lingers, which isn't true of being cheated or used.
-3. **Each word is on the wheel once.** Two forms of one word (Love and Loved) count as the same word. A repeat is one of two cases:
-   - **one feeling that fits two families:** it goes where most people would look, and its card names the other ("Betrayed often comes with anger");
-   - **two feelings that share a spelling** (embarrassed about yourself, embarrassed for someone else): each that earns a place gets its own label and definition, and each is counted with a phrase that pins its meaning.
+3. **Each word is on the wheel once, unless people would split.** Two forms of one word (Love and Loved) count as the same word. A repeat is one of two cases:
+   - **one feeling that fits two families:** it goes under the core most people would tap (question 2), and its card names the other ("Betrayed often comes with anger"). But a card only helps someone who found the word, so when the evidence shows people would split between two cores, the word goes in both, with the same definition. That should be rare, and the reason records the evidence for the split;
+   - **two feelings that share a spelling** (embarrassed about yourself, embarrassed for someone else): each that earns a place gets its own definition, and each is counted with a phrase that pins its meaning. They keep the same label when each sits under the core its own users would tap, since people see only the core they tapped. *Lucas, 2026-11-22:* Disgusted is physical disgust under Bad and moral disgust under Angry, "until something pushes against it". Otherwise each gets its own label (Cringe, for embarrassment for someone else).
 4. **The layout.** Each middle word has 2 or 3 outer words, and 2 is the default. *Lucas, 2026-11-20:* going by how the body wheel works, even 3 is pushing it. A third word's reason names an everyday situation where it's the word you'd reach for and neither its siblings nor its parent fits. If a fourth seems needed, split the middle word or move a word; never break the cap.
 5. **Every language uses the English wheel's shape.** Each position gets that language's most natural word or phrase for the position's meaning (*tengo miedo* is fine). Never re-sort a language, even where its own sorting differs. If two positions collide, use another word or a short qualifier; if that fails, record it as a known limit. *Lucas, 2026-11-19:* a shape for each language is possible long term, given AI reliable enough at this, or a fluent speaker willing to scrutinize every word the way he does.
 6. **Fix the body wheel in the same change.** Moving or removing a word means rechecking every body wheel path that uses it.
 7. **Credit every new source** with a note in [reference/](../reference/README.md) and a Credits entry. Datasets and published situation sets stay out of the repo, and nothing is transcribed from them.
 
-**No size limit** beyond the layout: the wheel is as comprehensive as is reasonable.
+**No size limit** beyond the layout: the wheel is as comprehensive as is reasonable. For now there's no limit on middle words per core either (Lucas, 2026-11-21), though a crowded core is slower to scan.
 
 ## What the script checks
 
@@ -55,12 +57,12 @@ The checks that need only the wheel files run in CI with the app's data tests. T
 | | Check | Runs | When a word fails |
 |---|---|---|---|
 | **Pleasantness** | No word under a core is on the other side from it, both ways: a word fails when every list that scores it (Warriner et al. 2013; NRC VAD v2.1) puts it there. Lookups try the word as written, lowercase, with the hyphen as a space, and with the hyphen removed, so nothing passes silently as unscored. | Local | Move it to the family on its side that question 2 picks, or record a reason naming the meaning and why the lists misread it. |
-| **Once** | Each label appears once, comparing base forms (Love and Loved are the same). | CI | Rename one meaning (Always 3), or remove one. |
+| **Once** | Each label appears once, comparing base forms (Love and Loved are the same). A word recorded as a split between two cores, or as two meanings under two cores (Always 3), may appear once in each. | CI | Rename one meaning (Always 3), or remove one. |
 | **Layout** | Every middle word has 2 or 3 outer words. | CI | Add, remove, split, or move (Always 4). |
 | **Body wheel** | Every sensation has 2 or 3 feelings, all on the feelings wheel, and no two from the same line (parent, child, or grandparent). A core word can be one of them where it really is the best fit. | CI | Pick the nearest feeling by question 2, or remove the sensation with a note. |
-| **What happened** | Every word tagged as what happened to you is on the outer ring, and its definition ends by naming the feeling. | CI | Move it out, or fix the definition. |
+| **What happened** | Every word tagged as what happened to you is on the outer ring, and its definition ends by naming the feeling (both feelings, for a word under two cores: Betrayed ends "hurt, angry, or both"). | CI | Move it out, or fix the definition. |
 | **Translations** | No two positions in one language share a translation, comparing base and gendered forms (*avergonzado* and *avergonzada*), neighbors or not. | CI | Another word or a short qualifier, or record a known limit. |
-| **Situations** | Each situation on the list records 1 to 3 feelings in its source's words, and the wheel word each maps to. Every mapped word is on the wheel. Mapping is judgment, written down with it. | CI | Add the missing feeling, or map it to an existing word with a reason. |
+| **Situations** | Each situation on the list records 1 to 3 feelings in its source's words, and the wheel word each maps to. Every mapped word is on the wheel. Mapping is judgment, written down with it, and it includes the path: someone in that situation would tap that word's core and middle word to reach it. A word filed where they'd never tap is as good as missing. | CI | Add the missing feeling, map it to an existing word with a reason, or move the word. |
 
 ## What the script flags, never decides
 
@@ -89,18 +91,22 @@ The checks that need only the wheel files run in CI with the app's data tests. T
    - only a way of treating people (Critical, Judgmental).
 
    Words for what happened to you, or the situation you're in (Betrayed, Trapped, Safe), are feelings people reach for: they stay, as tagged outer words (see below).
-2. **Where would most people look for it?** Where the sorting studies cover a word, follow them: Embarrassed, Guilty, Ashamed, Insecure, Rejected, and Lonely with sadness; Jealous, Envious, Disgusted, and Contempt with anger; Shocked with fear; pleasant surprise with joy. Where they don't, ask what happened, using the cores' questions below. Word associations can flag a word that seems out of place, but they're skewed by other meanings (mad also means crazy).
-3. **Does this parent describe it better than any other parent would?** Most people who feel the word would also say they feel its parent, and the word reads as the parent plus something specific: a cause, a target, or a strength. Words for what happened go under the feeling their definition names.
-4. **Is each word a real choice?** Siblings pass "I feel A but not B" both ways (Curious and Inquisitive fail). Siblings can be different strengths of their parent (Annoyed and Furious under Angry), but a stronger word that keeps one sibling's specific cause or target is that sibling's strong form, so it goes under that sibling or leaves. *Lucas, 2026-11-20:* Lust ("strong physical desire") beside Desire was this trap. For a parent and its word, only one direction has to hold: you can feel scared without feeling terrified.
+2. **If you felt this, which core would you tap first?** People use the wheel from the center out: they tap the core that matches what they feel, then go deeper. Nobody thinks "I feel repulsed, so I'll look in Angry". *Lucas, 2026-11-21.* Evidence for the answer:
+   - **What people say they feel at the same time:** if people who feel the word usually also say they feel the core, the core is the door.
+   - **What happened,** using the cores' questions below.
+   - **The sorting studies,** where they cover the word. They show which words people think are alike, which isn't the same as which door they'd tap, so they inform the answer rather than decide it.
+   - **Word associations** can flag a word that seems out of place, but they're skewed by other meanings (mad also means crazy).
+3. **If you felt this, which middle word would you tap?** The same test as question 2, one ring further in. The evidence is the same too: people who feel the word usually also say they feel its parent, and the word reads as the parent plus something specific: a cause, a target, or a strength. Words for what happened to you follow this like any other word, not the feeling they're assumed to cause: someone who feels betrayed might tap Angry as easily as Sad.
+4. **Is each word a real choice?** Siblings pass "I feel A but not B" both ways (Curious and Inquisitive fail). Siblings can be different strengths of their parent (Annoyed and Furious under Angry), but a stronger word that keeps one sibling's specific cause or target is that sibling's strong form, so it goes under that sibling or leaves. *Lucas, 2026-11-20:* Lust ("strong physical desire") beside Desire was this trap. For a parent and its word, only one direction has to hold: you can feel scared without feeling terrified. And siblings are told apart by their labels alone, since people choose from labels and read the definition only after the tap: two siblings whose labels look like the same thing at a glance (Puzzled beside Confused) fail, even if their definitions differ.
 5. **After "I feel", does it name your own feeling, in everyday words?** Its usual meaning after "I feel" is the feeling (Down passes; Sensitive and Free don't), and it's something people say about themselves, not mostly about others (Persecuted). Everyday words beat medical ones (Down, not Depressed). Heavy words people really say stay (Hopeless, Worthless). Slang is in when the reason shows people say it about themselves; book counts barely see it. *Lucas, 2026-11-20:* Cringe joined this way.
 
 ## Design notes
 
 **Cores.** A core is one of the families people sort feelings into (love, joy, anger, sadness, fear) or the one catch-all door. Each is all pleasant or all unpleasant. A core with fewer than 4 middle words needs a line in its reason. Its label is a word young children know: prefer one that at least 75% of 4- to 6-year-olds knew, and let counts only break ties (Afraid outnumbers Scared in books mostly through "afraid that", a hedge).
 
-The catch-all's words are specific feelings, not all from one other family. Its card points to Guilty and Sorry for someone, since nearly half of "feel bad" is "feel bad about" or "feel bad for".
+The catch-all's words are specific feelings, not all from one other family. Nearly half of "feel bad" is "feel bad about" (guilt) or "feel bad for" (sympathy), so Guilty sits inside Bad (Lucas, 2026-11-22), and Bad's card points to Sorry for someone for "I feel bad for them".
 
-Each core answers a question about what happened. These are guides adapted from appraisal theory (Lazarus 1991 and others), not evidence: Lazarus has no theme for surprise or a catch-all, and his anger is "a demeaning offense against me and mine".
+Each core answers a question about what happened. These are guides for placing a word, adapted from appraisal theory (Lazarus 1991 and others), not evidence, and not how people choose: people tap by what they feel, not by what caused it. Lazarus has no theme for surprise or a catch-all, and his anger is "a demeaning offense against me and mine".
 
 | Core | What happened |
 |---|---|
@@ -111,7 +117,7 @@ Each core answers a question about what happened. These are guides adapted from 
 | Fear | Something might hurt you, or something sudden just jolted you. |
 | Catch-all | It's unpleasant, but it isn't loss, danger, or unfairness: too much, unsettled, out of sorts. |
 
-**Words for what happened to you, or the situation you're in** (Betrayed, Abandoned, Cheated, Trapped, Safe). A tagged list, starting from Ortony, Clore, and Foss's "objective descriptions"; each addition gets a reason. Each goes on the outer ring, under the feeling its definition names, and the definition ends with it. *Lucas, 2026-11-20:* intent matters. Shut out on purpose is Rejected (hurt); left out, maybe by accident, is Left out (lonely). Hurt, Lonely, Threatened, and Guilty in its feeling sense are feelings, not tagged.
+**Words for what happened to you, or the situation you're in** (Betrayed, Abandoned, Cheated, Trapped, Safe). A tagged list, starting from Ortony, Clore, and Foss's "objective descriptions"; each addition gets a reason. Each goes on the outer ring, under the core and middle word people who feel it would tap (questions 2 and 3), and its definition ends with that middle word's feeling. *Lucas, 2026-11-20:* intent matters. Shut out on purpose is Rejected (hurt); left out, maybe by accident, is Left out (lonely). Hurt, Lonely, Threatened, and Guilty in its feeling sense are feelings, not tagged.
 
 **Mixed feelings** (Bittersweet, Nostalgic, Awe). The word goes on the side most people feel more strongly. Its reason says what's mixed and why it chose that side, and its card names the other side.
 
@@ -119,7 +125,7 @@ Each core answers a question about what happened. These are guides adapted from 
 
 **Situations.** A list of everyday situations, written without looking at the wheel. A list written one situation per word can't find a missing feeling. Published sets where real people described situations (EmpatheticDialogues, CC BY-NC 4.0; ISEAR, shared for non-commercial research) can be run as a local check after their licenses are confirmed. Both asked people to describe a time they felt one of a fixed list of feelings, so use their situations, not their labels.
 
-**Open:** whether NRC's request for an About-page credit "in a product" covers a design-time check, and whether the non-commercial licenses fit the app, both turn on whether Feels on Wheels stays non-commercial. That's Lucas's call.
+**The app stays non-commercial** (Lucas, 2026-11-21), so the non-commercial licenses fit. **Still open:** whether NRC's request for an About-page credit "in a product" covers a design-time check.
 
 ## Considered and dropped
 

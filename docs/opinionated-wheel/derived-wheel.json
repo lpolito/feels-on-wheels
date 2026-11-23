@@ -87,11 +87,17 @@
           ]
         },
         {
-          "label": "Surprised",
+          "label": "Amazed",
           "outer": [
-            "Amazed",
             "Awe",
             "Impressed"
+          ]
+        },
+        {
+          "label": "Grateful",
+          "outer": [
+            "Honored",
+            "Cared for"
           ]
         }
       ]
@@ -116,7 +122,6 @@
         {
           "label": "Connected",
           "outer": [
-            "Loved",
             "Understood",
             "Valued",
             "Accepted"
@@ -127,13 +132,6 @@
           "outer": [
             "Desire",
             "Aroused"
-          ]
-        },
-        {
-          "label": "Grateful",
-          "outer": [
-            "Honored",
-            "Cared for"
           ]
         }
       ]
@@ -160,7 +158,6 @@
         {
           "label": "Disappointed",
           "outer": [
-            "Let down",
             "Discouraged",
             "Regret",
             "Disillusioned"
@@ -197,25 +194,8 @@
           ]
         },
         {
-          "label": "Guilty",
+          "label": "Inadequate",
           "outer": [
-            "Remorse",
-            "Apologetic"
-          ]
-        },
-        {
-          "label": "Embarrassed",
-          "outer": [
-            "Foolish",
-            "Mortified",
-            "Humbled",
-            "Cringe"
-          ]
-        },
-        {
-          "label": "Insecure",
-          "outer": [
-            "Inadequate",
             "Inferior",
             "Insignificant"
           ]
@@ -237,7 +217,8 @@
           "label": "Nervous",
           "outer": [
             "Apprehensive",
-            "On edge"
+            "On edge",
+            "Insecure"
           ]
         },
         {
@@ -296,7 +277,7 @@
           "outer": [
             "Cheated",
             "Used",
-            "Hatred"
+            "Betrayed"
           ]
         },
         {
@@ -317,9 +298,9 @@
         {
           "label": "Disgusted",
           "outer": [
-            "Repulsed",
             "Appalled",
-            "Contempt"
+            "Contempt",
+            "Hatred"
           ]
         }
       ]
@@ -362,6 +343,28 @@
           "outer": [
             "Awkward",
             "Out of place"
+          ]
+        },
+        {
+          "label": "Embarrassed",
+          "outer": [
+            "Foolish",
+            "Mortified",
+            "Cringe"
+          ]
+        },
+        {
+          "label": "Guilty",
+          "outer": [
+            "Remorse",
+            "Apologetic"
+          ]
+        },
+        {
+          "label": "Disgusted",
+          "outer": [
+            "Repulsed",
+            "Squeamish"
           ]
         }
       ]

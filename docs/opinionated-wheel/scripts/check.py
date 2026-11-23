@@ -38,6 +38,8 @@ LOOKUP_AS = {"Sorry for someone": "sorry"}
 NEAR_NEUTRAL_NRC = 0.15
 NEAR_NEUTRAL_WAR = 0.5
 MAX_OUTER = 3          # Lucas, 2026-11-20: never 4, and 3 only when the third word earns its place
+# Words on the wheel twice on purpose (rules.md, Always 3): each meaning under the core its own users would tap.
+SPLITS = {"disgusted", "betrayed"}  # Lucas, 2026-11-22: Disgusted physical under Bad, moral under Angry; Betrayed under Sad and Angry, as people split
 MIN_OUTER = 2
 
 # Words whose phrase count can't measure them, kept by Lucas's decision.
@@ -181,7 +183,7 @@ def main():
                 check_word(out, label, "outer", mid["label"])
 
     for w, where in seen.items():
-        if len(where) > 1:
+        if len(where) > 1 and not (w in SPLITS and len(where) == 2):
             fails.append(f"rule 9: {w} appears {len(where)} times: {where}")
 
     # Each situation: [source, area, situation, feeling, covered-by?, reason?]

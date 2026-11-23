@@ -69,7 +69,7 @@
 "builder-1",
 "Loss",
 "Someone promised to show up and didn't",
-"Let down"
+"Disappointed"
 ],
 [
 "builder-1",
@@ -469,7 +469,7 @@
 "builder-1",
 "Good",
 "A surprise party, an unexpected gift",
-"Surprised"
+"Delighted"
 ],
 [
 "builder-1",
@@ -517,7 +517,7 @@
 "builder-1",
 "Close",
 "Someone says they love you",
-"Loved"
+"Connected"
 ],
 [
 "builder-1",
@@ -809,7 +809,7 @@
 "checker",
 "failure",
 "You find out you were wrong in an argument you pushed hard",
-"Humbled"
+"Foolish"
 ],
 [
 "checker",
@@ -1061,7 +1061,7 @@ null,
 "builder-2",
 "achievement",
 "You pass a test you were sure you'd fail",
-"Surprised"
+"Amazed"
 ],
 [
 "builder-2",
@@ -1112,5 +1112,11 @@ null,
 "moral",
 "A cashier gives you too much change and you keep it",
 "Guilty"
+],
+[
+"main-2026-11-22",
+"body",
+"You see blood or a bad injury, and your stomach turns",
+"Squeamish"
 ]
 ]

@@ -11,5 +11,8 @@ Written by fresh agents during the 2026-11-19 and 2026-11-20 brainstorm, each ch
 | [5-derived-wheel-check.md](5-derived-wheel-check.md) | the check | A cold check of the first derived wheel, including the Basque study read in full |
 | [6-final-rules-refuted.md](6-final-rules-refuted.md) | the final refutation | A cold check of the final rule set (2026-11-21), given only the rules and reports 1 to 5 |
 | [7-looser-rules-refuted.md](7-looser-rules-refuted.md) | the second refutation | Two independent drafts of the looser rules, attacked and merged (2026-11-21) |
+| [8-comb-pass.md](8-comb-pass.md) | the comb pass | Every parent and sibling group of the candidate wheel, checked against the new rules with word associations (2026-11-21) |
+| [9-disgust.md](9-disgust.md) | the disgust report | Where disgust belongs: sorting studies read in full, what people mean by "disgusted", and a second agent's check (2026-11-21) |
+| [10-which-core-people-tap.md](10-which-core-people-tap.md) | the which-core report | Which core people would tap first for 17 words, from rating and daily-report data, re-derived by a second agent (2026-11-22) |
 
 Not kept: the brief, report 3 (a critique of the first nine rules), and the two rule drafts. They're superseded by the refutation and by [rules.md](../rules.md).

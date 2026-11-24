@@ -42,6 +42,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Emoji wheel](#emoji-wheel) | New ways to identify an emotion | Planned |
 | [Strength](#strength) | New ways to identify an emotion | Shelved (2026-11-08) |
 | [Wheels for kids](#wheels-for-kids) | New ways to identify an emotion | Idea |
+| [Search for a word](#search-for-a-word) | New ways to identify an emotion | Idea |
 | [An opinionated feelings wheel](#an-opinionated-feelings-wheel) | [The wheels' content](#the-wheels-content) | Idea |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
@@ -92,6 +93,12 @@ What Lucas first asked for:
   - their URLs, and whether a kids' word links to the same word on the grown-up wheel;
   - where the words come from, since any new source gets a [reference note](reference/README.md) and a credit.
 - Overlaps with the [emoji wheel](#emoji-wheel), which is also a simplified wheel; worth designing them together.
+
+#### Search for a word
+
+- Lucas, 2026-11-23: "I often want to find a word quickly and cannot." Type a word and jump to it on the wheel, with fuzzy matching so a typo or a partial word still finds it.
+- Meets ["Did you mean" on not found](#did-you-mean-on-not-found), which needs the same matching of a mistyped word to a real one.
+- To decide when designing: where the search box lives on phones and computers, whether it searches both wheels (feelings and body sensations), whether it matches definitions or only labels, what it shows for a word that's on the wheel twice, and how it works with the keyboard and screen readers.
 
 <a id="the-body-wheels-content"></a>
 
@@ -156,6 +163,7 @@ Still open. None blocks the next change. The ones that get in someone's way are 
 
 ### Navigation
 
+- **With a word opened, dragging turns the wheel at the opened ring's speed, wherever you grab.** Found by Lucas 2026-11-23. Grab inside the opened ring, toward the center, and the wheel turns slower than the pointer; grab outside it, toward the edge, and it turns faster. With nothing opened, the wheel follows the pointer's angle around the center, so the spot you grabbed stays under it. The cause: once a word is opened, `src/controller.ts` (`case 'drag'`) turns the wheel by the pointer's vertical movement divided by the opened ring's radius (`rotateBy(i.dy / radiusPx(ring))`), not by the radius where you grabbed, and its fling on release (`dragEnd`) does the same. To decide when designing: divide by the grabbed point's distance from the center, or follow the pointer's angle as the whole wheel does. No fix chosen yet.
 - **Going back on phones.** Swiping back doesn't work at all on the wheel: it takes every touch, so the browser's Back button is the only way back. An app installed to the iPhone home screen has no Back at all. Lucas (2026-11-14): better history rules for phones wait on an in-app back button. History follows the [history rule](superpowers/specs/2026-11-14-feels-on-wheels-history-rule-design.md): picking a word or a place adds an entry, moving by direction replaces it. Related: the [Back to pill](superpowers/specs/2026-11-15-feels-on-wheels-wheel-and-card-design.md#2-back-to-the-word-you-jumped-from) is a way back without the browser's Back, for the jump between wheels only.
 - **With VoiceOver on iPhone, the wheel's words can't be reached.** Lucas tried it on 2026-11-15, after the [question-first change](superpowers/specs/2026-11-15-feels-on-wheels-question-first-design.md): swiping through the page kept repeating the headings or whatever had focus, and never got to a word on the wheel, so he couldn't select one. He's new to VoiceOver, so it isn't yet known how much is the app and how much is how it was used; it needs someone who uses VoiceOver daily, or a careful walk-through. Likely causes, worth checking together:
   - the tree is visually hidden (`.visually-hidden`: 1 px, clipped), and VoiceOver on iPhone moves by what it finds on screen, so it may skip a 1 px element or struggle to land in it;

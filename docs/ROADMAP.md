@@ -52,6 +52,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
 | [Show which word will open after a spin](#show-which-word-will-open-after-a-spin) | [Moving around the wheel](#moving-around-the-wheel) | Idea |
 | [Check every test is worth keeping](#check-every-test-is-worth-keeping) | [Tests](#tests) | Idea |
+| [A wheel that's fast in every browser](#a-wheel-thats-fast-in-every-browser) | [Performance](#performance) | Explored, waiting on Lucas (2026-11-24) |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
 
@@ -173,6 +174,17 @@ What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheel
 - Lucas, 2026-11-16: the test suites are huge and keep growing, about 9,000 lines across 45 unit and end-to-end files. Go through them and keep only the tests that earn their place.
 - Found during the body wheel rework: some tests just restate the content (the body wheel's full list of sensations, exact cell counts, the exact feelings under one sensation). They duplicate `body.json` word for word and have to be edited with every content change, without catching anything. Tests that check rules (every feeling is on the feelings wheel, 2 or 3 feelings per sensation) or behavior (with any valid path) are worth more.
 - To decide when designing: what a test has to protect to stay, whether a single snapshot replaces the content tests, how much end-to-end coverage each of the five browsers needs, and whether to write the bar down for future changes, since the plans' test-first steps add tests with every change.
+
+### Performance
+
+#### A wheel that's fast in every browser
+
+- Lucas, 2026-11-24: spinning the wheel in desktop Firefox lags (about 20 fps on his 2019 MacBook Pro). Firefox moves the wheel's canvas off the GPU for good during the first spin ([Firefox GPU canvas spec](superpowers/specs/2026-11-24-firefox-gpu-canvas-design.md)).
+- The fix on branch `ff-canvas-perf` (cells batched by color, labels kept as `ImageBitmap`s) brings Firefox to 60 fps, but made iPhone browsers stutter on zooms and ring changes: every iOS browser is WebKit, and WebKit copies the whole canvas each time a label becomes a bitmap. It must not merge as it is. Lucas wants one approach for every browser that keeps labels looking as they do today.
+- Explored and timed on 2026-11-24: P2 and P3 (scaling cached labels), a Gecko-only path, caching labels at the sizes they rest at, and a WebGL renderer. Two are left:
+  - **view-size label caching** in the 2D canvas;
+  - **WebGL without antialiasing.**
+- Everything is in [docs/wheel-rendering/](wheel-rendering/findings.md): findings, timings, each exploration's report and branch, and the open problems. The [handoff](wheel-rendering/handoff.md) is the prompt for the next session, with the decisions waiting on Lucas.
 
 ## Known issues
 

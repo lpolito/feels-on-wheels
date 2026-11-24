@@ -1,5 +1,7 @@
 # Firefox: keep the wheel's canvas on the GPU
 
+> **Not merged.** The fix in §2 made every iPhone browser (WebKit) stutter on zooms and ring changes. What came after, and the corrections to the draft reports in §4 and §5, are in [docs/wheel-rendering/](../../wheel-rendering/findings.md).
+
 Lucas, 2026-11-24: spinning the wheel with the keyboard in Firefox on his 2019 MacBook Pro (Intel i7-9750H, Radeon Pro 5300M, 4096 × 2560 at 2×) is laggy. This is a bug fix, so this file is both the findings and the design; there's no separate plan.
 
 ## 1. What was going on

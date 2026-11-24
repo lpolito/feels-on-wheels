@@ -2,29 +2,40 @@
 <meta charset="utf-8">
 <title>Canvas 2D: drawImage from an unchanged OffscreenCanvas each frame</title>
 <style>body{margin:0;font:14px system-ui}#c{display:block;width:100vw;height:90vh}p{margin:8px}</style>
-<p>Source: <a href="?src=offscreen">OffscreenCanvas</a> · <a href="?src=bitmap">ImageBitmap</a> · <a href="?src=canvas">&lt;canvas&gt;</a> · <a href="?src=paths">rotating paths</a> — <span id="out">running…</span></p>
+<p>Source: <a href="?src=offscreen">OffscreenCanvas</a> · <a href="?src=bitmap">ImageBitmap</a> · <a href="?src=canvas">&lt;canvas&gt;</a> · <a href="?src=paths">rotating paths</a> · 30 labels re-rendered each frame: <a href="?src=offscreen&amp;new=30">OffscreenCanvas</a>, <a href="?src=bitmap&amp;new=30">ImageBitmap</a> — <span id="out">running…</span></p>
 <canvas id="c"></canvas>
 <script>
 // 150 small labels, each rendered once, then drawn rotated every frame. With gfx.canvas.accelerated.debug = true, an
-// accelerated canvas shows a green square in its top-right corner.
-const src = new URLSearchParams(location.search).get('src') || 'offscreen';
+// accelerated canvas shows a green square in its top-right corner. With ?new=N, N labels are rendered again each frame,
+// as when a zoom changes their size: into their own canvas, or for ImageBitmaps, into a canvas whose pixels are then
+// transferred to a new bitmap.
+const params = new URLSearchParams(location.search);
+const src = params.get('src') || 'offscreen';
+const fresh = Number(params.get('new') || 0);
 const c = document.getElementById('c');
 const dpr = devicePixelRatio;
 c.width = Math.round(c.clientWidth * dpr); c.height = Math.round(c.clientHeight * dpr);
 const g = c.getContext('2d', { alpha: false });
-const sprites = [];
-for (let i = 0; i < 150; i++) {
-  const w = 120 * dpr, h = 28 * dpr;
-  const s = src === 'canvas' ? Object.assign(document.createElement('canvas'), { width: w, height: h }) : new OffscreenCanvas(w, h);
+const w = 120 * dpr, h = 28 * dpr;
+const make = () => src === 'canvas' ? Object.assign(document.createElement('canvas'), { width: w, height: h }) : new OffscreenCanvas(w, h);
+function paint(s, i, n) {
   const x = s.getContext('2d');
-  x.scale(dpr, dpr); x.fillStyle = `hsl(${i * 37 % 360} 60% 35%)`; x.font = '600 16px system-ui';
-  x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('Label ' + i, 60, 14);
-  sprites.push(src === 'bitmap' ? s.transferToImageBitmap() : s);
+  x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, 120, 28);
+  x.fillStyle = `hsl(${i * 37 % 360} 60% 35%)`; x.font = '600 16px system-ui';
+  x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(`Label ${i}.${n}`, 60, 14);
+  return src === 'bitmap' ? s.transferToImageBitmap() : s;
 }
+const scratch = src === 'bitmap' ? make() : null;
+const sprites = [];
+for (let i = 0; i < 150; i++) sprites.push(paint(scratch ?? make(), i, 0));
 let frames = 0; const times = []; let last = performance.now();
 function frame(now) {
   times.push(now - last); last = now;
   const t = now / 1000, cx = c.width / 2, cy = c.height / 2, R = Math.min(cx, cy) * 0.9;
+  for (let k = 0; k < fresh; k++) {
+    const i = (frames * fresh + k) % 150;
+    if (scratch) { sprites[i].close(); sprites[i] = paint(scratch, i, frames); } else paint(sprites[i], i, frames);
+  }
   g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
   if (src === 'paths') {
     for (let i = 0; i < 150; i++) {

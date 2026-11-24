@@ -1,0 +1,86 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>label sources</title>
+<style>body{margin:0;font:14px system-ui}#c{display:block;width:100vw;height:90vh}p{margin:8px}</style>
+<p id="out">running…</p>
+<canvas id="c"></canvas>
+<script>
+// N labels drawn rotated every frame; `fresh` of them re-rendered each frame (as a zoom changes their size).
+// mode: canvas (own OffscreenCanvas, drawn directly), transfer (transferToImageBitmap per label),
+// page (this frame's new labels share one canvas, one transferToImageBitmap per frame),
+// create (createImageBitmap per label, canvas drawn until it resolves), atlas (one big OffscreenCanvas, subrects).
+const q = new URLSearchParams(location.search);
+const mode = q.get('mode') || 'canvas';
+const N = Number(q.get('n') || 150);
+const fresh = Number(q.get('new') || 0);
+const c = document.getElementById('c');
+const dpr = devicePixelRatio;
+c.width = Math.round(c.clientWidth * dpr); c.height = Math.round(c.clientHeight * dpr);
+const g = c.getContext('2d', { alpha: false });
+const LW = 120, LH = 28, w = Math.ceil(LW * dpr), h = Math.ceil(LH * dpr);
+const label = (x, ox, oy, i, n) => {
+  x.setTransform(dpr, 0, 0, dpr, ox, oy); x.clearRect(0, 0, LW, LH);
+  x.fillStyle = `hsl(${i * 37 % 360} 60% 35%)`; x.font = `600 ${14 + (n % 5) * 0.5}px system-ui`;
+  x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(`Label ${i}.${n}`, LW / 2, LH / 2);
+};
+// sprite: { img, sx, sy } ; img may be canvas or bitmap
+const sprites = new Array(N);
+const COLS = 16, ROWS = Math.ceil(2 * N / COLS);
+const atlas = mode === 'atlas' ? new OffscreenCanvas(COLS * w, ROWS * h) : null;
+const ax = atlas?.getContext('2d');
+let slot = 0;
+const pageCanvas = mode === 'page' ? new OffscreenCanvas(1, 1) : null;
+let pageRefs = new Map(); // bitmap -> live count
+function renderBatch(ids, n) {
+  if (mode === 'canvas') {
+    for (const i of ids) { const s = sprites[i]?.img ?? new OffscreenCanvas(w, h); label(s.getContext('2d'), 0, 0, i, n); sprites[i] = { img: s, sx: 0, sy: 0 }; }
+  } else if (mode === 'transfer') {
+    const s = pageCanvas ?? (renderBatch.scratch ??= new OffscreenCanvas(w, h));
+    for (const i of ids) { label(s.getContext('2d'), 0, 0, i, n); sprites[i]?.img.close(); sprites[i] = { img: s.transferToImageBitmap(), sx: 0, sy: 0 }; }
+  } else if (mode === 'page') {
+    if (!ids.length) return;
+    const cols = Math.min(ids.length, 8), rows = Math.ceil(ids.length / cols);
+    pageCanvas.width = cols * w; pageCanvas.height = rows * h;
+    const x = pageCanvas.getContext('2d');
+    ids.forEach((i, k) => label(x, (k % cols) * w, Math.floor(k / cols) * h, i, n));
+    const bmp = pageCanvas.transferToImageBitmap();
+    pageRefs.set(bmp, ids.length);
+    ids.forEach((i, k) => {
+      const old = sprites[i];
+      if (old) { const r = pageRefs.get(old.img) - 1; if (r === 0) { old.img.close(); pageRefs.delete(old.img); } else pageRefs.set(old.img, r); }
+      sprites[i] = { img: bmp, sx: (k % cols) * w, sy: Math.floor(k / cols) * h };
+    });
+  } else if (mode === 'create') {
+    for (const i of ids) {
+      const s = new OffscreenCanvas(w, h); label(s.getContext('2d'), 0, 0, i, n);
+      const sp = { img: s, sx: 0, sy: 0 }; const prev = sprites[i]; sprites[i] = sp;
+      if (prev && prev.img.close) prev.img.close();
+      createImageBitmap(s).then((b) => { if (sprites[i] === sp) sp.img = b; else b.close(); });
+    }
+  } else if (mode === 'atlas') {
+    for (const i of ids) { const k = slot++ % (COLS * ROWS); const sx = (k % COLS) * w, sy = Math.floor(k / COLS) * h; label(ax, sx, sy, i, n); sprites[i] = { img: atlas, sx, sy }; }
+  }
+}
+renderBatch([...Array(N).keys()], 0);
+let frames = 0; const times = []; let last = performance.now();
+function frame(now) {
+  times.push(now - last); last = now;
+  const ids = []; for (let k = 0; k < fresh; k++) ids.push((frames * fresh + k) % N);
+  renderBatch(ids, frames + 1);
+  const t = now / 1000, cx = c.width / 2, cy = c.height / 2, R = Math.min(cx, cy) * 0.9;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+  for (let i = 0; i < N; i++) {
+    const s = sprites[i]; const a = t + i * Math.PI * 2 / N, r = R * (0.4 + 0.5 * (i % 3) / 2);
+    g.setTransform(Math.cos(a), Math.sin(a), -Math.sin(a), Math.cos(a), cx + r * Math.cos(a), cy + r * Math.sin(a));
+    g.drawImage(s.img, s.sx, s.sy, w, h, -w / 2, -h / 2, w, h);
+  }
+  frames++;
+  if (frames === 240) {
+    const s = times.slice(40).sort((a, b) => a - b);
+    window.done = { med: s[s.length >> 1], p90: s[Math.floor(s.length * 0.9)] };
+    document.getElementById('out').textContent = `${mode} new=${fresh}: median ${window.done.med.toFixed(1)} p90 ${window.done.p90.toFixed(1)}`;
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>

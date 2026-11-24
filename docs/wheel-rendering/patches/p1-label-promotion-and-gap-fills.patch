@@ -1,0 +1,193 @@
+diff --git a/src/render/sprites.ts b/src/render/sprites.ts
+index ab18db4..2402265 100644
+--- a/src/render/sprites.ts
++++ b/src/render/sprites.ts
+@@ -4,18 +4,26 @@ type Ctx2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+ export interface SpriteCache {
+   /** Draws `text` centered at (x, y) in CSS px, rotated by `rot`, from a cached bitmap. */
+   draw(g: CanvasRenderingContext2D, text: string, px: number, color: string, x: number, y: number, rot: number): void;
++  /** Starts a frame: a label still drawn `PROMOTE_AFTER` frames after it was rendered becomes an ImageBitmap. */
++  frame(): void;
+   /** Device pixel ratio the bitmaps are rendered at; changing it drops every sprite. */
+   setScale(dpr: number): void;
+   readonly size: number;
+ }
+ 
+-/** `image` is an ImageBitmap where the canvas can hand one over, else the canvas itself. */
+-interface Sprite { image: ImageBitmap | AnyCanvas; w: number; h: number; bytes: number }
++/** `image` is the canvas the label was rendered into, until it's promoted to an ImageBitmap; `frame` is when it was rendered. */
++interface Sprite { image: ImageBitmap | AnyCanvas; w: number; h: number; bytes: number; frame: number }
+ 
+ const STEP = 0.5;
+ const PAD = 2;
+ const HEIGHT = 1.4;
+ const POOL = 64;
++/**
++ * Frames a label is drawn from its canvas before it becomes an ImageBitmap. A zoom renders most labels anew every
++ * frame, and making a bitmap is slow in WebKit, so only a label that's still in use two frames on gets one; Firefox
++ * needs bitmaps by the third frame of a spin to keep the wheel's canvas on the GPU (spec §2).
++ */
++const PROMOTE_AFTER = 2;
+ /** Spec v1.2 §7: the cache's total backing store (width × height × 4 bytes). */
+ const MAX_BYTES = 16 * 1024 * 1024;
+ 
+@@ -24,9 +32,9 @@ const canvasElement = (w: number, h: number): AnyCanvas =>
+ 
+ /**
+  * Spec §7: label text rendered once per (label, px, color) and blitted with drawImage, because Firefox re-rasterises
+- * rotated fillText on every frame. Each label is kept as an ImageBitmap where the canvas can make one: Firefox sends a
+- * canvas's pixels to its GPU process again every time it's drawn, and a canvas whose draws are mostly new to the GPU
+- * is moved to software for good. Keyed on px rounded to 0.5. Least recently used sprites go once there are more
++ * rotated fillText on every frame. A label that stays in use becomes an ImageBitmap where its canvas can make one:
++ * Firefox sends a canvas's pixels to its GPU process again every time it's drawn, and a canvas whose draws are mostly
++ * new to the GPU is moved to software for good. Keyed on px rounded to 0.5. Least recently used sprites go once there are more
+  * than `limit` or their bitmaps pass `o.maxBytes`. When `makeCanvas` can't give a 2D context, every later sprite
+  * uses `o.fallback` (a <canvas> element by default).
+  */
+@@ -43,6 +51,7 @@ export function createSpriteCache(
+   let bytes = 0;
+   let dpr = 1;
+   let make = makeCanvas;
++  let frame = 0;
+ 
+   function context(): { canvas: AnyCanvas; g: Ctx2D } {
+     const pooled = pool.pop();
+@@ -70,11 +79,15 @@ export function createSpriteCache(
+     g.textAlign = 'center';
+     g.textBaseline = 'middle';
+     g.fillText(text, w / 2, h / 2);
+-    const bytes = canvas.width * canvas.height * 4;
+-    if (!('transferToImageBitmap' in canvas)) return { image: canvas, w, h, bytes };
+-    const image = canvas.transferToImageBitmap();
+-    release(canvas);
+-    return { image, w, h, bytes };
++    return { image: canvas, w, h, bytes: canvas.width * canvas.height * 4, frame };
++  }
++
++  /** A label still in use hands its canvas's pixels to an ImageBitmap, and the canvas goes back to the pool. */
++  function promote(s: Sprite): void {
++    const c = s.image;
++    if (frame - s.frame < PROMOTE_AFTER || !('transferToImageBitmap' in c)) return;
++    s.image = c.transferToImageBitmap();
++    release(c);
+   }
+ 
+   /** Back to the pool, shrunk so a pooled canvas holds no backing store of its own. */
+@@ -105,6 +118,9 @@ export function createSpriteCache(
+     get size() {
+       return sprites.size;
+     },
++    frame() {
++      frame++;
++    },
+     setScale(next) {
+       if (next === dpr) return;
+       dpr = next;
+@@ -120,6 +136,7 @@ export function createSpriteCache(
+       if (s) {
+         sprites.delete(key);
+         sprites.set(key, s);
++        promote(s);
+       } else {
+         s = render(text, q, color);
+         sprites.set(key, s);
+diff --git a/src/render/wheel.ts b/src/render/wheel.ts
+index aa77d11..478d2a9 100644
+--- a/src/render/wheel.ts
++++ b/src/render/wheel.ts
+@@ -141,7 +141,6 @@ export function createWheelRenderer(
+     addSector(cx, cy, r0, r1, a0, a1);
+   }
+ 
+-  /** Adds a cell to the current path, as its own closed subpath. */
+   function addSector(cx: number, cy: number, r0: number, r1: number, a0: number, a1: number): void {
+     g.moveTo(cx + r1 * Math.cos(a0), cy + r1 * Math.sin(a0));
+     g.arc(cx, cy, r1, a0, a1);
+@@ -149,6 +148,25 @@ export function createWheelRenderer(
+     g.closePath();
+   }
+ 
++  /**
++   * Adds a cell to the current path, as its own closed subpath, with its edges moved in: `in0` from the inner arc,
++   * `in1` from the outer arc, and `side` from each radial edge, kept parallel to it. A negative amount moves an edge
++   * out. A cell too narrow to show adds nothing.
++   */
++  function addInset(cx: number, cy: number, r0: number, r1: number, a0: number, a1: number, in0: number, in1: number,
++    side: number): void {
++    const q0 = Math.max(r0 + in0, 0);
++    const q1 = r1 - in1;
++    if (q1 <= q0 || q0 <= Math.abs(side)) return;
++    const d0 = Math.asin(side / q0);
++    const d1 = Math.asin(side / q1);
++    if (a1 - a0 <= 2 * d0) return;
++    g.moveTo(cx + q1 * Math.cos(a0 + d1), cy + q1 * Math.sin(a0 + d1));
++    g.arc(cx, cy, q1, a0 + d1, a1 - d1);
++    g.arc(cx, cy, q0, a1 - d0, a0 + d0, true);
++    g.closePath();
++  }
++
+   function fitted(i: number, w: number, h: number, min: number, max: number, wrapAt: number): LabelCache['result'] {
+     const c = labelCache[i];
+     if (c && Math.abs(c.w - w) <= FIT_TOLERANCE && Math.abs(c.h - h) <= FIT_TOLERANCE && c.min === min && c.max === max
+@@ -253,6 +271,7 @@ export function createWheelRenderer(
+       stats.focusRing = false;
+       stats.focusOutline = false;
+       if (!table || !palette) return;
++      sprites?.frame();
+       const { cam, vp } = f;
+       const R = vp.radius * cam.scale;
+       const k = f.remPx / 16;
+@@ -276,8 +295,11 @@ export function createWheelRenderer(
+       g.strokeStyle = palette.gap;
+       g.lineJoin = 'round';
+ 
+-      // One path per fill color and one for every gap, so a turning wheel is a few dozen draw calls rather than two
+-      // per cell (Firefox moves a canvas to software when most of a frame's paths are new to its GPU cache).
++      // The gaps: every cell is filled in the gap color, grown by half a gap on every side, then in its own color, moved
++      // in by half a gap. The same picture as stroking each cell's outline over its fill, as the gap color is opaque.
++      // One path per color and no stroke: a turning wheel is a few dozen fills rather than a fill and a stroke per cell
++      // (Firefox moves a canvas to software when most of a frame's paths are new to its GPU cache), and stroking curves
++      // costs far more than filling them in every engine.
+       const fills = new Map<string, Segment[]>();
+       const fades = new Map<string, Segment[]>();
+       const cells: Segment[] = [];
+@@ -297,30 +319,32 @@ export function createWheelRenderer(
+         cells.push(s);
+         stats.segmentsDrawn++;
+       }
+-      const cellPath = (group: Segment[]): void => {
++      const half = g.lineWidth / 2;
++      /** Every cell in `group`, moved in by `by` on every side (out, when it's negative). */
++      const cellPath = (group: Segment[], by: number): void => {
+         g.beginPath();
+         for (const s of group) {
+           const ring = layout.rings[s.ring]!;
+-          addSector(cam.cx, cam.cy, ring.inner * R, ring.outer * R, s.start + cam.rotation, s.end + cam.rotation);
++          addInset(cam.cx, cam.cy, ring.inner * R, ring.outer * R, s.start + cam.rotation, s.end + cam.rotation, by, by, by);
+         }
+       };
++      cellPath(cells, -half);
++      g.fillStyle = palette.gap;
++      g.fill();
+       for (const [color, group] of fills) {
+         g.fillStyle = color;
+-        cellPath(group);
++        cellPath(group, half);
+         g.fill();
+       }
+       if (fades.size > 0) {
+         g.globalAlpha = f.fadeT;
+         for (const [color, group] of fades) {
+           g.fillStyle = color;
+-          cellPath(group);
++          cellPath(group, half);
+           g.fill();
+         }
+         g.globalAlpha = 1;
+       }
+-      // The gap color is opaque, so one stroke over every edge looks the same as stroking each cell after its fill.
+-      cellPath(cells);
+-      g.stroke();
+ 
+       g.textAlign = 'center';
+       g.textBaseline = 'middle';

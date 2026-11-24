@@ -1,0 +1,108 @@
+diff --git a/src/main.ts b/src/main.ts
+index 5be2d49..e9aba1d 100644
+--- a/src/main.ts
++++ b/src/main.ts
+@@ -139,8 +139,12 @@ let opts!: CameraOpts;
+ // ── Rendering ────────────────────────────────────────────────────────────
+ const makeCanvas = (w: number, h: number): HTMLCanvasElement | OffscreenCanvas =>
+   typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(w, h) : Object.assign(document.createElement('canvas'), { width: w, height: h });
+-/** Shared by every wheel: keyed on label, size and color (spec v1.2 §7). */
+-const sprites = createSpriteCache(makeCanvas, 600, labelFont);
++/**
++ * Shared by every wheel: keyed on label, size and color (spec v1.2 §7). Labels are kept as ImageBitmaps only in
++ * Firefox's engine (`-moz-orient` is Gecko's alone), where drawing a canvas re-sends its pixels to the GPU, and slower
++ * everywhere else (docs/superpowers/specs/2026-11-24-firefox-gpu-canvas-design.md §2). Firefox on iOS is WebKit.
++ */
++const sprites = createSpriteCache(makeCanvas, 600, labelFont, { bitmaps: CSS.supports('-moz-orient', 'inline') });
+ /** Spec §4.2: cells fade only while a word is opened. */
+ const litFor = (s: State): Uint8Array => (s.opened ? litMask(layout, s.selected) : allLit);
+ const openedKey = (s: State): number | null => (s.opened ? s.selected : null);
+diff --git a/src/render/sprites.ts b/src/render/sprites.ts
+index ab18db4..b1de4f9 100644
+--- a/src/render/sprites.ts
++++ b/src/render/sprites.ts
+@@ -9,7 +9,7 @@ export interface SpriteCache {
+   readonly size: number;
+ }
+ 
+-/** `image` is an ImageBitmap where the canvas can hand one over, else the canvas itself. */
++/** `image` is an ImageBitmap when the cache keeps bitmaps and the canvas can hand one over, else the canvas itself. */
+ interface Sprite { image: ImageBitmap | AnyCanvas; w: number; h: number; bytes: number }
+ 
+ const STEP = 0.5;
+@@ -24,17 +24,18 @@ const canvasElement = (w: number, h: number): AnyCanvas =>
+ 
+ /**
+  * Spec §7: label text rendered once per (label, px, color) and blitted with drawImage, because Firefox re-rasterises
+- * rotated fillText on every frame. Each label is kept as an ImageBitmap where the canvas can make one: Firefox sends a
+- * canvas's pixels to its GPU process again every time it's drawn, and a canvas whose draws are mostly new to the GPU
+- * is moved to software for good. Keyed on px rounded to 0.5. Least recently used sprites go once there are more
+- * than `limit` or their bitmaps pass `o.maxBytes`. When `makeCanvas` can't give a 2D context, every later sprite
+- * uses `o.fallback` (a <canvas> element by default).
++ * rotated fillText on every frame. With `o.bitmaps`, each label is kept as an ImageBitmap where the canvas can make
++ * one: Firefox sends a canvas's pixels to its GPU process again every time it's drawn, and a canvas whose draws are
++ * mostly new to the GPU is moved to software for good. Only Firefox asks for that: in WebKit, every
++ * transferToImageBitmap is slow, and a zoom renders new labels every frame. Keyed on px rounded to 0.5. Least recently
++ * used sprites go once there are more than `limit` or their bitmaps pass `o.maxBytes`. When `makeCanvas` can't give a
++ * 2D context, every later sprite uses `o.fallback` (a <canvas> element by default).
+  */
+ export function createSpriteCache(
+   makeCanvas: (w: number, h: number) => AnyCanvas,
+   limit = 600,
+   font: (px: number) => string = (px) => `${px}px sans-serif`,
+-  o: { maxBytes?: number; fallback?: (w: number, h: number) => AnyCanvas } = {},
++  o: { maxBytes?: number; fallback?: (w: number, h: number) => AnyCanvas; bitmaps?: boolean } = {},
+ ): SpriteCache {
+   const maxBytes = o.maxBytes ?? MAX_BYTES;
+   const fallback = o.fallback ?? canvasElement;
+@@ -71,7 +72,7 @@ export function createSpriteCache(
+     g.textBaseline = 'middle';
+     g.fillText(text, w / 2, h / 2);
+     const bytes = canvas.width * canvas.height * 4;
+-    if (!('transferToImageBitmap' in canvas)) return { image: canvas, w, h, bytes };
++    if (!o.bitmaps || !('transferToImageBitmap' in canvas)) return { image: canvas, w, h, bytes };
+     const image = canvas.transferToImageBitmap();
+     release(canvas);
+     return { image, w, h, bytes };
+diff --git a/tests/unit/sprites.test.ts b/tests/unit/sprites.test.ts
+index 3c166e4..4355728 100644
+--- a/tests/unit/sprites.test.ts
++++ b/tests/unit/sprites.test.ts
+@@ -167,7 +167,7 @@ describe('sprite cache', () => {
+ 
+   test('an OffscreenCanvas label is drawn from an ImageBitmap, and its canvas goes back to the pool', () => {
+     const { made, makeCanvas, drawn, g, bitmaps } = fakes({ bitmaps: true });
+-    const cache = createSpriteCache(makeCanvas, 600, font);
++    const cache = createSpriteCache(makeCanvas, 600, font, { bitmaps: true });
+     cache.draw(g, 'Angry', 14, '#ffffff', 10, 10, 0);
+     cache.draw(g, 'Angry', 14, '#ffffff', 50, 80, 1.2);
+     cache.draw(g, 'Sad', 14, '#ffffff', 0, 0, 0);
+@@ -178,9 +178,18 @@ describe('sprite cache', () => {
+     expect(drawn).toEqual([bitmaps[0], bitmaps[0], bitmaps[1]]);
+   });
+ 
++  test('without bitmaps, an OffscreenCanvas label is drawn from its own canvas', () => {
++    const { made, makeCanvas, drawn, g, bitmaps } = fakes({ bitmaps: true });
++    const cache = createSpriteCache(makeCanvas, 600, font);
++    cache.draw(g, 'Angry', 14, '#ffffff', 10, 10, 0);
++    cache.draw(g, 'Angry', 14, '#ffffff', 50, 80, 1.2);
++    expect(bitmaps).toHaveLength(0);
++    expect(drawn).toEqual([made[0], made[0]]);
++  });
++
+   test('evicted and rescaled ImageBitmaps are closed', () => {
+     const { makeCanvas, g, bitmaps } = fakes({ bitmaps: true });
+-    const cache = createSpriteCache(makeCanvas, 2, font);
++    const cache = createSpriteCache(makeCanvas, 2, font, { bitmaps: true });
+     cache.draw(g, 'Angry', 14, '#ffffff', 0, 0, 0);
+     cache.draw(g, 'Sad', 14, '#ffffff', 0, 0, 0);
+     cache.draw(g, 'Happy', 14, '#ffffff', 0, 0, 0);
+@@ -192,7 +201,7 @@ describe('sprite cache', () => {
+ 
+   test('ImageBitmap bytes count toward the byte cap', () => {
+     const { makeCanvas, g, bitmaps } = fakes({ bitmaps: true });
+-    const cache = createSpriteCache(makeCanvas, 600, font, { maxBytes: 1 });
++    const cache = createSpriteCache(makeCanvas, 600, font, { maxBytes: 1, bitmaps: true });
+     cache.draw(g, 'Angry', 14, '#ffffff', 0, 0, 0);
+     cache.draw(g, 'Sad', 14, '#ffffff', 0, 0, 0);
+     expect(cache.size).toBe(1);

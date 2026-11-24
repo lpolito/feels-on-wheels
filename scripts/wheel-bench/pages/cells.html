@@ -1,0 +1,71 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>cells</title>
+<style>body{margin:0;font:14px system-ui}#c{display:block;width:100vw;height:90vh}p{margin:8px}</style>
+<p id="out">running…</p>
+<canvas id="c"></canvas>
+<script>
+// A wheel of 178 cells in 21 colors, turning, its cell pass drawn `load` times a frame. mode:
+// S1 fill+stroke per cell (main), S2 fills by color + one stroke (branch), S3 fills by color + stroke per cell,
+// S4 fills by color + gaps as one path of radial lines and arcs, S6 gap-colored annulus + cells inset by half a gap.
+const q = new URLSearchParams(location.search);
+const mode = q.get('mode') || 'S1';
+const load = Number(q.get('load') || 4);
+const c = document.getElementById('c');
+const dpr = devicePixelRatio;
+c.width = Math.round(c.clientWidth * dpr); c.height = Math.round(c.clientHeight * dpr);
+const g = c.getContext('2d', { alpha: false });
+const rings = [[0.12, 0.32, 7], [0.32, 0.62, 41], [0.62, 1, 130]];
+const cells = [];
+rings.forEach(([r0, r1, n], ri) => { for (let i = 0; i < n; i++) cells.push({ r0, r1, a0: i / n * Math.PI * 2, a1: (i + 1) / n * Math.PI * 2, ri, color: `hsl(${Math.floor(i * 7 / n) * 51} 50% ${40 + ri * 15}%)` }); });
+const byColor = new Map(); for (const s of cells) { (byColor.get(s.color) ?? byColor.set(s.color, []).get(s.color)).push(s); }
+const GAP = 1.5;
+let cx, cy, R, rot;
+const sector = (s) => { g.moveTo(cx + s.r1 * R * Math.cos(s.a0 + rot), cy + s.r1 * R * Math.sin(s.a0 + rot)); g.arc(cx, cy, s.r1 * R, s.a0 + rot, s.a1 + rot); g.arc(cx, cy, s.r0 * R, s.a1 + rot, s.a0 + rot, true); g.closePath(); };
+const inset = (s) => {
+  const h = GAP / 2, r1 = s.r1 * R - h, r0 = s.r0 * R + h;
+  const d1 = Math.asin(h / r1), d0 = Math.asin(h / r0);
+  if (s.a1 - s.a0 <= 2 * d0) return;
+  g.moveTo(cx + r1 * Math.cos(s.a0 + rot + d1), cy + r1 * Math.sin(s.a0 + rot + d1));
+  g.arc(cx, cy, r1, s.a0 + rot + d1, s.a1 + rot - d1);
+  g.arc(cx, cy, r0, s.a1 + rot - d0, s.a0 + rot + d0, true); g.closePath();
+};
+function pass() {
+  g.lineWidth = GAP; g.strokeStyle = '#222'; g.lineJoin = 'round'; g.lineCap = 'round';
+  if (mode === 'S1') { for (const s of cells) { g.beginPath(); sector(s); g.fillStyle = s.color; g.fill(); g.stroke(); } return; }
+  if (mode === 'S6') {
+    g.beginPath(); g.arc(cx, cy, R + GAP / 2, 0, Math.PI * 2); g.arc(cx, cy, 0.12 * R - GAP / 2, Math.PI * 2, 0, true); g.fillStyle = '#222'; g.fill();
+    for (const [color, group] of byColor) { g.beginPath(); for (const s of group) inset(s); g.fillStyle = color; g.fill(); }
+    return;
+  }
+  for (const [color, group] of byColor) { g.beginPath(); for (const s of group) sector(s); g.fillStyle = color; g.fill(); }
+  if (mode === 'S2') { g.beginPath(); for (const s of cells) sector(s); g.stroke(); }
+  else if (mode === 'S3') { for (const s of cells) { g.beginPath(); sector(s); g.stroke(); } }
+  else if (mode === 'S4') {
+    g.beginPath();
+    for (const s of cells) {
+      g.moveTo(cx + s.r0 * R * Math.cos(s.a0 + rot), cy + s.r0 * R * Math.sin(s.a0 + rot));
+      g.lineTo(cx + s.r1 * R * Math.cos(s.a0 + rot), cy + s.r1 * R * Math.sin(s.a0 + rot));
+      g.arc(cx, cy, s.r1 * R, s.a0 + rot, s.a1 + rot);
+      if (s.ri === 0) { g.moveTo(cx + s.r0 * R * Math.cos(s.a0 + rot), cy + s.r0 * R * Math.sin(s.a0 + rot)); g.arc(cx, cy, s.r0 * R, s.a0 + rot, s.a1 + rot); }
+    }
+    g.stroke();
+  }
+}
+let frames = 0; const times = []; let last = performance.now();
+function frame(now) {
+  times.push(now - last); last = now;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  cx = c.clientWidth / 2; cy = c.clientHeight / 2; R = Math.min(cx, cy) * 0.95;
+  for (let k = 0; k < load; k++) { rot = now / 1000 + k * 0.01; pass(); }
+  frames++;
+  if (frames === 240) {
+    const s = times.slice(40).sort((a, b) => a - b);
+    window.done = { med: s[s.length >> 1], p90: s[Math.floor(s.length * 0.9)] };
+    document.getElementById('out').textContent = `${mode} load=${load}: median ${window.done.med.toFixed(1)} p90 ${window.done.p90.toFixed(1)}`;
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>

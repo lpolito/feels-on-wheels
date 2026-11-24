@@ -154,7 +154,7 @@ function treeFocusVisible(): boolean {
   return el instanceof HTMLElement && el.closest('#a11y-tree') !== null && el.matches(':focus-visible') && !el.hasAttribute('data-quiet-focus');
 }
 
-function frame(): void {
+function frame(moving = false): void {
   pendingDraw = 0;
   if (onAbout) return;
   const s = store.get();
@@ -166,17 +166,25 @@ function frame(): void {
     cam: camera.current, vp, lit, prevLit, fadeT, pulseT,
     selected: s.selected, opened: s.opened,
     mode: s.view.mode, ring: s.view.mode === 'ring' ? s.view.ring : null, remPx: opts.remPx, moreContrast: moreContrast.matches,
-    keyboardFocus: treeFocusVisible(),
+    keyboardFocus: treeFocusVisible(), moving,
   });
   if (TEST) {
     drawTimes.push(performance.now() - t0);
     if (drawTimes.length > 5000) drawTimes.splice(0, 2500);
   }
   if (fadeT < 1 || pulseT < 1) requestDraw();
+  // P2: once the wheel stops (no spring, no pinch event for a moment), draw again so every label gets its exact size.
+  clearTimeout(exactTimer);
+  // A rest frame that still has stand-ins (a render budget) goes on next frame.
+  if (sprites.approximate && !moving) requestDraw();
+  else if (sprites.approximate) exactTimer = setTimeout(() => { if (!camera.moving) requestDraw(); }, EXACT_AFTER_MS);
 }
 
+let exactTimer: ReturnType<typeof setTimeout> | undefined;
+const EXACT_AFTER_MS = 50;
+
 function requestDraw(): void {
-  if (pendingDraw === 0) pendingDraw = requestAnimationFrame(frame);
+  if (pendingDraw === 0) pendingDraw = requestAnimationFrame(() => frame());
 }
 
 /** Draw in this task: resizing clears the canvas, and waiting a frame would paint it blank. */
@@ -403,7 +411,7 @@ function mount(next: Layout, initial: State, intro: boolean): void {
   });
   camera.onFrame(() => {
     if (pendingDraw !== 0) cancelAnimationFrame(pendingDraw);
-    frame();
+    frame(true);
   });
   controller = createController(layout, store, camera, vp, opts);
   renderer = createWheelRenderer(canvas, layout, undefined, sprites);

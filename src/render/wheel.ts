@@ -29,6 +29,8 @@ export interface Frame {
    * color instead of the usual outline color.
    */
   keyboardFocus: boolean;
+  /** P2: the camera drew this frame (a spring or a pinch); labels may stand in from nearby sizes. */
+  moving?: boolean;
 }
 
 export interface WheelRenderer {
@@ -253,6 +255,7 @@ export function createWheelRenderer(
       stats.focusRing = false;
       stats.focusOutline = false;
       if (!table || !palette) return;
+      sprites?.frame(f.moving ?? false);
       const { cam, vp } = f;
       const R = vp.radius * cam.scale;
       const k = f.remPx / 16;

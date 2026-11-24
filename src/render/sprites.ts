@@ -6,6 +6,10 @@ export interface SpriteCache {
   draw(g: CanvasRenderingContext2D, text: string, px: number, color: string, x: number, y: number, rot: number): void;
   /** Device pixel ratio the bitmaps are rendered at; changing it drops every sprite. */
   setScale(dpr: number): void;
+  /** P2: starts a frame; while `moving`, a label whose size isn't cached may be drawn from a nearby larger one. */
+  frame(moving: boolean): void;
+  /** P2: some label this frame was drawn from a nearby larger size; draw again so it gets its exact one. */
+  readonly approximate: boolean;
   readonly size: number;
 }
 
@@ -18,6 +22,13 @@ const HEIGHT = 1.4;
 const POOL = 64;
 /** Spec v1.2 §7: the cache's total backing store (width × height × 4 bytes). */
 const MAX_BYTES = 16 * 1024 * 1024;
+/** P2: while moving, a size not cached may be drawn from a cached bitmap up to this much larger. */
+const TOL = Number(import.meta.env.VITE_P2_TOL ?? 0.3);
+/** P2 "ahead": while moving, a size with no larger neighbor is rendered this much larger (0 = exact). */
+const AHEAD = Number(import.meta.env.VITE_P2_AHEAD ?? 0);
+const COUNT = import.meta.env.VITE_COUNT === '1';
+/** P2 "b": at rest, at most this many labels are rendered exact per frame; the rest keep standing in (0 = no limit). */
+const BUDGET = Number(import.meta.env.VITE_P2_BUDGET ?? 0);
 
 const canvasElement = (w: number, h: number): AnyCanvas =>
   Object.assign(document.createElement('canvas'), { width: w, height: h });
@@ -43,6 +54,9 @@ export function createSpriteCache(
   let bytes = 0;
   let dpr = 1;
   let make = makeCanvas;
+  let moving = false;
+  let approximate = false;
+  let budget = 0;
 
   function context(): { canvas: AnyCanvas; g: Ctx2D } {
     const pooled = pool.pop();
@@ -56,6 +70,7 @@ export function createSpriteCache(
   }
 
   function render(text: string, px: number, color: string): Sprite {
+    if (COUNT) (globalThis as { __renders?: number }).__renders = ((globalThis as { __renders?: number }).__renders ?? 0) + 1;
     const { canvas, g } = context();
     g.font = font(px);
     const w = g.measureText(text).width + 2 * PAD;
@@ -105,6 +120,14 @@ export function createSpriteCache(
     get size() {
       return sprites.size;
     },
+    get approximate() {
+      return approximate;
+    },
+    frame(m) {
+      moving = m;
+      approximate = false;
+      budget = BUDGET;
+    },
     setScale(next) {
       if (next === dpr) return;
       dpr = next;
@@ -114,13 +137,54 @@ export function createSpriteCache(
       bytes = 0;
     },
     draw(g, text, px, color, x, y, rot) {
-      const q = Math.round(px / STEP) * STEP;
+      if (COUNT) (globalThis as { __draws?: number }).__draws = ((globalThis as { __draws?: number }).__draws ?? 0) + 1;
+      let q = Math.round(px / STEP) * STEP;
       const key = `${text}|${q}|${color}`;
       let s = sprites.get(key);
+      let hitKey = key;
+      if (!s && (moving || (BUDGET > 0 && budget <= 0))) {
+        // Moving: a bitmap of the same label up to TOL larger stands in, scaled down.
+        for (let n = q + STEP; n <= q * (1 + TOL); n += STEP) {
+          const k2 = `${text}|${n}|${color}`;
+          const t = sprites.get(k2);
+          if (t) {
+            s = t;
+            hitKey = k2;
+            q = n;
+            break;
+          }
+        }
+        if (COUNT && !s) {
+          const G = globalThis as unknown as { __why?: Record<string, number> };
+          G.__why ??= {};
+          const pre = `${text}|`;
+          let smaller = false;
+          let any = false;
+          for (const k3 of sprites.keys()) if (k3.startsWith(pre) && k3.endsWith(`|${color}`)) { any = true; if (Number(k3.split('|')[1]) < q) smaller = true; }
+          const why = !any ? 'none' : smaller ? 'growing-or-gap' : 'larger-beyond-tol';
+          G.__why[why] = (G.__why[why] ?? 0) + 1;
+        }
+        if (s) approximate = true;
+        else if (AHEAD > 0) {
+          // No larger neighbor: render ahead, so the frames after it (a growing label) can reuse it.
+          const up = Math.ceil((q * (1 + AHEAD)) / STEP) * STEP;
+          hitKey = `${text}|${up}|${color}`;
+          q = up;
+          s = sprites.get(hitKey);
+          if (!s) {
+            s = render(text, up, color);
+            sprites.set(hitKey, s);
+            bytes += s.bytes;
+            evict();
+          }
+          approximate = true;
+        }
+      }
       if (s) {
-        sprites.delete(key);
-        sprites.set(key, s);
+        sprites.delete(hitKey);
+        sprites.set(hitKey, s);
       } else {
+        budget--;
         s = render(text, q, color);
         sprites.set(key, s);
         bytes += s.bytes;

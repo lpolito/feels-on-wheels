@@ -554,7 +554,7 @@
           "feeling": "numb",
           "children": [
             {
-              "feeling": "empty"
+              "feeling": "empty-of-feeling"
             },
             {
               "feeling": "disconnected"

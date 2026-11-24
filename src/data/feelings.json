@@ -698,6 +698,9 @@
       "foggy-head"
     ]
   },
+  "empty-of-feeling": {
+    "sensations": []
+  },
   "disconnected": {
     "sensations": []
   },

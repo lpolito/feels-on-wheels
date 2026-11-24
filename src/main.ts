@@ -12,9 +12,9 @@ import { buildLayout, homes, litMask, type Layout, type Path } from './model/lay
 import { routeMeta } from './meta';
 import { inAppLink } from './router';
 import { buildFillTable, inkFor, readPalette } from './render/colors';
-import { createSpriteCache } from './render/sprites';
+import { createSpriteCache, labelVariant, type WarmItem } from './render/sprites';
 import { createWheelRenderer, labelFont, type WheelRenderer } from './render/wheel';
-import { createStore, initialState, withFrom, type Action, type State, type Store } from './state/store';
+import { createStore, initialState, reduce, withFrom, type Action, type State, type Store } from './state/store';
 import { createHistoryWriter, historyOp } from './state/history';
 import { formatRoute, parsePath, pathOf, routeTable, stateFor, type Route } from './state/url';
 import type { FwBackTo } from './ui/back-to';
@@ -140,7 +140,13 @@ let opts!: CameraOpts;
 const makeCanvas = (w: number, h: number): HTMLCanvasElement | OffscreenCanvas =>
   typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(w, h) : Object.assign(document.createElement('canvas'), { width: w, height: h });
 /** Shared by every wheel: keyed on label, size and color (spec v1.2 §7). */
-const sprites = createSpriteCache(makeCanvas, 600, labelFont);
+const LV = labelVariant();
+/** EXPLORATION: option 5 (and 1+2, which need the room): the byte cap scaled with the pixel count, 16 MB at 1×. */
+const scaledBudget = LV === 'v5' || LV.startsWith('v12');
+const benchDpr = devicePixelRatio || 1;
+const budgetBytes = (globalThis as { __lvBytes?: number }).__lvBytes
+  ?? (scaledBudget ? 16 * 1024 * 1024 * benchDpr * benchDpr : 16 * 1024 * 1024);
+const sprites = createSpriteCache(makeCanvas, scaledBudget ? 2000 : 600, labelFont, { maxBytes: budgetBytes });
 /** Spec §4.2: cells fade only while a word is opened. */
 const litFor = (s: State): Uint8Array => (s.opened ? litMask(layout, s.selected) : allLit);
 const openedKey = (s: State): number | null => (s.opened ? s.selected : null);
@@ -167,6 +173,7 @@ function frame(): void {
     selected: s.selected, opened: s.opened,
     mode: s.view.mode, ring: s.view.mode === 'ring' ? s.view.ring : null, remPx: opts.remPx, moreContrast: moreContrast.matches,
     keyboardFocus: treeFocusVisible(),
+    exact: !camera.moving && !controller.zooming,
   });
   if (TEST) {
     drawTimes.push(performance.now() - t0);
@@ -174,6 +181,82 @@ function frame(): void {
   }
   if (fadeT < 1 || pulseT < 1) requestDraw();
 }
+
+// ── EXPLORATION: option 2, prewarm the views reachable next ─────────────
+let warmJob = 0;
+const warmTimes: number[] = [];
+function nextStates(s: State): State[] {
+  const acts: Action[] = [];
+  if (s.opened && s.selected !== null) {
+    acts.push({ type: 'toParent' }, { type: 'toChild' }, { type: 'close' });
+    for (const c of layout.segments[s.selected]!.children) acts.push({ type: 'open', segment: c });
+    acts.push({ type: 'step', delta: 1 }, { type: 'step', delta: -1 });
+  } else {
+    const at = s.selected ?? controller.coreAtThree();
+    acts.push({ type: 'open', segment: at });
+    const cores = layout.rings[0]!.segments.filter((c) => c !== at);
+    for (const c of cores) acts.push({ type: 'open', segment: c });
+  }
+  const out: State[] = [];
+  for (const a of acts) {
+    const n = reduce(layout, s, a);
+    if (n !== s && !out.some((o) => o.selected === n.selected && o.opened === n.opened)) out.push(n);
+  }
+  return out;
+}
+function prewarm(): void {
+  if (!LV.startsWith('v12')) return;
+  const job = ++warmJob;
+  (globalThis as { __warmStart?: number }).__warmStart = performance.now();
+  const views = nextStates(store.get());
+  let v = 0;
+  let items: WarmItem[] = [];
+  let at = 0;
+  const slice = (): void => {
+    if (job !== warmJob || camera.moving || controller.zooming) return;
+    const t0 = performance.now();
+    try {
+    while (performance.now() - t0 < 6) {
+      if (sprites.bytes > budgetBytes * 0.85) return;
+      if (at >= items.length) {
+        if (v >= views.length) {
+          (globalThis as { __warmDone?: number }).__warmDone = performance.now();
+          return;
+        }
+        const n = views[v++]!;
+        items = renderer.collect({
+          cam: controller.restingCameraFor(n), vp, lit: litFor(n), prevLit: litFor(n), fadeT: 1, pulseT: 1,
+          selected: n.selected, opened: n.opened, mode: n.view.mode, ring: n.view.mode === 'ring' ? n.view.ring : null,
+          remPx: opts.remPx, keyboardFocus: false,
+        }).filter((it) => !sprites.has(it.text, it.px, it.color));
+        at = 0;
+        if (LV.startsWith('v123')) {
+          sprites.warm(items, true);
+          at = items.length;
+        }
+        continue;
+      }
+      sprites.warm([items[at++]!], false);
+    }
+    } finally {
+      warmTimes.push(performance.now() - t0);
+    }
+    setTimeout(slice, 0);
+  };
+  setTimeout(slice, 0);
+}
+(globalThis as { __warmTimes?: number[] }).__warmTimes = warmTimes;
+const frameFor = (n: State, cam = controller.restingCameraFor(n)) => ({
+  cam, vp, lit: litFor(n), prevLit: litFor(n), fadeT: 1, pulseT: 1,
+  selected: n.selected, opened: n.opened, mode: n.view.mode, ring: n.view.mode === 'ring' ? n.view.ring : null,
+  remPx: opts.remPx, keyboardFocus: false,
+});
+/** EXPLORATION analysis: the labels of this view and of each view reachable next. */
+(globalThis as { __viewFits?: () => unknown }).__viewFits = () => {
+  const s = store.get();
+  const views = [s, ...nextStates(s)];
+  return views.map((n) => ({ selected: n.selected === null ? null : layout.segments[n.selected]!.path, opened: n.opened, items: renderer.collect(frameFor(n, n === s ? camera.current : undefined)) }));
+};
 
 function requestDraw(): void {
   if (pendingDraw === 0) pendingDraw = requestAnimationFrame(frame);
@@ -414,6 +497,7 @@ function mount(next: Layout, initial: State, intro: boolean): void {
   pulseStart = -Infinity;
   tree = createA11yTree(freshTreeRoot(), layout, dispatch, () => controller.coreAtThree());
   camera.onSettle(() => tree.rest());
+  camera.onSettle(() => prewarm());
   unsubscribe = store.subscribe(onState);
   wheelSwitch.current = layout.wheelId;
 
@@ -425,6 +509,7 @@ function mount(next: Layout, initial: State, intro: boolean): void {
   controller.setViewport(vp, opts);
   if (intro && opts.rest !== 'whole' && !reducedMotion.matches) controller.playIntro();
   drawNow();
+  setTimeout(prewarm, 300);
   if (TEST) live.push(new WeakRef(layout), new WeakRef(store));}
 
 // ── Routes (URL redesign spec §2, §3) ────────────────────────────────────

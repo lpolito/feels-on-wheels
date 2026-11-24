@@ -21,6 +21,10 @@ export interface Controller {
   /** The core word at 3 o'clock where the wheel is headed (the camera's target rotation), for a key pressed from nothing. */
   coreAtThree(): number;
   readonly camera: CameraController;
+  /** EXPLORATION: a pinch or ctrl-wheel zoom is in progress. */
+  readonly zooming: boolean;
+  /** EXPLORATION: the camera a state rests at, from where the camera is now. */
+  restingCameraFor(s: State): Camera;
 }
 
 const MIN_SCALE = 0.8;
@@ -361,5 +365,9 @@ export function createController(
     setViewport,
     setOpenedY,
     playIntro,
+    get zooming() {
+      return zoom !== null;
+    },
+    restingCameraFor: restingCamera,
   };
 }

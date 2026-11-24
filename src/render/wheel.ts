@@ -4,7 +4,7 @@ import { inWindow, TAU, viewWindow, type Camera, type Viewport, type ViewWindow 
 import type { FillTable, Palette } from './colors';
 import { fitLabel, labelRotation, type Measure } from './labels';
 import { LIFT_RADIAL_PX, LIFT_SIDE_PX, OUTLINE_INNER_PX, OUTLINE_PX } from './selection';
-import type { SpriteCache } from './sprites';
+import { labelVariant, type SpriteCache, type WarmItem } from './sprites';
 
 export interface Frame {
   cam: Camera;
@@ -29,12 +29,16 @@ export interface Frame {
    * color instead of the usual outline color.
    */
   keyboardFocus: boolean;
+  /** EXPLORATION: false while the camera moves or a pinch is held (labels may come from a nearby cached size). */
+  exact?: boolean;
 }
 
 export interface WheelRenderer {
   resize(cssW: number, cssH: number, dpr: number): void;
   setColors(t: FillTable, p: Palette): void;
   draw(f: Frame): void;
+  /** EXPLORATION: the (text, px, color) of every label `f` would draw, without drawing. */
+  collect(f: Frame): WarmItem[];
   stats: { segmentsDrawn: number; labelsDrawn: number; labelFits: number; /** Labels drawn per ring this frame. */ labelsByRing: number[]; /** Whether the focus ring was drawn this frame. */ focusRing: boolean; /** Whether the selection's outline was drawn in the focus color this frame. */ focusOutline: boolean };
 }
 
@@ -69,6 +73,8 @@ export function createWheelRenderer(
   canvas: HTMLCanvasElement, layout: Layout, ctx?: CanvasRenderingContext2D, sprites?: SpriteCache,
 ): WheelRenderer {
   const g = ctx ?? canvas.getContext('2d', { alpha: false })!;
+  const variant = labelVariant();
+  let exactFrame = true;
   const texts = layout.segments.map((s) => wheelCellLabel(s.node));
   const fonts = new Map<number, string>();
   const labelCache: (LabelCache | null)[] = layout.segments.map(() => null);
@@ -151,7 +157,9 @@ export function createWheelRenderer(
 
   function fitted(i: number, w: number, h: number, min: number, max: number, wrapAt: number): LabelCache['result'] {
     const c = labelCache[i];
-    if (c && Math.abs(c.w - w) <= FIT_TOLERANCE && Math.abs(c.h - h) <= FIT_TOLERANCE && c.min === min && c.max === max
+    // EXPLORATION (v12f, v123f): at rest, a fresh fit, so the size doesn't depend on the path the camera took.
+    const tol = exactFrame && variant.endsWith('f') ? 0 : FIT_TOLERANCE;
+    if (c && Math.abs(c.w - w) <= tol && Math.abs(c.h - h) <= tol && c.min === min && c.max === max
       && c.wrapAt === wrapAt) {
       return c.result;
     }
@@ -188,7 +196,11 @@ export function createWheelRenderer(
       const uy = Math.cos(rot);
       for (let l = 0; l < lines.length; l++) {
         const dy = top + l * lineGap;
-        sprites.draw(g, lines[l]!, px, color, x + ux * dy, y + uy * dy, rot);
+        const lx = x + ux * dy;
+        const ly = y + uy * dy;
+        if (variant === 'v4') sprites.drawMip(g, lines[l]!, px, color, lx, ly, rot);
+        else if (!exactFrame && variant.startsWith('v1')) sprites.drawNear(g, lines[l]!, px, color, lx, ly, rot);
+        else sprites.draw(g, lines[l]!, px, color, lx, ly, rot);
       }
       stats.labelsDrawn++;
       return;
@@ -245,7 +257,35 @@ export function createWheelRenderer(
       table = t;
       palette = p;
     },
+    collect(f) {
+      const out: WarmItem[] = [];
+      if (!table || !palette || palette.forced) return out;
+      const { cam, vp } = f;
+      const R = vp.radius * cam.scale;
+      const k = f.remPx / 16;
+      const wrapAt = (ring: number): number => (f.mode !== 'ring' ? 8 : f.ring !== null && ring > f.ring ? 10 : 12) * k;
+      const floor = 1 * k;
+      const maxPx = Math.floor(Math.min(Math.max(16 * k * cam.scale, 16 * k), 24 * k) * 2) / 2;
+      const lifted = f.opened ? f.selected : null;
+      const w = viewWindow(cam, vp);
+      for (const s of layout.segments) {
+        const ring = layout.rings[s.ring]!;
+        if (s.index === lifted || !inWindow(s, ring, w)) continue;
+        const rMid = ((ring.inner + ring.outer) / 2) * R;
+        const angle = s.mid + cam.rotation;
+        const x = cam.cx + rMid * Math.cos(angle);
+        const y = cam.cy + rMid * Math.sin(angle);
+        if (x < -rMid || y < -rMid || x > cssW + rMid || y > cssH + rMid) continue;
+        const boxLen = (ring.outer - ring.inner) * R - 2 * LABEL_PAD;
+        const fit = fitLabel(texts[s.index]!, measure, { width: boxLen, height: (s.end - s.start) * rMid }, { min: floor, max: maxPx, wrapAt: wrapAt(s.ring) });
+        if (!fit) continue;
+        const color = table.label(s.hue, s.ring, f.lit[s.index] === 1);
+        for (const line of fit.lines) out.push({ text: line, px: fit.px, color, seg: s.index, lines: fit.lines.length });
+      }
+      return out;
+    },
     draw(f) {
+      exactFrame = f.exact !== false;
       stats.segmentsDrawn = 0;
       stats.labelsDrawn = 0;
       stats.labelFits = 0;

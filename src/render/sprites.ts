@@ -9,7 +9,8 @@ export interface SpriteCache {
   readonly size: number;
 }
 
-interface Sprite { canvas: AnyCanvas; w: number; h: number }
+/** `image` is an ImageBitmap where the canvas can hand one over, else the canvas itself. */
+interface Sprite { image: ImageBitmap | AnyCanvas; w: number; h: number; bytes: number }
 
 const STEP = 0.5;
 const PAD = 2;
@@ -18,14 +19,14 @@ const POOL = 64;
 /** Spec v1.2 §7: the cache's total backing store (width × height × 4 bytes). */
 const MAX_BYTES = 16 * 1024 * 1024;
 
-const bytesOf = (c: AnyCanvas): number => c.width * c.height * 4;
-
 const canvasElement = (w: number, h: number): AnyCanvas =>
   Object.assign(document.createElement('canvas'), { width: w, height: h });
 
 /**
  * Spec §7: label text rendered once per (label, px, color) and blitted with drawImage, because Firefox re-rasterises
- * rotated fillText on every frame. Keyed on px rounded to 0.5. Least recently used sprites go once there are more
+ * rotated fillText on every frame. Each label is kept as an ImageBitmap where the canvas can make one: Firefox sends a
+ * canvas's pixels to its GPU process again every time it's drawn, and a canvas whose draws are mostly new to the GPU
+ * is moved to software for good. Keyed on px rounded to 0.5. Least recently used sprites go once there are more
  * than `limit` or their bitmaps pass `o.maxBytes`. When `makeCanvas` can't give a 2D context, every later sprite
  * uses `o.fallback` (a <canvas> element by default).
  */
@@ -69,7 +70,24 @@ export function createSpriteCache(
     g.textAlign = 'center';
     g.textBaseline = 'middle';
     g.fillText(text, w / 2, h / 2);
-    return { canvas, w, h };
+    const bytes = canvas.width * canvas.height * 4;
+    if (!('transferToImageBitmap' in canvas)) return { image: canvas, w, h, bytes };
+    const image = canvas.transferToImageBitmap();
+    release(canvas);
+    return { image, w, h, bytes };
+  }
+
+  /** Back to the pool, shrunk so a pooled canvas holds no backing store of its own. */
+  function release(canvas: AnyCanvas): void {
+    if (pool.length >= POOL) return;
+    canvas.width = 1;
+    canvas.height = 1;
+    pool.push(canvas);
+  }
+
+  function drop(s: Sprite): void {
+    if ('close' in s.image) s.image.close();
+    else release(s.image);
   }
 
   /** Drop least recently used sprites while over either limit; the newest always stays. */
@@ -78,13 +96,8 @@ export function createSpriteCache(
       const oldest = sprites.keys().next().value!;
       const evicted = sprites.get(oldest)!;
       sprites.delete(oldest);
-      bytes -= bytesOf(evicted.canvas);
-      if (pool.length < POOL) {
-        // Shrink it so a pooled canvas holds no backing store of its own.
-        evicted.canvas.width = 1;
-        evicted.canvas.height = 1;
-        pool.push(evicted.canvas);
-      }
+      bytes -= evicted.bytes;
+      drop(evicted);
     }
   }
 
@@ -95,6 +108,7 @@ export function createSpriteCache(
     setScale(next) {
       if (next === dpr) return;
       dpr = next;
+      for (const s of sprites.values()) if ('close' in s.image) s.image.close();
       sprites.clear();
       pool.length = 0;
       bytes = 0;
@@ -109,7 +123,7 @@ export function createSpriteCache(
       } else {
         s = render(text, q, color);
         sprites.set(key, s);
-        bytes += bytesOf(s.canvas);
+        bytes += s.bytes;
         evict();
       }
       // Draw at the exact px: the bitmap was rendered at the rounded one.
@@ -117,7 +131,7 @@ export function createSpriteCache(
       const cos = Math.cos(rot) * k;
       const sin = Math.sin(rot) * k;
       g.setTransform(dpr * cos, dpr * sin, -dpr * sin, dpr * cos, dpr * x, dpr * y);
-      g.drawImage(s.canvas, -s.w / 2, -s.h / 2, s.w, s.h);
+      g.drawImage(s.image, -s.w / 2, -s.h / 2, s.w, s.h);
     },
   };
 }

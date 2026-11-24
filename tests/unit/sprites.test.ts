@@ -1,10 +1,16 @@
 import { describe, expect, test } from 'vitest';
 import { createSpriteCache } from '../../src/render/sprites';
 
-interface FakeCanvas { width: number; height: number; texts: string[]; fonts: string[]; ops: string[]; getContext(): unknown }
+interface FakeBitmap { width: number; height: number; text: string | undefined; closed: boolean; close(): void }
+interface FakeCanvas {
+  width: number; height: number; texts: string[]; fonts: string[]; ops: string[]; getContext(): unknown;
+  transferToImageBitmap?: () => FakeBitmap;
+}
 
-function fakes(o: { noContext?: boolean } = {}) {
+/** `bitmaps`: the canvases hand their pixels over as ImageBitmaps, as an OffscreenCanvas does. */
+function fakes(o: { noContext?: boolean; bitmaps?: boolean } = {}) {
   const made: FakeCanvas[] = [];
+  const bitmaps: FakeBitmap[] = [];
   const makeCanvas = (w: number, h: number) => {
     const c: FakeCanvas = {
       width: w, height: h, texts: [], fonts: [], ops: [],
@@ -21,6 +27,13 @@ function fakes(o: { noContext?: boolean } = {}) {
         return ctx;
       },
     };
+    if (o.bitmaps) {
+      c.transferToImageBitmap = () => {
+        const b: FakeBitmap = { width: c.width, height: c.height, text: c.texts.at(-1), closed: false, close() { b.closed = true; } };
+        bitmaps.push(b);
+        return b;
+      };
+    }
     made.push(c);
     return c as unknown as HTMLCanvasElement;
   };
@@ -29,7 +42,7 @@ function fakes(o: { noContext?: boolean } = {}) {
     setTransform() {},
     drawImage: (img: unknown) => drawn.push(img),
   } as unknown as CanvasRenderingContext2D;
-  return { made, makeCanvas, drawn, g };
+  return { made, makeCanvas, drawn, g, bitmaps };
 }
 
 const font = (px: number) => `600 ${px}px sans-serif`;
@@ -150,5 +163,39 @@ describe('sprite cache', () => {
     expect(cache.size).toBe(0);
     cache.draw(g, 'Angry', 14, '#ffffff', 0, 0, 0);
     expect(made.at(-1)!.width).toBeGreaterThan(made[0]!.width);
+  });
+
+  test('an OffscreenCanvas label is drawn from an ImageBitmap, and its canvas goes back to the pool', () => {
+    const { made, makeCanvas, drawn, g, bitmaps } = fakes({ bitmaps: true });
+    const cache = createSpriteCache(makeCanvas, 600, font);
+    cache.draw(g, 'Angry', 14, '#ffffff', 10, 10, 0);
+    cache.draw(g, 'Angry', 14, '#ffffff', 50, 80, 1.2);
+    cache.draw(g, 'Sad', 14, '#ffffff', 0, 0, 0);
+    // One canvas renders both labels; the cache keeps only their bitmaps, the same one each time a label is drawn.
+    expect(made).toHaveLength(1);
+    expect(made[0]!.width).toBe(1);
+    expect(bitmaps.map((b) => b.text)).toEqual(['Angry', 'Sad']);
+    expect(drawn).toEqual([bitmaps[0], bitmaps[0], bitmaps[1]]);
+  });
+
+  test('evicted and rescaled ImageBitmaps are closed', () => {
+    const { makeCanvas, g, bitmaps } = fakes({ bitmaps: true });
+    const cache = createSpriteCache(makeCanvas, 2, font);
+    cache.draw(g, 'Angry', 14, '#ffffff', 0, 0, 0);
+    cache.draw(g, 'Sad', 14, '#ffffff', 0, 0, 0);
+    cache.draw(g, 'Happy', 14, '#ffffff', 0, 0, 0);
+    expect(bitmaps.map((b) => b.closed)).toEqual([true, false, false]);
+    cache.setScale(2);
+    expect(bitmaps.every((b) => b.closed)).toBe(true);
+    expect(cache.size).toBe(0);
+  });
+
+  test('ImageBitmap bytes count toward the byte cap', () => {
+    const { makeCanvas, g, bitmaps } = fakes({ bitmaps: true });
+    const cache = createSpriteCache(makeCanvas, 600, font, { maxBytes: 1 });
+    cache.draw(g, 'Angry', 14, '#ffffff', 0, 0, 0);
+    cache.draw(g, 'Sad', 14, '#ffffff', 0, 0, 0);
+    expect(cache.size).toBe(1);
+    expect(bitmaps.map((b) => b.closed)).toEqual([true, false]);
   });
 });

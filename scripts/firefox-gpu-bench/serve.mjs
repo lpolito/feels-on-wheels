@@ -5,6 +5,7 @@ http.createServer((req, res) => {
   let p = path.join(dir, decodeURIComponent(new URL(req.url, 'http://x').pathname));
   if (!p.startsWith(dir)) { res.writeHead(403); return res.end(); }
   if (!fs.existsSync(p) || fs.statSync(p).isDirectory()) p = fs.existsSync(path.join(p, 'index.html')) ? path.join(p, 'index.html') : path.join(dir, 'index.html');
+  if (!fs.existsSync(p)) { res.writeHead(404); return res.end(); }
   res.writeHead(200, { 'content-type': types[path.extname(p)] || 'application/octet-stream', 'cache-control': 'no-store' });
   fs.createReadStream(p).pipe(res);
 }).listen(port, () => console.log('serving', dir, port));

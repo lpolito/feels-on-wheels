@@ -6,7 +6,8 @@ Everything learned while fixing the Firefox lag and then the iOS stutter the fix
 
 - **`ff-canvas-perf` must not merge as it is.** Its fix (cells batched by color, labels kept as `ImageBitmap`s) makes desktop Firefox spin at 60 fps on the GPU, but makes iOS browsers stutter when zooming and moving between rings. Lucas, 2026-11-24: "the performance on iOS FF is noticeably degraded with these changes. Seems specific to zooming in/out. or selecting outer wheel words and going to the inner wheel in any way. This same interaction is snappy on main."
 - **Lucas wants one approach that works in every browser** that also keeps labels looking as they do today. He turned down a Gecko-only path (bitmaps only in Firefox's engine; [patch](patches/gecko-only-bitmaps.patch)).
-- **Two options are left, and he hasn't chosen:** view-size label caching in the 2D canvas, or a WebGL renderer. See [handoff.md](handoff.md#decisions-waiting-on-me-lucas).
+- **Lucas leans to view-size label caching** (2026-11-24, after trying both contenders on his phone): "option one is probably what we're going to go with". Still open: whether to render the next views' labels ahead of time at all ([handoff.md](handoff.md#decisions-waiting-on-me-lucas)).
+- **WebGL is out for now.** Lucas, trying it: without antialiasing it "looks like crap around words and around borders. Lots of artifacting. And with AA on its noticeably laggy." 
 
 ## Where the code is
 
@@ -141,7 +142,7 @@ What it shows:
 | View sizes, 1+2+3 (one bitmap per view) | Only if needed | About the same timings as 1+2, with more complexity and coarser eviction. |
 | View sizes, 4 (a few fixed sizes per label) | Drop | Text is visibly tighter at rest: scaled-down labels lose the letter spacing small text gets. |
 | View sizes, 5 (budget by pixel density) | A supporting change | Alone it only helps revisits, at 140 MB on a phone. 1+2 needs about 32 MB from 2× up. |
-| **WebGL, no antialiasing** | **Contender** | Best timings everywhere, and sidesteps the browsers' canvas heuristics. A rewrite of 1–2 weeks. |
+| WebGL, no antialiasing | Out for now (Lucas, 2026-11-24) | Best timings, but visible artifacts around words and cell borders. With antialiasing on, it feels laggy. |
 
 ## Open problems
 

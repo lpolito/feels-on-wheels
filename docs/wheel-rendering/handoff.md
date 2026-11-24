@@ -4,7 +4,7 @@ The prompt for the next session on [wheel rendering](../ROADMAP.md#a-wheel-thats
 
 ---
 
-We're making the Feels on Wheels wheel fast in every browser. Desktop Firefox spun the wheel at about 20 fps. The fix on branch `ff-canvas-perf` (cells batched by color, labels kept as `ImageBitmap`s) brought it to 60 fps, but made every iPhone browser stutter when zooming or moving between rings, because WebKit copies the whole canvas each time a label becomes a bitmap. So that branch must not merge as it is. Four approaches were explored on 2026-11-24, then timed one at a time on a quiet machine. Two are left, and I haven't picked one.
+We're making the Feels on Wheels wheel fast in every browser. Desktop Firefox spun the wheel at about 20 fps. The fix on branch `ff-canvas-perf` (cells batched by color, labels kept as `ImageBitmap`s) brought it to 60 fps, but made every iPhone browser stutter when zooming or moving between rings, because WebKit copies the whole canvas each time a label becomes a bitmap. So that branch must not merge as it is. Four approaches were explored on 2026-11-24, then timed one at a time on a quiet machine. After trying the two best on my phone, I'm going with view-size label caching. WebGL looked bad without antialiasing and felt laggy with it.
 
 Start by reading, in this order:
 
@@ -19,10 +19,8 @@ Work on `ff-canvas-perf`, which carries the findings. The contenders' code is on
 
 Ask me these one at a time, the first one first.
 
-1. **Which to push on:**
-   - **View-size label caching (1+2)** in the 2D canvas. It keeps bitmaps only at the sizes labels rest at, draws from the nearest one while moving, and makes the next views' labels in idle time after the wheel stops. It's the smaller change, and it's pixel-identical at rest.
-   - **A WebGL renderer without antialiasing.** It has the best timings everywhere and doesn't depend on any browser's canvas rules, but it's a rewrite of 1–2 weeks, with a 2D fallback to keep.
-2. **Only for view sizes: the size a label rests at.** Today a label that comes to rest can keep a size it was fitted to mid-move (`fitted()` reuses a fit within 1 px, `FIT_TOLERANCE`), half a pixel off what a fresh load of that view draws. The view-size prototype's `v12f` refits fresh once the wheel settles, which removes the last renders on settling, but those labels then no longer exactly match today. Is that fine?
+1. **Whether to render the next views' labels ahead of time (option 2).** View-size caching (1) keeps bitmaps only at the sizes labels rest at and draws from the nearest one while moving. Option 2 adds rendering the next views' labels in idle time after the wheel stops. I notice that happening in practice, and it assumes I'll even go to the "next" view. Work out what I'm noticing and what the alternatives cost (for example option 1 alone renders about 127 labels in the frame the wheel settles), before deciding.
+2. **The size a label rests at.** Today a label that comes to rest can keep a size it was fitted to mid-move (`fitted()` reuses a fit within 1 px, `FIT_TOLERANCE`), half a pixel off what a fresh load of that view draws. The view-size prototype's `v12f` refits fresh once the wheel settles, which removes the last renders on settling, but those labels then no longer exactly match today. Is that fine?
 
 I can try both contenders myself. Build them from their branches:
 

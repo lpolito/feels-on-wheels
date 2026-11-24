@@ -1,0 +1,3 @@
+390x844@3 chromium main          spin       dropped 81/459 (17.6%) worst med 167 max 184 draw med 0.9 p90 1.4
+390x844@3 chromium fix           spin       dropped 121/399 (30.3%) worst med 217 max 286 draw med 1 p90 1.7
+390x844@3 Node.js v26.2.0

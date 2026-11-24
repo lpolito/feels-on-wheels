@@ -1,0 +1,331 @@
+## chromium phone main
+ArrowLeft (out a ring)       frames 32 renders/frame med 0 p90 2 max 3 total 18 labels/frame med 49
+ArrowLeft (out a ring)       frames 39 renders/frame med 0 p90 61 max 64 total 680 labels/frame med 68
+ArrowRight (in a ring)       frames 43 renders/frame med 0 p90 34 max 81 total 345 labels/frame med 49
+ArrowRight (in a ring)       frames 35 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 41 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 43 renders/frame med 0 p90 61 max 66 total 709 labels/frame med 68
+ArrowRight (in a ring)       frames 42 renders/frame med 0 p90 52 max 81 total 374 labels/frame med 49
+ArrowRight (in a ring)       frames 41 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 88 renders/frame med 0 p90 1 max 4 total 24 labels/frame med 34
+pinch 2.5 s                  frames 15 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## chromium phone fix
+ArrowLeft (out a ring)       frames 29 renders/frame med 0 p90 3 max 5 total 18 labels/frame med 49
+ArrowLeft (out a ring)       frames 40 renders/frame med 0 p90 63 max 66 total 680 labels/frame med 68
+ArrowRight (in a ring)       frames 44 renders/frame med 0 p90 33 max 81 total 312 labels/frame med 49
+ArrowRight (in a ring)       frames 34 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 42 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 41 renders/frame med 0 p90 61 max 66 total 675 labels/frame med 68
+ArrowRight (in a ring)       frames 41 renders/frame med 0 p90 33 max 79 total 349 labels/frame med 49
+ArrowRight (in a ring)       frames 45 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 87 renders/frame med 0 p90 1 max 4 total 22 labels/frame med 33
+pinch 2.5 s                  frames 26 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## chromium phone p2-15
+ArrowLeft (out a ring)       frames 26 renders/frame med 0 p90 3 max 3 total 18 labels/frame med 49
+ArrowLeft (out a ring)       frames 43 renders/frame med 0 p90 43 max 65 total 340 labels/frame med 68
+ArrowRight (in a ring)       frames 36 renders/frame med 0 p90 52 max 103 total 379 labels/frame med 49
+ArrowRight (in a ring)       frames 43 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 40 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 49 renders/frame med 0 p90 55 max 63 total 404 labels/frame med 68
+ArrowRight (in a ring)       frames 46 renders/frame med 0 p90 52 max 93 total 389 labels/frame med 49
+ArrowRight (in a ring)       frames 42 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 111 renders/frame med 0 p90 1 max 4 total 25 labels/frame med 34
+pinch 2.5 s                  frames 14 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## chromium phone p2-30
+ArrowLeft (out a ring)       frames 34 renders/frame med 0 p90 2 max 5 total 18 labels/frame med 49
+ArrowLeft (out a ring)       frames 44 renders/frame med 0 p90 31 max 61 total 276 labels/frame med 68
+ArrowRight (in a ring)       frames 36 renders/frame med 0 p90 53 max 84 total 393 labels/frame med 49
+ArrowRight (in a ring)       frames 38 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 36 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 37 renders/frame med 0 p90 54 max 66 total 292 labels/frame med 68
+ArrowRight (in a ring)       frames 35 renders/frame med 0 p90 54 max 83 total 413 labels/frame med 49
+ArrowRight (in a ring)       frames 45 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 96 renders/frame med 0 p90 1 max 4 total 23 labels/frame med 34
+pinch 2.5 s                  frames 26 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## chromium phone p2-30b
+ArrowLeft (out a ring)       frames 33 renders/frame med 0 p90 2 max 3 total 18 labels/frame med 49
+ArrowLeft (out a ring)       frames 49 renders/frame med 0 p90 20 max 61 total 265 labels/frame med 68
+ArrowRight (in a ring)       frames 39 renders/frame med 0 p90 52 max 66 total 366 labels/frame med 49
+ArrowRight (in a ring)       frames 42 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 30 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 50 renders/frame med 0 p90 19 max 61 total 286 labels/frame med 68
+ArrowRight (in a ring)       frames 39 renders/frame med 0 p90 39 max 57 total 281 labels/frame med 49
+ArrowRight (in a ring)       frames 40 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 102 renders/frame med 0 p90 1 max 3 total 25 labels/frame med 34
+pinch 2.5 s                  frames 13 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## chromium desktop main
+ArrowLeft (out a ring)       frames 26 renders/frame med 0 p90 3 max 4 total 16 labels/frame med 60
+ArrowLeft (out a ring)       frames 28 renders/frame med 0 p90 63 max 82 total 250 labels/frame med 129
+ArrowRight (in a ring)       frames 34 renders/frame med 0 p90 0 max 82 total 104 labels/frame med 64
+ArrowRight (in a ring)       frames 40 renders/frame med 0 p90 0 max 1 total 1 labels/frame med 50
+ArrowLeft (out a ring)       frames 31 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 64
+ArrowLeft (out a ring)       frames 33 renders/frame med 0 p90 0 max 82 total 246 labels/frame med 129
+ArrowRight (in a ring)       frames 35 renders/frame med 0 p90 0 max 82 total 104 labels/frame med 64
+ArrowRight (in a ring)       frames 32 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+spin 10 steps                frames 58 renders/frame med 0 p90 0 max 4 total 9 labels/frame med 96
+pinch 2.5 s                  frames 27 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+## chromium desktop fix
+ArrowLeft (out a ring)       frames 39 renders/frame med 0 p90 2 max 3 total 16 labels/frame med 60
+ArrowLeft (out a ring)       frames 32 renders/frame med 0 p90 63 max 82 total 332 labels/frame med 129
+ArrowRight (in a ring)       frames 39 renders/frame med 0 p90 1 max 82 total 186 labels/frame med 64
+ArrowRight (in a ring)       frames 36 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+ArrowLeft (out a ring)       frames 38 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 62
+ArrowLeft (out a ring)       frames 36 renders/frame med 0 p90 0 max 82 total 164 labels/frame med 129
+ArrowRight (in a ring)       frames 30 renders/frame med 0 p90 21 max 82 total 186 labels/frame med 64
+ArrowRight (in a ring)       frames 38 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+spin 10 steps                frames 49 renders/frame med 0 p90 0 max 4 total 9 labels/frame med 49
+pinch 2.5 s                  frames 36 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+## chromium desktop p2-15
+ArrowLeft (out a ring)       frames 31 renders/frame med 0 p90 2 max 4 total 16 labels/frame med 60
+ArrowLeft (out a ring)       frames 33 renders/frame med 0 p90 1 max 82 total 168 labels/frame med 129
+ArrowRight (in a ring)       frames 34 renders/frame med 0 p90 0 max 103 total 185 labels/frame med 64
+ArrowRight (in a ring)       frames 33 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+ArrowLeft (out a ring)       frames 37 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 64
+ArrowLeft (out a ring)       frames 33 renders/frame med 0 p90 0 max 82 total 82 labels/frame med 129
+ArrowRight (in a ring)       frames 43 renders/frame med 0 p90 0 max 123 total 145 labels/frame med 64
+ArrowRight (in a ring)       frames 36 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+spin 10 steps                frames 53 renders/frame med 0 p90 1 max 3 total 9 labels/frame med 96
+pinch 2.5 s                  frames 28 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+## chromium desktop p2-30
+ArrowLeft (out a ring)       frames 27 renders/frame med 0 p90 3 max 4 total 16 labels/frame med 60
+ArrowLeft (out a ring)       frames 27 renders/frame med 0 p90 0 max 65 total 86 labels/frame med 129
+ArrowRight (in a ring)       frames 33 renders/frame med 0 p90 0 max 82 total 96 labels/frame med 64
+ArrowRight (in a ring)       frames 29 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 50
+ArrowLeft (out a ring)       frames 36 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 60
+ArrowLeft (out a ring)       frames 30 renders/frame med 0 p90 0 max 82 total 82 labels/frame med 129
+ArrowRight (in a ring)       frames 46 renders/frame med 0 p90 0 max 82 total 104 labels/frame med 64
+ArrowRight (in a ring)       frames 37 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+spin 10 steps                frames 53 renders/frame med 0 p90 0 max 4 total 9 labels/frame med 96
+pinch 2.5 s                  frames 32 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+## chromium desktop p2-30b
+ArrowLeft (out a ring)       frames 34 renders/frame med 0 p90 2 max 4 total 16 labels/frame med 60
+ArrowLeft (out a ring)       frames 36 renders/frame med 0 p90 16 max 64 total 168 labels/frame med 129
+ArrowRight (in a ring)       frames 39 renders/frame med 0 p90 0 max 16 total 16 labels/frame med 64
+ArrowRight (in a ring)       frames 36 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 50
+ArrowLeft (out a ring)       frames 35 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 62
+ArrowLeft (out a ring)       frames 33 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 129
+ArrowRight (in a ring)       frames 32 renders/frame med 0 p90 0 max 21 total 53 labels/frame med 64
+ArrowRight (in a ring)       frames 29 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+spin 10 steps                frames 35 renders/frame med 0 p90 0 max 3 total 5 labels/frame med 49
+pinch 2.5 s                  frames 34 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+## firefox phone main
+ArrowLeft (out a ring)       frames 25 renders/frame med 0 p90 3 max 5 total 18 labels/frame med 49
+ArrowLeft (out a ring)       frames 29 renders/frame med 2 p90 64 max 66 total 694 labels/frame med 68
+ArrowRight (in a ring)       frames 29 renders/frame med 0 p90 53 max 59 total 346 labels/frame med 49
+ArrowRight (in a ring)       frames 25 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 25 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 29 renders/frame med 2 p90 64 max 65 total 678 labels/frame med 68
+ArrowRight (in a ring)       frames 29 renders/frame med 0 p90 53 max 59 total 296 labels/frame med 49
+ArrowRight (in a ring)       frames 26 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 72 renders/frame med 0 p90 1 max 3 total 25 labels/frame med 34
+pinch 2.5 s                  frames 14 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## firefox phone fix
+ArrowLeft (out a ring)       frames 42 renders/frame med 0 p90 2 max 4 total 18 labels/frame med 49
+ArrowLeft (out a ring)       frames 44 renders/frame med 0 p90 61 max 64 total 698 labels/frame med 68
+ArrowRight (in a ring)       frames 42 renders/frame med 0 p90 34 max 80 total 333 labels/frame med 49
+ArrowRight (in a ring)       frames 49 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 40 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 49 renders/frame med 0 p90 61 max 64 total 729 labels/frame med 68
+ArrowRight (in a ring)       frames 50 renders/frame med 0 p90 35 max 79 total 356 labels/frame med 49
+ArrowRight (in a ring)       frames 48 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 122 renders/frame med 0 p90 1 max 4 total 25 labels/frame med 34
+pinch 2.5 s                  frames 20 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## firefox phone p2-15
+ArrowLeft (out a ring)       frames 46 renders/frame med 0 p90 2 max 3 total 18 labels/frame med 49
+ArrowLeft (out a ring)       frames 38 renders/frame med 0 p90 47 max 61 total 375 labels/frame med 68
+ArrowRight (in a ring)       frames 51 renders/frame med 0 p90 33 max 96 total 358 labels/frame med 49
+ArrowRight (in a ring)       frames 36 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 48 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 48 renders/frame med 0 p90 56 max 66 total 449 labels/frame med 68
+ArrowRight (in a ring)       frames 49 renders/frame med 0 p90 34 max 101 total 382 labels/frame med 49
+ArrowRight (in a ring)       frames 42 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 114 renders/frame med 0 p90 1 max 3 total 25 labels/frame med 34
+pinch 2.5 s                  frames 20 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## firefox phone p2-30
+ArrowLeft (out a ring)       frames 43 renders/frame med 0 p90 2 max 5 total 18 labels/frame med 49
+ArrowLeft (out a ring)       frames 52 renders/frame med 0 p90 20 max 66 total 261 labels/frame med 68
+ArrowRight (in a ring)       frames 45 renders/frame med 0 p90 34 max 94 total 368 labels/frame med 49
+ArrowRight (in a ring)       frames 49 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 39 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 54 renders/frame med 0 p90 36 max 64 total 327 labels/frame med 68
+ArrowRight (in a ring)       frames 45 renders/frame med 0 p90 52 max 119 total 413 labels/frame med 49
+ArrowRight (in a ring)       frames 43 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 97 renders/frame med 0 p90 1 max 3 total 23 labels/frame med 34
+pinch 2.5 s                  frames 17 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## firefox phone p2-30b
+ArrowLeft (out a ring)       frames 47 renders/frame med 0 p90 2 max 3 total 18 labels/frame med 49
+ArrowLeft (out a ring)       frames 56 renders/frame med 0 p90 18 max 61 total 298 labels/frame med 68
+ArrowRight (in a ring)       frames 49 renders/frame med 0 p90 34 max 72 total 303 labels/frame med 49
+ArrowRight (in a ring)       frames 49 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 46 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 49 renders/frame med 0 p90 21 max 61 total 237 labels/frame med 68
+ArrowRight (in a ring)       frames 50 renders/frame med 0 p90 33 max 54 total 308 labels/frame med 49
+ArrowRight (in a ring)       frames 38 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 117 renders/frame med 0 p90 1 max 4 total 25 labels/frame med 34
+pinch 2.5 s                  frames 19 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## firefox desktop main
+ArrowLeft (out a ring)       frames 28 renders/frame med 0 p90 2 max 4 total 16 labels/frame med 60
+ArrowLeft (out a ring)       frames 26 renders/frame med 0 p90 82 max 82 total 332 labels/frame med 129
+ArrowRight (in a ring)       frames 27 renders/frame med 0 p90 0 max 103 total 104 labels/frame med 64
+ArrowRight (in a ring)       frames 33 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+ArrowLeft (out a ring)       frames 25 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 60
+ArrowLeft (out a ring)       frames 27 renders/frame med 0 p90 82 max 82 total 260 labels/frame med 129
+ArrowRight (in a ring)       frames 30 renders/frame med 0 p90 0 max 103 total 104 labels/frame med 64
+ArrowRight (in a ring)       frames 29 renders/frame med 0 p90 0 max 1 total 1 labels/frame med 50
+spin 10 steps                frames 51 renders/frame med 0 p90 1 max 4 total 15 labels/frame med 96
+pinch 2.5 s                  frames 29 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+## firefox desktop fix
+ArrowLeft (out a ring)       frames 46 renders/frame med 0 p90 2 max 4 total 16 labels/frame med 60
+ArrowLeft (out a ring)       frames 44 renders/frame med 0 p90 21 max 82 total 332 labels/frame med 129
+ArrowRight (in a ring)       frames 49 renders/frame med 0 p90 0 max 82 total 104 labels/frame med 64
+ArrowRight (in a ring)       frames 47 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+ArrowLeft (out a ring)       frames 44 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 60
+ArrowLeft (out a ring)       frames 46 renders/frame med 0 p90 0 max 82 total 246 labels/frame med 129
+ArrowRight (in a ring)       frames 44 renders/frame med 0 p90 0 max 82 total 104 labels/frame med 64
+ArrowRight (in a ring)       frames 48 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+spin 10 steps                frames 48 renders/frame med 0 p90 1 max 3 total 8 labels/frame med 49
+pinch 2.5 s                  frames 37 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+## firefox desktop p2-15
+ArrowLeft (out a ring)       frames 44 renders/frame med 0 p90 2 max 3 total 16 labels/frame med 60
+ArrowLeft (out a ring)       frames 44 renders/frame med 0 p90 0 max 82 total 168 labels/frame med 129
+ArrowRight (in a ring)       frames 48 renders/frame med 0 p90 0 max 96 total 96 labels/frame med 64
+ArrowRight (in a ring)       frames 48 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+ArrowLeft (out a ring)       frames 41 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 60
+ArrowLeft (out a ring)       frames 52 renders/frame med 0 p90 0 max 32 total 32 labels/frame med 129
+ArrowRight (in a ring)       frames 46 renders/frame med 0 p90 0 max 150 total 172 labels/frame med 64
+ArrowRight (in a ring)       frames 41 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+spin 10 steps                frames 64 renders/frame med 0 p90 0 max 4 total 9 labels/frame med 94
+pinch 2.5 s                  frames 37 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+## firefox desktop p2-30
+ArrowLeft (out a ring)       frames 34 renders/frame med 0 p90 2 max 4 total 16 labels/frame med 64
+ArrowLeft (out a ring)       frames 50 renders/frame med 0 p90 0 max 82 total 168 labels/frame med 129
+ArrowRight (in a ring)       frames 41 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 64
+ArrowRight (in a ring)       frames 48 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 50
+ArrowLeft (out a ring)       frames 43 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 64
+ArrowLeft (out a ring)       frames 51 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 129
+ArrowRight (in a ring)       frames 43 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 64
+ArrowRight (in a ring)       frames 46 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 50
+spin 10 steps                frames 73 renders/frame med 0 p90 0 max 4 total 8 labels/frame med 96
+pinch 2.5 s                  frames 37 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+## firefox desktop p2-30b
+ArrowLeft (out a ring)       frames 44 renders/frame med 0 p90 2 max 3 total 16 labels/frame med 60
+ArrowLeft (out a ring)       frames 57 renders/frame med 0 p90 16 max 64 total 168 labels/frame med 129
+ArrowRight (in a ring)       frames 47 renders/frame med 0 p90 0 max 16 total 16 labels/frame med 64
+ArrowRight (in a ring)       frames 48 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 50
+ArrowLeft (out a ring)       frames 41 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 60
+ArrowLeft (out a ring)       frames 52 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 129
+ArrowRight (in a ring)       frames 43 renders/frame med 0 p90 0 max 16 total 16 labels/frame med 64
+ArrowRight (in a ring)       frames 46 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 50
+spin 10 steps                frames 52 renders/frame med 0 p90 0 max 3 total 9 labels/frame med 49
+pinch 2.5 s                  frames 36 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+## webkit phone main
+ArrowLeft (out a ring)       frames 42 renders/frame med 0 p90 2 max 33 total 51 labels/frame med 49
+ArrowLeft (out a ring)       frames 37 renders/frame med 0 p90 64 max 66 total 679 labels/frame med 68
+ArrowRight (in a ring)       frames 49 renders/frame med 0 p90 33 max 79 total 318 labels/frame med 49
+ArrowRight (in a ring)       frames 40 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 43 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 44 renders/frame med 0 p90 61 max 66 total 653 labels/frame med 68
+ArrowRight (in a ring)       frames 44 renders/frame med 0 p90 33 max 77 total 333 labels/frame med 49
+ArrowRight (in a ring)       frames 44 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 90 renders/frame med 0 p90 1 max 3 total 23 labels/frame med 34
+pinch 2.5 s                  frames 21 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## webkit phone fix
+ArrowLeft (out a ring)       frames 44 renders/frame med 0 p90 2 max 33 total 51 labels/frame med 49
+ArrowLeft (out a ring)       frames 38 renders/frame med 0 p90 64 max 65 total 657 labels/frame med 68
+ArrowRight (in a ring)       frames 43 renders/frame med 0 p90 52 max 100 total 387 labels/frame med 49
+ArrowRight (in a ring)       frames 40 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 46 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 41 renders/frame med 0 p90 61 max 64 total 710 labels/frame med 68
+ArrowRight (in a ring)       frames 47 renders/frame med 0 p90 52 max 85 total 391 labels/frame med 49
+ArrowRight (in a ring)       frames 35 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 113 renders/frame med 0 p90 1 max 4 total 25 labels/frame med 34
+pinch 2.5 s                  frames 26 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## webkit phone p2-15
+ArrowLeft (out a ring)       frames 40 renders/frame med 0 p90 2 max 33 total 51 labels/frame med 47
+ArrowLeft (out a ring)       frames 45 renders/frame med 0 p90 40 max 61 total 325 labels/frame med 68
+ArrowRight (in a ring)       frames 44 renders/frame med 0 p90 52 max 87 total 368 labels/frame med 49
+ArrowRight (in a ring)       frames 43 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 39 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 47 renders/frame med 0 p90 36 max 61 total 339 labels/frame med 68
+ArrowRight (in a ring)       frames 41 renders/frame med 0 p90 52 max 117 total 452 labels/frame med 49
+ArrowRight (in a ring)       frames 37 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 89 renders/frame med 0 p90 1 max 4 total 25 labels/frame med 34
+pinch 2.5 s                  frames 26 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## webkit phone p2-30
+ArrowLeft (out a ring)       frames 33 renders/frame med 0 p90 2 max 33 total 51 labels/frame med 49
+ArrowLeft (out a ring)       frames 46 renders/frame med 0 p90 23 max 61 total 245 labels/frame med 68
+ArrowRight (in a ring)       frames 38 renders/frame med 0 p90 53 max 96 total 410 labels/frame med 49
+ArrowRight (in a ring)       frames 42 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 36 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 45 renders/frame med 0 p90 35 max 61 total 259 labels/frame med 68
+ArrowRight (in a ring)       frames 44 renders/frame med 0 p90 33 max 88 total 336 labels/frame med 49
+ArrowRight (in a ring)       frames 39 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 104 renders/frame med 0 p90 1 max 4 total 25 labels/frame med 34
+pinch 2.5 s                  frames 27 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## webkit phone p2-30b
+ArrowLeft (out a ring)       frames 45 renders/frame med 0 p90 2 max 33 total 51 labels/frame med 49
+ArrowLeft (out a ring)       frames 42 renders/frame med 0 p90 20 max 61 total 239 labels/frame med 68
+ArrowRight (in a ring)       frames 39 renders/frame med 0 p90 52 max 69 total 330 labels/frame med 49
+ArrowRight (in a ring)       frames 47 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+ArrowLeft (out a ring)       frames 42 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 49
+ArrowLeft (out a ring)       frames 50 renders/frame med 0 p90 18 max 61 total 244 labels/frame med 68
+ArrowRight (in a ring)       frames 50 renders/frame med 0 p90 33 max 69 total 328 labels/frame med 49
+ArrowRight (in a ring)       frames 41 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 33
+spin 10 steps                frames 100 renders/frame med 0 p90 1 max 3 total 25 labels/frame med 34
+pinch 2.5 s                  frames 26 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 34
+## webkit desktop main
+ArrowLeft (out a ring)       frames 46 renders/frame med 0 p90 2 max 50 total 66 labels/frame med 60
+ArrowLeft (out a ring)       frames 40 renders/frame med 0 p90 63 max 82 total 332 labels/frame med 129
+ArrowRight (in a ring)       frames 44 renders/frame med 0 p90 0 max 82 total 104 labels/frame med 64
+ArrowRight (in a ring)       frames 41 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+ArrowLeft (out a ring)       frames 47 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 60
+ArrowLeft (out a ring)       frames 35 renders/frame med 0 p90 0 max 82 total 246 labels/frame med 129
+ArrowRight (in a ring)       frames 46 renders/frame med 0 p90 0 max 82 total 104 labels/frame med 64
+ArrowRight (in a ring)       frames 37 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+spin 10 steps                frames 67 renders/frame med 0 p90 0 max 4 total 9 labels/frame med 96
+pinch 2.5 s                  frames 34 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+## webkit desktop fix
+ArrowLeft (out a ring)       frames 44 renders/frame med 0 p90 2 max 50 total 66 labels/frame med 60
+ArrowLeft (out a ring)       frames 39 renders/frame med 0 p90 65 max 82 total 332 labels/frame med 129
+ArrowRight (in a ring)       frames 47 renders/frame med 0 p90 0 max 82 total 186 labels/frame med 64
+ArrowRight (in a ring)       frames 40 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+ArrowLeft (out a ring)       frames 46 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 62
+ArrowLeft (out a ring)       frames 36 renders/frame med 0 p90 0 max 82 total 164 labels/frame med 129
+ArrowRight (in a ring)       frames 48 renders/frame med 0 p90 0 max 82 total 104 labels/frame med 64
+ArrowRight (in a ring)       frames 38 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+spin 10 steps                frames 71 renders/frame med 0 p90 0 max 4 total 9 labels/frame med 96
+pinch 2.5 s                  frames 34 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+## webkit desktop p2-15
+ArrowLeft (out a ring)       frames 46 renders/frame med 0 p90 2 max 50 total 66 labels/frame med 60
+ArrowLeft (out a ring)       frames 45 renders/frame med 0 p90 0 max 82 total 168 labels/frame med 129
+ArrowRight (in a ring)       frames 42 renders/frame med 0 p90 0 max 103 total 185 labels/frame med 64
+ArrowRight (in a ring)       frames 45 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+ArrowLeft (out a ring)       frames 45 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 60
+ArrowLeft (out a ring)       frames 43 renders/frame med 0 p90 0 max 82 total 82 labels/frame med 129
+ArrowRight (in a ring)       frames 45 renders/frame med 0 p90 0 max 82 total 145 labels/frame med 64
+ArrowRight (in a ring)       frames 46 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+spin 10 steps                frames 77 renders/frame med 0 p90 0 max 3 total 9 labels/frame med 96
+pinch 2.5 s                  frames 36 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+## webkit desktop p2-30
+ArrowLeft (out a ring)       frames 47 renders/frame med 0 p90 2 max 50 total 66 labels/frame med 60
+ArrowLeft (out a ring)       frames 39 renders/frame med 0 p90 0 max 82 total 168 labels/frame med 129
+ArrowRight (in a ring)       frames 40 renders/frame med 0 p90 0 max 103 total 185 labels/frame med 64
+ArrowRight (in a ring)       frames 45 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+ArrowLeft (out a ring)       frames 39 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 62
+ArrowLeft (out a ring)       frames 45 renders/frame med 0 p90 0 max 82 total 82 labels/frame med 129
+ArrowRight (in a ring)       frames 48 renders/frame med 0 p90 0 max 82 total 145 labels/frame med 64
+ArrowRight (in a ring)       frames 46 renders/frame med 0 p90 0 max 1 total 2 labels/frame med 50
+spin 10 steps                frames 61 renders/frame med 0 p90 0 max 4 total 9 labels/frame med 94
+pinch 2.5 s                  frames 36 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+## webkit desktop p2-30b
+ArrowLeft (out a ring)       frames 46 renders/frame med 0 p90 2 max 50 total 66 labels/frame med 60
+ArrowLeft (out a ring)       frames 34 renders/frame med 0 p90 16 max 85 total 150 labels/frame med 129
+ArrowRight (in a ring)       frames 46 renders/frame med 0 p90 0 max 16 total 34 labels/frame med 64
+ArrowRight (in a ring)       frames 37 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 50
+ArrowLeft (out a ring)       frames 44 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 62
+ArrowLeft (out a ring)       frames 38 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 129
+ArrowRight (in a ring)       frames 47 renders/frame med 0 p90 0 max 16 total 16 labels/frame med 64
+ArrowRight (in a ring)       frames 46 renders/frame med 0 p90 0 max 0 total 0 labels/frame med 50
+spin 10 steps                frames 68 renders/frame med 0 p90 0 max 3 total 9 labels/frame med 96
+pinch 2.5 s                  frames 31 renders/frame med 0 p90 0 max 46 total 46 labels/frame med 49
+ALLDONE

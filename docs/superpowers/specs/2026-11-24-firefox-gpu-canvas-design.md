@@ -70,7 +70,7 @@ File at <https://bugzilla.mozilla.org/enter_bug.cgi?product=Core&component=Graph
 3. Wait about 3 seconds for the median frame time to show, and look at the canvas's top-right corner.
 4. Repeat with `?src=bitmap`, which draws the same labels from `ImageBitmap`s made with `transferToImageBitmap()`.
 
-**Actual results:** With `?src=offscreen` (and `?src=canvas`, which uses `<canvas>` elements), the green square disappears after the first frames and the canvas is drawn in software for as long as the page is open: REPRO_OFFSCREEN. The profiler shows `RecordedSourceSurfaceCreation` and memory copies under every `drawImage`, and `PCanvas::Msg_AddBuffer` sending the pixels to the GPU process, though the source canvases haven't changed. With `?src=bitmap`, the canvas stays accelerated: REPRO_BITMAP.
+**Actual results:** With `?src=offscreen` (and `?src=canvas`, which uses `<canvas>` elements), the green square disappears after the first frames and the canvas is drawn in software for as long as the page is open: 33.3 ms median frames for both, on a 2× Retina window at 1440 × 900 in Playwright's Firefox 159. The profiler shows `RecordedSourceSurfaceCreation` and memory copies under every `drawImage`, and `PCanvas::Msg_AddBuffer` sending the pixels to the GPU process, though the source canvases haven't changed. With `?src=bitmap`, the canvas stays accelerated, at 16.7 ms (60 fps).
 
 **Expected results:** Drawing an unchanged canvas again reuses the copy already sent, as with an `ImageBitmap`, so pre-rendering into a canvas (as [MDN advises](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas)) doesn't move the destination canvas to software.
 
@@ -86,7 +86,7 @@ File at <https://github.com/mdn/content/issues/new/choose> ("Content or feature 
 
 **Page:** https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
 
-**What's wrong:** "Pre-render similar primitives or repeating objects on an offscreen canvas" recommends rendering into a canvas and drawing that canvas each frame. In Firefox's accelerated Canvas2D, drawing a canvas copies its pixels to the GPU again every time, even when it hasn't changed, and a canvas whose frames are mostly such copies is moved to software for good (Firefox bug BUGNUMBER). An `ImageBitmap` (from `createImageBitmap()` or `OffscreenCanvas.transferToImageBitmap()`) is uploaded once.
+**What's wrong:** "Pre-render similar primitives or repeating objects on an offscreen canvas" recommends rendering into a canvas and drawing that canvas each frame. In Firefox's accelerated Canvas2D, drawing a canvas copies its pixels to the GPU again every time, even when it hasn't changed, and a canvas whose frames are mostly such copies is moved to software for good (Firefox bug: add its number once it's filed). An `ImageBitmap` (from `createImageBitmap()` or `OffscreenCanvas.transferToImageBitmap()`) is uploaded once.
 
 **Suggested change:** After pre-rendering into an `OffscreenCanvas`, call `transferToImageBitmap()` and draw the bitmap; mention closing bitmaps that are no longer needed.
 

@@ -14,6 +14,9 @@ import { inAppLink } from './router';
 import { buildFillTable, inkFor, readPalette } from './render/colors';
 import { createSpriteCache } from './render/sprites';
 import { createWheelRenderer, labelFont, type WheelRenderer } from './render/wheel';
+import { createGlWheelRenderer } from './render/wheel-gl';
+/** EXPLORATION: build with VITE_WHEEL_GL=1 to draw the wheel with WebGL2. */
+const WHEEL_GL = import.meta.env.VITE_WHEEL_GL === '1';
 import { createStore, initialState, withFrom, type Action, type State, type Store } from './state/store';
 import { createHistoryWriter, historyOp } from './state/history';
 import { formatRoute, parsePath, pathOf, routeTable, stateFor, type Route } from './state/url';
@@ -406,7 +409,7 @@ function mount(next: Layout, initial: State, intro: boolean): void {
     frame();
   });
   controller = createController(layout, store, camera, vp, opts);
-  renderer = createWheelRenderer(canvas, layout, undefined, sprites);
+  renderer = (WHEEL_GL ? createGlWheelRenderer(canvas, layout) : null) ?? createWheelRenderer(canvas, layout, undefined, sprites);
   allLit = litMask(layout, null);
   lit = litFor(store.get());
   prevLit = lit;

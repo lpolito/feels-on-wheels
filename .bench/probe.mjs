@@ -1,0 +1,11 @@
+import { createRequire } from 'node:module';
+const pw = createRequire(import.meta.url)('@playwright/test');
+const [engine, base] = process.argv.slice(2);
+const b = await pw[engine].launch({ headless: process.env.HEADLESS !== '0' });
+const page = await (await b.newContext()).newPage();
+page.on('console', (m) => console.log('CONSOLE', m.type(), m.text()));
+page.on('pageerror', (e) => console.log('PAGEERROR', e.message));
+await page.goto(base + '/');
+await page.waitForTimeout(1500);
+console.log(await page.evaluate(() => ({ gl: !!document.createElement('canvas').getContext('webgl2'), stats: typeof globalThis.__glStats, s: globalThis.__glStats && globalThis.__glStats(), ctx2d: (() => { try { return document.getElementById('wheel').getContext('2d') !== null; } catch (e) { return String(e); } })() })));
+await b.close();

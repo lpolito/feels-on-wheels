@@ -1,0 +1,57 @@
+== main phone
+ArrowLeft (out a ring)   frames  28 renders/frame med 0 p90 2 max 3 total 18 | labels/frame med 49 
+ArrowLeft (out a ring)   frames  29 renders/frame med 2 p90 63 max 64 total 677 | labels/frame med 68 
+ArrowRight (in a ring)   frames  36 renders/frame med 0 p90 53 max 79 total 362 | labels/frame med 49 
+ArrowRight (in a ring)   frames  36 renders/frame med 0 p90 0 max 1 total 2 | labels/frame med 33 
+ArrowLeft (out a ring)   frames  31 renders/frame med 0 p90 0 max 0 total 0 | labels/frame med 49 
+ArrowLeft (out a ring)   frames  35 renders/frame med 0 p90 63 max 66 total 674 | labels/frame med 68 
+ArrowRight (in a ring)   frames  30 renders/frame med 0 p90 54 max 79 total 344 | labels/frame med 49 
+ArrowRight (in a ring)   frames  37 renders/frame med 0 p90 0 max 1 total 2 | labels/frame med 33 
+spin 10 steps            frames  71 renders/frame med 0 p90 1 max 4 total 25 | labels/frame med 34 
+pinch 2.5 s              frames  22 renders/frame med 0 p90 0 max 0 total 0 | labels/frame med 34 
+== fix phone
+ArrowLeft (out a ring)   frames  27 renders/frame med 0 p90 2 max 4 total 18 | labels/frame med 49 
+ArrowLeft (out a ring)   frames  31 renders/frame med 0 p90 63 max 66 total 697 | labels/frame med 68 
+ArrowRight (in a ring)   frames  37 renders/frame med 0 p90 53 max 85 total 354 | labels/frame med 49 
+ArrowRight (in a ring)   frames  30 renders/frame med 0 p90 0 max 1 total 2 | labels/frame med 33 
+ArrowLeft (out a ring)   frames  34 renders/frame med 0 p90 0 max 0 total 0 | labels/frame med 49 
+ArrowLeft (out a ring)   frames  29 renders/frame med 1 p90 64 max 66 total 692 | labels/frame med 68 
+ArrowRight (in a ring)   frames  34 renders/frame med 0 p90 53 max 79 total 361 | labels/frame med 49 
+ArrowRight (in a ring)   frames  34 renders/frame med 0 p90 0 max 1 total 2 | labels/frame med 33 
+spin 10 steps            frames  84 renders/frame med 0 p90 1 max 4 total 25 | labels/frame med 34 
+pinch 2.5 s              frames  26 renders/frame med 0 p90 0 max 0 total 0 | labels/frame med 34 
+== gl-hybrid phone
+ArrowLeft (out a ring)   frames  26 renders/frame med 0 p90 2 max 4 total 16 | labels/frame med 50 | GL calls/frame med 7 max 14 | upload max 0.14 MB/frame
+ArrowLeft (out a ring)   frames  29 renders/frame med 13 p90 26 max 60 total 358 | labels/frame med 130 | GL calls/frame med 14 max 14 | upload max 0.73 MB/frame
+ArrowRight (in a ring)   frames  29 renders/frame med 0 p90 14 max 24 total 101 | labels/frame med 50 | GL calls/frame med 7 max 14 | upload max 0.69 MB/frame
+ArrowRight (in a ring)   frames  25 renders/frame med 0 p90 0 max 1 total 2 | labels/frame med 34 | GL calls/frame med 7 max 14 | upload max 0.04 MB/frame
+ArrowLeft (out a ring)   frames  25 renders/frame med 0 p90 0 max 0 total 0 | labels/frame med 50 | GL calls/frame med 7 max 14 | upload max 0.00 MB/frame
+ArrowLeft (out a ring)   frames  29 renders/frame med 0 p90 13 max 19 total 120 | labels/frame med 69 | GL calls/frame med 7 max 14 | upload max 0.41 MB/frame
+ArrowRight (in a ring)   frames  29 renders/frame med 0 p90 24 max 56 total 168 | labels/frame med 50 | GL calls/frame med 7 max 21 | upload max 1.67 MB/frame
+ArrowRight (in a ring)   frames  25 renders/frame med 0 p90 1 max 2 total 4 | labels/frame med 34 | GL calls/frame med 7 max 14 | upload max 0.08 MB/frame
+spin 10 steps            frames  58 renders/frame med 0 p90 1 max 3 total 19 | labels/frame med 35 | GL calls/frame med 7 max 14 | upload max 0.13 MB/frame
+pinch 2.5 s              frames  14 renders/frame med 0 p90 0 max 1 total 1 | labels/frame med 35 | GL calls/frame med 7 max 7 | upload max 0.05 MB/frame
+== gl-scale phone
+ArrowLeft (out a ring)   frames  26 renders/frame med 0 p90 2 max 4 total 16 | labels/frame med 50 | GL calls/frame med 7 max 14 | upload max 0.14 MB/frame
+ArrowLeft (out a ring)   frames  29 renders/frame med 0 p90 3 max 61 total 81 | labels/frame med 69 | GL calls/frame med 7 max 14 | upload max 0.74 MB/frame
+ArrowRight (in a ring)   frames  29 renders/frame med 0 p90 0 max 2 total 2 | labels/frame med 50 | GL calls/frame med 7 max 14 | upload max 0.05 MB/frame
+ArrowRight (in a ring)   frames  25 renders/frame med 0 p90 0 max 1 total 1 | labels/frame med 34 | GL calls/frame med 7 max 14 | upload max 0.04 MB/frame
+ArrowLeft (out a ring)   frames  25 renders/frame med 0 p90 0 max 0 total 0 | labels/frame med 50 | GL calls/frame med 7 max 14 | upload max 0.00 MB/frame
+ArrowLeft (out a ring)   frames  29 renders/frame med 0 p90 0 max 0 total 0 | labels/frame med 69 | GL calls/frame med 7 max 14 | upload max 0.00 MB/frame
+ArrowRight (in a ring)   frames  29 renders/frame med 0 p90 0 max 0 total 0 | labels/frame med 50 | GL calls/frame med 7 max 14 | upload max 0.00 MB/frame
+ArrowRight (in a ring)   frames  25 renders/frame med 0 p90 0 max 0 total 0 | labels/frame med 34 | GL calls/frame med 7 max 14 | upload max 0.00 MB/frame
+spin 10 steps            frames  59 renders/frame med 0 p90 1 max 1 total 10 | labels/frame med 35 | GL calls/frame med 7 max 14 | upload max 0.06 MB/frame
+pinch 2.5 s              frames  12 renders/frame med 0 p90 15 max 22 total 37 | labels/frame med 35 | GL calls/frame med 7 max 7 | upload max 0.14 MB/frame
+== gl-rerender phone
+ArrowLeft (out a ring)   frames  26 renders/frame med 0 p90 2 max 3 total 16 | labels/frame med 50 | GL calls/frame med 7 max 14 | upload max 0.10 MB/frame
+ArrowLeft (out a ring)   frames  29 renders/frame med 2 p90 62 max 153 total 752 | labels/frame med 69 | GL calls/frame med 7 max 14 | upload max 1.94 MB/frame
+ArrowRight (in a ring)   frames  29 renders/frame med 0 p90 55 max 63 total 325 | labels/frame med 50 | GL calls/frame med 7 max 14 | upload max 1.58 MB/frame
+ArrowRight (in a ring)   frames  25 renders/frame med 0 p90 1 max 2 total 4 | labels/frame med 34 | GL calls/frame med 7 max 14 | upload max 0.08 MB/frame
+ArrowLeft (out a ring)   frames  25 renders/frame med 0 p90 0 max 0 total 0 | labels/frame med 50 | GL calls/frame med 7 max 14 | upload max 0.00 MB/frame
+ArrowLeft (out a ring)   frames  29 renders/frame med 1 p90 62 max 97 total 586 | labels/frame med 69 | GL calls/frame med 7 max 14 | upload max 1.69 MB/frame
+ArrowRight (in a ring)   frames  29 renders/frame med 0 p90 55 max 76 total 348 | labels/frame med 50 | GL calls/frame med 7 max 14 | upload max 2.72 MB/frame
+ArrowRight (in a ring)   frames  25 renders/frame med 0 p90 1 max 2 total 4 | labels/frame med 34 | GL calls/frame med 7 max 14 | upload max 0.08 MB/frame
+spin 10 steps            frames  58 renders/frame med 0 p90 1 max 3 total 19 | labels/frame med 35 | GL calls/frame med 7 max 14 | upload max 0.13 MB/frame
+pinch 2.5 s              frames  13 renders/frame med 0 p90 0 max 1 total 1 | labels/frame med 35 | GL calls/frame med 7 max 7 | upload max 0.05 MB/frame
+
+[exited with code 0]

@@ -1,0 +1,38 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>body{margin:0}#c{display:block;width:100vw;height:100vh}</style>
+<canvas id="c"></canvas>
+<script>
+// Minimal WebGL2 cost in this engine: clear + one 6000-triangle mesh turning. ?aa=0|1 &draw=0|1 &kind=gl|2d
+const q = new URLSearchParams(location.search);
+const c = document.getElementById('c'); const dpr = devicePixelRatio;
+c.width = Math.round(c.clientWidth * dpr); c.height = Math.round(c.clientHeight * dpr);
+const kind = q.get('kind') || 'gl'; const draw = q.get('draw') !== '0';
+let render;
+if (kind === 'gl') {
+  const gl = c.getContext('webgl2', { alpha: false, antialias: q.get('aa') !== '0', depth: false, stencil: false, desynchronized: q.get('desync') === '1' });
+  const vs = `#version 300 es
+  in vec2 p; uniform float r; void main(){ float c=cos(r),s=sin(r); gl_Position=vec4(mat2(c,s,-s,c)*p*0.9,0,1);} `;
+  const fs = `#version 300 es
+  precision mediump float; out vec4 o; void main(){ o=vec4(0.5,0.2,0.6,1);} `;
+  const pr = gl.createProgram();
+  for (const [t, s] of [[gl.VERTEX_SHADER, vs], [gl.FRAGMENT_SHADER, fs]]) { const sh = gl.createShader(t); gl.shaderSource(sh, s); gl.compileShader(sh); gl.attachShader(pr, sh); }
+  gl.linkProgram(pr); gl.useProgram(pr);
+  const v = []; const N = 3000;
+  for (let i = 0; i < N; i++) { const a0 = i / N * 6.283, a1 = (i + 0.8) / N * 6.283; for (const [r, a] of [[0.2, a0], [1, a0], [1, a1], [0.2, a0], [1, a1], [0.2, a1]]) v.push(r * Math.cos(a), r * Math.sin(a)); }
+  const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(v), gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0); gl.bindAttribLocation(pr, 0, 'p'); gl.vertexAttribPointer(gl.getAttribLocation(pr, 'p'), 2, gl.FLOAT, false, 0, 0);
+  const ur = gl.getUniformLocation(pr, 'r');
+  render = (t) => { gl.viewport(0, 0, c.width, c.height); gl.clearColor(1, 1, 1, 1); gl.clear(gl.COLOR_BUFFER_BIT); if (draw) { gl.uniform1f(ur, t / 1000); gl.drawArrays(gl.TRIANGLES, 0, v.length / 2); } };
+} else {
+  const g = c.getContext('2d', { alpha: false });
+  render = (t) => { g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); if (draw) { g.fillStyle = '#839'; g.beginPath(); g.arc(c.width / 2 + 10 * Math.sin(t / 300), c.height / 2, c.width / 3, 0, 6.283); g.fill(); } };
+}
+const times = []; let last = performance.now();
+function frame(now) {
+  times.push(now - last); last = now; render(now);
+  if (times.length < 240) requestAnimationFrame(frame);
+  else { const s = times.slice(20).sort((a, b) => a - b); window.done = { med: s[s.length >> 1], p90: s[Math.floor(s.length * 0.9)], drop: s.filter((x) => x > 25).length / s.length }; }
+}
+requestAnimationFrame(frame);
+</script>

@@ -1,0 +1,11 @@
+{"view":"/","nextViews":7,"restMB":3.4,"restLabels":127,"prewarmMB":16.9,"prewarmLabels":377,"sharedLabelViews":903,"linesDiffer":0,"newLabels":0,"ex":""}
+{"view":"/angry","nextViews":11,"restMB":7,"restLabels":129,"prewarmMB":17.9,"prewarmLabels":382,"sharedLabelViews":891,"linesDiffer":0,"newLabels":11,"ex":""}
+{"view":"/angry/aggressive","nextViews":6,"restMB":3.9,"restLabels":64,"prewarmMB":14,"prewarmLabels":315,"sharedLabelViews":344,"linesDiffer":0,"newLabels":143,"ex":""}
+{"view":"/angry/aggressive/hostile","nextViews":4,"restMB":3,"restLabels":50,"prewarmMB":7.6,"prewarmLabels":196,"sharedLabelViews":193,"linesDiffer":0,"newLabels":100,"ex":""}
+{"view":"/happy","nextViews":12,"restMB":7,"restLabels":129,"prewarmMB":17.9,"prewarmLabels":389,"sharedLabelViews":955,"linesDiffer":0,"newLabels":12,"ex":""}
+{"view":"/happy/playful","nextViews":6,"restMB":3.7,"restLabels":65,"prewarmMB":13.9,"prewarmLabels":318,"sharedLabelViews":347,"linesDiffer":0,"newLabels":140,"ex":""}
+{"view":"/sad/lonely","nextViews":6,"restMB":3.8,"restLabels":65,"prewarmMB":13.7,"prewarmLabels":315,"sharedLabelViews":345,"linesDiffer":0,"newLabels":140,"ex":""}
+{"view":"/fearful/scared/helpless","nextViews":4,"restMB":3,"restLabels":50,"prewarmMB":7.5,"prewarmLabels":199,"sharedLabelViews":194,"linesDiffer":0,"newLabels":101,"ex":""}
+{"view":"/body","nextViews":8,"restMB":2.4,"restLabels":114,"prewarmMB":11.6,"prewarmLabels":334,"sharedLabelViews":1432,"linesDiffer":0,"newLabels":0,"ex":""}
+{"view":"/body/chest","nextViews":8,"restMB":5,"restLabels":123,"prewarmMB":11.7,"prewarmLabels":319,"sharedLabelViews":954,"linesDiffer":0,"newLabels":8,"ex":""}
+{"view":"/body/chest/racing-heart","nextViews":7,"restMB":3.7,"restLabels":59,"prewarmMB":11.6,"prewarmLabels":312,"sharedLabelViews":440,"linesDiffer":0,"newLabels":204,"ex":""}

@@ -185,7 +185,7 @@ Brackets: NRC valence (−1 to 1) / Warriner valence (1–9, 5 neutral) / Google
     - **Hopeless**: you can't see things getting better. (−.81/2.20/163) Lucas, 2026-11-20: kept over Despair.
     - **Miserable**: you feel so down that everything seems awful. (−.88/2.60/150)
     - **Defeated**: you lost or failed, and you feel beaten. (−.79/2.59/147)
-  - **Ashamed**: you feel low about who you are, not just about something you did. (−.69/2.52/937) Not "you feel bad about yourself", which used the Bad core's label and Guilty's wording (2026-11-22, fresh comb pass, [research/11](research/11-fresh-comb-pass.md)).
+  - **Ashamed**: you feel low about who you are, not just about something you did. (−.69/2.52/937) Not "you feel bad about yourself", which used the Bad core's label and Guilty's wording (2026-11-22, fresh comb pass, [research/11](research/11-fresh-comb-pass.md)). Don't say shame makes you hide: it often goes with trying to fix things, but only when the failure can be fixed (Leach and Cidam 2015, 90 samples).
     - **Humiliated**: R3. You were made to look small in front of others, and you feel ashamed. (−.79/–/156)
     - **Worthless**: you feel you're worth nothing. (−.83/1.89/90)
   - **Inadequate**: you feel you're not good enough. (−.76/2.57/196) Lucas, 2026-11-22: a middle word for worth, replacing Insecure, which moved to Scared → Nervous. People link inadequate, inferior, and insignificant to "not enough", "less", and "worthless", and to fear words almost not at all.

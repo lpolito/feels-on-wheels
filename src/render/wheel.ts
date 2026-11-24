@@ -1,5 +1,5 @@
 import { wheelCellLabel } from '../i18n';
-import type { Layout } from '../model/layout';
+import type { Layout, Segment } from '../model/layout';
 import { inWindow, TAU, viewWindow, type Camera, type Viewport, type ViewWindow } from '../model/geometry';
 import type { FillTable, Palette } from './colors';
 import { fitLabel, labelRotation, type Measure } from './labels';
@@ -140,6 +140,12 @@ export function createWheelRenderer(
 
   function sector(cx: number, cy: number, r0: number, r1: number, a0: number, a1: number): void {
     g.beginPath();
+    addSector(cx, cy, r0, r1, a0, a1);
+  }
+
+  /** Adds a cell to the current path, as its own closed subpath. */
+  function addSector(cx: number, cy: number, r0: number, r1: number, a0: number, a1: number): void {
+    g.moveTo(cx + r1 * Math.cos(a0), cy + r1 * Math.sin(a0));
     g.arc(cx, cy, r1, a0, a1);
     g.arc(cx, cy, r0, a1, a0, true);
     g.closePath();
@@ -295,28 +301,51 @@ export function createWheelRenderer(
       g.strokeStyle = palette.gap;
       g.lineJoin = 'round';
 
+      // One path per fill color and one for every gap, so a turning wheel is a few dozen draw calls rather than two
+      // per cell (Firefox moves a canvas to software when most of a frame's paths are new to its GPU cache).
+      const fills = new Map<string, Segment[]>();
+      const fades = new Map<string, Segment[]>();
+      const cells: Segment[] = [];
+      const into = (m: Map<string, Segment[]>, color: string, s: Segment): void => {
+        const group = m.get(color);
+        if (group) group.push(s);
+        else m.set(color, [s]);
+      };
       for (const s of layout.segments) {
         const ring = layout.rings[s.ring]!;
         if (s.index === lifted || !inWindow(s, ring, win)) continue;
-        const a0 = s.start + cam.rotation;
-        const a1 = s.end + cam.rotation;
-        sector(cam.cx, cam.cy, ring.inner * R, ring.outer * R, a0, a1);
         const now = f.lit[s.index] === 1;
         const before = f.prevLit[s.index] === 1;
-        if (now === before || f.fadeT >= 1) {
-          g.fillStyle = table.fill(s.hue, s.ring, now);
-          g.fill();
-        } else {
-          g.fillStyle = table.fill(s.hue, s.ring, before);
-          g.fill();
-          g.globalAlpha = f.fadeT;
-          g.fillStyle = table.fill(s.hue, s.ring, now);
-          g.fill();
-          g.globalAlpha = 1;
-        }
-        g.stroke();
+        const fading = now !== before && f.fadeT < 1;
+        into(fills, table.fill(s.hue, s.ring, fading ? before : now), s);
+        if (fading) into(fades, table.fill(s.hue, s.ring, now), s);
+        cells.push(s);
         stats.segmentsDrawn++;
       }
+      const cellPath = (group: Segment[]): void => {
+        g.beginPath();
+        for (const s of group) {
+          const ring = layout.rings[s.ring]!;
+          addSector(cam.cx, cam.cy, ring.inner * R, ring.outer * R, s.start + cam.rotation, s.end + cam.rotation);
+        }
+      };
+      for (const [color, group] of fills) {
+        g.fillStyle = color;
+        cellPath(group);
+        g.fill();
+      }
+      if (fades.size > 0) {
+        g.globalAlpha = f.fadeT;
+        for (const [color, group] of fades) {
+          g.fillStyle = color;
+          cellPath(group);
+          g.fill();
+        }
+        g.globalAlpha = 1;
+      }
+      // The gap color is opaque, so one stroke over every edge looks the same as stroking each cell after its fill.
+      cellPath(cells);
+      g.stroke();
 
       g.textAlign = 'center';
       g.textBaseline = 'middle';

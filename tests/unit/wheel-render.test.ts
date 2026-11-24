@@ -22,10 +22,13 @@ const table = buildFillTable(palette, 3, 'light');
 type Arc = { r: number; a0: number; a1: number };
 /** One stroke call: its style, width and the arcs in its path. */
 type StrokeRec = { style: string; lineWidth: number; arcs: Arc[] };
+/** One fill call: its style and the arcs in its path. */
+type FillRec = { style: string; arcs: Arc[] };
 
 interface Rec {
   fills: string[]; strokes: string[]; texts: string[]; fonts: string[]; shadowSets: number;
   strokeLog: StrokeRec[];
+  fillLog: FillRec[];
   /** The transform's translation (e, f) at each fillText. */
   textAt: { text: string; e: number; f: number }[];
 }
@@ -40,7 +43,7 @@ function fakeWidth(text: string, font: string): number {
 }
 
 function fakeCanvas(): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2D; rec: Rec } {
-  const rec: Rec = { fills: [], strokes: [], texts: [], fonts: [], shadowSets: 0, strokeLog: [], textAt: [] };
+  const rec: Rec = { fills: [], strokes: [], texts: [], fonts: [], shadowSets: 0, strokeLog: [], fillLog: [], textAt: [] };
   const state = {
     fillStyle: '', strokeStyle: '', font: '10px sans-serif', globalAlpha: 1, lineWidth: 1, textAlign: 'start', textBaseline: 'alphabetic',
     lineJoin: 'miter', lineCap: 'butt', shadowBlur: 0, shadowColor: 'transparent', shadowOffsetX: 0, shadowOffsetY: 0,
@@ -53,7 +56,10 @@ function fakeCanvas(): { canvas: HTMLCanvasElement; ctx: CanvasRenderingContext2
     beginPath: () => { path = []; },
     arc: (_x: number, _y: number, r: number, a0: number, a1: number) => { path.push({ r, a0, a1 }); },
     setTransform: (_a: number, _b: number, _c: number, _d: number, e: number, f: number) => { tf = { e, f }; },
-    fill: () => rec.fills.push(state.fillStyle),
+    fill: () => {
+      rec.fills.push(state.fillStyle);
+      rec.fillLog.push({ style: state.fillStyle, arcs: path.slice() });
+    },
     stroke: () => {
       rec.strokes.push(state.strokeStyle);
       rec.strokeLog.push({ style: state.strokeStyle, lineWidth: state.lineWidth, arcs: path.slice() });
@@ -225,10 +231,13 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     r.setColors(bodyTable, bodyPalette);
     r.resize(1000, 1000, 1);
     r.draw(frame(desk));
-    // Fills follow segment order, one per drawn segment, in overview every segment is drawn.
+    // The fill whose path holds the outer cell's outer arc.
     const outer = homed.segments.find((s) => s.ring === 2)!;
-    expect(rec.fills[outer.index]).toBe(bodyTable.fill(outer.hue, 2, true));
-    expect(rec.fills[outer.index]).not.toBe(bodyTable.fill(outer.hue, 0, true));
+    const { cam } = frame(desk);
+    const radius = homed.rings[2]!.outer * desk.radius * cam.scale;
+    const filled = rec.fillLog.filter((x) => x.arcs.some((a) => Math.abs(a.r - radius) < 1e-6
+      && Math.abs(a.a0 - (outer.start + cam.rotation)) < 1e-9 && Math.abs(a.a1 - (outer.end + cam.rotation)) < 1e-9));
+    expect(filled.map((x) => x.style)).toEqual([bodyTable.fill(outer.hue, 2, true)]);
   });
 
   test('the drawn wheel says "The urge to…" where everything else says "Urges"', () => {
@@ -267,6 +276,25 @@ describe('wheel renderer', () => {
     r.draw(frame(desk));
     expect(r.stats.segmentsDrawn).toBe(162);
     expect(r.stats.labelsDrawn).toBeGreaterThan(100);
+  });
+
+  test('cells are drawn with one fill per color and one stroke for every gap', () => {
+    // Firefox moves a canvas to software when most of a frame's draws are new to its GPU caches, and a turning cell is
+    // a new path every frame: two calls per cell kept the wheel there for good.
+    const { canvas, ctx, rec } = fakeCanvas();
+    const r = createWheelRenderer(canvas, layout, ctx);
+    r.setColors(table, palette);
+    r.resize(1000, 1000, 2);
+    const sel = layout.byPath.get('angry/aggressive')!;
+    r.draw(frame(desk, { lit: litMask(layout, sel), prevLit: litMask(layout, null), fadeT: 0.5 }));
+    const cellFills = rec.fillLog.filter((x) => x.arcs.length > 0);
+    const colors = new Set(layout.segments.flatMap((s) => [table.fill(s.hue, s.ring, true), table.fill(s.hue, s.ring, false)]));
+    // Mid-fade: every cell's old color, then the new color of each cell that changes.
+    expect(cellFills.length).toBeLessThanOrEqual(colors.size * 2);
+    expect(cellFills.reduce((n, x) => n + x.arcs.length, 0)).toBe(2 * (130 + layout.segments.filter((s) => litMask(layout, sel)[s.index] !== 1).length));
+    const gaps = rec.strokeLog.filter((x) => x.style === palette.gap);
+    expect(gaps).toHaveLength(1);
+    expect(gaps[0]!.arcs).toHaveLength(2 * 130);
   });
 
   test('ring focus on the outer ring at 375×667 draws fewer than 40 segments', () => {

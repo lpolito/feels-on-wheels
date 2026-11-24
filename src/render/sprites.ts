@@ -12,12 +12,17 @@ export interface SpriteCache {
 /** `image` is an ImageBitmap where the canvas can hand one over, else the canvas itself. */
 interface Sprite { image: ImageBitmap | AnyCanvas; w: number; h: number; bytes: number }
 
+/** P3 exploration: sizes come in geometric steps this far apart; a label renders at the next step up and draws scaled down. */
+const RATIO = Number(import.meta.env.VITE_P3 ?? 0);
+const LOG_RATIO = Math.log(RATIO);
 const STEP = 0.5;
+const stepUp = (px: number): number =>
+  RATIO > 1 ? Math.exp(Math.ceil(Math.log(px) / LOG_RATIO - 1e-9) * LOG_RATIO) : Math.round(px / STEP) * STEP;
 const PAD = 2;
 const HEIGHT = 1.4;
 const POOL = 64;
 /** Spec v1.2 §7: the cache's total backing store (width × height × 4 bytes). */
-const MAX_BYTES = 16 * 1024 * 1024;
+const MAX_BYTES = Number(import.meta.env.VITE_MAXMB ?? 16) * 1024 * 1024;
 
 const canvasElement = (w: number, h: number): AnyCanvas =>
   Object.assign(document.createElement('canvas'), { width: w, height: h });
@@ -56,6 +61,7 @@ export function createSpriteCache(
   }
 
   function render(text: string, px: number, color: string): Sprite {
+    if (import.meta.env.VITE_COUNT) (globalThis as any).__renders = ((globalThis as any).__renders ?? 0) + 1;
     const { canvas, g } = context();
     g.font = font(px);
     const w = g.measureText(text).width + 2 * PAD;
@@ -96,6 +102,7 @@ export function createSpriteCache(
       const oldest = sprites.keys().next().value!;
       const evicted = sprites.get(oldest)!;
       sprites.delete(oldest);
+      if (import.meta.env.VITE_COUNT) (globalThis as any).__evicts = ((globalThis as any).__evicts ?? 0) + 1;
       bytes -= evicted.bytes;
       drop(evicted);
     }
@@ -114,7 +121,8 @@ export function createSpriteCache(
       bytes = 0;
     },
     draw(g, text, px, color, x, y, rot) {
-      const q = Math.round(px / STEP) * STEP;
+      if (import.meta.env.VITE_COUNT) (globalThis as any).__draws = ((globalThis as any).__draws ?? 0) + 1;
+      const q = stepUp(px);
       const key = `${text}|${q}|${color}`;
       let s = sprites.get(key);
       if (s) {

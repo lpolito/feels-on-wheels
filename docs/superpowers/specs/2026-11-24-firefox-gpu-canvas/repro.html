@@ -1,0 +1,50 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Canvas 2D: drawImage from an unchanged OffscreenCanvas each frame</title>
+<style>body{margin:0;font:14px system-ui}#c{display:block;width:100vw;height:90vh}p{margin:8px}</style>
+<p>Source: <a href="?src=offscreen">OffscreenCanvas</a> · <a href="?src=bitmap">ImageBitmap</a> · <a href="?src=canvas">&lt;canvas&gt;</a> · <a href="?src=paths">rotating paths</a> — <span id="out">running…</span></p>
+<canvas id="c"></canvas>
+<script>
+// 150 small labels, each rendered once, then drawn rotated every frame. With gfx.canvas.accelerated.debug = true, an
+// accelerated canvas shows a green square in its top-right corner.
+const src = new URLSearchParams(location.search).get('src') || 'offscreen';
+const c = document.getElementById('c');
+const dpr = devicePixelRatio;
+c.width = Math.round(c.clientWidth * dpr); c.height = Math.round(c.clientHeight * dpr);
+const g = c.getContext('2d', { alpha: false });
+const sprites = [];
+for (let i = 0; i < 150; i++) {
+  const w = 120 * dpr, h = 28 * dpr;
+  const s = src === 'canvas' ? Object.assign(document.createElement('canvas'), { width: w, height: h }) : new OffscreenCanvas(w, h);
+  const x = s.getContext('2d');
+  x.scale(dpr, dpr); x.fillStyle = `hsl(${i * 37 % 360} 60% 35%)`; x.font = '600 16px system-ui';
+  x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('Label ' + i, 60, 14);
+  sprites.push(src === 'bitmap' ? s.transferToImageBitmap() : s);
+}
+let frames = 0; const times = []; let last = performance.now();
+function frame(now) {
+  times.push(now - last); last = now;
+  const t = now / 1000, cx = c.width / 2, cy = c.height / 2, R = Math.min(cx, cy) * 0.9;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+  if (src === 'paths') {
+    for (let i = 0; i < 150; i++) {
+      const a0 = t + i * Math.PI * 2 / 150, a1 = a0 + Math.PI * 2 / 150;
+      g.beginPath(); g.arc(cx, cy, R, a0, a1); g.arc(cx, cy, R * 0.6, a1, a0, true); g.closePath();
+      g.fillStyle = `hsl(${i * 37 % 360} 60% 70%)`; g.fill(); g.stroke();
+    }
+  } else {
+    sprites.forEach((s, i) => {
+      const a = t + i * Math.PI * 2 / 150, r = R * (0.4 + 0.5 * (i % 3) / 2);
+      g.setTransform(Math.cos(a), Math.sin(a), -Math.sin(a), Math.cos(a), cx + r * Math.cos(a), cy + r * Math.sin(a));
+      g.drawImage(s, -60 * dpr, -14 * dpr);
+    });
+  }
+  if (++frames === 180) {
+    const s = times.slice(30).sort((a, b) => a - b);
+    document.getElementById('out').textContent = `${src}: median frame ${s[s.length >> 1].toFixed(1)} ms`;
+    window.done = s[s.length >> 1];
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>

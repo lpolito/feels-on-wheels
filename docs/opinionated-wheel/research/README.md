@@ -17,5 +17,6 @@ Written by fresh agents during the 2026-11-19 and 2026-11-20 brainstorm, each ch
 | [11-fresh-comb-pass.md](11-fresh-comb-pass.md) | the fresh comb pass | The current wheel checked against the current rules: which core people would tap for all 45 middle words, situations, missing words, and the 2019–20 spike in book counts (2026-11-22) |
 | [12-cringe.md](12-cringe.md) | the Cringe report | Whether people say "cringe" about their own feeling, and what they mean by it, re-checked by a second agent (2026-11-22) |
 | [13-definitions-review.md](13-definitions-review.md) | the definitions review | Lucas's notes on every card, and a cold test of two rule wordings against them: two blind writers and a judge (2026-11-25) |
+| [14-card-fixes.md](14-card-fixes.md) | the card fixes | The 48 flagged cards rewritten by the revised rules, before and after, with the cold check of the first draft (2026-11-25) |
 
 Not kept: the brief, report 3 (a critique of the first nine rules), and the two rule drafts. They're superseded by the refutation and by [rules.md](../rules.md).

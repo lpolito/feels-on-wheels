@@ -338,7 +338,7 @@
     },
     "empty": {
       "label": "Empty",
-      "definition": "Hollow since a loss, as if part of you went with it."
+      "definition": "Hollow inside, as if something that should be there is missing."
     },
     "heartache": {
       "label": "Heartache",
@@ -628,7 +628,7 @@
     },
     "empty-of-feeling": {
       "label": "Empty",
-      "definition": "Hollow inside, as if there's nothing left in you."
+      "definition": "Hollow inside, as if something that should be there is missing."
     },
     "disconnected": {
       "label": "Disconnected",
@@ -660,7 +660,7 @@
     },
     "cringe": {
       "label": "Cringe",
-      "definition": "Wincing at someone else's embarrassing moment, or at your own when you remember it."
+      "definition": "Wincing at an embarrassing moment, whether you're watching it or remembering it."
     },
     "guilty": {
       "label": "Guilty",

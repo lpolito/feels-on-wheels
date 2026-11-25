@@ -282,7 +282,7 @@
     },
     "left-out": {
       "label": "Left out",
-      "definition": "Lonely because you weren't included, maybe by accident."
+      "definition": "Lonely because others are included and you aren't."
     },
     "misunderstood": {
       "label": "Misunderstood",
@@ -302,7 +302,7 @@
     },
     "rejected": {
       "label": "Rejected",
-      "definition": "Hurt that someone pushed you away or shut you out on purpose."
+      "definition": "Hurt at being pushed away or not wanted by someone."
     },
     "unappreciated": {
       "label": "Unappreciated",
@@ -554,7 +554,7 @@
     },
     "jealous": {
       "label": "Jealous",
-      "definition": "Angry that someone has, or might take, something or someone you want."
+      "definition": "Angry that someone has what you want, or could take someone you have."
     },
     "envious": {
       "label": "Envious",

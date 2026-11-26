@@ -8,20 +8,15 @@ We're continuing the opinionated feelings wheel for Feels on Wheels. The rules, 
 
 Start by reading, in this order:
 
-1. `docs/opinionated-wheel/learnings.md`: how I work, what went wrong before, and every decision I've made, with dates. Follow it.
+1. `docs/opinionated-wheel/learnings.md`: what went wrong before, and every decision I've made, with dates. It's background, not a checklist.
 2. `docs/opinionated-wheel/rules.md`: the rules. Their north star is how people use the wheel: they start at the center, tap the core that matches what they feel, tap a middle word, find their word, and read its card. Anything I decided earlier can be rechecked against that.
 3. `docs/opinionated-wheel/derived-wheel.md` (and `.json`): the wheel, with each word's definition, data, and reason. Its older entries cite old rule numbers; the note at the top maps them.
 4. `docs/opinionated-wheel/research/`: reports 1 to 15. The newest matter most: which core people tap (10), the fresh comb pass (11), my review of the definitions and the rules it produced (13), the card fixes (14), and my second review with the plain-language rule (15).
 5. `src/data/README.md` and `src/data/AGENTS.md`: the project's rules for wheel content, including the body wheel's, and the steps for changing wheel files.
 
-Continue on the branch `opinionated-wheel-rules`, or branch from the latest `main` if it has merged. Use the brainstorming skill.
+Continue on the branch `opinionated-wheel-rules`, or branch from the latest `main` if it has merged.
 
-**How I want to work** (it's in the learnings too, but it matters most):
-- One decision per message, short, with only the context it needs: the spot, its neighbors, definitions, counts. Never a long list of findings and questions at once. Keep a "decided so far" line I can check.
-- Research and the rules decide placement; ask me only real coin flips. When the evidence and "which core / word would you tap first?" agree, make the call and tell me in a line.
-- Push back when a rule or one of my calls looks wrong, with the case.
-- Plain English: pleasant or unpleasant, not "valence".
-- Separate writers from checkers, and keep checkers cold. Have important research checked by a second agent before it reaches me.
+**How I want to work:** lean on research and the rules for the calls; I'm not trained in this, so make them and tell me what you decided and why. Push back when something I decided looks wrong. Talk to me in plain English. Use your judgment on everything else, including how to check your work and how to show it to me.
 
 **Scope:** translations are out of this work entirely.
 

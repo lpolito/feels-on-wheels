@@ -32,7 +32,7 @@
   "feelings": {
     "happy": {
       "label": "Happy",
-      "definition": "A light, good feeling of pleasure or well-being.",
+      "definition": "Light and good, with a sense of pleasure or well-being.",
       "kind": "A {link} feeling.",
       "kindLink": "happy"
     },
@@ -70,7 +70,7 @@
     },
     "exhilarated": {
       "label": "Exhilarated",
-      "definition": "A rush of excitement in the moment, often from something fast or daring."
+      "definition": "Feeling a rush of excitement in the moment, often from something fast or daring."
     },
     "proud": {
       "label": "Proud",
@@ -82,7 +82,7 @@
     },
     "triumphant": {
       "label": "Triumphant",
-      "definition": "A proud high after winning or beating what stood in your way."
+      "definition": "Proud and victorious after beating a rival or a hard challenge."
     },
     "flattered": {
       "label": "Flattered",
@@ -106,7 +106,7 @@
     },
     "satisfied": {
       "label": "Satisfied",
-      "definition": "Pleased that what you wanted or needed has been met."
+      "definition": "Pleased that you got what you wanted or needed."
     },
     "fulfilled": {
       "label": "Fulfilled",
@@ -118,11 +118,11 @@
     },
     "calm": {
       "label": "Calm",
-      "definition": "Settled and steady inside, with nothing stirring you up."
+      "definition": "Settled and steady inside, with nothing bothering you."
     },
     "relaxed": {
       "label": "Relaxed",
-      "definition": "Loose and unhurried, with your guard down."
+      "definition": "Loose and unhurried, with no stress or tension."
     },
     "at-peace": {
       "label": "At peace",
@@ -158,7 +158,7 @@
     },
     "encouraged": {
       "label": "Encouraged",
-      "definition": "More hopeful about going on, thanks to a good sign or someone's support."
+      "definition": "Ready to keep going, because a good sign or someone's support gave you hope."
     },
     "motivated": {
       "label": "Motivated",
@@ -166,15 +166,15 @@
     },
     "inspired": {
       "label": "Inspired",
-      "definition": "Fired up to create or do something, because someone or something showed you what's possible."
+      "definition": "Eager to create or do something, because someone or something showed you what's possible."
     },
     "determined": {
       "label": "Determined",
-      "definition": "Set on doing something, whatever it takes."
+      "definition": "Firmly decided to do something, however hard it gets."
     },
     "interested": {
       "label": "Interested",
-      "definition": "Your attention is caught by something, and you want to stay with it."
+      "definition": "Drawn in by something, and wanting to keep paying attention to it."
     },
     "curious": {
       "label": "Curious",
@@ -194,7 +194,7 @@
     },
     "impressed": {
       "label": "Impressed",
-      "definition": "Struck by how good or skilled someone or something is."
+      "definition": "Full of admiration for how good or skilled someone or something is."
     },
     "grateful": {
       "label": "Grateful",
@@ -210,21 +210,21 @@
     },
     "love": {
       "label": "Love",
-      "definition": "Warmth toward someone: caring for them, wanting to be close, or feeling their care for you.",
+      "definition": "Warmth toward someone or something, a wish to be close, or the comfort of knowing someone cares about you.",
       "kind": "A feeling of {link}.",
       "kindLink": "love"
     },
     "affection": {
       "label": "Affection",
-      "definition": "A warm fondness for someone that makes you glad to have them around."
+      "definition": "A warm fondness you feel for someone or something, or that someone shows you."
     },
     "tenderness": {
       "label": "Tenderness",
-      "definition": "A gentle feeling that makes you want to be soft and careful with someone."
+      "definition": "A gentle feeling that makes you want to be soft and careful with someone or something."
     },
     "protective": {
       "label": "Protective",
-      "definition": "Wanting to shield someone you care about from anything that could hurt them."
+      "definition": "Wanting to shield someone or something you care about from anything that could hurt them."
     },
     "cared-for": {
       "label": "Cared for",
@@ -240,7 +240,7 @@
     },
     "moved": {
       "label": "Moved",
-      "definition": "Stirred deeply, maybe to tears, by someone's suffering or courage."
+      "definition": "Deeply affected, maybe to tears, by someone's suffering or their courage through it."
     },
     "connected": {
       "label": "Connected",
@@ -248,7 +248,7 @@
     },
     "understood": {
       "label": "Understood",
-      "definition": "Seen and known, because someone really gets you."
+      "definition": "Close to someone who knows what you mean, or who you really are."
     },
     "valued": {
       "label": "Valued",
@@ -260,7 +260,7 @@
     },
     "attracted": {
       "label": "Attracted",
-      "definition": "Drawn to someone, by their looks, their personality, or both."
+      "definition": "Drawn to someone's looks, personality, or both."
     },
     "desire": {
       "label": "Desire",
@@ -272,13 +272,13 @@
     },
     "sad": {
       "label": "Sad",
-      "definition": "A heavy feeling of loss, disappointment, or hurt.",
+      "definition": "Heavy with loss, disappointment, or hurt.",
       "kind": "A {link} feeling.",
       "kindLink": "sad"
     },
     "lonely": {
       "label": "Lonely",
-      "definition": "Longing for closeness with others that isn't there."
+      "definition": "Wanting closeness with others, and not having it."
     },
     "left-out": {
       "label": "Left out",
@@ -286,11 +286,11 @@
     },
     "misunderstood": {
       "label": "Misunderstood",
-      "definition": "Lonely because others get the wrong idea about you or what you mean."
+      "definition": "Lonely because others get the wrong idea about you, or about what you mean."
     },
     "abandoned": {
       "label": "Abandoned",
-      "definition": "On your own, without those you counted on to be there for you."
+      "definition": "On your own, after someone you counted on left you."
     },
     "hurt": {
       "label": "Hurt",
@@ -306,11 +306,11 @@
     },
     "unappreciated": {
       "label": "Unappreciated",
-      "definition": "Hurt that others take your efforts, or you, for granted."
+      "definition": "Hurt that others don't notice what you do for them, or how much you matter."
     },
     "disappointed": {
       "label": "Disappointed",
-      "definition": "Sad that things didn't go the way you hoped, or someone didn't come through."
+      "definition": "Sad that things didn't go the way you hoped, or that someone failed you."
     },
     "discouraged": {
       "label": "Discouraged",
@@ -322,7 +322,7 @@
     },
     "disillusioned": {
       "label": "Disillusioned",
-      "definition": "Let down after finding out someone or something isn't as good as you thought."
+      "definition": "Let down after learning the truth about someone or something you believed in."
     },
     "grief": {
       "label": "Grief",
@@ -330,11 +330,11 @@
     },
     "heartbroken": {
       "label": "Heartbroken",
-      "definition": "Deep pain over a love or a close bond that ended."
+      "definition": "Deep pain over losing a love or close bond, or something you had high hopes for."
     },
     "devastated": {
       "label": "Devastated",
-      "definition": "Crushed by a terrible loss or piece of bad news."
+      "definition": "Overcome with pain, as if everything has fallen apart."
     },
     "empty": {
       "label": "Empty",
@@ -350,7 +350,7 @@
     },
     "nostalgic": {
       "label": "Nostalgic",
-      "definition": "Wistful about times gone by, with warmth mixed into the sadness."
+      "definition": "Longing for the past, with warmth mixed into the sadness."
     },
     "sorry-for-someone": {
       "label": "Sorry for someone",
@@ -370,7 +370,7 @@
     },
     "defeated": {
       "label": "Defeated",
-      "definition": "Beaten down by a loss or failure, and ready to stop trying."
+      "definition": "Beaten down by a loss or failure, with no strength left to try again."
     },
     "ashamed": {
       "label": "Ashamed",
@@ -378,7 +378,7 @@
     },
     "humiliated": {
       "label": "Humiliated",
-      "definition": "Made to feel small and ashamed, often in front of others."
+      "definition": "Ashamed after being mocked or put down, often in front of others."
     },
     "worthless": {
       "label": "Worthless",
@@ -386,7 +386,7 @@
     },
     "inadequate": {
       "label": "Inadequate",
-      "definition": "Feeling that you are not good enough or not able to do what is needed."
+      "definition": "Feeling that you're not good enough, or can't do what's needed."
     },
     "inferior": {
       "label": "Inferior",
@@ -394,11 +394,11 @@
     },
     "insignificant": {
       "label": "Insignificant",
-      "definition": "Feeling small and unimportant, as if no one would notice you."
+      "definition": "Feeling small and unimportant, as if no one notices you."
     },
     "scared": {
       "label": "Scared",
-      "definition": "A feeling that you are in danger or about to be hurt.",
+      "definition": "Afraid or shaken, as if harm could come to you or to someone or something you care about.",
       "kind": "A {link} feeling.",
       "kindLink": "scared"
     },
@@ -408,7 +408,7 @@
     },
     "worried": {
       "label": "Worried",
-      "definition": "Turning something over in your mind, afraid it will go wrong."
+      "definition": "Afraid that something might go wrong, and thinking about it a lot."
     },
     "dread": {
       "label": "Dread",
@@ -416,19 +416,19 @@
     },
     "suspicious": {
       "label": "Suspicious",
-      "definition": "Distrustful, sensing that someone or something isn't what they appear to be."
+      "definition": "Distrustful, sensing that someone or something isn't what it seems."
     },
     "nervous": {
       "label": "Nervous",
-      "definition": "Jittery and unsure about how things will go and how you'll do."
+      "definition": "Jittery and unsure how things will go, or how you'll do."
     },
     "on-edge": {
       "label": "On edge",
-      "definition": "Tense and jumpy, unable to let your guard down."
+      "definition": "Tense and jumpy, always on alert."
     },
     "insecure": {
       "label": "Insecure",
-      "definition": "Unsure whether you measure up or whether people like you."
+      "definition": "Unsure whether you're good enough, or whether people like you."
     },
     "uneasy": {
       "label": "Uneasy",
@@ -440,7 +440,7 @@
     },
     "panicked": {
       "label": "Panicked",
-      "definition": "So scared that your mind races and you can't think straight."
+      "definition": "So scared that your mind races and you can't think clearly."
     },
     "petrified": {
       "label": "Petrified",
@@ -460,11 +460,11 @@
     },
     "stunned": {
       "label": "Stunned",
-      "definition": "So shocked that you go blank, unable to react or take it in."
+      "definition": "So shocked that your mind goes blank, and you can't react or take it in."
     },
     "vulnerable": {
       "label": "Vulnerable",
-      "definition": "Easily hurt, without your usual defenses."
+      "definition": "Unprotected, as if you could easily get hurt."
     },
     "helpless": {
       "label": "Helpless",
@@ -480,7 +480,7 @@
     },
     "angry": {
       "label": "Angry",
-      "definition": "A strong feeling that something is wrong or unfair, with an urge to push back.",
+      "definition": "Heated and wanting to push back at someone or something that bothers you, wrongs you, or gets in your way.",
       "kind": "An {link} feeling.",
       "kindLink": "angry"
     },
@@ -490,15 +490,15 @@
     },
     "irritable": {
       "label": "Irritable",
-      "definition": "Short-tempered right now, as if everything gets on your nerves."
+      "definition": "Short-tempered, as if every little thing bothers you."
     },
     "impatient": {
       "label": "Impatient",
-      "definition": "Itching for something to hurry up, and annoyed that it hasn't."
+      "definition": "Wanting something to hurry up, and annoyed at the wait."
     },
     "provoked": {
       "label": "Provoked",
-      "definition": "Stirred up by someone who's deliberately pushing your buttons."
+      "definition": "Annoyed by someone who's trying to get a reaction out of you."
     },
     "frustrated": {
       "label": "Frustrated",
@@ -506,11 +506,11 @@
     },
     "trapped": {
       "label": "Trapped",
-      "definition": "Frustrated and stuck, with no way out of where you are."
+      "definition": "Frustrated and stuck, like there's no way out."
     },
     "fed-up": {
       "label": "Fed up",
-      "definition": "Done putting up with the same thing over and over."
+      "definition": "Out of patience with the same thing happening over and over."
     },
     "furious": {
       "label": "Furious",
@@ -526,7 +526,7 @@
     },
     "violated": {
       "label": "Violated",
-      "definition": "Furious that someone crossed a line with you they had no right to cross, like your body, privacy, or home."
+      "definition": "Furious that someone invaded something that's yours alone, like your body, privacy, or home."
     },
     "resentful": {
       "label": "Resentful",
@@ -546,7 +546,7 @@
     },
     "insulted": {
       "label": "Insulted",
-      "definition": "Stung by something that put you down."
+      "definition": "Stung that someone seems to have a low opinion of you or of what you care about."
     },
     "indignant": {
       "label": "Indignant",
@@ -554,7 +554,7 @@
     },
     "jealous": {
       "label": "Jealous",
-      "definition": "Angry that someone has what you want, or could take someone you have."
+      "definition": "Angry that someone has what you want, or could take away someone or something you care about."
     },
     "envious": {
       "label": "Envious",
@@ -562,7 +562,7 @@
     },
     "possessive": {
       "label": "Possessive",
-      "definition": "Wanting to keep someone to yourself, and wary of anyone who comes near them."
+      "definition": "Wanting to keep someone or something to yourself, and wary of anyone who comes near them."
     },
     "disgusted": {
       "label": "Disgusted",
@@ -574,7 +574,7 @@
     },
     "contempt": {
       "label": "Contempt",
-      "definition": "Cold disgust for someone or something you look down on."
+      "definition": "Cold disgust for someone or something you have no respect for."
     },
     "hatred": {
       "label": "Hatred",
@@ -582,7 +582,7 @@
     },
     "bad": {
       "label": "Bad",
-      "definition": "Generally off or out of sorts, whether or not you can name why.",
+      "definition": "Not okay in some way, whether or not you know why.",
       "kind": "A {link} feeling.",
       "kindLink": "bad"
     },
@@ -636,7 +636,7 @@
     },
     "uncomfortable": {
       "label": "Uncomfortable",
-      "definition": "Ill at ease in a place or with the people around you."
+      "definition": "Tense and unable to relax where you are, or around the people you're with."
     },
     "awkward": {
       "label": "Awkward",
@@ -664,11 +664,11 @@
     },
     "guilty": {
       "label": "Guilty",
-      "definition": "Feeling that you did something wrong, and it weighs on you."
+      "definition": "Troubled by the sense that you did something wrong."
     },
     "remorse": {
       "label": "Remorse",
-      "definition": "Deep guilt over harm you caused, and wishing you could undo it."
+      "definition": "Deep guilt over harm you caused, and a wish to undo it."
     },
     "apologetic": {
       "label": "Apologetic",

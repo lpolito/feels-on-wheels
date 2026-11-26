@@ -208,6 +208,112 @@
       "label": "Blessed",
       "definition": "Thankful for the good in your life, and lucky to have it."
     },
+    "angry": {
+      "label": "Angry",
+      "definition": "Heated and wanting to push back at someone or something that bothers you, wrongs you, or gets in your way.",
+      "kind": "An {link} feeling.",
+      "kindLink": "angry"
+    },
+    "annoyed": {
+      "label": "Annoyed",
+      "definition": "Mildly irritated by something that bothers you."
+    },
+    "irritable": {
+      "label": "Irritable",
+      "definition": "Short-tempered, as if every little thing bothers you."
+    },
+    "impatient": {
+      "label": "Impatient",
+      "definition": "Wanting something to hurry up, and annoyed at the wait."
+    },
+    "provoked": {
+      "label": "Provoked",
+      "definition": "Annoyed by someone who's trying to get a reaction out of you."
+    },
+    "frustrated": {
+      "label": "Frustrated",
+      "definition": "Upset because something keeps getting in your way."
+    },
+    "trapped": {
+      "label": "Trapped",
+      "definition": "Frustrated and stuck, like there's no way out."
+    },
+    "fed-up": {
+      "label": "Fed up",
+      "definition": "Out of patience with the same thing happening over and over."
+    },
+    "furious": {
+      "label": "Furious",
+      "definition": "Extremely angry, and hard to calm down."
+    },
+    "outraged": {
+      "label": "Outraged",
+      "definition": "Furious at something wrong or unjust."
+    },
+    "rage": {
+      "label": "Rage",
+      "definition": "Anger so strong that it takes over."
+    },
+    "violated": {
+      "label": "Violated",
+      "definition": "Furious that someone invaded something that's yours alone, like your body, privacy, or home."
+    },
+    "resentful": {
+      "label": "Resentful",
+      "definition": "Holding on to anger about being treated unfairly."
+    },
+    "cheated": {
+      "label": "Cheated",
+      "definition": "Angry that someone tricked you or didn't play fair."
+    },
+    "used": {
+      "label": "Used",
+      "definition": "Resentful that someone took advantage of you to get what they wanted."
+    },
+    "betrayed": {
+      "label": "Betrayed",
+      "definition": "Hurt and angry because someone you trusted broke that trust."
+    },
+    "offended": {
+      "label": "Offended",
+      "definition": "Angry or upset at words or actions that feel disrespectful."
+    },
+    "insulted": {
+      "label": "Insulted",
+      "definition": "Stung that someone seems to have a low opinion of you or of what you care about."
+    },
+    "indignant": {
+      "label": "Indignant",
+      "definition": "Angry at being wronged or disrespected, and sure you're in the right."
+    },
+    "jealous": {
+      "label": "Jealous",
+      "definition": "Angry that someone has what you want, or could take away someone or something you care about."
+    },
+    "envious": {
+      "label": "Envious",
+      "definition": "Wanting what someone else has, and bothered that it's theirs."
+    },
+    "possessive": {
+      "label": "Possessive",
+      "definition": "Wanting to keep someone or something to yourself, and wary of anyone who comes near them."
+    },
+    "disgusted": {
+      "label": "Disgusted",
+      "definition": "Sickened by something cruel or morally wrong."
+    },
+    "appalled": {
+      "label": "Appalled",
+      "definition": "Shocked and in disbelief that anyone could do something so wrong."
+    },
+    "contempt": {
+      "label": "Contempt",
+      "definition": "Cold disgust for someone or something you have no respect for."
+    },
+    "hatred": {
+      "label": "Hatred",
+      "definition": "Intense, lasting hostility toward someone or something, for who they are or what they stand for."
+    },
     "love": {
       "label": "Love",
       "definition": "Warmth toward someone or something, a wish to be close, or the comfort of knowing someone cares about you.",
@@ -295,10 +401,6 @@
     "hurt": {
       "label": "Hurt",
       "definition": "Pained by something someone said or did."
-    },
-    "betrayed": {
-      "label": "Betrayed",
-      "definition": "Hurt and angry because someone you trusted broke that trust."
     },
     "rejected": {
       "label": "Rejected",
@@ -395,190 +497,6 @@
     "insignificant": {
       "label": "Insignificant",
       "definition": "Feeling small and unimportant, as if no one notices you."
-    },
-    "scared": {
-      "label": "Scared",
-      "definition": "Afraid or shaken, as if harm could come to you or to someone or something you care about.",
-      "kind": "A {link} feeling.",
-      "kindLink": "scared"
-    },
-    "anxious": {
-      "label": "Anxious",
-      "definition": "Tense and troubled about what might happen, often without knowing exactly what."
-    },
-    "worried": {
-      "label": "Worried",
-      "definition": "Afraid that something might go wrong, and thinking about it a lot."
-    },
-    "dread": {
-      "label": "Dread",
-      "definition": "A heavy fear of something that's coming."
-    },
-    "suspicious": {
-      "label": "Suspicious",
-      "definition": "Distrustful, sensing that someone or something isn't what it seems."
-    },
-    "nervous": {
-      "label": "Nervous",
-      "definition": "Jittery and unsure how things will go, or how you'll do."
-    },
-    "on-edge": {
-      "label": "On edge",
-      "definition": "Tense and jumpy, always on alert."
-    },
-    "insecure": {
-      "label": "Insecure",
-      "definition": "Unsure whether you're good enough, or whether people like you."
-    },
-    "uneasy": {
-      "label": "Uneasy",
-      "definition": "Slightly unsettled, with a sense that something isn't right."
-    },
-    "terrified": {
-      "label": "Terrified",
-      "definition": "Extremely afraid, as though something terrible could happen any second."
-    },
-    "panicked": {
-      "label": "Panicked",
-      "definition": "So scared that your mind races and you can't think clearly."
-    },
-    "petrified": {
-      "label": "Petrified",
-      "definition": "Frozen with fear."
-    },
-    "horrified": {
-      "label": "Horrified",
-      "definition": "Frightened and sickened by something awful you saw, heard, or learned."
-    },
-    "shocked": {
-      "label": "Shocked",
-      "definition": "Shaken by something sudden and upsetting."
-    },
-    "startled": {
-      "label": "Startled",
-      "definition": "Briefly jolted by something sudden."
-    },
-    "stunned": {
-      "label": "Stunned",
-      "definition": "So shocked that your mind goes blank, and you can't react or take it in."
-    },
-    "vulnerable": {
-      "label": "Vulnerable",
-      "definition": "Unprotected, as if you could easily get hurt."
-    },
-    "helpless": {
-      "label": "Helpless",
-      "definition": "Unable to stop something bad from happening, no matter what you do."
-    },
-    "exposed": {
-      "label": "Exposed",
-      "definition": "Feeling seen in a way you didn't choose, with nowhere to hide."
-    },
-    "threatened": {
-      "label": "Threatened",
-      "definition": "Feeling at risk from someone or something that could harm you or what you care about."
-    },
-    "angry": {
-      "label": "Angry",
-      "definition": "Heated and wanting to push back at someone or something that bothers you, wrongs you, or gets in your way.",
-      "kind": "An {link} feeling.",
-      "kindLink": "angry"
-    },
-    "annoyed": {
-      "label": "Annoyed",
-      "definition": "Mildly irritated by something that bothers you."
-    },
-    "irritable": {
-      "label": "Irritable",
-      "definition": "Short-tempered, as if every little thing bothers you."
-    },
-    "impatient": {
-      "label": "Impatient",
-      "definition": "Wanting something to hurry up, and annoyed at the wait."
-    },
-    "provoked": {
-      "label": "Provoked",
-      "definition": "Annoyed by someone who's trying to get a reaction out of you."
-    },
-    "frustrated": {
-      "label": "Frustrated",
-      "definition": "Upset because something keeps getting in your way."
-    },
-    "trapped": {
-      "label": "Trapped",
-      "definition": "Frustrated and stuck, like there's no way out."
-    },
-    "fed-up": {
-      "label": "Fed up",
-      "definition": "Out of patience with the same thing happening over and over."
-    },
-    "furious": {
-      "label": "Furious",
-      "definition": "Extremely angry, and hard to calm down."
-    },
-    "outraged": {
-      "label": "Outraged",
-      "definition": "Furious at something wrong or unjust."
-    },
-    "rage": {
-      "label": "Rage",
-      "definition": "Anger so strong that it takes over."
-    },
-    "violated": {
-      "label": "Violated",
-      "definition": "Furious that someone invaded something that's yours alone, like your body, privacy, or home."
-    },
-    "resentful": {
-      "label": "Resentful",
-      "definition": "Holding on to anger about being treated unfairly."
-    },
-    "cheated": {
-      "label": "Cheated",
-      "definition": "Angry that someone tricked you or didn't play fair."
-    },
-    "used": {
-      "label": "Used",
-      "definition": "Resentful that someone took advantage of you to get what they wanted."
-    },
-    "offended": {
-      "label": "Offended",
-      "definition": "Angry or upset at words or actions that feel disrespectful."
-    },
-    "insulted": {
-      "label": "Insulted",
-      "definition": "Stung that someone seems to have a low opinion of you or of what you care about."
-    },
-    "indignant": {
-      "label": "Indignant",
-      "definition": "Angry at being wronged or disrespected, and sure you're in the right."
-    },
-    "jealous": {
-      "label": "Jealous",
-      "definition": "Angry that someone has what you want, or could take away someone or something you care about."
-    },
-    "envious": {
-      "label": "Envious",
-      "definition": "Wanting what someone else has, and bothered that it's theirs."
-    },
-    "possessive": {
-      "label": "Possessive",
-      "definition": "Wanting to keep someone or something to yourself, and wary of anyone who comes near them."
-    },
-    "disgusted": {
-      "label": "Disgusted",
-      "definition": "Sickened by something cruel or morally wrong."
-    },
-    "appalled": {
-      "label": "Appalled",
-      "definition": "Shocked and in disbelief that anyone could do something so wrong."
-    },
-    "contempt": {
-      "label": "Contempt",
-      "definition": "Cold disgust for someone or something you have no respect for."
-    },
-    "hatred": {
-      "label": "Hatred",
-      "definition": "Intense, lasting hostility toward someone or something, for who they are or what they stand for."
     },
     "bad": {
       "label": "Bad",
@@ -681,6 +599,88 @@
     "squeamish": {
       "label": "Squeamish",
       "definition": "Queasy and shrinking back at things like blood, wounds, or bugs."
+    },
+    "scared": {
+      "label": "Scared",
+      "definition": "Afraid or shaken, as if harm could come to you or to someone or something you care about.",
+      "kind": "A {link} feeling.",
+      "kindLink": "scared"
+    },
+    "anxious": {
+      "label": "Anxious",
+      "definition": "Tense and troubled about what might happen, often without knowing exactly what."
+    },
+    "worried": {
+      "label": "Worried",
+      "definition": "Afraid that something might go wrong, and thinking about it a lot."
+    },
+    "dread": {
+      "label": "Dread",
+      "definition": "A heavy fear of something that's coming."
+    },
+    "suspicious": {
+      "label": "Suspicious",
+      "definition": "Distrustful, sensing that someone or something isn't what it seems."
+    },
+    "nervous": {
+      "label": "Nervous",
+      "definition": "Jittery and unsure how things will go, or how you'll do."
+    },
+    "on-edge": {
+      "label": "On edge",
+      "definition": "Tense and jumpy, always on alert."
+    },
+    "insecure": {
+      "label": "Insecure",
+      "definition": "Unsure whether you're good enough, or whether people like you."
+    },
+    "uneasy": {
+      "label": "Uneasy",
+      "definition": "Slightly unsettled, with a sense that something isn't right."
+    },
+    "terrified": {
+      "label": "Terrified",
+      "definition": "Extremely afraid, as though something terrible could happen any second."
+    },
+    "panicked": {
+      "label": "Panicked",
+      "definition": "So scared that your mind races and you can't think clearly."
+    },
+    "petrified": {
+      "label": "Petrified",
+      "definition": "Frozen with fear."
+    },
+    "horrified": {
+      "label": "Horrified",
+      "definition": "Frightened and sickened by something awful you saw, heard, or learned."
+    },
+    "shocked": {
+      "label": "Shocked",
+      "definition": "Shaken by something sudden and upsetting."
+    },
+    "startled": {
+      "label": "Startled",
+      "definition": "Briefly jolted by something sudden."
+    },
+    "stunned": {
+      "label": "Stunned",
+      "definition": "So shocked that your mind goes blank, and you can't react or take it in."
+    },
+    "vulnerable": {
+      "label": "Vulnerable",
+      "definition": "Unprotected, as if you could easily get hurt."
+    },
+    "helpless": {
+      "label": "Helpless",
+      "definition": "Unable to stop something bad from happening, no matter what you do."
+    },
+    "exposed": {
+      "label": "Exposed",
+      "definition": "Feeling seen in a way you didn't choose, with nowhere to hide."
+    },
+    "threatened": {
+      "label": "Threatened",
+      "definition": "Feeling at risk from someone or something that could harm you or what you care about."
     }
   },
   "sensations": {

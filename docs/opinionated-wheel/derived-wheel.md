@@ -67,6 +67,8 @@ The additions left four middle words with 4 outer words. Each was resolved in th
 
 **Settled by Lucas, 2026-11-21:** these six, with Bad keeping its name over Off.
 
+**Order and colors, Lucas, 2026-11-26:** clockwise from the start, Happy, Angry, Love, Sad, Bad, Scared, so that opposites face each other (Happy and Sad, Love and Scared, Angry and Bad) and the colors run around like a color wheel: orange, red, pink, indigo, teal, green. Bad changed from purple to teal, which also ends its closeness to Sad's indigo, and the body wheel's Throat moved from teal to a muted violet to make room. The reasons are in [learnings.md](learnings.md#lucass-decisions).
+
 Rule 5: a core is a family people sort feelings into, or the Bad door. Evidence: card sorts in English (Shaver et al. 1987), Indonesian (2001) and Basque (Alonso-Arbiol et al. 2006, which restates all three trees).
 
 | Core | Decided by | Label check (rules 5 and 10) |

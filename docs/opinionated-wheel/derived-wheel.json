@@ -101,6 +101,64 @@
       ]
     },
     {
+      "label": "Angry",
+      "middle": [
+        {
+          "label": "Annoyed",
+          "outer": [
+            "Irritable",
+            "Impatient",
+            "Provoked"
+          ]
+        },
+        {
+          "label": "Frustrated",
+          "outer": [
+            "Trapped",
+            "Fed up"
+          ]
+        },
+        {
+          "label": "Furious",
+          "outer": [
+            "Outraged",
+            "Rage",
+            "Violated"
+          ]
+        },
+        {
+          "label": "Resentful",
+          "outer": [
+            "Cheated",
+            "Used",
+            "Betrayed"
+          ]
+        },
+        {
+          "label": "Offended",
+          "outer": [
+            "Insulted",
+            "Indignant"
+          ]
+        },
+        {
+          "label": "Jealous",
+          "outer": [
+            "Envious",
+            "Possessive"
+          ]
+        },
+        {
+          "label": "Disgusted",
+          "outer": [
+            "Appalled",
+            "Contempt",
+            "Hatred"
+          ]
+        }
+      ]
+    },
+    {
       "label": "Love",
       "middle": [
         {
@@ -203,108 +261,6 @@
       ]
     },
     {
-      "label": "Scared",
-      "middle": [
-        {
-          "label": "Anxious",
-          "outer": [
-            "Worried",
-            "Dread",
-            "Suspicious"
-          ]
-        },
-        {
-          "label": "Nervous",
-          "outer": [
-            "On edge",
-            "Insecure",
-            "Uneasy"
-          ]
-        },
-        {
-          "label": "Terrified",
-          "outer": [
-            "Panicked",
-            "Petrified",
-            "Horrified"
-          ]
-        },
-        {
-          "label": "Shocked",
-          "outer": [
-            "Startled",
-            "Stunned"
-          ]
-        },
-        {
-          "label": "Vulnerable",
-          "outer": [
-            "Helpless",
-            "Exposed",
-            "Threatened"
-          ]
-        }
-      ]
-    },
-    {
-      "label": "Angry",
-      "middle": [
-        {
-          "label": "Annoyed",
-          "outer": [
-            "Irritable",
-            "Impatient",
-            "Provoked"
-          ]
-        },
-        {
-          "label": "Frustrated",
-          "outer": [
-            "Trapped",
-            "Fed up"
-          ]
-        },
-        {
-          "label": "Furious",
-          "outer": [
-            "Outraged",
-            "Rage",
-            "Violated"
-          ]
-        },
-        {
-          "label": "Resentful",
-          "outer": [
-            "Cheated",
-            "Used",
-            "Betrayed"
-          ]
-        },
-        {
-          "label": "Offended",
-          "outer": [
-            "Insulted",
-            "Indignant"
-          ]
-        },
-        {
-          "label": "Jealous",
-          "outer": [
-            "Envious",
-            "Possessive"
-          ]
-        },
-        {
-          "label": "Disgusted",
-          "outer": [
-            "Appalled",
-            "Contempt",
-            "Hatred"
-          ]
-        }
-      ]
-    },
-    {
       "label": "Bad",
       "middle": [
         {
@@ -362,6 +318,50 @@
           "outer": [
             "Repulsed",
             "Squeamish"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Scared",
+      "middle": [
+        {
+          "label": "Anxious",
+          "outer": [
+            "Worried",
+            "Dread",
+            "Suspicious"
+          ]
+        },
+        {
+          "label": "Nervous",
+          "outer": [
+            "On edge",
+            "Insecure",
+            "Uneasy"
+          ]
+        },
+        {
+          "label": "Terrified",
+          "outer": [
+            "Panicked",
+            "Petrified",
+            "Horrified"
+          ]
+        },
+        {
+          "label": "Shocked",
+          "outer": [
+            "Startled",
+            "Stunned"
+          ]
+        },
+        {
+          "label": "Vulnerable",
+          "outer": [
+            "Helpless",
+            "Exposed",
+            "Threatened"
           ]
         }
       ]

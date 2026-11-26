@@ -36,6 +36,7 @@ The body wheel (`src/data/wheels/body.json`) maps each body sensation to 2 or 3 
 - Map every sensation to 2 or 3 feelings on the new wheel. The rules (`rules.md`'s body wheel check and `src/data/README.md`): every feeling is on the feelings wheel, no two from the same line (parent, child, or grandparent), and a core word can be one where it's the best fit.
 - Judge it the same way as the feelings wheel: someone notices a sensation and looks for what they feel. Body states like Tired go on the body wheel's side, not the feelings wheel; Tired, Weak, and Withdrawn need thought.
 - Draft the whole mapping, have a cold agent check it, then bring me only the real choices, one at a time.
+- **Give Urges the brown the feelings wheel lost** (Lucas, 2026-11-25). Disgusted's color (`--hue-disgusted` in `src/styles/tokens.css`: #A4532A light, #C77A4F dark) has no core now that Disgusted is a middle word; I'd like it to replace Urges' mauve (`--hue-urges`). Check it against Shoulders, already a dark brown (#604016), so the two areas stay easy to tell apart, and against the contrast checks the colors already pass. Then redraw `public/og/` (root `AGENTS.md`, "Social preview images").
 
 ## Part 2: what's left in the words
 

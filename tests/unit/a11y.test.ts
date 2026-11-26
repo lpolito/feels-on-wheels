@@ -258,12 +258,12 @@ describe('body wheel (v2)', () => {
   });
 
   test('describe reads an urge\'s path', () => {
-    expect(describeSeg(bodyLayout, bodyLayout.byPath.get('urges/run/scared')!)).toBe('Scared. In Urges, Run.');
+    expect(describeSeg(bodyLayout, bodyLayout.byPath.get('urges/run/terrified')!)).toBe('Terrified. In Urges, Run.');
   });
 
-  test('the body tree has 180 treeitems', () => {
+  test('the body tree has 178 treeitems', () => {
     createA11yTree(root, bodyLayout, dispatch, startWord);
-    expect(items()).toHaveLength(180);
+    expect(items()).toHaveLength(178);
   });
 
   test('the tree is named after its wheel', () => {

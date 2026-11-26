@@ -39,8 +39,8 @@ describe('v1 content', () => {
 });
 
 describe('body wheel content', () => {
-  test('racing heart leads to scared, mad and excited', () => {
-    expect(feelingsUnder('racing-heart')).toEqual(['scared', 'mad', 'excited']);
+  test('racing heart leads to scared, angry and excited', () => {
+    expect(feelingsUnder('racing-heart')).toEqual(['scared', 'angry', 'excited']);
   });
 
   test('urges are bare verbs on the wheel and read as wanting on cards', () => {
@@ -55,11 +55,11 @@ describe('body wheel content', () => {
   });
 
   test('want to cry leaves out sad', () => {
-    expect(feelingsUnder('cry')).toEqual(['frustrated', 'overwhelmed', 'thankful']);
+    expect(feelingsUnder('cry')).toEqual(['frustrated', 'overwhelmed', 'grateful']);
   });
 
-  test('nothing much could be content, peaceful, or apathetic', () => {
-    expect(feelingsUnder('nothing-much')).toEqual(['content', 'peaceful', 'apathetic']);
+  test('nothing much could be content, at peace, or unmotivated', () => {
+    expect(feelingsUnder('nothing-much')).toEqual(['content', 'at-peace', 'unmotivated']);
     expect(locale.sensations['nothing-much']).toBe('Nothing much');
     expect(locale.sensationPhrases['nothing-much']).toBe('Not feeling much');
   });
@@ -70,13 +70,13 @@ describe('body wheel content', () => {
       expect(locale.sensations[s], s).toBeTruthy();
       expect(onWheel.has(s), s).toBe(false);
     }
-    expect(feelings['joyful']!.sensations).toContain('light-body');
+    expect(feelings['joy']!.sensations).toContain('light-body');
   });
 
-  test('no sensation is happy and nothing else', () => {
+  test('no sensation is pleasant (Happy or Love) and nothing else', () => {
     const happy = new Set<string>();
     const walk = (n: { feeling?: string; children?: { feeling?: string; children?: unknown[] }[] }, inHappy: boolean) => {
-      for (const c of n.children ?? []) { const h = inHappy || c.feeling === 'happy'; if (h) happy.add(c.feeling!); walk(c as never, h); }
+      for (const c of n.children ?? []) { const h = inHappy || c.feeling === 'happy' || c.feeling === 'love'; if (h) happy.add(c.feeling!); walk(c as never, h); }
     };
     walk(wheels.find((w) => w.id === 'core')! as never, false);
     for (const s of wheels.find((w) => w.id === 'body')!.children.flatMap((a) => a.children ?? [])) {

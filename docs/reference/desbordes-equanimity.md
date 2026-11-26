@@ -14,5 +14,5 @@ Published research. We use the idea, not its text.
 
 ## Takeaways for this project
 
-1. **Not caring and being content can feel alike from the inside,** which is exactly what Nothing much offers: one sensation, two readings (Content and Peaceful, or Apathetic).
-2. **Whether you still care is the tell,** and it's how the wheel defines Apathetic ("Not caring or feeling much about anything"). A definition or a card for these words could someday say so; that's for the opinionated feelings wheel.
+1. **Not caring and being content can feel alike from the inside,** which is exactly what Nothing much offers: one sensation, two readings (Content and At peace, or Unmotivated).
+2. **Whether you still care is the tell,** and it's how the first wheel defined Apathetic ("Not caring or feeling much about anything"). The opinionated feelings wheel has no word for not caring, so Nothing much offers Unmotivated, the closest: it's about lost drive more than lost caring.

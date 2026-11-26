@@ -45,7 +45,7 @@ Someone asking "I have this sensation, or this urge: what could it be?" Use the 
 ### Urges
 
 - Urges hold what you feel pulled to do. In the end, every urge is a pull to get away from something, whether or not you realize it: a threat, a person, a mistake, or the feeling itself ([experiential avoidance](../../docs/reference/hayes-experiential-avoidance.md)). The area is there to help people catch those moments ([urge surfing](../../docs/reference/marlatt-urge-surfing.md)).
-- Each core feeling's typical urges are on the wheel, checked against [Frijda's](../../docs/reference/frijda-action-tendencies.md) and [DBT's](../../docs/reference/linehan-dbt-model-of-emotions.md) pairings of emotions with urges. Two are left out on purpose: Surprised's urge to look closer and Happy's urge to laugh.
+- Each core feeling's typical urges are on the wheel, checked against [Frijda's](../../docs/reference/frijda-action-tendencies.md) and [DBT's](../../docs/reference/linehan-dbt-model-of-emotions.md) pairings of emotions with urges. Two are left out on purpose, both Happy's: the urge to laugh, and the urge to look closer that comes with interest and amazement.
 - Urges are bare verbs on the wheel ("Hide", "Fix things"), since the area gives the context. Avoid labels that read as a noun ("Control things", not "Control").
 
 ### Labels: two strings per sensation
@@ -64,9 +64,9 @@ Don't reuse one string where the grammar differs; give each context its own.
 - **2 or 3 per sensation, each a word on the feelings wheel,** from whichever ring fits best: usually the middle ring, an outer word where it's more exact, a core word where it really is the best fit.
 - **Every common path is on the wheel.** If a sensation commonly comes with a feeling, the wheel offers that path, so it can be found and followed. Feelings repeating across sensations is fine. Don't make room by cutting a path because its feeling appears elsewhere.
 - **Offer the other reading where a sensation honestly splits.** The same body signal reads as different feelings in different contexts (a racing heart can be scared or excited).
-- **Happy feelings come in only as the other reading of a sensation,** where the same signal could be a hard feeling. People rarely need help knowing they're happy, so a sensation whose only reading is happy doesn't earn a place on the wheel. It can still appear on cards (Feeling light, Feeling relaxed, Feeling tall, Warmth or fullness in your chest).
+- **Pleasant feelings (under Happy or Love) come in only as the other reading of a sensation,** where the same signal could be a hard feeling. People rarely need help knowing they feel good, so a sensation whose only reading is pleasant doesn't earn a place on the wheel. It can still appear on cards (Feeling light, Feeling relaxed, Feeling tall, Warmth or fullness in your chest).
 - **Obvious paths stay.** People follow the obvious ones first, and what's useful is often the less obvious feelings at their end, so an obvious urge or sensation can leave out its most obvious feeling (Cry leaves out Sad).
-- **Feelings under one sensation must be different enough that someone would choose between them.** A word and its own parent or child on the feelings wheel often aren't (Stressed and Overwhelmed, Repelled and Horrified), so look at those pairs first. Keep both only when each says something the other doesn't, and never fill a sensation with one word and the words nested under it (Repelled with Horrified and Hesitant). Feelings that all come from one core feeling are fine when each is a real choice (a lump in your throat: Hurt, Grief, Guilty).
+- **Feelings under one sensation must be different enough that someone would choose between them.** So no two come from the same line on the feelings wheel: a word with its parent, child, or grandparent (Overwhelmed and Pressured, Scared and Startled). A core word counts, so a core fits where a sensation splits across families (a racing heart: Scared, Angry, Excited), and a word that's on the feelings wheel twice is in both its lines. Feelings that all come from one core feeling are fine when each is a real choice (your heart in your throat: Terrified, Nervous, Startled).
 - **Two sensations in one area must feel different, or lead to different feelings.** If they don't, merge them (Want to get even became part of Lash out).
 - **When room is short,** the unpleasant and hard-to-tell feelings come first.
 
@@ -86,7 +86,7 @@ An id follows the wheel's label (`hollow-chest`, `hide`). A sensation that stays
 ## How to check a change
 
 - Every feeling on the body wheel is a word on the feelings wheel, and each sensation has 2 or 3 feelings. The data tests check both.
-- Each core feeling stays reachable from at least 2 areas, and the hard-to-tell ones from several. Happy has the fewest on purpose.
+- Each core feeling stays reachable from at least 2 areas, and the hard-to-tell ones from several. The pleasant ones, Happy and Love, have the fewest on purpose.
 - Every new or changed word says what backs it.
 - `docs/content-review.md` is rebuilt to match: each feeling's card line and the Body wheel section.
 

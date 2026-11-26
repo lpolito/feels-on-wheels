@@ -14,4 +14,4 @@ Published research. We use the idea, not its text.
 
 ## Takeaways for this project
 
-1. **Wanting to be close isn't only love.** Attachment anxiety, one kind of insecurity, pulls people toward closeness and reassurance, which is why Be close offers Insecure as well as Loving and Lonely. The other kind, avoidance, pulls away instead.
+1. **Wanting to be close isn't only love.** Attachment anxiety, one kind of insecurity, pulls people toward closeness and reassurance, which is why Be close offers Insecure as well as Love and Lonely. The other kind, avoidance, pulls away instead.

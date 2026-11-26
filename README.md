@@ -25,7 +25,7 @@ The body sensations wheel starts from what you notice in your body and leads to 
 
 - **Places you could point to, plus Urges.** The areas run head to toe in a body scan's order (Head / face, Throat / mouth, Shoulders, Hands, Chest, Stomach), then Whole body for what you feel all over. The last area, Urges, holds what you feel pulled to do: run, hide, lash out, numb out. Many people notice the pull before they can name the feeling.
 - **A sensation is something you'd notice with your eyes closed and nobody watching.** What others see, like a smile or raised eyebrows, isn't on the wheel.
-- **One sensation, several feelings.** The same body signal can mean different things: a racing heart can be scared or excited, and not feeling much can be content or apathetic. The wheel offers both readings where they're real, and offers happy feelings only as the other reading of a sensation, since few people need help knowing they're happy.
+- **One sensation, several feelings.** The same body signal can mean different things: a racing heart can be scared or excited, and not feeling much can be content or unmotivated. The wheel offers both readings where they're real, and offers good feelings only as the other reading of a sensation, since few people need help knowing they feel good.
 
 ### What the research found
 

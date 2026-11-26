@@ -139,8 +139,8 @@ describe('body wheel data', () => {
     expect(body.children.flatMap((a) => a.children ?? []).length).toBe(46);
   });
 
-  test('body wheel has 126 feeling cells', () => {
-    expect(body.children.flatMap((a) => a.children ?? []).reduce((n, s) => n + (s.children ?? []).length, 0)).toBe(126);
+  test('body wheel has 124 feeling cells', () => {
+    expect(body.children.flatMap((a) => a.children ?? []).reduce((n, s) => n + (s.children ?? []).length, 0)).toBe(124);
   });
 
   test('area labels', () => {
@@ -149,6 +149,27 @@ describe('body wheel data', () => {
 
   test('the body wheel still starts on Whole body', () => {
     expect(body.start).toBe('whole-body');
+  });
+
+  test('body wheel: no two feelings under a sensation from the same line (parent, child, or grandparent)', () => {
+    // Every place each feeling sits on the feelings wheel, as its path of ids from the core.
+    const paths = new Map<string, string[][]>();
+    const visit = (n: WheelNode, above: string[]) => {
+      const path = [...above, nodeRef(n).id];
+      paths.set(path.at(-1)!, [...(paths.get(path.at(-1)!) ?? []), path]);
+      for (const c of n.children ?? []) visit(c, path);
+    };
+    for (const c of wheel.children) visit(c, []);
+    const inLine = (a: string[], b: string[]) => a.every((id, i) => i >= b.length || b[i] === id);
+    for (const s of body.children.flatMap((a) => a.children ?? [])) {
+      const fs = (s.children ?? []).map((k) => nodeRef(k).id);
+      for (const [i, a] of fs.entries()) {
+        for (const b of fs.slice(i + 1)) {
+          const clash = paths.get(a)!.some((pa) => paths.get(b)!.some((pb) => inLine(pa, pb)));
+          expect(clash, `${nodeRef(s).id}: ${a} and ${b}`).toBe(false);
+        }
+      }
+    }
   });
 
   test('body wheel: every sensation has 2 or 3 feeling children, each a known feeling', () => {

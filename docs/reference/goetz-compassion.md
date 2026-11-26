@@ -15,4 +15,4 @@ Published research. We use the idea, not its text.
 ## Takeaways for this project
 
 1. **Wanting to help is an urge,** the defining one for compassion. It sits with guilt's urge to repair as one urge, wanting to fix things: one for your own mistake, one for someone else's trouble.
-2. **Compassion isn't a word on the feelings wheel,** so the body wheel uses its closest words, Loving and Worried.
+2. **Compassion is a word on the feelings wheel** (under Love, since the opinionated feelings wheel), so the body wheel's Fix things offers it directly, beside Guilty and Worried.

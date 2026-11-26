@@ -20,7 +20,7 @@ const themes = [
   ['dark', palette(block(':root[data-theme="dark"]'))],
 ] as const;
 
-const FEELING_HUES = ['angry', 'bad', 'disgusted', 'fearful', 'happy', 'sad', 'surprised'];
+const FEELING_HUES = ['angry', 'bad', 'fearful', 'happy', 'sad', 'surprised'];
 const AREA_HUES = ['head', 'throat', 'shoulders', 'hands', 'chest', 'stomach', 'whole-body', 'urges'];
 
 type Lab = [number, number, number];
@@ -69,7 +69,7 @@ describe('color math', () => {
 });
 
 describe('palette contrast floors', () => {
-  test('tokens.css defines the seven feeling hues and eight area hues in both themes', () => {
+  test('tokens.css defines the six feeling hues and eight area hues in both themes', () => {
     const all = [...FEELING_HUES, ...AREA_HUES].sort();
     for (const [, p] of themes) expect(Object.keys(p.hues).sort()).toEqual(all);
     // The system-dark block matches the manual dark block.

@@ -19,5 +19,6 @@ Written by fresh agents during the 2026-11-19 and 2026-11-20 brainstorm, each ch
 | [13-definitions-review.md](13-definitions-review.md) | the definitions review | Lucas's notes on every card, and a cold test of two rule wordings against them: two blind writers and a judge (2026-11-25) |
 | [14-card-fixes.md](14-card-fixes.md) | the card fixes | The 48 flagged cards rewritten by the revised rules, before and after, with the cold check of the first draft (2026-11-25) |
 | [15-second-card-review.md](15-second-card-review.md) | the second card review | Lucas's second review of the cards in two rounds of annotations: 56 cards rewritten, the Love cards widened past people, a plain-language rule, and the cold check (2026-11-25) |
+| [16-body-wheel-repair.md](16-body-wheel-repair.md) | the body wheel repair | The body wheel repaired to the new words (two drafts, a referee), the urges rechecked, the Urges color, and "You might notice" for the new words with a cold review (2026-11-26) |
 
 Not kept: the brief, report 3 (a critique of the first nine rules), and the two rule drafts. They're superseded by the refutation and by [rules.md](../rules.md).

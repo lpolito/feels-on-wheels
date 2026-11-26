@@ -8,8 +8,8 @@ and src/data/locales/en.json from derived-wheel.json and the definitions in
 derived-wheel.md. Ids follow labels ("At peace" is at-peace). A word on the wheel
 twice with one definition keeps one id. A word with two definitions gets two:
 moral Disgusted (Angry) is `disgusted` and physical Disgusted (Bad) is
-`physically-disgusted`; Empty after a loss (Sad) is `empty` and Empty with no
-feeling (Bad) is `empty-of-feeling`. "You might notice" carries over from
+`physically-disgusted`. Empty has one definition in both places (Lucas,
+2026-11-25), so it's one id, `empty`. "You might notice" carries over from
 today's feelings.json for words with the same id, and is empty for new ones,
 until it's redrafted after the body wheel. The body wheel itself is left out of
 src/data/wheels/index.ts while its feelings point at words that are gone.
@@ -26,7 +26,7 @@ DATA = os.path.join(REPO, "src", "data")
 # Today's color tokens, reused so the preview needs no new colors.
 HUES = {"Happy": "happy", "Love": "fearful", "Sad": "sad", "Scared": "surprised", "Angry": "angry", "Bad": "bad"}
 KIND = {"Love": ("A feeling of {link}.", "love"), "Angry": ("An {link} feeling.", "angry")}
-IDS = {("Bad", "Disgusted"): "physically-disgusted", ("Bad", "Empty"): "empty-of-feeling"}
+IDS = {("Bad", "Disgusted"): "physically-disgusted"}
 
 
 def ident(label):

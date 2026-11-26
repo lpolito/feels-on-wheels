@@ -310,7 +310,7 @@ describe('sideways zoom spec: the core word stays in view', () => {
   test('on a small sideways window the step wins over keeping the core ring in view (body, 720 × 480)', () => {
     const small: Viewport = { width: 432, height: 480, radius: 208 };
     const body = wheels.find((l) => l.wheelId === 'body')!;
-    expect(ringFocusCamera(body, 0, small, 0, opts).scale).toBeCloseTo(2.43, 2);
+    expect(ringFocusCamera(body, 0, small, 0, opts).scale).toBeCloseTo(2.39, 2);
     expect(ringFocusCamera(body, 1, small, 0, opts).scale).toBeCloseTo(1.25 * ringFocusCamera(body, 0, small, 0, opts).scale, 6);
   });
 

@@ -11,7 +11,6 @@
 
   --hue-fearful: #C2257F;
   --hue-angry: #C62835;
-  --hue-disgusted: #A4532A;
   --hue-sad: #3B3470;
   --hue-happy: #D9730D;
   --hue-surprised: #3E7B5E;
@@ -25,7 +24,8 @@
   --hue-stomach: #0179A3;
   --hue-hands: #51618D;
   --hue-whole-body: #83327B;
-  --hue-urges: #7B4D65;
+  /* Urges: the brown Disgusted had as a core (#A4532A light, #C77A4F dark), darkened until it stays 0.055 OKLab clear of Happy (2026-11-26). */
+  --hue-urges: #9A4E26;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,7 +42,6 @@
 
     --hue-fearful: #E0559E;
     --hue-angry: #E0525C;
-    --hue-disgusted: #C77A4F;
     --hue-sad: #7A70C2;
     --hue-happy: #E8933A;
     --hue-surprised: #5FA383;
@@ -56,7 +55,7 @@
     --hue-stomach: #1FA6DB;
     --hue-hands: #798BB8;
     --hue-whole-body: #B05BA6;
-    --hue-urges: #A7758E;
+    --hue-urges: #954E17;
   }
 }
 
@@ -73,7 +72,6 @@
 
   --hue-fearful: #E0559E;
   --hue-angry: #E0525C;
-  --hue-disgusted: #C77A4F;
   --hue-sad: #7A70C2;
   --hue-happy: #E8933A;
   --hue-surprised: #5FA383;
@@ -87,5 +85,5 @@
   --hue-stomach: #1FA6DB;
   --hue-hands: #798BB8;
   --hue-whole-body: #B05BA6;
-  --hue-urges: #A7758E;
+  --hue-urges: #954E17;
 }

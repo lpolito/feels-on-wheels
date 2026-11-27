@@ -113,7 +113,7 @@ test('with a word selected behind About, the heading starts fresh: the whole whe
   await page.goBack();
   await expect(page).toHaveURL(/\/$/);
   await page.goBack();
-  await expect(page).toHaveURL(/\/happy\/playful$/);
+  await expect(page).toHaveURL(/\/happy\/cheerful\/playful$/);
   await idle(page);
   expect((await state(page)).opened).toBe(true);
   // Forward to / closes the word and keeps it selected (spec v1.2 §3.1), then on to About.

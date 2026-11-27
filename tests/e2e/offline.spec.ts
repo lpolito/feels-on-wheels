@@ -10,7 +10,7 @@ test('offline reload works after the first visit', async ({ page, context, brows
   await page.reload();
   await context.setOffline(true);
   await page.reload();
-  await expect(page.locator('[role="treeitem"]')).toHaveCount(130);
+  await expect(page.locator('[role="treeitem"]')).toHaveCount(162);
   await expect(page.locator('#wheel')).toBeVisible();
   await context.setOffline(false);
 });

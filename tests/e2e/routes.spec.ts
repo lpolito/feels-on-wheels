@@ -191,7 +191,7 @@ test('Review Focus 5: Back and Forward across About during a spin', async ({ pag
   // About opens from the message, with nothing selected; history can still open it on a ring spin. Entries: the word,
   // then / (Start over), then About. Back twice to the opened word, so the fling is a ring spin whose settle would pick
   // a word, then straight on to About.
-  await open(page, '/fearful/scared');
+  await open(page, '/scared/anxious');
   await page.locator('fw-toolbar .fw-start-over').click();
   await idle(page);
   const homeTitle = await page.title();
@@ -200,7 +200,7 @@ test('Review Focus 5: Back and Forward across About during a spin', async ({ pag
   await page.goBack();
   await expect(page).toHaveURL((u) => u.pathname === '/');
   await page.goBack();
-  await expect(page).toHaveURL((u) => u.pathname === '/fearful/scared');
+  await expect(page).toHaveURL((u) => u.pathname === '/scared/anxious');
   await idle(page);
   expect((await state(page)).opened).toBe(true);
   const box = (await page.locator('#wheel').boundingBox())!;
@@ -346,7 +346,7 @@ test.describe('history: picking adds an entry, moving by direction replaces it',
   });
 
   test('a spin between open words replaces the entry', async ({ page }) => {
-    await open(page, '/fearful/scared');
+    await open(page, '/scared/anxious');
     const before = await entries(page);
     const box = (await page.locator('#wheel').boundingBox())!;
     const x = box.x + box.width * 0.4;
@@ -357,7 +357,7 @@ test.describe('history: picking adds an entry, moving by direction replaces it',
     await page.waitForTimeout(1500);
     await idle(page);
     expect((await state(page)).opened).toBe(true);
-    expect(new URL(page.url()).pathname).not.toBe('/fearful/scared');
+    expect(new URL(page.url()).pathname).not.toBe('/scared/anxious');
     expect(await entries(page)).toBe(before);
   });
 

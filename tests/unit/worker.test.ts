@@ -65,14 +65,14 @@ const NOINDEX = '<meta name="robots" content="noindex">';
 
 describe('real paths', () => {
   test('a word: its title, its definition, its canonical, noindex while the site is not indexable, and no JSON-LD', async () => {
-    const { res, html, assets } = await get('/happy/playful');
+    const { res, html, assets } = await get('/happy/cheerful/playful');
     expect(res.status).toBe(200);
     expect(assets.requested).toEqual([`${ORIGIN}/`]);
     expect(html).toContain('<title>Playful · Feels on Wheels</title>');
     expect(html).not.toContain('Shell title');
     expect(metaOf(html, 'name', 'description')).toBe(escapeHtml(data.locale.feelings['playful']!.definition!));
-    expect(canonicalOf(html)).toBe(`${site.url}happy/playful`);
-    expect(metaOf(html, 'property', 'og:url')).toBe(`${site.url}happy/playful`);
+    expect(canonicalOf(html)).toBe(`${site.url}happy/cheerful/playful`);
+    expect(metaOf(html, 'property', 'og:url')).toBe(`${site.url}happy/cheerful/playful`);
     expect(html).toContain(NOINDEX);
     expect(html).not.toContain('application/ld+json');
     expect(html).toContain('data-route="wheel"');
@@ -81,9 +81,9 @@ describe('real paths', () => {
   });
 
   test('the query is left out of the canonical', async () => {
-    const { res, html } = await get('/happy/playful?fbclid=1');
+    const { res, html } = await get('/happy/cheerful/playful?fbclid=1');
     expect(res.status).toBe(200);
-    expect(canonicalOf(html)).toBe(`${site.url}happy/playful`);
+    expect(canonicalOf(html)).toBe(`${site.url}happy/cheerful/playful`);
     expect(html).not.toContain('fbclid');
   });
 
@@ -182,7 +182,7 @@ describe('methods and headers', () => {
     expect(assets.requested).toEqual([]);
   });
 
-  test.each(['/happy/playful', '/about', '/nope'])('%s keeps the shell\'s caching headers, but not its etag or length', async (path) => {
+  test.each(['/happy/cheerful/playful', '/about', '/nope'])('%s keeps the shell\'s caching headers, but not its etag or length', async (path) => {
     const { res } = await get(path);
     expect([200, 404]).toContain(res.status);
     expect(res.headers.get('cache-control')).toBe('public, max-age=0, must-revalidate');

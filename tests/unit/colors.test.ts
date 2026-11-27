@@ -20,7 +20,7 @@ const themes = [
   ['dark', palette(block(':root[data-theme="dark"]'))],
 ] as const;
 
-const FEELING_HUES = ['angry', 'bad', 'fearful', 'happy', 'sad', 'surprised'];
+const FEELING_HUES = ['angry', 'bad', 'happy', 'love', 'sad', 'scared'];
 const AREA_HUES = ['head', 'throat', 'shoulders', 'hands', 'chest', 'stomach', 'whole-body', 'urges'];
 
 type Lab = [number, number, number];

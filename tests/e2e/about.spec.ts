@@ -105,7 +105,7 @@ test('the heading links home, like a site title: a new entry, the wheel, focus b
 
 test('with a word selected behind About, the heading starts fresh: the whole wheel, nothing selected', async ({ page }) => {
   // About opens only from the message, with nothing selected; Back and Forward can still put it in front of a selected word.
-  await open(page, '/happy/playful');
+  await open(page, '/happy/cheerful/playful');
   await page.locator('fw-toolbar .fw-start-over').click();
   await idle(page);
   await aboutLink(page).click();
@@ -122,7 +122,7 @@ test('with a word selected behind About, the heading starts fresh: the whole whe
   await page.goForward();
   await expect(page).toHaveURL(/\/about$/);
   await expect(aboutHeading(page)).toBeVisible();
-  expect(await selectedPath(page)).toBe('happy/playful');
+  expect(await selectedPath(page)).toBe('happy/cheerful/playful');
   await page.waitForTimeout(320);
   await page.getByRole('heading', { level: 1 }).getByRole('link', { name: 'Feels on Wheels', exact: true }).click();
   await expect(page).toHaveURL(/\/$/);

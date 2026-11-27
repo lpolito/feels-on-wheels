@@ -6,7 +6,7 @@ const titleOf = (html: string): string | undefined => /<title>([^<]*)<\/title>/.
 
 test.describe('statuses and titles', () => {
   for (const [path, status, title] of [
-    ['/happy/playful', 200, 'Playful · Feels on Wheels'],
+    ['/happy/cheerful/playful', 200, 'Playful · Feels on Wheels'],
     ['/body', 200, 'Body sensations wheel · Feels on Wheels'],
     ['/about', 200, 'About Feels on Wheels'],
     ['/nope', 404, 'Not found · Feels on Wheels'],

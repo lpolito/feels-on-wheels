@@ -187,14 +187,14 @@ test.describe('desktop', () => {
   });
 
   test('arrows work after a Close-to link', async ({ page }) => {
-    await open(page, '/angry/aggressive/hostile');
+    await open(page, '/angry/annoyed/irritable');
     await page.locator('fw-card .fw-close-to a', { hasText: 'Provoked' }).click();
     await idle(page);
-    expect(await selectedPath(page)).toBe('angry/aggressive/provoked');
+    expect(await selectedPath(page)).toBe('angry/annoyed/provoked');
     await page.keyboard.press('ArrowDown');
     await idle(page);
-    // Ring order: Provoked's next neighbour in the outer ring is Hostile.
-    expect(await selectedPath(page)).toBe('angry/aggressive/hostile');
+    // Ring order: Provoked's next neighbour in the outer ring is Irritable.
+    expect(await selectedPath(page)).toBe('angry/annoyed/irritable');
   });
 
   test('Enter on a focused row activates it, not the wheel', async ({ page }) => {
@@ -393,8 +393,8 @@ test.describe('desktop', () => {
     expect((await state(page)).opened).toBe(true);
     // A drag on the wheel released over the column. It's a swipe right, which opens the parent (on a core word it
     // would close, by design), so start on a middle word: whatever the swipe does, nothing may be dismissed.
-    await open(page, '/angry/aggressive');
-    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry/aggressive'));
+    await open(page, '/angry/annoyed');
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry/annoyed'));
     await page.mouse.move(p.x, p.y);
     await page.mouse.down();
     await page.mouse.move(empty.x, empty.y, { steps: 5 });
@@ -451,7 +451,7 @@ test.describe('desktop', () => {
   });
 
   test("desktop: opened view's wheel edge meets the column", async ({ page }) => {
-    for (const path of ['angry', 'angry/aggressive', 'angry/aggressive/hostile']) {
+    for (const path of ['angry', 'angry/annoyed', 'angry/annoyed/irritable']) {
       await open(page, `/${path}`);
       const { cam, vp } = await page.evaluate(() => ({ cam: window.__fw.camera(), vp: window.__fw.viewport() }));
       // The opened cell's 10px lift and 2px of outline end exactly at the column.
@@ -462,7 +462,7 @@ test.describe('desktop', () => {
   test('desktop 1024×768: an opened core word is fully on screen', async ({ page }) => {
     await page.setViewportSize({ width: 1024, height: 768 });
     // The middle ring is where the 1rem safeguard takes over at this size.
-    for (const [path, ring] of [['angry', [0.12, 0.32]], ['angry/aggressive', [0.32, 0.62]]] as const) {
+    for (const [path, ring] of [['angry', [0.12, 0.32]], ['angry/annoyed', [0.32, 0.62]]] as const) {
       await open(page, `/${path}`);
       const { p, cam, vp } = await page.evaluate((x) => ({
         p: window.__fw.segmentScreenPoint(x), cam: window.__fw.camera(), vp: window.__fw.viewport(),
@@ -496,7 +496,7 @@ test.describe('desktop', () => {
   });
 
   test('the dot, the first crumb and the body share one left edge', async ({ page }) => {
-    await open(page, '/angry/aggressive');
+    await open(page, '/angry/annoyed');
     await settled(page);
     const box = async (sel: string) => (await page.locator(sel).first().boundingBox())!;
     const dot = await box('fw-card .fw-card-toggle .fw-dot');
@@ -509,7 +509,7 @@ test.describe('desktop', () => {
   });
 
   test('folding an opened word leaves no space above its name', async ({ page }) => {
-    await open(page, '/angry/aggressive');
+    await open(page, '/angry/annoyed');
     await page.keyboard.press('Escape');
     await idle(page);
     await settled(page);
@@ -522,7 +522,7 @@ test.describe('desktop', () => {
     // A fresh card for the same word, never opened, has no crumbs at all.
     await page.reload();
     await page.waitForFunction(() => window.__fw !== undefined);
-    await tapPath(page, 'angry/aggressive');
+    await tapPath(page, 'angry/annoyed');
     await settled(page);
     expect(await page.locator('fw-card nav.fw-crumbs').count()).toBe(0);
     expect(Math.abs(folded - (await offset()))).toBeLessThanOrEqual(0.5);
@@ -531,7 +531,7 @@ test.describe('desktop', () => {
   test('the dot-and-name row sticks and the crumbs scroll away', async ({ page }) => {
     // Short enough that Aggressive's card (which has breadcrumbs) overflows.
     await page.setViewportSize({ width: 1280, height: 380 });
-    await open(page, '/angry/aggressive');
+    await open(page, '/angry/annoyed');
     await settled(page);
     const card = page.locator('fw-card');
     expect(await card.evaluate((el) => el.scrollHeight > el.clientHeight)).toBe(true);
@@ -569,13 +569,13 @@ test.describe('desktop', () => {
   });
 
   test('resize while opened keeps the opened word flat', async ({ page }) => {
-    await open(page, '/angry/aggressive/hostile');
-    expect(await page.evaluate(() => window.__fw.offCenter('angry/aggressive/hostile'))).toBeLessThan(1e-6);
+    await open(page, '/angry/annoyed/irritable');
+    expect(await page.evaluate(() => window.__fw.offCenter('angry/annoyed/irritable'))).toBeLessThan(1e-6);
     const size = page.viewportSize()!;
     await page.setViewportSize({ width: Math.round(size.width * 0.8), height: size.height + 100 });
     await page.waitForTimeout(200);
     await idle(page);
-    expect(await page.evaluate(() => window.__fw.offCenter('angry/aggressive/hostile'))).toBeLessThan(1e-6);
+    expect(await page.evaluate(() => window.__fw.offCenter('angry/annoyed/irritable'))).toBeLessThan(1e-6);
   });
 });
 
@@ -817,13 +817,13 @@ for (const colorScheme of ['light', 'dark'] as const) {
 
     test(`axe: no violations with nothing selected, selected, opened (${colorScheme})`, async ({ page }) => {
       await page.emulateMedia({ colorScheme });
-      await open(page, '/angry/aggressive/hostile');
+      await open(page, '/angry/annoyed/irritable');
       // Let the unfold finish, so axe reads the settled colors.
       await settled(page);
       expect((await axe(page).analyze()).violations, 'opened').toEqual([]);
       await page.keyboard.press('Escape');
       await idle(page);
-      await expect(title(page)).toHaveText('Hostile');
+      await expect(title(page)).toHaveText('Irritable');
       await settled(page);
       expect((await axe(page).analyze()).violations, 'selected').toEqual([]);
       await page.keyboard.press('Escape');

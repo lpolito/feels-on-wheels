@@ -274,7 +274,7 @@
     },
     {
       "feeling": "love",
-      "hue": "fearful",
+      "hue": "love",
       "children": [
         {
           "feeling": "attracted",
@@ -539,7 +539,7 @@
     },
     {
       "feeling": "scared",
-      "hue": "surprised",
+      "hue": "scared",
       "children": [
         {
           "feeling": "anxious",

@@ -83,9 +83,9 @@ describe('head tags', () => {
   });
 
   test('a route\'s path makes its canonical and og:url, and its title and description are used as given', () => {
-    const h = headTags({ title: 'Playful · Feels on Wheels', description: 'Fun & light.', path: 'happy/playful', jsonLd: false, noindex: false, image: { path: 'og/core-happy.png', alt: 'x' } }, site, strings);
-    expect(h).toContain('<link rel="canonical" href="https://lpolito.github.io/feels-on-wheels/happy/playful">');
-    expect(h).toContain('<meta property="og:url" content="https://lpolito.github.io/feels-on-wheels/happy/playful">');
+    const h = headTags({ title: 'Playful · Feels on Wheels', description: 'Fun & light.', path: 'happy/cheerful/playful', jsonLd: false, noindex: false, image: { path: 'og/core-happy.png', alt: 'x' } }, site, strings);
+    expect(h).toContain('<link rel="canonical" href="https://lpolito.github.io/feels-on-wheels/happy/cheerful/playful">');
+    expect(h).toContain('<meta property="og:url" content="https://lpolito.github.io/feels-on-wheels/happy/cheerful/playful">');
     expect(h).toContain('<title>Playful · Feels on Wheels</title>');
     expect(h).toContain('<meta property="og:title" content="Playful · Feels on Wheels">');
     expect(h).toContain('<meta name="description" content="Fun &amp; light.">');
@@ -131,7 +131,7 @@ describe('generated files', () => {
     const locs = [...sitemapXml(site, paths).matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => m[1]);
     expect(locs).toHaveLength(paths.length);
     expect(new Set(locs).size).toBe(locs.length);
-    for (const tail of ['', 'about', 'body', 'happy/playful']) expect(locs).toContain(`${site.url}${tail}`);
+    for (const tail of ['', 'about', 'body', 'happy/cheerful/playful']) expect(locs).toContain(`${site.url}${tail}`);
   });
 });
 

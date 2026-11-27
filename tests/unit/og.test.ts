@@ -19,7 +19,7 @@ describe('preview image per route (share and preview spec §5)', () => {
 
   test.each([
     ['/', 'og/core-happy.png'],
-    ['/happy/playful/aroused', 'og/core-happy.png'],
+    ['/love/attracted/aroused', 'og/core-love.png'],
     ['/sad/lonely', 'og/core-sad.png'],
     ['/body', 'og/body-whole-body.png'],
     ['/body/chest/racing-heart', 'og/body-chest.png'],

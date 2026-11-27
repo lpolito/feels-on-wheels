@@ -6,7 +6,7 @@ test.skip(({ browserName }) => browserName !== 'chromium', 'heap and frame probe
 
 const p95 = (xs: number[]): number => [...xs].sort((a, b) => a - b)[Math.floor(xs.length * 0.95)] ?? 0;
 
-async function setup(page: Page, url = '/angry/aggressive/hostile'): Promise<void> {
+async function setup(page: Page, url = '/angry/annoyed/irritable'): Promise<void> {
   await page.addInitScript(() => {
     const raf = window.requestAnimationFrame.bind(window);
     window.__rafCount = 0;

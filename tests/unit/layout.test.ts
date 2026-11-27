@@ -40,8 +40,8 @@ describe('buildLayout', () => {
 
   test('segment width is proportional to leafCount', () => {
     const angry = layout.segments[idx('angry')]!;
-    expect(angry.leafCount).toBe(16);
-    expect(angry.end - angry.start).toBeCloseTo((16 / 82) * TAU, 12);
+    expect(angry.leafCount).toBe(18);
+    expect(angry.end - angry.start).toBeCloseTo((18 / 111) * TAU, 12);
     expect(layout.segments.filter((s) => s.ring === 2).every((s) => s.leafCount === 1)).toBe(true);
   });
 
@@ -58,11 +58,11 @@ describe('buildLayout', () => {
   });
 
   test('paths are unique and byPath round-trips', () => {
-    expect(layout.segments).toHaveLength(130);
-    expect(layout.byPath.size).toBe(130);
+    expect(layout.segments).toHaveLength(162);
+    expect(layout.byPath.size).toBe(162);
     for (const s of layout.segments) expect(layout.byPath.get(s.path)).toBe(s.index);
-    expect(layout.segments[idx('angry/aggressive/hostile')]!.node).toEqual({ kind: 'feeling', id: 'hostile' });
-    expect(layout.segments[idx('angry/aggressive/hostile')]!.hue).toBe('angry');
+    expect(layout.segments[idx('angry/annoyed/irritable')]!.node).toEqual({ kind: 'feeling', id: 'irritable' });
+    expect(layout.segments[idx('angry/annoyed/irritable')]!.hue).toBe('angry');
     expect(layout.segments[idx('angry')]!.parent).toBe(-1);
     expect(layout.wheelId).toBe('core');
   });
@@ -73,31 +73,31 @@ describe('buildLayout', () => {
 });
 
 describe('litMask', () => {
-  test('litMask(selected=aggressive) lights exactly angry, aggressive, provoked, hostile', () => {
-    expect(lit(litMask(layout, idx('angry/aggressive')))).toEqual(
-      ['angry', 'angry/aggressive', 'angry/aggressive/hostile', 'angry/aggressive/provoked'],
+  test('litMask(selected=annoyed) lights exactly angry, annoyed, provoked, irritable, impatient', () => {
+    expect(lit(litMask(layout, idx('angry/annoyed')))).toEqual(
+      ['angry', 'angry/annoyed', 'angry/annoyed/impatient', 'angry/annoyed/irritable', 'angry/annoyed/provoked'],
     );
   });
 
-  test('litMask(selected=angry) lights all 25 Angry segments', () => {
+  test('litMask(selected=angry) lights all 26 Angry segments', () => {
     const paths = lit(litMask(layout, idx('angry')));
-    expect(paths).toHaveLength(25);
+    expect(paths).toHaveLength(26);
     expect(paths.every((p) => p.startsWith('angry'))).toBe(true);
   });
 
-  test('litMask(selected=hostile) lights only the path', () => {
-    expect(lit(litMask(layout, idx('angry/aggressive/hostile')))).toEqual(
-      ['angry', 'angry/aggressive', 'angry/aggressive/hostile'],
+  test('litMask(selected=irritable) lights only the path', () => {
+    expect(lit(litMask(layout, idx('angry/annoyed/irritable')))).toEqual(
+      ['angry', 'angry/annoyed', 'angry/annoyed/irritable'],
     );
   });
 
   test('litMask(null) lights all, and reuses out', () => {
-    const out = new Uint8Array(130);
+    const out = new Uint8Array(162);
     const m = litMask(layout, null, out);
     expect(m).toBe(out);
-    expect(lit(m)).toHaveLength(130);
+    expect(lit(m)).toHaveLength(162);
     litMask(layout, idx('sad'), out);
-    expect(lit(out)).toHaveLength(19);
+    expect(lit(out)).toHaveLength(31);
   });
 });
 
@@ -106,19 +106,19 @@ describe('neighbors', () => {
     const outer = layout.rings[2]!.segments;
     expect(ringNeighbor(layout, outer[outer.length - 1]!, 1)).toBe(outer[0]);
     expect(ringNeighbor(layout, outer[0]!, -1)).toBe(outer[outer.length - 1]);
-    expect(ringNeighbor(layout, idx('angry'), 1)).toBe(idx('disgusted'));
+    expect(ringNeighbor(layout, idx('angry'), 1)).toBe(idx('love'));
   });
 
   test('siblings excludes self', () => {
-    expect(siblings(layout, idx('angry/aggressive/hostile'))).toEqual([idx('angry/aggressive/provoked')]);
-    expect(siblings(layout, idx('angry'))).toHaveLength(6);
+    expect(siblings(layout, idx('angry/jealous/envious'))).toEqual([idx('angry/jealous/possessive')]);
+    expect(siblings(layout, idx('angry'))).toHaveLength(5);
   });
 });
 
 describe('nodes, homes and the hue rule (v2 §5.1)', () => {
   test("core wheel: every feeling has its home's hue, except the second places of repeated feelings", () => {
     const h = homes(layout);
-    const second = new Set(['bad/stressed/overwhelmed', 'sad/depressed/inferior', 'sad/hurt/embarrassed', 'sad/hurt/disappointed']);
+    const second = new Set(['sad/hurt/betrayed', 'bad/numb/empty']);
     for (const s of layout.segments) {
       if (second.has(s.path)) expect(s.hue, s.path).not.toBe(h.get(s.node.id)!.hue);
       else expect(s.hue, s.path).toBe(h.get(s.node.id)!.hue);
@@ -128,18 +128,16 @@ describe('nodes, homes and the hue rule (v2 §5.1)', () => {
   test('body wheel: areas and sensations take the area hue, feelings their core hue', () => {
     expect(bodyHue('chest')).toBe('chest');
     expect(bodyHue('chest/racing-heart')).toBe('chest');
-    expect(bodyHue('chest/racing-heart/scared')).toBe('fearful');
-    expect(bodyHue('chest/racing-heart/mad')).toBe('angry');
-    expect(bodyHue('chest/racing-heart/excited')).toBe('surprised');
+    expect(bodyHue('chest/racing-heart/scared')).toBe('scared');
+    expect(bodyHue('chest/racing-heart/angry')).toBe('angry');
+    expect(bodyHue('chest/racing-heart/excited')).toBe('happy');
   });
 
   test('homes uses the first position for repeated feelings', () => {
     const h = homes(layout);
-    expect(h.get('overwhelmed')).toEqual({ path: 'fearful/anxious/overwhelmed', hue: 'fearful' });
-    expect(h.get('inferior')).toEqual({ path: 'fearful/insecure/inferior', hue: 'fearful' });
-    expect(h.get('embarrassed')).toEqual({ path: 'disgusted/disapproving/embarrassed', hue: 'disgusted' });
-    expect(h.get('disappointed')).toEqual({ path: 'disgusted/disappointed', hue: 'disgusted' });
-    expect(h.get('scared')).toEqual({ path: 'fearful/scared', hue: 'fearful' });
+    expect(h.get('betrayed')).toEqual({ path: 'angry/resentful/betrayed', hue: 'angry' });
+    expect(h.get('empty')).toEqual({ path: 'sad/grief/empty', hue: 'sad' });
+    expect(h.get('scared')).toEqual({ path: 'scared', hue: 'scared' });
   });
 
   test('body paths join node ids', () => {

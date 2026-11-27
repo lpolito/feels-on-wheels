@@ -9,11 +9,11 @@
   --outline: #1c1b1f;
   --panel-edge: rgb(28 27 31 / 0.12);
 
-  --hue-fearful: #C2257F;
+  --hue-love: #C2257F;
   --hue-angry: #C62835;
   --hue-sad: #3B3470;
   --hue-happy: #D9730D;
-  --hue-surprised: #3E7B5E;
+  --hue-scared: #3E7B5E;
   --hue-bad: #005A69;
 
   /* v2 body areas (spec v2 §5.2). v2.1: the v2 values at 1.2x OKLab chroma, same L and hue (spec v2.1 §7.2); stomach (light) was already at the sRGB edge. */
@@ -40,11 +40,11 @@
   --outline: #ffffff;
   --panel-edge: rgb(255 255 255 / 0.1);
 
-    --hue-fearful: #E0559E;
+    --hue-love: #E0559E;
     --hue-angry: #E0525C;
     --hue-sad: #7A70C2;
     --hue-happy: #E8933A;
-    --hue-surprised: #5FA383;
+    --hue-scared: #5FA383;
     --hue-bad: #2B6D7C;
 
     /* v2 body areas. v2.1: the v2 values at 1.2x OKLab chroma, same L and hue (spec v2.1 §7.2); stomach (light) was already at the sRGB edge. */
@@ -70,11 +70,11 @@
   --outline: #ffffff;
   --panel-edge: rgb(255 255 255 / 0.1);
 
-  --hue-fearful: #E0559E;
+  --hue-love: #E0559E;
   --hue-angry: #E0525C;
   --hue-sad: #7A70C2;
   --hue-happy: #E8933A;
-  --hue-surprised: #5FA383;
+  --hue-scared: #5FA383;
   --hue-bad: #2B6D7C;
 
   /* v2 body areas. v2.1: the v2 values at 1.2x OKLab chroma, same L and hue (spec v2.1 §7.2); stomach (light) was already at the sRGB edge. */

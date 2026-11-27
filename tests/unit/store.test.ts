@@ -20,8 +20,8 @@ describe('initial state', () => {
 
 describe('select', () => {
   test('select on the wheel selects without opening or moving the view', () => {
-    const s = run(initialState, { type: 'select', segment: idx('angry/aggressive') });
-    expect(s).toEqual({ selected: idx('angry/aggressive'), opened: false, view: wheel });
+    const s = run(initialState, { type: 'select', segment: idx('angry/annoyed') });
+    expect(s).toEqual({ selected: idx('angry/annoyed'), opened: false, view: wheel });
   });
 
   test('select another word moves the selection', () => {
@@ -31,25 +31,25 @@ describe('select', () => {
   });
 
   test('select same word opens it', () => {
-    const s = run(selected('angry/aggressive'), { type: 'select', segment: idx('angry/aggressive') });
-    expect(s).toEqual(opened('angry/aggressive'));
+    const s = run(selected('angry/annoyed'), { type: 'select', segment: idx('angry/annoyed') });
+    expect(s).toEqual(opened('angry/annoyed'));
   });
 
   test('select while opened opens the new word in its ring', () => {
-    const s = run(opened('angry/aggressive'), { type: 'select', segment: idx('sad/hurt/embarrassed') });
-    expect(s).toEqual(opened('sad/hurt/embarrassed'));
+    const s = run(opened('angry/annoyed'), { type: 'select', segment: idx('sad/hurt/rejected') });
+    expect(s).toEqual(opened('sad/hurt/rejected'));
   });
 
 });
 
 describe('open / close / clear / escape', () => {
   test('open from nothing opens in the word ring', () => {
-    expect(run(initialState, { type: 'open', segment: idx('angry/aggressive/hostile') })).toEqual(opened('angry/aggressive/hostile'));
+    expect(run(initialState, { type: 'open', segment: idx('angry/annoyed/irritable') })).toEqual(opened('angry/annoyed/irritable'));
   });
 
   test('close keeps the selection and returns to wheel', () => {
-    const s = run(opened('angry/aggressive'), { type: 'close' });
-    expect(s).toEqual({ selected: idx('angry/aggressive'), opened: false, view: wheel });
+    const s = run(opened('angry/annoyed'), { type: 'close' });
+    expect(s).toEqual({ selected: idx('angry/annoyed'), opened: false, view: wheel });
   });
 
   test('close when only selected is a no-op (same object)', () => {
@@ -63,8 +63,8 @@ describe('open / close / clear / escape', () => {
   });
 
   test('escape closes then clears', () => {
-    const closed = run(opened('angry/aggressive'), { type: 'escape' });
-    expect(closed).toEqual(selected('angry/aggressive'));
+    const closed = run(opened('angry/annoyed'), { type: 'escape' });
+    expect(closed).toEqual(selected('angry/annoyed'));
     expect(run(closed, { type: 'escape' })).toEqual({ ...initialState });
   });
 });
@@ -77,44 +77,44 @@ describe('step', () => {
   });
 
   test('step while selected selects the ring neighbour, wrapping', () => {
-    const last = layout.rings[0]!.segments[6]!;
+    const last = layout.rings[0]!.segments[5]!;
     const s = run({ ...initialState, selected: last }, { type: 'step', delta: 1 });
-    expect(s).toEqual(selected('fearful'));
-    expect(run(selected('angry'), { type: 'step', delta: 1 }).selected).toBe(idx('disgusted'));
+    expect(s).toEqual(selected('happy'));
+    expect(run(selected('angry'), { type: 'step', delta: 1 }).selected).toBe(idx('love'));
   });
 
   test('step while opened opens the ring neighbour', () => {
-    expect(run(opened('angry'), { type: 'step', delta: -1 })).toEqual(opened('fearful'));
+    expect(run(opened('angry'), { type: 'step', delta: -1 })).toEqual(opened('happy'));
   });
 });
 
 describe('toChild / toParent', () => {
   test('toChild while selected selects the center child, as when opened', () => {
-    expect(run(selected('angry/aggressive'), { type: 'toChild' })).toEqual(selected('angry/aggressive/hostile'));
+    expect(run(selected('angry/annoyed'), { type: 'toChild' })).toEqual(selected('angry/annoyed/irritable'));
   });
 
   test('toChild while opened opens the center child', () => {
-    expect(run(opened('angry/aggressive'), { type: 'toChild' })).toEqual(opened('angry/aggressive/hostile'));
+    expect(run(opened('angry/annoyed'), { type: 'toChild' })).toEqual(opened('angry/annoyed/irritable'));
   });
 
   test('toChild on an opened leaf is a no-op (same object)', () => {
-    const s = opened('angry/aggressive/hostile');
+    const s = opened('angry/annoyed/irritable');
     expect(reduce(layout, s, { type: 'toChild' })).toBe(s);
   });
 
   test('toChild on a selected leaf is a no-op (same object)', () => {
-    const s = selected('angry/aggressive/hostile');
+    const s = selected('angry/annoyed/irritable');
     expect(reduce(layout, s, { type: 'toChild' })).toBe(s);
   });
 
   test('toParent while selected selects the parent; at the core it is a no-op', () => {
-    expect(run(selected('angry/aggressive'), { type: 'toParent' })).toEqual(selected('angry'));
+    expect(run(selected('angry/annoyed'), { type: 'toParent' })).toEqual(selected('angry'));
     const core = selected('angry');
     expect(reduce(layout, core, { type: 'toParent' })).toBe(core);
   });
 
   test('toParent while opened opens the parent', () => {
-    expect(run(opened('angry/aggressive/hostile'), { type: 'toParent' })).toEqual(opened('angry/aggressive'));
+    expect(run(opened('angry/annoyed/irritable'), { type: 'toParent' })).toEqual(opened('angry/annoyed'));
   });
 
   test('toParent on an opened core closes', () => {
@@ -122,19 +122,19 @@ describe('toChild / toParent', () => {
   });
 
   test('stepOut while opened opens the parent; on an opened core it closes', () => {
-    expect(run(opened('angry/aggressive/hostile'), { type: 'stepOut' })).toEqual(opened('angry/aggressive'));
+    expect(run(opened('angry/annoyed/irritable'), { type: 'stepOut' })).toEqual(opened('angry/annoyed'));
     expect(run(opened('angry'), { type: 'stepOut' })).toEqual(selected('angry'));
   });
 
   test('stepOut while only selected is a no-op', () => {
-    const s = selected('angry/aggressive');
+    const s = selected('angry/annoyed');
     expect(reduce(layout, s, { type: 'stepOut' })).toBe(s);
     expect(reduce(layout, initialState, { type: 'stepOut' })).toBe(initialState);
   });
 
-  test('centerChild(angry/aggressive) is hostile', () => {
-    expect(centerChild(layout, idx('angry/aggressive'))).toBe(idx('angry/aggressive/hostile'));
-    expect(centerChild(layout, idx('angry/aggressive/hostile'))).toBeNull();
+  test('centerChild(angry/annoyed) is irritable', () => {
+    expect(centerChild(layout, idx('angry/annoyed'))).toBe(idx('angry/annoyed/irritable'));
+    expect(centerChild(layout, idx('angry/annoyed/irritable'))).toBeNull();
   });
 });
 
@@ -155,11 +155,11 @@ describe('activate', () => {
 
 describe('settled', () => {
   test('settled while opened opens the word in the opened ring', () => {
-    expect(run(opened('angry/aggressive'), { type: 'settled', segment: idx('angry/mad') })).toEqual(opened('angry/mad'));
+    expect(run(opened('angry/annoyed'), { type: 'settled', segment: idx('angry/furious') })).toEqual(opened('angry/furious'));
   });
 
   test('settled while opened ignores a word from another ring', () => {
-    const s = opened('angry/aggressive');
+    const s = opened('angry/annoyed');
     expect(reduce(layout, s, { type: 'settled', segment: idx('sad') })).toBe(s);
   });
 

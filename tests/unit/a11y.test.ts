@@ -31,15 +31,15 @@ const sel = (p: string): State => ({ ...initialState, selected: idx(p) });
 const opened = (p: string): State => ({ selected: idx(p), opened: true, view: { mode: 'ring', ring: layout.segments[idx(p)]!.ring } });
 
 describe('a11y tree', () => {
-  test('renders 130 treeitems with correct aria-level inside a labelled tree', () => {
+  test('renders 162 treeitems with correct aria-level inside a labelled tree', () => {
     const tree = createA11yTree(root, layout, dispatch, startWord);
     tree.update(initialState);
     expect(root.getAttribute('role')).toBe('tree');
     expect(root.getAttribute('aria-label')).toBe('Feelings wheel');
-    expect(items()).toHaveLength(130);
+    expect(items()).toHaveLength(162);
     expect(item(idx('angry')).getAttribute('aria-level')).toBe('1');
-    expect(item(idx('angry/aggressive/hostile')).getAttribute('aria-level')).toBe('3');
-    expect(item(idx('angry/aggressive/hostile')).hasAttribute('aria-expanded')).toBe(false);
+    expect(item(idx('angry/annoyed/irritable')).getAttribute('aria-level')).toBe('3');
+    expect(item(idx('angry/annoyed/irritable')).hasAttribute('aria-expanded')).toBe(false);
     expect(item(idx('angry')).querySelector(':scope > [role="group"]')).not.toBeNull();
   });
 
@@ -90,10 +90,10 @@ describe('a11y tree', () => {
   test('with nothing selected, update never moves focus between words', () => {
     const tree = createA11yTree(root, layout, dispatch, startWord);
     tree.update(initialState);
-    item(idx('angry/aggressive/hostile')).focus();
+    item(idx('angry/annoyed/irritable')).focus();
     start = idx('happy');
     tree.update(initialState);
-    expect(document.activeElement).toBe(item(idx('angry/aggressive/hostile')));
+    expect(document.activeElement).toBe(item(idx('angry/annoyed/irritable')));
     expect(items().filter((el) => el.tabIndex === 0)).toEqual([item(idx('sad'))]);
   });
 
@@ -138,10 +138,10 @@ describe('a11y tree', () => {
 
   test('keys with nothing selected carry the focused word', () => {
     createA11yTree(root, layout, dispatch, startWord).update(initialState);
-    const inner = item(idx('angry/aggressive/hostile'));
+    const inner = item(idx('angry/annoyed/irritable'));
     inner.focus();
     inner.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }));
-    expect(dispatch.mock.calls).toEqual([[{ type: 'step', delta: 1, from: idx('angry/aggressive/hostile') }]]);
+    expect(dispatch.mock.calls).toEqual([[{ type: 'step', delta: 1, from: idx('angry/annoyed/irritable') }]]);
   });
 
   test('focusSelected with nothing selected does not select anything', () => {
@@ -198,33 +198,33 @@ describe('a11y tree', () => {
 
   test('aria-selected only on selected; aria-current only when opened; aria-expanded on ancestors', () => {
     const tree = createA11yTree(root, layout, dispatch, startWord);
-    tree.update(sel('angry/aggressive/hostile'));
-    expect(items().filter((el) => el.getAttribute('aria-selected') === 'true')).toEqual([item(idx('angry/aggressive/hostile'))]);
+    tree.update(sel('angry/annoyed/irritable'));
+    expect(items().filter((el) => el.getAttribute('aria-selected') === 'true')).toEqual([item(idx('angry/annoyed/irritable'))]);
     expect(items().filter((el) => el.hasAttribute('aria-current'))).toEqual([]);
     expect(item(idx('angry')).getAttribute('aria-expanded')).toBe('true');
-    expect(item(idx('angry/aggressive')).getAttribute('aria-expanded')).toBe('true');
+    expect(item(idx('angry/annoyed')).getAttribute('aria-expanded')).toBe('true');
     expect(item(idx('sad')).getAttribute('aria-expanded')).toBe('false');
-    tree.update(opened('angry/aggressive/hostile'));
-    expect(items().filter((el) => el.getAttribute('aria-current') === 'true')).toEqual([item(idx('angry/aggressive/hostile'))]);
-    expect(items().filter((el) => el.getAttribute('aria-selected') === 'true')).toEqual([item(idx('angry/aggressive/hostile'))]);
-    tree.update(sel('angry/aggressive/hostile'));
+    tree.update(opened('angry/annoyed/irritable'));
+    expect(items().filter((el) => el.getAttribute('aria-current') === 'true')).toEqual([item(idx('angry/annoyed/irritable'))]);
+    expect(items().filter((el) => el.getAttribute('aria-selected') === 'true')).toEqual([item(idx('angry/annoyed/irritable'))]);
+    tree.update(sel('angry/annoyed/irritable'));
     expect(items().filter((el) => el.hasAttribute('aria-current'))).toEqual([]);
   });
 });
 
 describe('announceFor', () => {
   test('selecting announces the description', () => {
-    expect(announceFor(layout, initialState, sel('angry/aggressive/hostile'))).toBe('Hostile. In Angry, Aggressive.');
+    expect(announceFor(layout, initialState, sel('angry/annoyed/irritable'))).toBe('Irritable. In Angry, Annoyed.');
   });
 
   test('opening announces opened, with the path for non-core words', () => {
-    expect(announceFor(layout, sel('angry/aggressive/hostile'), opened('angry/aggressive/hostile'))).toBe('Hostile, opened. In Angry, Aggressive.');
-    expect(announceFor(layout, opened('angry/aggressive/hostile'), opened('angry/aggressive'))).toBe('Aggressive, opened. In Angry.');
+    expect(announceFor(layout, sel('angry/annoyed/irritable'), opened('angry/annoyed/irritable'))).toBe('Irritable, opened. In Angry, Annoyed.');
+    expect(announceFor(layout, opened('angry/annoyed/irritable'), opened('angry/annoyed'))).toBe('Annoyed, opened. In Angry.');
     expect(announceFor(layout, initialState, opened('angry'))).toBe('Angry, opened.');
   });
 
   test('closing announces closed', () => {
-    expect(announceFor(layout, opened('angry/aggressive/hostile'), sel('angry/aggressive/hostile'))).toBe('Hostile, closed.');
+    expect(announceFor(layout, opened('angry/annoyed/irritable'), sel('angry/annoyed/irritable'))).toBe('Irritable, closed.');
   });
 
   test('nothing to say: null', () => {
@@ -234,21 +234,21 @@ describe('announceFor', () => {
 });
 
 describe('describe + announcer', () => {
-  test('describe(hostile) reads its path', () => {
-    expect(describeSeg(layout, idx('angry/aggressive/hostile'))).toBe('Hostile. In Angry, Aggressive.');
+  test('describe(irritable) reads its path', () => {
+    expect(describeSeg(layout, idx('angry/annoyed/irritable'))).toBe('Irritable. In Angry, Annoyed.');
     expect(describeSeg(layout, idx('angry'))).toBe('Angry.');
   });
 
   test('announcer re-announces identical text', async () => {
     const el = document.createElement('div');
     const announce = createAnnouncer(el);
-    announce('Hostile.');
+    announce('Irritable.');
     await new Promise((r) => requestAnimationFrame(() => r(null)));
-    expect(el.textContent).toBe('Hostile.');
-    announce('Hostile.');
+    expect(el.textContent).toBe('Irritable.');
+    announce('Irritable.');
     expect(el.textContent).toBe('');
     await new Promise((r) => requestAnimationFrame(() => r(null)));
-    expect(el.textContent).toBe('Hostile.');
+    expect(el.textContent).toBe('Irritable.');
   });
 });
 

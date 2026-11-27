@@ -74,7 +74,7 @@ test('Firefox: pinching the whole wheel keeps frame delta p95 ≤ 20 ms', async 
   expect(p95(deltas)).toBeLessThanOrEqual(20);
 });
 
-for (const [name, url] of [['whole wheel', '/'], ['opened', '/angry/aggressive/hostile']] as const) {
+for (const [name, url] of [['whole wheel', '/'], ['opened', '/angry/annoyed/irritable']] as const) {
   test(`Firefox: spinning the ${name} keeps frame delta p95 ≤ 20 ms`, async ({ page }) => {
     await setup(page, url);
     await page.evaluate(() => { window.__probe.length = 0; });

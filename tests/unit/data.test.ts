@@ -22,13 +22,13 @@ function countByDepth(w: Wheel): number[] {
 }
 
 describe('core wheel data', () => {
-  test('core wheel has 7 core, 41 middle, 82 outer positions', () => {
-    expect(countByDepth(wheel)).toEqual([7, 41, 82]);
+  test('core wheel has 6 core, 45 middle, 111 outer positions', () => {
+    expect(countByDepth(wheel)).toEqual([6, 45, 111]);
   });
 
-  test('core order starts Fearful, Angry, Disgusted, Sad, Happy, Surprised, Bad', () => {
+  test('core order is Happy, Angry, Love, Sad, Bad, Scared, like a color wheel with opposites facing', () => {
     expect(wheel.children.map((n) => nodeRef(n).id)).toEqual([
-      'fearful', 'angry', 'disgusted', 'sad', 'happy', 'surprised', 'bad',
+      'happy', 'angry', 'love', 'sad', 'bad', 'scared',
     ]);
   });
 
@@ -43,19 +43,16 @@ describe('core wheel data', () => {
     });
   });
 
-  test('labels: Judgmental (not Judgemental), Optimistic without leading space', () => {
+  test('labels: Optimistic without leading space, and none with a space at either end', () => {
     setLocale(locale);
-    expect(label('judgmental')).toBe('Judgmental');
     expect(label('optimistic')).toBe('Optimistic');
-    const all = Object.values(locale.feelings).map((f) => f.label);
-    expect(all).not.toContain('Judgemental');
-    for (const l of all) expect(l).toBe(l.trim());
+    for (const l of Object.values(locale.feelings).map((f) => f.label)) expect(l).toBe(l.trim());
   });
 
   test('duplicate words share one feeling id', () => {
     const uses = new Map<string, number>();
     walk(wheel.children, 0, (n) => uses.set(nodeRef(n).id, (uses.get(nodeRef(n).id) ?? 0) + 1));
-    for (const id of ['overwhelmed', 'embarrassed', 'inferior', 'disappointed']) {
+    for (const id of ['betrayed', 'empty']) {
       expect(uses.get(id), id).toBe(2);
     }
   });
@@ -63,7 +60,7 @@ describe('core wheel data', () => {
 
 describe('validation', () => {
   test('validateWheel needs start to name one of its center nodes', () => {
-    for (const start of [undefined, 42, 'nope', 'aggressive']) {
+    for (const start of [undefined, 42, 'nope', 'annoyed']) {
       const bad = structuredClone(wheel) as unknown as Record<string, unknown>;
       bad['start'] = start;
       expect(() => validateWheel(bad, feelings, ids()), String(start)).toThrow(DataError);
@@ -264,14 +261,14 @@ describe('loadData and validateLocale: wheels', () => {
 
   test('validateLocale rejects a core feeling without kind, kindLink or exactly one {link}', () => {
     const noKind = structuredClone(locale);
-    delete noKind.feelings['fearful']!.kind;
-    expect(() => validateLocale(noKind, feelings, wheels)).toThrow(/fearful.*kind/);
+    delete noKind.feelings['scared']!.kind;
+    expect(() => validateLocale(noKind, feelings, wheels)).toThrow(/scared.*kind/);
     const noLink = structuredClone(locale);
-    noLink.feelings['fearful']!.kindLink = '';
-    expect(() => validateLocale(noLink, feelings, wheels)).toThrow(/fearful.*kindLink/);
+    noLink.feelings['scared']!.kindLink = '';
+    expect(() => validateLocale(noLink, feelings, wheels)).toThrow(/scared.*kindLink/);
     const twice = structuredClone(locale);
-    twice.feelings['fearful']!.kind = 'A {link} {link} feeling.';
-    expect(() => validateLocale(twice, feelings, wheels)).toThrow(/fearful.*kind/);
+    twice.feelings['scared']!.kind = 'A {link} {link} feeling.';
+    expect(() => validateLocale(twice, feelings, wheels)).toThrow(/scared.*kind/);
   });
 
   test('validateLocale accepts switchName and rejects an empty one', () => {
@@ -293,7 +290,7 @@ describe('loadData and validateLocale: wheels', () => {
 describe('i18n', () => {
   test('t replaces {name} vars and returns key for missing', () => {
     setLocale(locale);
-    expect(t('inPath', { label: 'Hostile', path: 'Angry, Aggressive' })).toBe('Hostile. In Angry, Aggressive.');
+    expect(t('inPath', { label: 'Irritable', path: 'Angry, Aggressive' })).toBe('Irritable. In Angry, Aggressive.');
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     expect(t('definitely.missing')).toBe('definitely.missing');
     expect(warn).toHaveBeenCalledTimes(1);

@@ -112,7 +112,7 @@ describe('history writer', () => {
 describe('historyOp', () => {
   const sel: State = { ...initialState, selected: idx('angry') };
   const opn: State = { selected: idx('angry'), opened: true, view: { mode: 'ring', ring: 0 } };
-  const outer: State = { selected: idx('angry/aggressive/hostile'), opened: true, view: { mode: 'ring', ring: 2 } };
+  const outer: State = { selected: idx('angry/annoyed/irritable'), opened: true, view: { mode: 'ring', ring: 2 } };
   const op = (prev: State, a: Action) => historyOp(prev, reduce(layout, prev, a), a);
 
   test('restore and select-only changes leave history alone', () => {

@@ -9,9 +9,9 @@ const hintText = (page: Page) => hint(page).locator('.fw-hint-text');
 const notFound = (page: Page) => page.locator('fw-hint[data-variant="not-found"]');
 
 test('deep links open their cells, with the cell in the title', async ({ page }) => {
-  await open(page, '/happy/playful');
+  await open(page, '/happy/cheerful/playful');
   expect(await wheelId(page)).toBe('core');
-  expect(await selectedPath(page)).toBe('happy/playful');
+  expect(await selectedPath(page)).toBe('happy/cheerful/playful');
   expect((await state(page)).opened).toBe(true);
   await expect(page).toHaveTitle('Playful · Feels on Wheels');
   await open(page, '/body/chest/tight-chest');
@@ -304,14 +304,14 @@ test.describe('history: picking adds an entry, moving by direction replaces it',
   });
 
   test('a shared link, then closing, then Back reopens the word', async ({ page }) => {
-    await open(page, '/happy/playful');
+    await open(page, '/happy/cheerful/playful');
     await page.keyboard.press('Escape');
     await idle(page);
     expect(new URL(page.url()).pathname).toBe('/');
     await page.goBack();
     await idle(page);
-    expect(new URL(page.url()).pathname).toBe('/happy/playful');
-    expect(await selectedPath(page)).toBe('happy/playful');
+    expect(new URL(page.url()).pathname).toBe('/happy/cheerful/playful');
+    expect(await selectedPath(page)).toBe('happy/cheerful/playful');
     expect((await state(page)).opened).toBe(true);
   });
 
@@ -381,9 +381,9 @@ test.describe('history: picking adds an entry, moving by direction replaces it',
   });
 
   test('a swipe to the parent word replaces the entry', async ({ page }) => {
-    await open(page, '/angry/aggressive');
+    await open(page, '/angry/annoyed');
     const before = await entries(page);
-    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry/aggressive'));
+    const p = await page.evaluate(() => window.__fw.segmentScreenPoint('angry/annoyed'));
     // A quick sideways drag on a ring is a swipe: right steps out to the parent (spec v1.2's swipe).
     await page.mouse.move(p.x - 60, p.y);
     await page.mouse.down();

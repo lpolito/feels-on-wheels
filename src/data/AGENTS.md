@@ -27,5 +27,5 @@ Changing the loader's code (`load.ts`, `types.ts`, `node.ts`), or the app's othe
    If a word breaks a rule, change the word, not the rule.
 2. **Say what backs each new or changed word:** a source, physiology, an idiom for something people feel, or someone's experience. A new source gets a note in `docs/reference/` and a credit, as the root `AGENTS.md` says.
 3. **Keep the two strings in step.** A new sensation needs both its wheel label (`sensations`) and its card phrase (`sensationPhrases`).
-4. **Run the checks** under "How to check a change" in the README, and rebuild `docs/content-review.md` so it matches the data.
+4. **Run the checks** under "How to check a change" in the README, and rebuild `docs/content-review.md` with `node scripts/make-content-review.mjs` so it matches the data.
 5. **If a change needs a rule to bend, or a new rule,** ask Lucas before making it. Then change the README in the same change, so the rule and the data never disagree.

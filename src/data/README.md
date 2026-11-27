@@ -88,6 +88,6 @@ An id follows the wheel's label (`hollow-chest`, `hide`). A sensation that stays
 - Every feeling on the body wheel is a word on the feelings wheel, and each sensation has 2 or 3 feelings. The data tests check both.
 - Each core feeling stays reachable from at least 2 areas, and the hard-to-tell ones from several. The pleasant ones, Happy and Love, have the fewest on purpose.
 - Every new or changed word says what backs it.
-- `docs/content-review.md` is rebuilt to match: each feeling's card line and the Body wheel section.
+- `docs/content-review.md` is rebuilt to match, with `node scripts/make-content-review.mjs`: each feeling's card and the Body wheel section.
 
 For reference, not a rule on what's on the wheel: it's worth listing the feelings wheel's middle-ring words that have no path on the body wheel, and asking whether a common sensation leads to any of them.

@@ -44,6 +44,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Wheels for kids](#wheels-for-kids) | New ways to identify an emotion | Idea |
 | [Search for a word](#search-for-a-word) | New ways to identify an emotion | Idea |
 | [An opinionated feelings wheel](#an-opinionated-feelings-wheel) | [The wheels' content](#the-wheels-content) | Brainstorming |
+| [Narrower feelings on the body wheel's card](#narrower-feelings-on-the-body-wheels-card) | The wheels' content | Idea |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
@@ -125,6 +126,18 @@ What the wheels say: their words, definitions, and how feelings relate to sensat
 - The cores are arranged like a color wheel, opposites facing each other, 2026-11-26: Happy, Angry, Love, Sad, Bad, Scared. Bad became teal, and the body wheel's Throat a muted violet to make room ([learnings](opinionated-wheel/learnings.md#lucass-decisions)).
 - "You might notice" for the new words was drafted from the repaired body wheel on 2026-11-26 ([research/16](opinionated-wheel/research/16-body-wheel-repair.md)). Still to decide: reference notes and credits for the new sources; and whether NRC's request for an About-page credit covers using it only as a design-time check (the app stays non-commercial, Lucas 2026-11-21).
 - Meets [Strength](#strength), [Wheels for kids](#wheels-for-kids), [Languages](#languages), and the [definitions and sensations review](#before-launching), which all depend on which words the wheel has. Builds on the rules the [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) set in [src/data/README.md](../src/data/README.md).
+
+#### Narrower feelings on the body wheel's card
+
+- Lucas, 2026-11-26: on the body wheel's card, when a feeling under "Could be feeling" or "Could also be feeling" is a core feeling or a middle-ring word, list the words nested under it on the feelings wheel, so the narrower feelings are right there without jumping to the feelings wheel. First step: try it and see how it looks.
+- Fits the body wheel's rule that a sensation never lists a word together with the words nested under it ([src/data/README.md](../src/data/README.md)): the card would show them as narrower readings of the one feeling, not as more choices beside it.
+- To decide when designing:
+  - where they go: under each feeling, or in their own part of the card before or after "Could also be feeling";
+  - what to call them: narrower, more specific, or related feelings, or another phrase;
+  - for a core feeling, its middle-ring words only, or the outer words too;
+  - whether each one links to its word on the feelings wheel, like the feelings they're nested under;
+  - how long the card gets, since a core feeling can have several middle-ring words, and how the list reads to a screen reader.
+- Meets [An opinionated feelings wheel](#an-opinionated-feelings-wheel), which may change which words are nested under which, such as Hesitant under Repelled.
 
 ### URLs, routing and hosting
 

@@ -2,16 +2,18 @@
 
 **Do this only once Feels on Wheels has its own domain. Never link the github.io address.** Lucas wants his site to link the app's permanent home; the move is in [Before launching](../ROADMAP.md#before-launching).
 
-A link icon for the row of icons on Lucas's site, in that site's style: gray at rest like the GitHub, LinkedIn and email icons. On hover, keyboard focus or a tap it takes the wheel's seven core-feeling colors and spins once, like a prize wheel, then settles. Chosen on 2026-11-09 ([going-public spec §9](../superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md)).
+A link icon for the row of icons on Lucas's site, in that site's style: gray at rest like the GitHub, LinkedIn and email icons. On hover, keyboard focus or a tap it takes the wheel's six core-feeling colors and spins once, like a prize wheel, then settles. Chosen on 2026-11-09 ([going-public spec §9](../superpowers/specs/2026-11-09-feels-on-wheels-going-public-design.md)).
 
 ## What's here
 
 | File | What it is |
 |---|---|
-| `feels-on-wheels.svg` | The silhouette, used as a CSS mask like the site's other icons: the app icon's wheel with its hole, core ring and seven spokes. |
+| `feels-on-wheels.svg` | The silhouette, used as a CSS mask like the site's other icons: the app icon's wheel with its hole, core ring and six spokes. |
 | `feels-on-wheels.css` | The rules to add to the site's stylesheet. |
 | `snippet.html` | The link to add to the site's `#links` row. |
 | `preview.html` | The site's links row with the new icon, using the live site's stylesheet. |
+
+The SVG and the CSS are drawn from the feelings wheel by `node scripts/make-icons.mjs`, which also draws the app's own icon; rerun it when the cores or their colors change, rather than editing them by hand.
 
 To see the preview, serve this folder (`python3 -m http.server 8000`) and open <http://localhost:8000/preview.html>. CSS masks don't load from `file://`.
 
@@ -24,7 +26,7 @@ The site's repo is `~/dev/lucaspolito.dev` (`lpolito/lucaspolito.dev`). It's one
 3. **Add the link.** In `~/dev/lucaspolito.dev/index.html`, add the contents of `snippet.html` as the **last** `<a>` inside `<nav id="links">`, unless Lucas asks for another position. Replace `DOMAIN` with the app's domain. Don't add `rel="me"`: that's for profiles that are Lucas himself.
 4. **Check it** with `python3 -m http.server 8000` in `~/dev/lucaspolito.dev`, at <http://localhost:8000>:
    - **At rest** the wheel is the same gray as the other icons.
-   - **Hover:** it takes the seven colors and spins once in about a second, then settles. Moving away and back spins it again.
+   - **Hover:** it takes the six colors and spins once in about a second, then settles. Moving away and back spins it again.
    - **Keyboard:** Tab to it. It shows the colors, spins, and gets the site's focus outline.
    - **Reduced motion** (in the browser's dev tools, emulate `prefers-reduced-motion: reduce`): the colors appear but it doesn't spin.
    - **Forced colors** (emulate `forced-colors: active`): it shows as a plain silhouette, like the other icons.

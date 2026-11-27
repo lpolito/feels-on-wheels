@@ -16,3 +16,4 @@ Published research. We use the idea, not its text.
 
 1. **Wanting to help is an urge,** the defining one for compassion. It sits with guilt's urge to repair as one urge, wanting to fix things: one for your own mistake, one for someone else's trouble.
 2. **Compassion is a word on the feelings wheel** (under Love, since the opinionated feelings wheel), so the body wheel's Fix things offers it directly, beside Guilty and Worried.
+3. **Compassion isn't pity.** In the review, compassion sorts with love and pity with sadness, and the two load on different factors; word ratings agree (compassion pleasant, pity unpleasant). So the [opinionated feelings wheel](../superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md) keeps Compassion under Love and Sorry for someone under Sad (Lucas, 2026-11-25). Taken from the research for that decision, not a new reading of the full text.

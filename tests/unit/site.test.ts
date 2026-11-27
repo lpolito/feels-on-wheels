@@ -242,10 +242,10 @@ describe('About page', () => {
 
   test('credits are brief: the main sources by name, a link to the full credits, and a way to say a word is wrong', () => {
     const credits = section('credits');
-    for (const name of ['Gloria Willcox', 'Geoffrey Roberts', 'Lindsay Braman', 'feelingswheel.com']) expect(credits).toContain(name);
+    for (const name of ['Gloria Willcox', 'Lindsay Braman', 'feelingswheel.com']) expect(credits).toContain(name);
     expect(credits).not.toContain('<li>');
     expect(credits).toContain('href="https://github.com/lpolito/feels-on-wheels#credits"');
-    expect(credits).toContain('>Read the full credits and the research behind the body wheel<');
+    expect(credits).toContain('>Read the full credits and the research behind both wheels<');
     expect(credits).toContain('href="https://github.com/lpolito/feels-on-wheels/issues/new?template=wheel-content.yml"');
     expect(credits).toContain('>Think a word or definition is wrong? Tell us<');
     expect(credits).toContain('isn&#39;t a clinical tool');

@@ -12,10 +12,56 @@ It's meant to have everything you'd want from a modern web app, with accessibili
 
 - **Accessible.** The wheel is drawn on a canvas, but every word is also in a real tree that works with a keyboard and screen readers. It follows your light or dark mode, and respects reduced motion and forced colors (high contrast). Automated accessibility checks (axe) run in the tests.
 - **Fast.** Spinning stays smooth: in performance tests, 95% of frames come less than 20 ms apart, in Chromium and Firefox.
-- **Small.** No frameworks and no runtime dependencies. Everything a first visit downloads, including every word and definition, is about 39 KB gzipped, against a 60 KB budget that every pull request checks.
+- **Small.** No frameworks and no runtime dependencies. Everything a first visit downloads, including every word and definition, is about 41 KB gzipped, against a 60 KB budget that every pull request checks.
 - **Offline and installable.** After one visit it works with no connection. To keep it handy, install it from your browser's menu, or use Add to Home Screen on an iPhone or iPad.
 - **Any screen.** Layouts are tested from 280 px phones to 2560 px monitors, in Chromium, Firefox and WebKit, and on Android and iPhone.
 - **Private.** No accounts, no tracking, no analytics. Nothing you choose leaves your device.
+
+## Research behind the feelings wheel
+
+The feelings wheel starts from six core feelings in the middle and gets more specific toward the edge. Its words aren't copied from another wheel: they were chosen by a short set of rules, checked against research on how people group and use feeling words. It's for finding words, not a clinical or diagnostic tool.
+
+### How it's built
+
+- **Built around how people use it.** You start at the center, tap the core that matches what you feel, tap a narrower word, find your word, and read its card to check it fits. Every word sits where someone feeling it would look.
+- **Six cores:** Happy, Angry, Love, Sad, Bad, and Scared, arranged like a color wheel so opposites face each other. Each is all pleasant or all unpleasant. Bad is the door for when you can't tell what you feel, and everything inside it is specific.
+- **Words for what happened to you,** like Betrayed or Left out, are on the outer ring, under the feeling people who feel them would look for first. Their cards still describe a feeling.
+- **A few words are in two places,** where people really split between two cores: Betrayed is under both Sad and Angry. Disgusted is in two places because it means two things: physical disgust under Bad, and moral disgust under Angry.
+- **Words side by side are related,** so if you land one word off, the word you meant is next to it.
+- **Every card is plain language,** one sentence that reads after "I feel", for anyone, including someone learning English or too upset to puzzle over a sentence.
+
+### What the research found
+
+- **People sort feeling words into the same few families:** love, joy, anger, sadness, and fear, with pleasant or unpleasant as the first split. This holds in several languages, and across thousands of languages pleasantness is what most decides which feelings share a word. ([Shaver and others](docs/reference/shaver-emotion-prototypes.md), [Jackson and others](docs/reference/jackson-emotion-semantics.md))
+- **The families have fuzzy edges,** so a word goes where it fits best, not where it fits perfectly. ([Russell and Fehr](docs/reference/russell-fehr-fuzzy-categories.md), [Cowen and Keltner](docs/reference/cowen-keltner-emotion-categories.md))
+- **Which core people would tap** comes from what people report feeling together through the day, and from which category raters pick for a word. That's why Guilty and Embarrassed are under Bad, and Grateful under Happy. ([Trampe and others](docs/reference/trampe-daily-emotions.md), [Zupan and others](docs/reference/zupan-categorising-emotion-words.md), [Algoe](docs/reference/algoe-gratitude.md))
+- **Some words name what happened, not a feeling:** "feeling abandoned" says what happened, which might bring hurt, fear, or anger. And tiredness is a body state, not a feeling. ([Ortony, Clore and Foss](docs/reference/ortony-clore-foss-affective-lexicon.md))
+- **Stress is an umbrella,** and boredom is a real emotion. ([Lazarus](docs/reference/lazarus-appraisal.md), [Danckert and others](docs/reference/danckert-boredom.md))
+- **Particular words:**
+  - shame, guilt, and embarrassment are different feelings, and shame doesn't always make you hide ([Tangney](docs/reference/tangney-shame-guilt.md), [Leach and Cidam](docs/reference/leach-cidam-shame.md));
+  - physical and moral disgust are different ([Rozin and others](docs/reference/rozin-disgust.md));
+  - compassion is warm and pity is sad ([Goetz and others](docs/reference/goetz-compassion.md));
+  - being moved is its own feeling ([Zickfeld and others](docs/reference/zickfeld-kama-muta.md)).
+- **The old cores came from faces,** the emotions people recognize on photographed faces, which says little about the words people use for themselves. ([Barrett and others](docs/reference/barrett-facial-expressions.md))
+- **Naming a feeling eases it a little,** but no study shows that feelings wheels help, so the wheel's only claim is that it helps you find a word. ([Lieberman and others](docs/reference/lieberman-affect-labeling.md))
+- **Word data** checked each choice: how pleasant a word is ([NRC VAD](docs/reference/nrc-vad-lexicon.md), [Warriner and others](docs/reference/warriner-affective-norms.md)), which meaning it usually has ([the Glasgow Norms](docs/reference/glasgow-norms.md)), which words people link ([Small World of Words](docs/reference/small-world-of-words.md)), how often people write "I feel ___" ([Google Books](docs/reference/google-books-ngram.md)), and which core words young children know ([Baron-Cohen and others](docs/reference/baron-cohen-emotion-vocabulary.md)). The data isn't in this repo; the checks run on a computer that has it ([scripts/wheel-words/](scripts/wheel-words/README.md)).
+
+### What isn't research
+
+- **Bad as a core** is a design choice: no research list has a catch-all.
+- **Lucas's calls:** which close words to use (Resentful, not Bitter), the order of the cores, and every card's wording, which he reviewed twice.
+
+The decisions and close calls are in the [design spec](docs/superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md#6-the-record-decisions-and-close-calls).
+
+### How it was decided
+
+- **Lucas set the rules,** with the person at the center tapping in as the test for everything.
+- **Claude did the research and drafting,** and separate AI agents that hadn't seen the reasoning checked each claim and each draft cold.
+- **Lucas made the calls,** reviewed every card twice, and rewrote freely.
+- **Lucas isn't a clinician or a researcher,** and doesn't claim to be.
+- **The rules** that keep the wheel this way are in [src/data/README.md](src/data/README.md).
+
+**If a word seems wrong or missing,** or you know research that says otherwise, please [open a Wheel content issue](https://github.com/lpolito/feels-on-wheels/issues/new?template=wheel-content.yml).
 
 ## Research behind the body wheel
 
@@ -111,7 +157,28 @@ What's built, what's next and what's still an idea are all in [docs/ROADMAP.md](
 
 Everything Feels on Wheels draws on, whether or not a license asks for credit. Each name links to a note on the source, and [docs/reference/](docs/reference/README.md) has the full citations.
 
-- **Feelings wheels:** [Gloria Willcox's Feeling Wheel](docs/reference/core-feelings-wheel.md) (1982), [Geoffrey Roberts's Feel Wheel](docs/reference/core-feelings-wheel.md) (2015), the source of the feelings wheel's words, [Lindsay Braman's Emotion-Sensation Wheel](docs/reference/braman-emotion-sensation-wheel.md) (2020), and [feelingswheel.com](docs/reference/core-feelings-wheel.md#the-reference-site), whose tap-to-trace idea inspired this one.
+- **Feelings wheels:** [Gloria Willcox's Feeling Wheel](docs/reference/core-feelings-wheel.md) (1982), [Geoffrey Roberts's Feel Wheel](docs/reference/core-feelings-wheel.md) (2015), the source of the first version's words, [Lindsay Braman's Emotion-Sensation Wheel](docs/reference/braman-emotion-sensation-wheel.md) (2020), and [feelingswheel.com](docs/reference/core-feelings-wheel.md#the-reference-site), whose tap-to-trace idea inspired this one.
+- **Research behind the feelings wheel** ([what each found](#research-behind-the-feelings-wheel)):
+  - [Shaver and others](docs/reference/shaver-emotion-prototypes.md)
+  - [Russell and Fehr](docs/reference/russell-fehr-fuzzy-categories.md)
+  - [Cowen and Keltner](docs/reference/cowen-keltner-emotion-categories.md)
+  - [Jackson and others](docs/reference/jackson-emotion-semantics.md)
+  - [Ortony, Clore and Foss](docs/reference/ortony-clore-foss-affective-lexicon.md)
+  - [Richard Lazarus](docs/reference/lazarus-appraisal.md)
+  - [Danckert and others](docs/reference/danckert-boredom.md)
+  - [June Tangney and others](docs/reference/tangney-shame-guilt.md)
+  - [Leach and Cidam](docs/reference/leach-cidam-shame.md)
+  - [Zickfeld and others](docs/reference/zickfeld-kama-muta.md)
+  - [Fontaine and others](docs/reference/fontaine-emotion-dimensions.md)
+  - [Barrett and others](docs/reference/barrett-facial-expressions.md)
+  - [Trampe, Quoidbach and Taquet](docs/reference/trampe-daily-emotions.md)
+  - [Zupan, Dempsey and Hartwell](docs/reference/zupan-categorising-emotion-words.md)
+  - [Sara Algoe](docs/reference/algoe-gratitude.md)
+  - [Nook and others](docs/reference/nook-emotion-definitions.md)
+  - [Lieberman and others](docs/reference/lieberman-affect-labeling.md)
+  - [Rozin and others](docs/reference/rozin-disgust.md)
+  - [Goetz and others](docs/reference/goetz-compassion.md)
+- **Word data used to check the feelings wheel's words:** [NRC VAD Lexicon](docs/reference/nrc-vad-lexicon.md) (Saif M. Mohammad), [Warriner, Kuperman and Brysbaert](docs/reference/warriner-affective-norms.md), [the Glasgow Norms](docs/reference/glasgow-norms.md), [Baron-Cohen and others](docs/reference/baron-cohen-emotion-vocabulary.md), [Small World of Words](docs/reference/small-world-of-words.md), and [Google Books Ngram](docs/reference/google-books-ngram.md).
 - **Research behind the body wheel** ([what each found](#research-behind-the-body-wheel)):
   - [Nummenmaa and others](docs/reference/nummenmaa-bodily-maps.md)
   - [A. D. Craig](docs/reference/craig-interoception.md)

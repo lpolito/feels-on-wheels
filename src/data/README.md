@@ -46,9 +46,9 @@ The rules are few and loose on purpose. Lucas, 2026-11-21: "It feels silly for s
 
    Words for what happened to you, or the situation you're in (Betrayed, Trapped, Safe), are feelings people reach for: they stay, as tagged outer words (below).
 2. **If you felt this, which core would you tap first?** People use the wheel from the center out: nobody thinks "I feel repulsed, so I'll look in Angry" (Lucas, 2026-11-21). Evidence for the answer:
-   - **what people say they feel at the same time:** if people who feel the word usually also say they feel the core, the core is the door;
+   - **what people say they feel at the same time** ([Trampe and others](../../docs/reference/trampe-daily-emotions.md)): if people who feel the word usually also say they feel the core, the core is the door;
    - **what happened,** using the cores' guides below;
-   - **the sorting studies,** where they cover the word. They show which words people think are alike, which isn't the same as which door they'd tap, so they inform the answer rather than decide it;
+   - **the sorting studies** ([Shaver and others](../../docs/reference/shaver-emotion-prototypes.md)), where they cover the word. They show which words people think are alike, which isn't the same as which door they'd tap, so they inform the answer rather than decide it;
    - **word associations** can flag a word that seems out of place, but other meanings skew them (mad also means crazy).
 3. **If you felt this, which middle word would you tap?** The same test, one ring further in. People who feel the word usually also say they feel its parent, and the word reads as the parent plus something specific: a cause, a target, or a strength. Words for what happened to you follow this like any other word, not the feeling they're assumed to cause: someone who feels betrayed might tap Angry as easily as Sad.
 4. **Is each word a real choice?** Siblings pass "I feel A but not B" both ways (Curious and Inquisitive fail). Siblings can be different strengths of their parent (Annoyed and Furious under Angry), but a stronger word that keeps one sibling's cause or target is that sibling's strong form, so it goes under that sibling or leaves (Lucas, 2026-11-20: Lust beside Desire was this trap). For a parent and its word, only one direction has to hold: you can feel scared without feeling terrified. And siblings are told apart by their labels alone, since people choose from labels and read the card only after the tap: two siblings whose labels look like the same thing at a glance (Puzzled beside Confused) fail, even if their definitions differ.
@@ -56,11 +56,11 @@ The rules are few and loose on purpose. Lucas, 2026-11-21: "It feels silly for s
 
 ### Cores
 
-A core is one of the families people sort feelings into (love, joy, anger, sadness, fear) or the one catch-all door. Each is all pleasant or all unpleasant. A core with fewer than 4 middle words needs a line saying why. Its label is a word young children know: prefer one that at least 75% of 4- to 6-year-olds knew, and let usage counts only break ties.
+A core is one of the families people sort feelings into (love, joy, anger, sadness, fear) or the one catch-all door. Each is all pleasant or all unpleasant. A core with fewer than 4 middle words needs a line saying why. Its label is a word young children know: prefer one that at least 75% of 4- to 6-year-olds knew ([Baron-Cohen and others](../../docs/reference/baron-cohen-emotion-vocabulary.md)), and let usage counts only break ties.
 
 The catch-all, Bad, is a door for when you can't tell what you feel, and its words are specific feelings, not all from one other family. Nearly half of "feel bad" is "feel bad about" (guilt) or "feel bad for" (sympathy), so Guilty sits inside Bad, and "I feel bad for them" is Sorry for someone, under Sad.
 
-Each core answers a question about what happened. These guide where a word goes; they aren't evidence, and they aren't how people choose, since people tap by what they feel, not by what caused it.
+Each core answers a question about what happened. These guide where a word goes, adapted from appraisal theory ([Lazarus](../../docs/reference/lazarus-appraisal.md)); they aren't evidence, and they aren't how people choose, since people tap by what they feel, not by what caused it.
 
 | Core | What happened |
 |---|---|
@@ -73,7 +73,7 @@ Each core answers a question about what happened. These guide where a word goes;
 
 ### Words for what happened to you
 
-Words like Betrayed, Abandoned, Cheated, Trapped, and Safe name what happened to you, or the situation you're in, more than a feeling. People reach for them anyway, so they stay, as a tagged list: `"whatHappened": true` in `feelings.json`. Each goes on the outer ring, under the core and middle word people who feel it would tap (questions 2 and 3), and its card still reads as something you feel (Definitions). Hurt, Lonely, Threatened, and Guilty are feelings, not tagged. Intent sorts some of them (Lucas, 2026-11-20): shut out on purpose is Rejected, which hurts; left out, maybe by accident, is Left out, which is lonely. The labels carry that, and the cards leave the intent out.
+Words like Betrayed, Abandoned, Cheated, Trapped, and Safe name what happened to you, or the situation you're in, more than a feeling. People reach for them anyway, so they stay ([Ortony, Clore and Foss](../../docs/reference/ortony-clore-foss-affective-lexicon.md)), as a tagged list: `"whatHappened": true` in `feelings.json`. Each goes on the outer ring, under the core and middle word people who feel it would tap (questions 2 and 3), and its card still reads as something you feel (Definitions). Hurt, Lonely, Threatened, and Guilty are feelings, not tagged. Intent sorts some of them (Lucas, 2026-11-20): shut out on purpose is Rejected, which hurts; left out, maybe by accident, is Left out, which is lonely. The labels carry that, and the cards leave the intent out.
 
 ### Mixed feelings
 
@@ -125,8 +125,8 @@ A failure blocks the change until it's fixed. Checks that need only the wheel fi
 
 **Flags, never verdicts** (local). A flag means someone looks, then changes the word or writes one line of reason in the change:
 
-- **pleasantness:** unscored in both lists, the lists disagree, or near neutral. The lists rate the word, not the feeling (Smug rates unpleasant though smugness feels good), so a written reason can beat them;
-- **rare:** both usage counts ("feel / feeling / felt ___" and "I was ___", from Google Books) under 15 per billion. Books undercount words people say aloud, especially slang;
+- **pleasantness:** unscored in both lists ([NRC VAD](../../docs/reference/nrc-vad-lexicon.md) and [Warriner and others](../../docs/reference/warriner-affective-norms.md)), the lists disagree, or near neutral. The lists rate the word, not the feeling (Smug rates unpleasant though smugness feels good), so a written reason can beat them;
+- **rare:** both usage counts ("feel / feeling / felt ___" and "I was ___", from [Google Books](../../docs/reference/google-books-ngram.md)) under 15 per billion. Books undercount words people say aloud, especially slang;
 - **a more common synonym:** a word with the same meaning used at least twice as often. Commonness only decides between words that mean the same thing; it never removes a word that names something no other word does (Lucas, 2026-11-20: Understood stayed beside Valued);
 - **core labels:** the share of young children who knew each label.
 

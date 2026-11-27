@@ -111,7 +111,7 @@ Every word's card has a short definition that describes the feeling itself, so s
 
 ### Checks
 
-A failure blocks the change until it's fixed. Checks that need only the wheel files run in CI with the data tests (`tests/unit/data.test.ts`). Checks that need word datasets run in local scripts ([scripts/wheel-words/](../../scripts/wheel-words/README.md)), since the datasets can't be committed; run them whenever words are added, moved, or renamed.
+A failure blocks the change until it's fixed. Checks that need only the wheel files run in CI with the data tests (`tests/unit/data.test.ts`). Checks that need word datasets run locally, from Lucas's private `feels-on-wheels-data` repo, since the datasets can't be committed here; run them whenever words are added, moved, or renamed.
 
 | Check | Runs | What it checks | When a word fails |
 |---|---|---|---|
@@ -202,7 +202,7 @@ An id follows the wheel's label (`hollow-chest`, `hide`). A sensation that stays
 - Each core feeling stays reachable from at least 2 areas, and the hard-to-tell ones from several. The pleasant ones, Happy and Love, have the fewest on purpose.
 - Every new or changed word says what backs it.
 - `docs/content-review.md` is rebuilt to match, with `node scripts/make-content-review.mjs`: each feeling's card and the Body wheel section.
-- The data tests pass (`npx vitest run tests/unit/data.test.ts`), and when feelings wheel words are added, moved, or renamed, so does `scripts/wheel-words/check.py`, with every flag answered.
+- The data tests pass (`npx vitest run tests/unit/data.test.ts`), and when feelings wheel words are added, moved, or renamed, so does `check.py` in Lucas's private `feels-on-wheels-data` repo, with every flag answered.
 
 People catch what scripts can't:
 

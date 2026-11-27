@@ -1,6 +1,6 @@
 # Small World of Words: which words people link
 
-Used in the [opinionated feelings wheel](../superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md)'s research and its synonym flag (`scripts/wheel-words/`).
+Used in the [opinionated feelings wheel](../superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md)'s research and its synonym flag (in Lucas's private `feels-on-wheels-data` repo).
 
 ## What it is
 

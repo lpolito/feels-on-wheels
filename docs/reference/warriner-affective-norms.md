@@ -1,6 +1,6 @@
 # Warriner, Kuperman and Brysbaert: how pleasant a word is
 
-The second list the [opinionated feelings wheel](../superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md)'s pleasantness check uses (`scripts/wheel-words/`).
+The second list the [opinionated feelings wheel](../superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md)'s pleasantness check uses (in Lucas's private `feels-on-wheels-data` repo).
 
 ## What it is
 

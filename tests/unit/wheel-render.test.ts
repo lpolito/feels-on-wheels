@@ -186,6 +186,23 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     for (const ring of both) expect(a.get(ring), `ring ${ring}`).toEqual(b.get(ring));
   });
 
+  test('the opened word\'s label is sized to its own cell, not its ring (Lucas, 2026-11-27)', () => {
+    const vp: Viewport = { width: 393, height: 650, radius: 188.5 };
+    const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    const { canvas, ctx, rec } = fakeCanvas();
+    const r = createWheelRenderer(canvas, body, ctx);
+    r.setColors(bodyTable, bodyPalette);
+    r.resize(vp.width, vp.height, 1);
+    const chest = body.byPath.get('chest')!;
+    const lit = litMask(body, chest);
+    r.draw({ cam: ringFocusCamera(body, 0, vp, -body.segments[chest]!.mid, o), vp, lit, prevLit: lit, fadeT: 1, selected: chest, opened: true, pulseT: 1, mode: 'ring', ring: 0, remPx: 16, keyboardFocus: false });
+    const opened = rec.texts.flatMap((t, k) => (t === 'Chest' && rec.fonts[k]!.startsWith('800 ') ? [pxOf(rec.fonts[k]!)] : []));
+    const areas = [...sizesByRing(body, rec).get(0)!];
+    expect(areas).toHaveLength(1);
+    expect(opened).toHaveLength(1);
+    expect(opened[0]!).toBeGreaterThan(1.5 * areas[0]!);
+  });
+
   test('a long core label wraps to two lines in a ring view, as before the floors went (known issues, round two)', () => {
     const vp: Viewport = { width: 393, height: 600, radius: 188.5 };
     const { canvas, ctx, rec } = fakeCanvas();

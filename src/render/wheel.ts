@@ -72,7 +72,8 @@ export function createWheelRenderer(
   const texts = layout.segments.map((s) => wheelCellLabel(s.node));
   const fonts = new Map<number, string>();
   const labelCache: (LabelCache | null)[] = layout.segments.map(() => null);
-  const ringCache: ({ R: number; floor: number; max: number; wrapAt: number; px: number } | null)[] = layout.rings.map(() => null);
+  const ringCache: ({ R: number; floor: number; max: number; wrapAt: number; px: number } | null)[] =
+    layout.rings.map(() => null);
   const win: ViewWindow = { rMin: 0, rMax: 0, full: true, from: 0, to: 0 };
   let cssW = 0;
   let cssH = 0;
@@ -163,7 +164,8 @@ export function createWheelRenderer(
    */
   function ringSize(ringIndex: number, R: number, floor: number, max: number, wrapAt: number): number {
     const c = ringCache[ringIndex];
-    if (c && Math.abs(c.R - R) <= FIT_TOLERANCE && c.floor === floor && c.max === max && c.wrapAt === wrapAt) return c.px;
+    // Reused only while the wheel is as big or a little bigger, so the label that set the size still fits at it.
+    if (c && R >= c.R && R - c.R <= FIT_TOLERANCE && c.floor === floor && c.max === max && c.wrapAt === wrapAt) return c.px;
     const ring = layout.rings[ringIndex]!;
     const rMid = ((ring.inner + ring.outer) / 2) * R;
     const boxLen = (ring.outer - ring.inner) * R - 2 * LABEL_PAD;
@@ -327,7 +329,8 @@ export function createWheelRenderer(
         const y = cam.cy + rMid * Math.sin(angle);
         if (x < -rMid || y < -rMid || x > cssW + rMid || y > cssH + rMid) continue;
         const boxLen = (ring.outer - ring.inner) * R - 2 * LABEL_PAD;
-        const fit = fitted(s.index, boxLen, (s.end - s.start) * rMid, floor, ringSize(s.ring, R, floor, maxPx, wrapAt(s.ring)), wrapAt(s.ring));
+        const size = ringSize(s.ring, R, floor, maxPx, wrapAt(s.ring));
+        const fit = fitted(s.index, boxLen, (s.end - s.start) * rMid, floor, size, wrapAt(s.ring));
         if (!fit) continue;
         const lit = f.fadeT >= 0.5 ? f.lit[s.index] === 1 : f.prevLit[s.index] === 1;
         drawLabel(fit.lines, fit.px, false, x, y, angle, 1, table.label(s.hue, s.ring, lit));
@@ -380,8 +383,9 @@ export function createWheelRenderer(
       g.shadowOffsetY = 0;
       g.shadowColor = 'transparent';
       outline(cam.cx, cam.cy, r0, r1, a0 - side, a1 + side, ink, palette.gap);
-      const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, floor,
-        ringSize(s.ring, R, floor, maxPx, wrapAt(s.ring)), wrapAt(s.ring));
+      // The opened word is sized to its own cell, not its ring, so it stands out (Lucas, 2026-11-27): with an area
+      // opened, the ring's size is set by its tightest label ("Head / face"), half of what "Chest" fits.
+      const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, floor, maxPx, wrapAt(s.ring));
       if (fit) {
         // Round two: as clear of the outline (its inner half is inside the cell) as an unopened label is of its cell.
         const lifted = openedLabel(s.index, r1 - r0 - 2 * (LABEL_PAD + OUTLINE_INNER_PX), (s.end - s.start + 2 * side) * rMid, fit);

@@ -44,6 +44,7 @@ Done on 2026-11-26, as a repair: only what the new words forced changed ([resear
 - Move the rules into `src/data/README.md`'s content rules (it wins over a spec). The CI-side checks (each word once, layout, body wheel, what-happened tags, situations) become data tests; the pleasantness check and usage flags stay in the local scripts, since the datasets can't be committed.
 - `docs/website-icon/` (the link icon for lucaspolito.dev) still draws the seven old cores in their old colors; redraw it from the six cores, in their new order and colors.
 - Every source the rules and wheel lean on gets a note in `docs/reference/` and a credit in `docs/reference/README.md` and the root `README.md` (root `AGENTS.md`, "Sources and credits"). The research reports list them; there are many now. One open question for me: whether NRC's request for an About-page credit covers using it only as a design-time check.
+- Redraw `public/og/` (`node scripts/make-og-image.mjs`) once the wheels stop changing, not after each change (Lucas, 2026-11-26). The body wheel's order changed after the last redraw.
 - Write the spec in `docs/superpowers/specs/` and update the roadmap. Once their content is in the spec, `src/data/README.md`, and `docs/reference/`, the files in `docs/opinionated-wheel/` can go.
 
 ## Data

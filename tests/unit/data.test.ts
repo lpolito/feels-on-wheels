@@ -121,7 +121,7 @@ describe('validation', () => {
 
 const AREAS: [string, string[]][] = [
   ['head', ['headache', 'foggy-head', 'lightheaded', 'hot-face']],
-  ['throat', ['lump-in-throat', 'heart-in-throat', 'tight-throat', 'dry-mouth', 'clenched-teeth']],
+  ['throat', ['heart-in-throat', 'lump-in-throat', 'tight-throat', 'dry-mouth', 'clenched-teeth']],
   ['shoulders', ['tense-shoulders', 'weight-on-shoulders']],
   ['hands', ['tight-fists', 'shaky-hands', 'sweaty-palms', 'cold-hands']],
   ['chest', ['racing-heart', 'tight-chest', 'short-breath', 'hollow-chest', 'heavy-heart']],
@@ -131,7 +131,7 @@ const AREAS: [string, string[]][] = [
 ];
 
 describe('body wheel data', () => {
-  test('body wheel has 8 areas and 46 sensations, in spec §3 order (less the changes file)', () => {
+  test("body wheel has 8 areas and 46 sensations, in spec §3 order (less the changes file, and Heart in throat before Lump in throat so Scared's color doesn't run on)", () => {
     expect(body.children.map((n) => nodeRef(n))).toEqual(AREAS.map(([id]) => ({ kind: 'area', id })));
     body.children.forEach((a, i) => {
       expect((a.children ?? []).map((n) => nodeRef(n)), AREAS[i]![0]).toEqual(AREAS[i]![1].map((id) => ({ kind: 'sensation', id })));

@@ -349,72 +349,72 @@ The body sensations wheel after the [body wheel rework](superpowers/specs/2026-1
 
 ### Head / face
 
-- **Headache**: Overwhelmed, Frustrated
+- **Headache**: Frustrated, Overwhelmed
 - **Foggy head**: Confused, Down, Burned out
 - **Lightheaded**: Shocked, Overwhelmed, Nervous
 - **Hot face**: Embarrassed, Ashamed
 
 ### Throat / mouth
 
-- **Lump in throat**: Hurt, Grief, Guilty
 - **Heart in throat**: Terrified, Nervous, Startled
+- **Lump in throat**: Hurt, Guilty, Grief
 - **Tight throat**: Anxious, Panicked, Disgusted
 - **Dry mouth**: Nervous, Terrified
-- **Clenched teeth**: Frustrated, Resentful, Overwhelmed
+- **Clenched teeth**: Frustrated, Overwhelmed, Resentful
 
 ### Shoulders
 
-- **Tense shoulders**: Overwhelmed, Anxious, Frustrated
-- **Weight on shoulders**: Pressured, Helpless
+- **Tense shoulders**: Anxious, Frustrated, Overwhelmed
+- **Weight on shoulders**: Helpless, Pressured
 
 ### Hands
 
 - **Tight fists**: Furious, Frustrated
-- **Shaky hands**: Scared, Furious, Excited
+- **Shaky hands**: Scared, Excited, Furious
 - **Sweaty palms**: Nervous, Excited
 - **Cold hands**: Terrified, Nervous
 
 ### Chest
 
-- **Racing heart**: Scared, Angry, Excited
+- **Racing heart**: Angry, Scared, Excited
 - **Tight chest**: Anxious, Resentful
-- **Short breath**: Anxious, Overwhelmed
+- **Short breath**: Overwhelmed, Anxious
 - **Hollow chest**: Lonely, Rejected, Empty
 - **Heavy heart**: Guilty, Disappointed, Down
 
 ### Stomach
 
 - **Knot in stomach**: Anxious, Guilty, Betrayed
-- **Sinking feeling**: Disappointed, Shocked, Worried
+- **Sinking feeling**: Shocked, Disappointed, Worried
 - **Butterflies**: Nervous, Excited
-- **Queasy**: Disgusted, Anxious
+- **Queasy**: Anxious, Disgusted
 
 ### Whole body
 
-- **Restless**: Anxious, Bored, Excited
-- **Buzzing**: Excited, Inspired, Anxious
+- **Restless**: Anxious, Excited, Bored
+- **Buzzing**: Anxious, Inspired, Excited
 - **Chills**: Scared, Awe, Inspired
 - **Frozen**: Petrified, Shocked, Helpless
 - **Skin crawling**: Disgusted, Violated
 - **Heaviness**: Down, Helpless
-- **Drained**: Down, Burned out, Unmotivated
-- **Numb / empty**: Numb, Down, Shocked
-- **Nothing much**: Content, At peace, Unmotivated
+- **Drained**: Burned out, Down, Unmotivated
+- **Numb / empty**: Shocked, Numb, Down
+- **Nothing much**: Content, Unmotivated, At peace
 - **Weak knees**: Scared, Squeamish, Aroused
 
 ### Urges (on the wheel: "The urge to…")
 
-- **Run**: Terrified, Threatened, Overwhelmed
+- **Run**: Terrified, Overwhelmed, Threatened
 - **Hide**: Ashamed, Exposed, Mortified
-- **Lash out**: Furious, Provoked, Hurt
+- **Lash out**: Furious, Hurt, Provoked
 - **Back away**: Repulsed, Contempt
 - **Fix things**: Guilty, Worried, Compassion
-- **Be close**: Love, Lonely, Insecure
+- **Be close**: Insecure, Lonely, Love
 - **Be alone**: Down, Vulnerable, Overwhelmed
 - **Give up**: Hopeless, Inadequate, Helpless
-- **Numb out**: Overwhelmed, Ashamed, Lonely
+- **Numb out**: Ashamed, Overwhelmed, Lonely
 - **Sleep**: Burned out, Bored, Down
-- **Cry**: Frustrated, Overwhelmed, Grateful
-- **Control things**: Overwhelmed, Anxious, Jealous
+- **Cry**: Overwhelmed, Frustrated, Grateful
+- **Control things**: Overwhelmed, Jealous, Anxious
 
 On cards only, not on the wheel: Warmth or fullness in your chest, Feeling light, Feeling relaxed, Feeling tall.

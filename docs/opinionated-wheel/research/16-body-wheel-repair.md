@@ -114,6 +114,18 @@ So the brown is darkened slightly: **#9A4E26** light (same hue, a little deeper)
 
 All 160 cards and the body wheel's sections are in [content-review.md](../../content-review.md), rebuilt from the data.
 
+## The order around the ring
+
+Added after the repair, when Lucas saw the same feeling twice in a row across two sensations, and long runs of one core's color. The outer ring is one circle of 124 cells, so the last feeling of one sensation sits next to the first of the next, across areas too.
+
+- **Before:** 3 feelings sat right next to themselves (Clenched teeth into Tense shoulders: Overwhelmed; Queasy into Restless: Anxious; Restless into Buzzing: Excited), 4 more had just one cell between them, and 8 runs of 3 or more cells shared a color, the longest 5 cells of Scared in Throat / mouth.
+- **After:** no feeling sits next to itself, and only Anxious has just one cell between its two places (Queasy into Restless, across Stomach and Whole body). The only runs of 3 left are sensations whose 3 feelings all come from one core (Heart in throat, Hollow chest, Frozen), which reordering can't change.
+- **How:** a search over the order of the feelings under each sensation, scoring repeats close together and same-colored neighbors, and preferring the order they had. 21 sensations changed order; which feelings each one leads to didn't change.
+- **Sensations stay in their order,** because that order helps people find them: areas run head to toe, and within an area, places run the same way (Throat before mouth, head before face) and Whole body runs roughly from wound up (Restless, Buzzing) to shut down (Numb / empty, Nothing much). One swap: Heart in throat now comes before Lump in throat, two throat idioms with no order between them, which ends the run of 5 Scared cells.
+- **A pleasant feeling isn't listed first** where the sensation has a hard reading too, since the sensation's card lists them in this order under "Could be", and the README lets pleasant feelings in only as the other reading. Be close and Nothing much are the exceptions, since their pleasant readings are their main ones; Be close now ends with Love, after Insecure and Lonely, and Nothing much lists Unmotivated between Content and At peace.
+
+Why not alphabetical: studies of menus find alphabetical order fastest only when people know the exact word they want, and here people are looking for a word they don't know yet. Positions that stay put matter more once people come back to the wheel, and an alphabetical order would also differ in every language. Under a sensation, with only 2 or 3 words, people read them all, so that order is free to spread the colors.
+
 ## Tests
 
 Body wheel tests run again, since the body wheel is back in the app. A new data test checks the line rule. Tests that restate the body wheel's content were updated: cell count, tree count, Racing heart, Cry, Nothing much, the urge path, and one zoom value that follows area widths (Shoulders lost a cell). Tests that name the old feelings wheel's words, cores, or colors still fail, as before this change. Part 3 replaces them.

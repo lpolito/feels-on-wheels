@@ -1,6 +1,6 @@
 # Google Books Ngram: how often people write a phrase
 
-The usage counts in the [opinionated feelings wheel](../superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md)'s flags (`ngrams.py` in Lucas's private `feels-on-wheels-data` repo).
+The usage counts in the [opinionated feelings wheel](../superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md)'s flags (`ngrams.py` in the [feels-on-wheels-data](https://github.com/lpolito/feels-on-wheels-data) repo).
 
 ## What it is
 

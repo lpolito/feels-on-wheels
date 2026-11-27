@@ -1,6 +1,6 @@
 # NRC VAD Lexicon: how pleasant a word is
 
-One of the two lists the [opinionated feelings wheel](../superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md)'s pleasantness check uses (in Lucas's private `feels-on-wheels-data` repo).
+One of the two lists the [opinionated feelings wheel](../superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md)'s pleasantness check uses (in the [feels-on-wheels-data](https://github.com/lpolito/feels-on-wheels-data) repo).
 
 ## What it is
 

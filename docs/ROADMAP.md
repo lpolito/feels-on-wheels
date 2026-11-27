@@ -31,6 +31,7 @@ Each change is used before the next one is designed. When Lucas picks an idea to
 | Known issues: card text that keeps its size when the phone turns, no double-tap zoom on labels, one rest view for both wheels, opened rings that fit the screen, opened labels that fit their cell, a wheel that keeps its axis while it turns, labels that never disappear, and an opened wedge centered below the controls | Shipped 2026-11-18 | [spec](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-design.md), [plan](superpowers/plans/2026-11-18-feels-on-wheels-known-issues.md), [round-two plan](superpowers/plans/2026-11-18-feels-on-wheels-known-issues-round-2.md), [round-three plan](superpowers/plans/2026-11-18-feels-on-wheels-known-issues-round-3.md), [changes](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-changes.md) |
 | <a id="snapshots-across-devices-and-window-sizes"></a>Screenshots of every layout on real phones, tablets and computers, in Chromatic | Shipped 2026-11-18 | [spec](superpowers/specs/2026-11-18-feels-on-wheels-screenshots-design.md), [plan](superpowers/plans/2026-11-18-feels-on-wheels-screenshots.md), [changes](superpowers/specs/2026-11-18-feels-on-wheels-screenshots-changes.md) |
 | Sideways tablets and computers: the core word stays in view with a middle word open, and opening a core word zooms in a little more | Shipped 2026-11-19 | [spec](superpowers/specs/2026-11-18-feels-on-wheels-sideways-zoom-design.md), [plan](superpowers/plans/2026-11-19-feels-on-wheels-sideways-zoom.md), [changes](superpowers/specs/2026-11-18-feels-on-wheels-sideways-zoom-changes.md) |
+| <a id="an-opinionated-feelings-wheel"></a>An opinionated feelings wheel: six cores like a color wheel, 162 words chosen by rules and research, plain-language cards, the body wheel repaired to match, and the rules beside the data | Shipped 2026-11-26 | [spec](superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md), [plan](superpowers/plans/2026-11-26-feels-on-wheels-opinionated-wheel.md) |
 
 ## Ideas
 
@@ -43,7 +44,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Strength](#strength) | New ways to identify an emotion | Shelved (2026-11-08) |
 | [Wheels for kids](#wheels-for-kids) | New ways to identify an emotion | Idea |
 | [Search for a word](#search-for-a-word) | New ways to identify an emotion | Idea |
-| [An opinionated feelings wheel](#an-opinionated-feelings-wheel) | [The wheels' content](#the-wheels-content) | Brainstorming |
+| [Open questions in the feelings wheel](#open-questions-in-the-feelings-wheel) | [The wheels' content](#the-wheels-content) | Idea |
 | [Narrower feelings on the body wheel's card](#narrower-feelings-on-the-body-wheels-card) | The wheels' content | Idea |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
@@ -94,7 +95,7 @@ What Lucas first asked for:
   - their URLs, and whether a kids' word links to the same word on the grown-up wheel;
   - where the words come from, since any new source gets a [reference note](reference/README.md) and a credit.
 - Overlaps with the [emoji wheel](#emoji-wheel), which is also a simplified wheel; worth designing them together.
-- A check for which words fit each age, from the opinionated wheel's brainstorm (2026-11-19): a published study of which feeling words children know, by age band (Baron-Cohen et al. 2010, UK, about 336 words; it counts a word as known when 75% of the band knew it). Words off its list need another check. See the [data notes](opinionated-wheel/learnings.md#data).
+- A check for which words fit each age, from the opinionated wheel's brainstorm (2026-11-19): a published study of which feeling words children know, by age band (Baron-Cohen et al. 2010, UK, about 336 words; it counts a word as known when 75% of the band knew it). Words off its list need another check. See [its note](reference/baron-cohen-emotion-vocabulary.md).
 
 #### Search for a word
 
@@ -108,24 +109,14 @@ What Lucas first asked for:
 
 What the wheels say: their words, definitions, and how feelings relate to sensations. Whatever is decided here gets written down as rules beside the data (`src/data/README.md`, with an `AGENTS.md` there that loads it), not only in a spec.
 
-#### An opinionated feelings wheel
+#### Open questions in the feelings wheel
 
-- Lucas, 2026-11-15: the feelings wheel should be opinionated about the words it uses, their definitions, and how feelings relate to sensations. Today it largely repeats other wheels (mostly [Roberts's seven-core wheel](reference/core-feelings-wheel.md)), which isn't necessary.
-- Its rules go in `src/data/README.md` next to the body wheel's, so every later edit follows them.
-- **A word for accepting your situation.** Lucas, 2026-11-16: not fighting reality, going with the flow. The wheel's Accepted means being welcomed by others, so the body wheel's Nothing much uses Content and At peace for now (rework [changes](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md#flat); [radical acceptance](reference/linehan-dbt-model-of-emotions.md), [equanimity](reference/desbordes-equanimity.md)).
-- **Words that sit oddly under their parent,** such as Hesitant under Repelled, Embarrassed under Disapproving, and Inferior under Depressed (Lucas, 2026-11-16). The body wheel's rule about a word and its parent depends on this nesting.
-- **Brainstormed 2026-11-19 and 2026-11-20.** The rules for which words the wheel has and where they go are settled, and a candidate wheel was built from those rules alone: 6 cores (Happy, Love, Sad, Scared, Angry, Bad) and about 165 words, keeping about half of today's. Everything is in [opinionated-wheel/](opinionated-wheel/):
-  - [the rules](opinionated-wheel/rules.md) and the research behind them;
-  - [the candidate wheel](opinionated-wheel/derived-wheel.md);
-  - [what the process taught](opinionated-wheel/learnings.md), including every decision Lucas made;
-  - [the handoff](opinionated-wheel/handoff.md) for the next session: scrutinize the rules, rule on the cores, then comb the words.
-- **Rules rethought 2026-11-21.** A cold refutation of the numbered rules led Lucas to replace them with a looser set: strict script checks for facts, usage counts as flags, five questions for judgment, and a written reason for every word. Two independent drafts and a refuter checked it.
-- Settled along the way: the accepting word is At peace (under Happy → Calm), and the odd nestings are what the placement questions fix. Colors, link previews, and URLs don't weigh in the choices, and links to removed or moved words aren't a concern (Lucas, 2026-11-19).
-- Cores settled 2026-11-21: Happy, Love, Sad, Scared, Angry, and Bad.
-- Words settled for now, 2026-11-22: 162 words, with placement judged by which core people would tap (Lucas will review them again). Translations are out of scope for this work. The body wheel was repaired to the new words on 2026-11-26, changing only what they forced, and Urges took the brown Disgusted had as a core ([research/16](opinionated-wheel/research/16-body-wheel-repair.md)).
-- The cores are arranged like a color wheel, opposites facing each other, 2026-11-26: Happy, Angry, Love, Sad, Bad, Scared. Bad became teal, and the body wheel's Throat a muted violet to make room ([learnings](opinionated-wheel/learnings.md#lucass-decisions)).
-- "You might notice" for the new words was drafted from the repaired body wheel on 2026-11-26 ([research/16](opinionated-wheel/research/16-body-wheel-repair.md)). Still to decide: reference notes and credits for the new sources; and whether NRC's request for an About-page credit covers using it only as a design-time check (the app stays non-commercial, Lucas 2026-11-21).
-- Meets [Strength](#strength), [Wheels for kids](#wheels-for-kids), [Languages](#languages), and the [definitions and sensations review](#before-launching), which all depend on which words the wheel has. Builds on the rules the [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) set in [src/data/README.md](../src/data/README.md).
+Left open when the [opinionated feelings wheel](superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md) shipped (its §6).
+
+- **"I feel bad for them."** Nearly half of "feel bad" is guilt or sympathy. Guilty is under Bad, but Sorry for someone is under Sad → Heartache, and nothing under Bad leads there; Bad's card can't point to it without a tacked-on clause (Lucas, 2026-11-25). The order helps a little: Sympathy sits beside Sorry for someone, where Love meets Sad. If people who feel bad for a friend don't find it, putting Sorry for someone in two places is the fix.
+- **Jealous and Envious.** Jealous is a middle word with Envious and Possessive, the two everyday kinds of jealousy. Lucas, 2026-11-22: "I just don't think it works very well", and he'd rather not have both Jealous and Envious, but Jealous has nowhere else to sit except a stretched Resentful.
+- **Check the whole wheel through a user's eyes,** as `src/data/README.md` describes, which would settle the first question. Lucas looked over the wheel himself on 2026-11-26 and saw nothing noteworthy.
+- Meets [Strength](#strength), [Wheels for kids](#wheels-for-kids), and [Languages](#languages), which all depend on which words the wheel has.
 
 #### Narrower feelings on the body wheel's card
 
@@ -137,7 +128,7 @@ What the wheels say: their words, definitions, and how feelings relate to sensat
   - for a core feeling, its middle-ring words only, or the outer words too;
   - whether each one links to its word on the feelings wheel, like the feelings they're nested under;
   - how long the card gets, since a core feeling can have several middle-ring words, and how the list reads to a screen reader.
-- Meets [An opinionated feelings wheel](#an-opinionated-feelings-wheel), which may change which words are nested under which, such as Hesitant under Repelled.
+- Example: on the body wheel, Overwhelmed (a middle word) is under several sensations; its card would also list Burned out and Pressured, the words under it on the feelings wheel.
 
 ### URLs, routing and hosting
 
@@ -216,7 +207,7 @@ Looked at on 2026-11-18 ([spec](superpowers/specs/2026-11-18-feels-on-wheels-kno
 
 The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens in two steps: first shareable, then launched. Step 1 [shipped](#shipped) on 2026-11-09. Step 2 is what's left before announcing it and letting search engines index it. The host and the domain (2026-11-13) and the URL structure (2026-11-14) are done; the rest isn't started.
 
-- **Lucas reviews the definitions and sensations** in [content-review.md](content-review.md). This was moved out of v1.1. Since the body wheel rework, it also shows each card's "You might notice" phrases and the body wheel as it is, all rebuilt from the data, so the phrases drafted in the rework get reviewed here too.
+- **Lucas reviews the "You might notice" phrases** in [content-review.md](content-review.md), rebuilt from the data. He reviewed every definition twice for the [opinionated feelings wheel](superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md) (2026-11-25); the phrases for its new words were drafted and cold-reviewed, but not by him.
 - **Draft text for Lucas to edit:** the body wheel's preview description ("Start from what you notice in your body to find the word for what you feel.") is a draft, and it's shorter than the 100 to 160 characters the home description uses.
 - **Let search engines in:** set `indexable: true` in `site.config.ts` (removes `noindex`), deploy, and re-check the link previews.
   - Decide first whether the `workers.dev` address and the preview links should say `noindex` once the domain is indexable, since they serve the same pages.

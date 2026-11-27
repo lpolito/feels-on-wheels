@@ -81,10 +81,6 @@ Every source the app's content draws on, credited here and in the root README's 
 - **Leslie Greenberg**, *Emotion-Focused Therapy*, 2002 ([note](greenberg-emotion-focused-therapy.md)): anger that covers hurt or fear.
 - **James Russell**, "A circumplex model of affect", *Journal of Personality and Social Psychology*, 1980 ([note](russell-circumplex.md)): pleasant and unpleasant low-energy feelings.
 - **Desbordes and others**, "Moving beyond mindfulness", *Mindfulness*, 2015 ([note](desbordes-equanimity.md)): equanimity isn't indifference.
-
-Not credited until the app uses them:
-
-- **Tom Drummond**, "Vocabulary of Emotions", tomdrummond.com: strength levels for feeling words, once strength ships.
 - **Paul Rozin, Laura Lowery, Sumio Imada and Jonathan Haidt**, "The CAD triad hypothesis", *Journal of Personality and Social Psychology*, 1999 ([note](rozin-disgust.md)): anger at violated rights, disgust at what's degrading.
 - **Shaver, Schwartz, Kirson and O'Connor**, "Emotion knowledge", *Journal of Personality and Social Psychology*, 1987, with its replications ([note](shaver-emotion-prototypes.md)): the families people sort feeling words into.
 - **James Russell and Beverley Fehr**, "Fuzzy concepts in a fuzzy hierarchy", *Journal of Personality and Social Psychology*, 1994 ([note](russell-fehr-fuzzy-categories.md)): feeling words belong to a family by degree.
@@ -109,3 +105,7 @@ Not credited until the app uses them:
 - **Baron-Cohen, Golan, Wheelwright, Granader and Hill**, "Emotion word comprehension from 4 to 16 years old", *Frontiers in Evolutionary Neuroscience*, 2010 ([note](baron-cohen-emotion-vocabulary.md)): which feeling words children know.
 - **De Deyne, Navarro, Perfors, Brysbaert and Storms**, "The 'Small World of Words' English word association norms", *Behavior Research Methods*, 2019 ([note](small-world-of-words.md)): which words people link.
 - **Google Books Ngram** ([note](google-books-ngram.md)): how often people write a phrase.
+
+Not credited until the app uses them:
+
+- **Tom Drummond**, "Vocabulary of Emotions", tomdrummond.com: strength levels for feeling words, once strength ships.

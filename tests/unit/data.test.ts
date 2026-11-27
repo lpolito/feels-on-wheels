@@ -325,6 +325,9 @@ describe('feelings wheel rules (opinionated wheel spec §3)', () => {
     const thrice = clone();
     at(thrice, 'sad/lonely').children!.push({ feeling: 'betrayed' });
     expect(onceFaults(thrice, labels())).toHaveLength(1);
+    const threeCores = clone();
+    at(threeCores, 'bad/confused').children!.push({ feeling: 'betrayed' });
+    expect(onceFaults(threeCores, labels()).join('\n')).toMatch(/Betrayed/);
   });
 
   test('layout: every middle word has 2 or 3 outer words', () => {
@@ -359,5 +362,7 @@ describe('feelings wheel rules (opinionated wheel spec §3)', () => {
     expect(definitionFaults(wheel, withDef('provoked', 'Irritable because someone wants a reaction.')).join('\n')).toMatch(/Irritable/);
     expect(definitionFaults(wheel, withDef('rejected', 'A sense of betrayal.'))).toEqual([]);
     expect(definitionFaults(wheel, withDef('rejected', 'Hurt at being pushed away.'))).toEqual([]);
+    expect(definitionFaults(wheel, withDef('lonely', 'Something hurtful happened.'))).toEqual([]);
+    expect(definitionFaults(wheel, withDef('lonely', 'It hurts.')).join('\n')).toMatch(/Hurt/);
   });
 });

@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 import { loadData } from '../../src/data/load';
-import { appIconSvg, iconWedges, siteIconSvg } from '../../scripts/icon-wedges';
+import { appIconSvg, iconWedges, siteIconCss, siteIconSvg } from '../../scripts/icon-wedges';
 
-const { wheel } = loadData();
+const { wheel, locale } = loadData();
 const read = (p: string) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf8');
 const css = read('src/styles/tokens.css');
 /** The `--hue-<name>` values in the first block after `selector`. */
@@ -42,6 +42,7 @@ describe('icons drawn from the wheel (opinionated wheel spec §4)', () => {
   test('the lucaspolito.dev CSS colors the wedges in the dark theme\'s colors', () => {
     const file = read('docs/website-icon/feels-on-wheels.css');
     const dark = hues(':root[data-theme="dark"]');
+    expect(file).toBe(siteIconCss(wedges, dark, Object.fromEntries(wedges.map((w) => [w.id, locale.feelings[w.id]!.label]))));
     const stops = [...file.matchAll(/(#[0-9a-f]{6}) ([\d.]+)deg ([\d.]+)deg/g)].map((m) => [m[1], Number(m[2]), Number(m[3])]);
     expect(stops).toEqual(wedges.map((w) => [dark[w.hue], Number(w.start.toFixed(1)), Number(w.end.toFixed(1))]));
   });

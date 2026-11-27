@@ -40,4 +40,4 @@ What Lucas wanted different:
 
 1. The first version's words came from this widely shared seven-core version, not from Willcox's original. Credit both, Roberts for the first version.
 2. Some outer words are judgments of others (Disrespected, Ridiculed, Betrayed, Persecuted) rather than feelings. Worth keeping in mind when writing definitions; the definition can name the feeling underneath.
-3. A few words appear twice on the wheel (Overwhelmed, Embarrassed, Inferior, Disappointed). The app gives each position its own id but one shared definition.
+3. In the first version, a few words appeared twice on the wheel (Overwhelmed, Embarrassed, Inferior, Disappointed), each position with its own id but one shared definition. The opinionated wheel's rules for words in two places are in `src/data/README.md`.

@@ -44,7 +44,7 @@ out.push(
   '',
   '## Body wheel',
   '',
-  'The body sensations wheel after the [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) (with its [changes](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md)), repaired to the opinionated feelings wheel\'s words ([research/16](opinionated-wheel/research/16-body-wheel-repair.md)): body areas, the sensations under each, and the 2–3 feelings each sensation leads to. These are drafted to agree with each feeling\'s "You might notice" above, though nothing enforces it. The wheel shows the short labels below; cards show the phrases above.',
+  'The body sensations wheel after the [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) (with its [changes](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md)), repaired to the [opinionated feelings wheel](superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md#the-body-wheel)\'s words: body areas, the sensations under each, and the 2–3 feelings each sensation leads to. These are drafted to agree with each feeling\'s "You might notice" above, though nothing enforces it. The wheel shows the short labels below; cards show the phrases above.',
 );
 const onWheel = new Set();
 for (const area of body.children) {

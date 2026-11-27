@@ -26,8 +26,8 @@ export function baseForm(word: string, others: ReadonlySet<string>): string {
 }
 
 /**
- * Each label once, comparing base forms. A word may be in more than one place only when every place is under a
- * different core: one feeling people split on (the same id) or two meanings (different ids, one label).
+ * Each label once, comparing base forms. A word may be in two places when they're under different cores: one
+ * feeling people split on (the same id) or two meanings (different ids, one label). Never three.
  */
 export function onceFaults(wheel: Wheel, labels: Record<string, string>): string[] {
   const all = new Set(Object.values(labels).map((l) => l.toLowerCase()));
@@ -38,9 +38,9 @@ export function onceFaults(wheel: Wheel, labels: Record<string, string>): string
   }
   const faults: string[] = [];
   for (const ps of byBase.values()) {
-    if (ps.length > 1 && new Set(ps.map((p) => p.core)).size < ps.length) {
-      faults.push(`once: ${ps.map((p) => `${labels[p.id] ?? p.id} (${p.path.join(' > ')})`).join(' and ')} share a label under one core`);
-    }
+    const where = ps.map((p) => `${labels[p.id] ?? p.id} (${p.path.join(' > ')})`).join(' and ');
+    if (ps.length > 2) faults.push(`once: ${where} put one label in more than two places`);
+    else if (ps.length === 2 && ps[0]!.core === ps[1]!.core) faults.push(`once: ${where} share a label under one core`);
   }
   return faults;
 }

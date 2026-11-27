@@ -49,6 +49,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
+| [Show which word will open after a spin](#show-which-word-will-open-after-a-spin) | [Moving around the wheel](#moving-around-the-wheel) | Idea |
 | [Check every test is worth keeping](#check-every-test-is-worth-keeping) | [Tests](#tests) | Idea |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
@@ -129,6 +130,17 @@ Left open when the [opinionated feelings wheel](superpowers/specs/2026-11-26-fee
   - whether each one links to its word on the feelings wheel, like the feelings they're nested under;
   - how long the card gets, since a core feeling can have several middle-ring words, and how the list reads to a screen reader.
 - Example: on the body wheel, Overwhelmed (a middle word) is under several sensations; its card would also list Burned out and Pressured, the words under it on the feelings wheel.
+
+### Moving around the wheel
+
+#### Show which word will open after a spin
+
+- Lucas, 2026-11-27, on phones: with a word opened, a drag, swipe or scroll turns the wheel, and when it stops, the word in the middle of the screen opens (`settled` in `src/controller.ts`). Nothing shows that's about to happen: the opened word's outline turns away with the wheel, and the new word only lights up once the wheel has stopped.
+- Idea: while the wheel turns, mark the word that would open if it stopped now, so it's clear the opened word is about to change.
+- To decide when designing:
+  - what the mark is: the opened word's outline moving to the middle word, a lighter outline, or another sign;
+  - whether the card follows along while turning or changes only once the wheel stops;
+  - how it works with reduced motion, more contrast and forced colors, and whether the keys' moves (which already open the next word at once) need it.
 
 ### URLs, routing and hosting
 

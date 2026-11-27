@@ -1,6 +1,6 @@
 # An opinionated feelings wheel
 
-Date: 2026-11-26. Status: **draft, for Lucas's review.** A project. It records the feelings wheel worked out from 2026-11-19 to 2026-11-26 (the rules, the six cores, 162 words and their cards, the repaired body wheel, and the order around both wheels), and says how that work ships: the rules into `src/data/README.md`, the checks into tests and scripts, the sources into `docs/reference/`, and the icons redrawn. After it ships, `docs/opinionated-wheel/` is deleted in a follow-up pull request, so the folder is on `main` once and git history keeps it.
+Date: 2026-11-26. Status: **approved by Lucas, 2026-11-26.** A project. It records the feelings wheel worked out from 2026-11-19 to 2026-11-26 (the rules, the six cores, 162 words and their cards, the repaired body wheel, and the order around both wheels), and says how that work ships: the rules into `src/data/README.md`, the checks into tests and scripts, the sources into `docs/reference/`, and the icons redrawn. After it ships, `docs/opinionated-wheel/` is deleted in a follow-up pull request, so the folder is on `main` once and git history keeps it.
 
 The roadmap idea is [An opinionated feelings wheel](../../ROADMAP.md#an-opinionated-feelings-wheel). It builds on the [body wheel rework](2026-11-15-feels-on-wheels-body-wheel-rework-design.md), whose rules for the body wheel still hold except where this spec changes them.
 

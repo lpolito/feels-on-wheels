@@ -1,7 +1,8 @@
 import { describe, expect, test, vi } from 'vitest';
 import { DataError, loadData, nodeRef, validateLocale, validateWheel } from '../../src/data/load';
 import { wheelSources } from '../../src/data/wheels/index';
-import type { Wheel, WheelNode } from '../../src/data/types';
+import type { FeelingsDict, Locale, Wheel, WheelNode } from '../../src/data/types';
+import { baseForm, definitionFaults, happenedFaults, layoutFaults, onceFaults } from './wheel-rules';
 import { label, setLocale, t } from '../../src/i18n';
 
 const { wheel, wheels, feelings, locale } = loadData();
@@ -297,5 +298,66 @@ describe('i18n', () => {
     t('definitely.missing');
     expect(warn).toHaveBeenCalledTimes(1);
     warn.mockRestore();
+  });
+});
+
+describe('feelings wheel rules (opinionated wheel spec §3)', () => {
+  const labels = (l: Locale = locale) => Object.fromEntries(Object.entries(l.feelings).map(([id, f]) => [id, f.label]));
+  const at = (w: Wheel, path: string): WheelNode => {
+    let nodes = w.children;
+    let n: WheelNode | undefined;
+    for (const id of path.split('/')) { n = nodes.find((c) => nodeRef(c).id === id)!; nodes = n.children ?? []; }
+    return n!;
+  };
+  const clone = (): Wheel => structuredClone(wheel);
+
+  test('base forms: Love and Loved are one word, Energetic and energy are not', () => {
+    expect(baseForm('Loved', new Set(['love']))).toBe('love');
+    expect(baseForm('Loved', new Set())).toBe('loved');
+    expect(baseForm('Energetic', new Set(['energy']))).toBe('energetic');
+  });
+
+  test('once: no label twice, comparing base forms, except a word under two cores', () => {
+    expect(onceFaults(wheel, labels())).toEqual([]);
+    const loved = clone();
+    at(loved, 'love/affection').children!.push({ feeling: 'loved' });
+    expect(onceFaults(loved, { ...labels(), loved: 'Loved' }).join('\n')).toMatch(/Loved/);
+    const thrice = clone();
+    at(thrice, 'sad/lonely').children!.push({ feeling: 'betrayed' });
+    expect(onceFaults(thrice, labels())).toHaveLength(1);
+  });
+
+  test('layout: every middle word has 2 or 3 outer words', () => {
+    expect(layoutFaults(wheel)).toEqual([]);
+    const four = clone();
+    at(four, 'angry/annoyed').children!.push({ feeling: 'envious' });
+    expect(layoutFaults(four).join('\n')).toMatch(/annoyed/);
+    const one = clone();
+    at(one, 'angry/jealous').children!.pop();
+    expect(layoutFaults(one).join('\n')).toMatch(/jealous/);
+  });
+
+  test('what happened: every tagged feeling is on the outer ring', () => {
+    expect(happenedFaults(wheel, feelings)).toEqual([]);
+    const tagged: FeelingsDict = { ...feelings, hurt: { ...feelings['hurt']!, whatHappened: true } };
+    expect(happenedFaults(wheel, tagged).join('\n')).toMatch(/hurt/);
+    expect(Object.keys(feelings).filter((id) => feelings[id]!.whatHappened).sort()).toEqual([
+      'abandoned', 'accepted', 'betrayed', 'cared-for', 'cheated', 'flattered', 'forgiven', 'honored', 'humiliated',
+      'insulted', 'left-out', 'misunderstood', 'pressured', 'provoked', 'reassured', 'rejected', 'safe', 'trapped',
+      'unappreciated', 'understood', 'used', 'valued', 'vindicated', 'violated',
+    ]);
+  });
+
+  test("definitions: no card uses its own label or a sibling's, comparing base forms", () => {
+    expect(definitionFaults(wheel, locale)).toEqual([]);
+    const withDef = (id: string, definition: string): Locale => {
+      const l = structuredClone(locale);
+      l.feelings[id] = { ...l.feelings[id]!, definition };
+      return l;
+    };
+    expect(definitionFaults(wheel, withDef('annoyed', 'Feeling annoyed.'))).toHaveLength(1);
+    expect(definitionFaults(wheel, withDef('provoked', 'Irritable because someone wants a reaction.')).join('\n')).toMatch(/Irritable/);
+    expect(definitionFaults(wheel, withDef('rejected', 'A sense of betrayal.'))).toEqual([]);
+    expect(definitionFaults(wheel, withDef('rejected', 'Hurt at being pushed away.'))).toEqual([]);
   });
 });

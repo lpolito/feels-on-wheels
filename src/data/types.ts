@@ -5,6 +5,8 @@ export type Strength = 'strong' | 'medium' | 'light';
 
 export interface Feeling {
   sensations: SensationId[];
+  /** A word for what happened to you, or the situation you're in (Betrayed, Safe): it goes on the outer ring (src/data/README.md). The app ignores it. */
+  whatHappened?: true;
   strength?: Strength;
   emoji?: string;
 }

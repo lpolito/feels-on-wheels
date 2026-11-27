@@ -148,7 +148,8 @@
     "sensations": [
       "relaxed",
       "warm-chest"
-    ]
+    ],
+    "whatHappened": true
   },
   "relieved": {
     "sensations": [
@@ -160,20 +161,23 @@
     "sensations": [
       "relaxed",
       "warm-chest"
-    ]
+    ],
+    "whatHappened": true
   },
   "vindicated": {
     "sensations": [
       "feeling-tall",
       "light-body"
-    ]
+    ],
+    "whatHappened": true
   },
   "forgiven": {
     "sensations": [
       "light-body",
       "warm-chest",
       "relaxed"
-    ]
+    ],
+    "whatHappened": true
   },
   "grateful": {
     "sensations": [
@@ -193,7 +197,8 @@
     "sensations": [
       "warm-chest",
       "feeling-tall"
-    ]
+    ],
+    "whatHappened": true
   },
   "hopeful": {
     "sensations": [
@@ -254,7 +259,8 @@
       "warm-chest",
       "hot-face",
       "light-body"
-    ]
+    ],
+    "whatHappened": true
   },
   "triumphant": {
     "sensations": [
@@ -317,7 +323,8 @@
       "hot-face",
       "clenched-teeth",
       "lash-out"
-    ]
+    ],
+    "whatHappened": true
   },
   "annoyed": {
     "sensations": [
@@ -332,7 +339,8 @@
       "hot-face",
       "clenched-teeth",
       "racing-heart"
-    ]
+    ],
+    "whatHappened": true
   },
   "irritable": {
     "sensations": [
@@ -368,7 +376,8 @@
       "tight-chest",
       "run",
       "short-breath"
-    ]
+    ],
+    "whatHappened": true
   },
   "furious": {
     "sensations": [
@@ -392,7 +401,8 @@
       "knot-in-stomach",
       "queasy",
       "frozen"
-    ]
+    ],
+    "whatHappened": true
   },
   "outraged": {
     "sensations": [
@@ -441,21 +451,24 @@
       "lash-out",
       "hollow-chest",
       "lump-in-throat"
-    ]
+    ],
+    "whatHappened": true
   },
   "used": {
     "sensations": [
       "knot-in-stomach",
       "clenched-teeth",
       "hollow-chest"
-    ]
+    ],
+    "whatHappened": true
   },
   "cheated": {
     "sensations": [
       "knot-in-stomach",
       "clenched-teeth",
       "hot-face"
-    ]
+    ],
+    "whatHappened": true
   },
   "jealous": {
     "sensations": [
@@ -531,7 +544,8 @@
     "sensations": [
       "warm-chest",
       "relaxed"
-    ]
+    ],
+    "whatHappened": true
   },
   "connected": {
     "sensations": [
@@ -544,20 +558,23 @@
     "sensations": [
       "warm-chest",
       "feeling-tall"
-    ]
+    ],
+    "whatHappened": true
   },
   "accepted": {
     "sensations": [
       "relaxed",
       "warm-chest"
-    ]
+    ],
+    "whatHappened": true
   },
   "understood": {
     "sensations": [
       "warm-chest",
       "relaxed",
       "light-body"
-    ]
+    ],
+    "whatHappened": true
   },
   "compassion": {
     "sensations": [
@@ -659,21 +676,24 @@
       "hollow-chest",
       "lump-in-throat",
       "cry"
-    ]
+    ],
+    "whatHappened": true
   },
   "misunderstood": {
     "sensations": [
       "hollow-chest",
       "lump-in-throat",
       "be-alone"
-    ]
+    ],
+    "whatHappened": true
   },
   "left-out": {
     "sensations": [
       "hollow-chest",
       "lump-in-throat",
       "be-close"
-    ]
+    ],
+    "whatHappened": true
   },
   "hurt": {
     "sensations": [
@@ -689,14 +709,16 @@
       "lump-in-throat",
       "sinking-feeling",
       "hide"
-    ]
+    ],
+    "whatHappened": true
   },
   "unappreciated": {
     "sensations": [
       "hollow-chest",
       "heavy-heart",
       "tight-chest"
-    ]
+    ],
+    "whatHappened": true
   },
   "disappointed": {
     "sensations": [
@@ -793,7 +815,8 @@
       "hot-face",
       "hide",
       "sinking-feeling"
-    ]
+    ],
+    "whatHappened": true
   },
   "bad": {
     "sensations": [
@@ -967,7 +990,8 @@
       "tight-chest",
       "tense-shoulders",
       "headache"
-    ]
+    ],
+    "whatHappened": true
   },
   "scared": {
     "sensations": [

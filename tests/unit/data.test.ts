@@ -1,7 +1,8 @@
 import { describe, expect, test, vi } from 'vitest';
 import { DataError, loadData, nodeRef, validateLocale, validateWheel } from '../../src/data/load';
 import { wheelSources } from '../../src/data/wheels/index';
-import type { Wheel, WheelNode } from '../../src/data/types';
+import type { FeelingsDict, Locale, Wheel, WheelNode } from '../../src/data/types';
+import { baseForm, definitionFaults, happenedFaults, layoutFaults, onceFaults } from './wheel-rules';
 import { label, setLocale, t } from '../../src/i18n';
 
 const { wheel, wheels, feelings, locale } = loadData();
@@ -22,13 +23,13 @@ function countByDepth(w: Wheel): number[] {
 }
 
 describe('core wheel data', () => {
-  test('core wheel has 7 core, 41 middle, 82 outer positions', () => {
-    expect(countByDepth(wheel)).toEqual([7, 41, 82]);
+  test('core wheel has 6 core, 45 middle, 111 outer positions', () => {
+    expect(countByDepth(wheel)).toEqual([6, 45, 111]);
   });
 
-  test('core order starts Fearful, Angry, Disgusted, Sad, Happy, Surprised, Bad', () => {
+  test('core order is Happy, Angry, Love, Sad, Bad, Scared, like a color wheel with opposites facing', () => {
     expect(wheel.children.map((n) => nodeRef(n).id)).toEqual([
-      'fearful', 'angry', 'disgusted', 'sad', 'happy', 'surprised', 'bad',
+      'happy', 'angry', 'love', 'sad', 'bad', 'scared',
     ]);
   });
 
@@ -43,19 +44,16 @@ describe('core wheel data', () => {
     });
   });
 
-  test('labels: Judgmental (not Judgemental), Optimistic without leading space', () => {
+  test('labels: Optimistic without leading space, and none with a space at either end', () => {
     setLocale(locale);
-    expect(label('judgmental')).toBe('Judgmental');
     expect(label('optimistic')).toBe('Optimistic');
-    const all = Object.values(locale.feelings).map((f) => f.label);
-    expect(all).not.toContain('Judgemental');
-    for (const l of all) expect(l).toBe(l.trim());
+    for (const l of Object.values(locale.feelings).map((f) => f.label)) expect(l).toBe(l.trim());
   });
 
   test('duplicate words share one feeling id', () => {
     const uses = new Map<string, number>();
     walk(wheel.children, 0, (n) => uses.set(nodeRef(n).id, (uses.get(nodeRef(n).id) ?? 0) + 1));
-    for (const id of ['overwhelmed', 'embarrassed', 'inferior', 'disappointed']) {
+    for (const id of ['betrayed', 'empty']) {
       expect(uses.get(id), id).toBe(2);
     }
   });
@@ -63,7 +61,7 @@ describe('core wheel data', () => {
 
 describe('validation', () => {
   test('validateWheel needs start to name one of its center nodes', () => {
-    for (const start of [undefined, 42, 'nope', 'aggressive']) {
+    for (const start of [undefined, 42, 'nope', 'annoyed']) {
       const bad = structuredClone(wheel) as unknown as Record<string, unknown>;
       bad['start'] = start;
       expect(() => validateWheel(bad, feelings, ids()), String(start)).toThrow(DataError);
@@ -121,7 +119,7 @@ describe('validation', () => {
 
 const AREAS: [string, string[]][] = [
   ['head', ['headache', 'foggy-head', 'lightheaded', 'hot-face']],
-  ['throat', ['lump-in-throat', 'heart-in-throat', 'tight-throat', 'dry-mouth', 'clenched-teeth']],
+  ['throat', ['heart-in-throat', 'lump-in-throat', 'tight-throat', 'dry-mouth', 'clenched-teeth']],
   ['shoulders', ['tense-shoulders', 'weight-on-shoulders']],
   ['hands', ['tight-fists', 'shaky-hands', 'sweaty-palms', 'cold-hands']],
   ['chest', ['racing-heart', 'tight-chest', 'short-breath', 'hollow-chest', 'heavy-heart']],
@@ -131,7 +129,7 @@ const AREAS: [string, string[]][] = [
 ];
 
 describe('body wheel data', () => {
-  test('body wheel has 8 areas and 46 sensations, in spec §3 order (less the changes file)', () => {
+  test("body wheel has 8 areas and 46 sensations, in spec §3 order (less the changes file, and Heart in throat before Lump in throat so Scared's color doesn't run on)", () => {
     expect(body.children.map((n) => nodeRef(n))).toEqual(AREAS.map(([id]) => ({ kind: 'area', id })));
     body.children.forEach((a, i) => {
       expect((a.children ?? []).map((n) => nodeRef(n)), AREAS[i]![0]).toEqual(AREAS[i]![1].map((id) => ({ kind: 'sensation', id })));
@@ -139,8 +137,8 @@ describe('body wheel data', () => {
     expect(body.children.flatMap((a) => a.children ?? []).length).toBe(46);
   });
 
-  test('body wheel has 126 feeling cells', () => {
-    expect(body.children.flatMap((a) => a.children ?? []).reduce((n, s) => n + (s.children ?? []).length, 0)).toBe(126);
+  test('body wheel has 124 feeling cells', () => {
+    expect(body.children.flatMap((a) => a.children ?? []).reduce((n, s) => n + (s.children ?? []).length, 0)).toBe(124);
   });
 
   test('area labels', () => {
@@ -149,6 +147,27 @@ describe('body wheel data', () => {
 
   test('the body wheel still starts on Whole body', () => {
     expect(body.start).toBe('whole-body');
+  });
+
+  test('body wheel: no two feelings under a sensation from the same line (parent, child, or grandparent)', () => {
+    // Every place each feeling sits on the feelings wheel, as its path of ids from the core.
+    const paths = new Map<string, string[][]>();
+    const visit = (n: WheelNode, above: string[]) => {
+      const path = [...above, nodeRef(n).id];
+      paths.set(path.at(-1)!, [...(paths.get(path.at(-1)!) ?? []), path]);
+      for (const c of n.children ?? []) visit(c, path);
+    };
+    for (const c of wheel.children) visit(c, []);
+    const inLine = (a: string[], b: string[]) => a.every((id, i) => i >= b.length || b[i] === id);
+    for (const s of body.children.flatMap((a) => a.children ?? [])) {
+      const fs = (s.children ?? []).map((k) => nodeRef(k).id);
+      for (const [i, a] of fs.entries()) {
+        for (const b of fs.slice(i + 1)) {
+          const clash = paths.get(a)!.some((pa) => paths.get(b)!.some((pb) => inLine(pa, pb)));
+          expect(clash, `${nodeRef(s).id}: ${a} and ${b}`).toBe(false);
+        }
+      }
+    }
   });
 
   test('body wheel: every sensation has 2 or 3 feeling children, each a known feeling', () => {
@@ -243,14 +262,14 @@ describe('loadData and validateLocale: wheels', () => {
 
   test('validateLocale rejects a core feeling without kind, kindLink or exactly one {link}', () => {
     const noKind = structuredClone(locale);
-    delete noKind.feelings['fearful']!.kind;
-    expect(() => validateLocale(noKind, feelings, wheels)).toThrow(/fearful.*kind/);
+    delete noKind.feelings['scared']!.kind;
+    expect(() => validateLocale(noKind, feelings, wheels)).toThrow(/scared.*kind/);
     const noLink = structuredClone(locale);
-    noLink.feelings['fearful']!.kindLink = '';
-    expect(() => validateLocale(noLink, feelings, wheels)).toThrow(/fearful.*kindLink/);
+    noLink.feelings['scared']!.kindLink = '';
+    expect(() => validateLocale(noLink, feelings, wheels)).toThrow(/scared.*kindLink/);
     const twice = structuredClone(locale);
-    twice.feelings['fearful']!.kind = 'A {link} {link} feeling.';
-    expect(() => validateLocale(twice, feelings, wheels)).toThrow(/fearful.*kind/);
+    twice.feelings['scared']!.kind = 'A {link} {link} feeling.';
+    expect(() => validateLocale(twice, feelings, wheels)).toThrow(/scared.*kind/);
   });
 
   test('validateLocale accepts switchName and rejects an empty one', () => {
@@ -272,12 +291,78 @@ describe('loadData and validateLocale: wheels', () => {
 describe('i18n', () => {
   test('t replaces {name} vars and returns key for missing', () => {
     setLocale(locale);
-    expect(t('inPath', { label: 'Hostile', path: 'Angry, Aggressive' })).toBe('Hostile. In Angry, Aggressive.');
+    expect(t('inPath', { label: 'Irritable', path: 'Angry, Aggressive' })).toBe('Irritable. In Angry, Aggressive.');
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     expect(t('definitely.missing')).toBe('definitely.missing');
     expect(warn).toHaveBeenCalledTimes(1);
     t('definitely.missing');
     expect(warn).toHaveBeenCalledTimes(1);
     warn.mockRestore();
+  });
+});
+
+describe('feelings wheel rules (opinionated wheel spec §3)', () => {
+  const labels = (l: Locale = locale) => Object.fromEntries(Object.entries(l.feelings).map(([id, f]) => [id, f.label]));
+  const at = (w: Wheel, path: string): WheelNode => {
+    let nodes = w.children;
+    let n: WheelNode | undefined;
+    for (const id of path.split('/')) { n = nodes.find((c) => nodeRef(c).id === id)!; nodes = n.children ?? []; }
+    return n!;
+  };
+  const clone = (): Wheel => structuredClone(wheel);
+
+  test('base forms: Love and Loved are one word, Energetic and energy are not', () => {
+    expect(baseForm('Loved', new Set(['love']))).toBe('love');
+    expect(baseForm('Loved', new Set())).toBe('loved');
+    expect(baseForm('Energetic', new Set(['energy']))).toBe('energetic');
+  });
+
+  test('once: no label twice, comparing base forms, except a word under two cores', () => {
+    expect(onceFaults(wheel, labels())).toEqual([]);
+    const loved = clone();
+    at(loved, 'love/affection').children!.push({ feeling: 'loved' });
+    expect(onceFaults(loved, { ...labels(), loved: 'Loved' }).join('\n')).toMatch(/Loved/);
+    const thrice = clone();
+    at(thrice, 'sad/lonely').children!.push({ feeling: 'betrayed' });
+    expect(onceFaults(thrice, labels())).toHaveLength(1);
+    const threeCores = clone();
+    at(threeCores, 'bad/confused').children!.push({ feeling: 'betrayed' });
+    expect(onceFaults(threeCores, labels()).join('\n')).toMatch(/Betrayed/);
+  });
+
+  test('layout: every middle word has 2 or 3 outer words', () => {
+    expect(layoutFaults(wheel)).toEqual([]);
+    const four = clone();
+    at(four, 'angry/annoyed').children!.push({ feeling: 'envious' });
+    expect(layoutFaults(four).join('\n')).toMatch(/annoyed/);
+    const one = clone();
+    at(one, 'angry/jealous').children!.pop();
+    expect(layoutFaults(one).join('\n')).toMatch(/jealous/);
+  });
+
+  test('what happened: every tagged feeling is on the outer ring', () => {
+    expect(happenedFaults(wheel, feelings)).toEqual([]);
+    const tagged: FeelingsDict = { ...feelings, hurt: { ...feelings['hurt']!, whatHappened: true } };
+    expect(happenedFaults(wheel, tagged).join('\n')).toMatch(/hurt/);
+    expect(Object.keys(feelings).filter((id) => feelings[id]!.whatHappened).sort()).toEqual([
+      'abandoned', 'accepted', 'betrayed', 'cared-for', 'cheated', 'flattered', 'forgiven', 'honored', 'humiliated',
+      'insulted', 'left-out', 'misunderstood', 'pressured', 'provoked', 'reassured', 'rejected', 'safe', 'trapped',
+      'unappreciated', 'understood', 'used', 'valued', 'vindicated', 'violated',
+    ]);
+  });
+
+  test("definitions: no card uses its own label or a sibling's, comparing base forms", () => {
+    expect(definitionFaults(wheel, locale)).toEqual([]);
+    const withDef = (id: string, definition: string): Locale => {
+      const l = structuredClone(locale);
+      l.feelings[id] = { ...l.feelings[id]!, definition };
+      return l;
+    };
+    expect(definitionFaults(wheel, withDef('annoyed', 'Feeling annoyed.'))).toHaveLength(1);
+    expect(definitionFaults(wheel, withDef('provoked', 'Irritable because someone wants a reaction.')).join('\n')).toMatch(/Irritable/);
+    expect(definitionFaults(wheel, withDef('rejected', 'A sense of betrayal.'))).toEqual([]);
+    expect(definitionFaults(wheel, withDef('rejected', 'Hurt at being pushed away.'))).toEqual([]);
+    expect(definitionFaults(wheel, withDef('lonely', 'Something hurtful happened.'))).toEqual([]);
+    expect(definitionFaults(wheel, withDef('lonely', 'It hurts.')).join('\n')).toMatch(/Hurt/);
   });
 });

@@ -40,6 +40,10 @@ The rules for what the wheels say live in `src/data/README.md`. They cover `src/
 
 `site.config.ts` is the only place the public URL lives. Never hard-code it elsewhere; the build fills canonical URLs, preview tags, robots.txt and the sitemap from it.
 
+## Icons
+
+The app's icon (`public/icons/`) and the link icon for lucaspolito.dev (`docs/website-icon/`) are drawn from the feelings wheel by `scripts/make-icons.mjs`: a wedge for each core feeling, in the wheel's order and colors. When the cores, their order, or their colors change, run `node scripts/make-icons.mjs` and commit `public/icons/` and `docs/website-icon/` in the same change. Don't edit the icons by hand.
+
 ## Social preview images
 
 `public/og/` holds a link-preview image for each core feeling and body area, drawn by `scripts/make-og-image.mjs` from the app's own wheels, layout and colors. When a wheel file, the color tokens (`src/styles/tokens.css`), the color code (`src/render/colors.ts`), the layout code (`src/model/layout.ts`), the app's name or the tagline changes, run `node scripts/make-og-image.mjs` and commit `public/og/` in the same change. The images' alt text (`page.imageAlt` in `src/data/locales/en.json`) quotes the app's name and the tagline, so change it with them.

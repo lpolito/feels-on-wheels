@@ -20,7 +20,7 @@ describe('paths', () => {
   });
   test('shapes (§1)', () => {
     expect(parsePath(table, '/').route).toEqual({ kind: 'wheel', wheel: 'core', path: null });
-    expect(parsePath(table, '/happy/playful').route).toEqual({ kind: 'wheel', wheel: 'core', path: 'happy/playful' });
+    expect(parsePath(table, '/happy/cheerful/playful').route).toEqual({ kind: 'wheel', wheel: 'core', path: 'happy/cheerful/playful' });
     expect(parsePath(table, '/body').route).toEqual({ kind: 'wheel', wheel: 'body', path: null });
     expect(parsePath(table, '/body/chest/tight-chest').route).toEqual({ kind: 'wheel', wheel: 'body', path: 'chest/tight-chest' });
     expect(parsePath(table, '/about').route).toEqual({ kind: 'about' });
@@ -64,9 +64,9 @@ describe('paths', () => {
   });
   test('stateFor / pathOf', () => {
     const l = buildLayout(wheel);
-    const s = stateFor(l, 'angry/aggressive/hostile')!;
-    expect(s).toEqual({ selected: l.byPath.get('angry/aggressive/hostile'), opened: true, view: { mode: 'ring', ring: 2 } });
-    expect(pathOf(l, s)).toBe('angry/aggressive/hostile');
+    const s = stateFor(l, 'angry/annoyed/irritable')!;
+    expect(s).toEqual({ selected: l.byPath.get('angry/annoyed/irritable'), opened: true, view: { mode: 'ring', ring: 2 } });
+    expect(pathOf(l, s)).toBe('angry/annoyed/irritable');
     expect(pathOf(l, { ...s, opened: false })).toBeNull();
     expect(stateFor(l, 'angry/nope')).toBeNull();
   });

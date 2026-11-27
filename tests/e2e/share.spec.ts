@@ -55,10 +55,10 @@ test('Share on the body wheel still shares the home page', async ({ page }) => {
 
 test("a word's share sends its own address and title", async ({ page }) => {
   await page.addInitScript(stubShareSheet);
-  await open(page, '/happy/playful/aroused');
+  await open(page, '/love/attracted/aroused');
   await page.locator('fw-card .fw-card-share').click();
   const origin = new URL(page.url()).origin;
-  expect(await shared(page)).toEqual({ title: 'Aroused · Feels on Wheels', url: `${origin}/happy/playful/aroused` });
+  expect(await shared(page)).toEqual({ title: 'Aroused · Feels on Wheels', url: `${origin}/love/attracted/aroused` });
 });
 
 test('without a share sheet the link is copied and said', async ({ page }) => {

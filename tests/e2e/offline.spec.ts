@@ -10,7 +10,7 @@ test('offline reload works after the first visit', async ({ page, context, brows
   await page.reload();
   await context.setOffline(true);
   await page.reload();
-  await expect(page.locator('[role="treeitem"]')).toHaveCount(130);
+  await expect(page.locator('[role="treeitem"]')).toHaveCount(162);
   await expect(page.locator('#wheel')).toBeVisible();
   await context.setOffline(false);
 });
@@ -39,7 +39,7 @@ test('a word\'s path and a made-up path load offline after the first visit (URL 
   test.skip(browserName === 'webkit', 'Playwright WebKit does not support service worker offline emulation');
   await installed(page);
   await context.setOffline(true);
-  await page.goto('/happy/playful');
+  await page.goto('/happy/cheerful/playful');
   await page.waitForFunction(() => window.__fw !== undefined);
   await expect(page.locator('fw-card .fw-card-title')).toHaveText('Playful');
   await page.goto('/nope');

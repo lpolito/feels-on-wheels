@@ -37,7 +37,7 @@ export const SCREENS: Screen[] = [
   { name: 'feelings wheel', path: '/' },
   { name: 'body wheel', path: '/body' },
   { name: 'core feeling opened', path: '/angry' },
-  { name: 'deeper feeling opened', path: '/happy/playful' },
+  { name: 'deeper feeling opened', path: '/happy/cheerful/playful' },
   { name: 'body area opened', path: '/body/chest' },
   { name: 'sensation opened', path: '/body/chest/tight-chest' },
   { name: 'about', path: '/about', only: FEW },

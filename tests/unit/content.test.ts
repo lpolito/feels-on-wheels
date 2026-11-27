@@ -5,9 +5,10 @@ import en from '../../src/data/locales/en.json';
 import { site } from '../../site.config';
 
 const { feelings, locale, wheels } = loadData();
+// Sorted: the order under a sensation only spreads repeats and colors around the ring, so these tests check which feelings, not where.
 const feelingsUnder = (sensation: string): string[] =>
   wheels.find((w) => w.id === 'body')!.children.flatMap((a) => a.children ?? [])
-    .find((s) => s.sensation === sensation)!.children!.map((f) => f.feeling!);
+    .find((s) => s.sensation === sensation)!.children!.map((f) => f.feeling!).sort();
 
 describe('v1 content', () => {
   test('every feeling has a non-empty definition of 1–2 sentences', () => {
@@ -39,8 +40,8 @@ describe('v1 content', () => {
 });
 
 describe('body wheel content', () => {
-  test('racing heart leads to scared, mad and excited', () => {
-    expect(feelingsUnder('racing-heart')).toEqual(['scared', 'mad', 'excited']);
+  test('racing heart leads to scared, angry and excited', () => {
+    expect(feelingsUnder('racing-heart')).toEqual(['angry', 'excited', 'scared']);
   });
 
   test('urges are bare verbs on the wheel and read as wanting on cards', () => {
@@ -51,15 +52,15 @@ describe('body wheel content', () => {
   });
 
   test('want to lash out offers hurt, which anger often covers', () => {
-    expect(feelingsUnder('lash-out')).toEqual(['furious', 'provoked', 'hurt']);
+    expect(feelingsUnder('lash-out')).toEqual(['furious', 'hurt', 'provoked']);
   });
 
   test('want to cry leaves out sad', () => {
-    expect(feelingsUnder('cry')).toEqual(['frustrated', 'overwhelmed', 'thankful']);
+    expect(feelingsUnder('cry')).toEqual(['frustrated', 'grateful', 'overwhelmed']);
   });
 
-  test('nothing much could be content, peaceful, or apathetic', () => {
-    expect(feelingsUnder('nothing-much')).toEqual(['content', 'peaceful', 'apathetic']);
+  test('nothing much could be content, at peace, or unmotivated', () => {
+    expect(feelingsUnder('nothing-much')).toEqual(['at-peace', 'content', 'unmotivated']);
     expect(locale.sensations['nothing-much']).toBe('Nothing much');
     expect(locale.sensationPhrases['nothing-much']).toBe('Not feeling much');
   });
@@ -70,13 +71,13 @@ describe('body wheel content', () => {
       expect(locale.sensations[s], s).toBeTruthy();
       expect(onWheel.has(s), s).toBe(false);
     }
-    expect(feelings['joyful']!.sensations).toContain('light-body');
+    expect(feelings['joy']!.sensations).toContain('light-body');
   });
 
-  test('no sensation is happy and nothing else', () => {
+  test('no sensation is pleasant (Happy or Love) and nothing else', () => {
     const happy = new Set<string>();
     const walk = (n: { feeling?: string; children?: { feeling?: string; children?: unknown[] }[] }, inHappy: boolean) => {
-      for (const c of n.children ?? []) { const h = inHappy || c.feeling === 'happy'; if (h) happy.add(c.feeling!); walk(c as never, h); }
+      for (const c of n.children ?? []) { const h = inHappy || c.feeling === 'happy' || c.feeling === 'love'; if (h) happy.add(c.feeling!); walk(c as never, h); }
     };
     walk(wheels.find((w) => w.id === 'core')! as never, false);
     for (const s of wheels.find((w) => w.id === 'body')!.children.flatMap((a) => a.children ?? [])) {

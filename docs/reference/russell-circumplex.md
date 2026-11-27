@@ -14,4 +14,4 @@ Published research. We use the idea, not its text or figure.
 
 ## Takeaways for this project
 
-1. **Low arousal doesn't say how it feels.** A quiet body with not much going on can be contentment or not caring. Valence, not the body, tells them apart, which is why Nothing much offers Content and Peaceful as well as Apathetic.
+1. **Low arousal doesn't say how it feels.** A quiet body with not much going on can be contentment or not caring. Valence, not the body, tells them apart, which is why Nothing much offers Content and At peace as well as Unmotivated.

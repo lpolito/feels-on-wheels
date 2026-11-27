@@ -67,7 +67,7 @@ test.describe('viewport sweep', () => {
       });
     }
 
-    for (const [url, path] of [['/happy/content/joyful', 'happy/content/joyful'], ['/body/head/headache', 'head/headache']] as const) {
+    for (const [url, path] of [['/happy/satisfied/fulfilled', 'happy/satisfied/fulfilled'], ['/body/head/headache', 'head/headache']] as const) {
       test(`${w}×${h} ${url} opened`, async ({ page }) => {
         await page.setViewportSize({ width: w, height: h });
         await open(page, url);

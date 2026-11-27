@@ -8,3 +8,4 @@ playwright-report/
 .claude/worktrees/
 .wrangler/
 build-archive.log
+__pycache__/

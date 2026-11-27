@@ -1,12 +1,12 @@
 /*
- * Feels on Wheels link icon for lucaspolito.dev (going-public spec §9).
+ * Feels on Wheels link icon for lucaspolito.dev (going-public spec §9). Drawn by scripts/make-icons.mjs.
  * Add after the .icon-linkedin rule in css/styles.css. It reuses the site's .icon mask and ::after color layer:
- * gray at rest like the other icons; on hover, focus or tap it takes the wheel's seven core-feeling colors
+ * gray at rest like the other icons; on hover, focus or tap it takes the wheel's six core-feeling colors
  * (the app's dark-theme hues) and spins once, settling.
  *
  * Contrast on --background #121214, all above the site's 3:1 rule:
- *   Fearful #E0559E 5.31 · Angry #E0525C 4.93 · Disgusted #C77A4F 5.64 · Sad #7A70C2 4.39
- *   Happy #E8933A 7.72 · Surprised #5FA383 6.28 · Bad #8E6BC0 4.47
+ *   Happy #E8933A 7.72 · Angry #E0525C 4.93 · Love #E0559E 5.31
+ *   Sad #7A70C2 4.39 · Bad #2B6D7C 3.19 · Scared #5FA383 6.28
  */
 .icon-feels {
   --icon: url("../icons/feels-on-wheels.svg");
@@ -19,13 +19,12 @@
     background-size: auto;
     animation: none;
     background-image: conic-gradient(
-      #e0559e 0deg 52.7deg,
-      #e0525c 52.7deg 122.9deg,
-      #c77a4f 122.9deg 158deg,
-      #7a70c2 158deg 210.7deg,
-      #e8933a 210.7deg 289.8deg,
-      #5fa383 289.8deg 324.9deg,
-      #8e6bc0 324.9deg 360deg
+      #e8933a 0deg 97.3deg,
+      #e0525c 97.3deg 155.7deg,
+      #e0559e 155.7deg 188.1deg,
+      #7a70c2 188.1deg 259.5deg,
+      #2b6d7c 259.5deg 314.6deg,
+      #5fa383 314.6deg 360deg
     );
   }
 }

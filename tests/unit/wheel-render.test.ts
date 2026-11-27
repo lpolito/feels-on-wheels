@@ -15,7 +15,7 @@ beforeAll(() => setLocale(locale));
 
 const palette: Palette = {
   bg: '#ffffff', fg: '#111111', gap: '#ffffff', focus: '#1a5fd0', outline: '#1c1b1f', surface: '#f6f5f8',
-  hues: { fearful: '#c2257f', angry: '#c62835', disgusted: '#a4532a', sad: '#3b3470', happy: '#d9730d', surprised: '#3e7b5e', bad: '#5e3a87' },
+  hues: { happy: '#d9730d', angry: '#c62835', love: '#c2257f', sad: '#3b3470', bad: '#005a69', scared: '#3e7b5e' },
 };
 const table = buildFillTable(palette, 3, 'light');
 
@@ -189,13 +189,13 @@ describe('label floors by ring (spec v2.1 §5)', () => {
 });
 
 describe('wheel renderer', () => {
-  test('overview draws all 130 segments', () => {
+  test('overview draws all 162 segments', () => {
     const { canvas, ctx } = fakeCanvas();
     const r = createWheelRenderer(canvas, layout, ctx);
     r.setColors(table, palette);
     r.resize(1000, 1000, 2);
     r.draw(frame(desk));
-    expect(r.stats.segmentsDrawn).toBe(130);
+    expect(r.stats.segmentsDrawn).toBe(162);
     expect(r.stats.labelsDrawn).toBeGreaterThan(100);
   });
 
@@ -223,7 +223,7 @@ describe('wheel renderer', () => {
     const r = createWheelRenderer(canvas, layout, ctx);
     r.setColors(table, palette);
     r.resize(1000, 1000, 1);
-    const sel = layout.byPath.get('angry/aggressive')!;
+    const sel = layout.byPath.get('angry/annoyed')!;
     r.draw(frame(desk, { lit: litMask(layout, sel), prevLit: litMask(layout, sel), fadeT: 1 }));
     const fadedSad = table.fill('sad', 0, false);
     const litAngry = table.fill('angry', 0, true);
@@ -285,8 +285,8 @@ describe('wheel renderer', () => {
   });
 
   test('an opened word with keyboard focus is outlined in the focus color too', () => {
-    const hostile = layout.byPath.get('angry/aggressive/hostile')!;
-    const { r, rec } = draw(desk, { selected: hostile, opened: true, mode: 'ring', ring: 2, keyboardFocus: true });
+    const irritable = layout.byPath.get('angry/annoyed/irritable')!;
+    const { r, rec } = draw(desk, { selected: irritable, opened: true, mode: 'ring', ring: 2, keyboardFocus: true });
     expect(rec.strokes).toContain(palette.focus);
     expect(rec.strokes).not.toContain(palette.outline);
     expect(r.stats.focusOutline).toBe(true);
@@ -301,27 +301,27 @@ describe('wheel renderer', () => {
   });
 
   test('opened: shadowBlur set exactly once per frame', () => {
-    const hostile = layout.byPath.get('angry/aggressive/hostile')!;
-    const sel = layout.segments[hostile]!;
+    const irritable = layout.byPath.get('angry/annoyed/irritable')!;
+    const sel = layout.segments[irritable]!;
     const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
-    const lit = litMask(layout, hostile);
-    const { rec } = draw(desk, { cam, mode: 'ring', selected: hostile, opened: true, lit, prevLit: lit, pulseT: 0.5 });
+    const lit = litMask(layout, irritable);
+    const { rec } = draw(desk, { cam, mode: 'ring', selected: irritable, opened: true, lit, prevLit: lit, pulseT: 0.5 });
     expect(rec.shadowSets).toBe(1);
     expect(rec.strokes).toContain(palette.outline);
   });
 
   test('opened label uses weight 800 and a larger px than its neighbours', () => {
-    const hostile = layout.byPath.get('angry/aggressive/hostile')!;
-    const sel = layout.segments[hostile]!;
+    const irritable = layout.byPath.get('angry/annoyed/irritable')!;
+    const sel = layout.segments[irritable]!;
     const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
-    const lit = litMask(layout, hostile);
-    const { rec } = draw(desk, { cam, mode: 'ring', selected: hostile, opened: true, lit, prevLit: lit });
+    const lit = litMask(layout, irritable);
+    const { rec } = draw(desk, { cam, mode: 'ring', selected: irritable, opened: true, lit, prevLit: lit });
     const at = (t: string) => rec.fonts[rec.texts.lastIndexOf(t)]!;
-    const hostileFont = at(label('hostile'));
+    const irritableFont = at(label('irritable'));
     const provokedFont = at(label('provoked'));
-    expect(hostileFont.startsWith('800 ')).toBe(true);
+    expect(irritableFont.startsWith('800 ')).toBe(true);
     expect(provokedFont.startsWith('600 ')).toBe(true);
-    expect(pxOf(hostileFont)).toBeGreaterThan(pxOf(provokedFont));
+    expect(pxOf(irritableFont)).toBeGreaterThan(pxOf(provokedFont));
   });
 
   /** Each inner-line arc against the outline's own arc: the angular inset times the inner arc's radius. */
@@ -338,7 +338,7 @@ describe('wheel renderer', () => {
   }
 
   test('inner outline line is a parallel 3px inset on every ring', () => {
-    for (const path of ['angry', 'angry/aggressive', 'angry/aggressive/hostile']) {
+    for (const path of ['angry', 'angry/annoyed', 'angry/annoyed/irritable']) {
       const { rec } = draw(desk, { selected: layout.byPath.get(path)! });
       const ins = insets(rec);
       expect(ins).toHaveLength(2);
@@ -420,10 +420,10 @@ describe('wheel renderer', () => {
   });
 
   test('with a sprite cache, labels are blitted from it except the opened (pulsing) one', () => {
-    const hostile = layout.byPath.get('angry/aggressive/hostile')!;
-    const sel = layout.segments[hostile]!;
+    const irritable = layout.byPath.get('angry/annoyed/irritable')!;
+    const sel = layout.segments[irritable]!;
     const cam = ringFocusCamera(layout, 2, desk, -sel.mid, { remPx: 16, portrait: false, rest: 'whole' as const, openedY: null, sideCoreWidth: SHARED.coreWidth });
-    const lit = litMask(layout, hostile);
+    const lit = litMask(layout, irritable);
     const sprited: string[] = [];
     const scales: number[] = [];
     const sprites = { size: 0, setScale: (d: number) => scales.push(d), draw: (_g: unknown, text: string) => { sprited.push(text); } };
@@ -432,10 +432,10 @@ describe('wheel renderer', () => {
     r.setColors(table, palette);
     r.resize(1000, 1000, 2);
     expect(scales).toEqual([2]);
-    r.draw(frame(desk, { cam, mode: 'ring', selected: hostile, opened: true, lit, prevLit: lit }));
-    expect(rec.texts).toEqual([label('hostile')]);
+    r.draw(frame(desk, { cam, mode: 'ring', selected: irritable, opened: true, lit, prevLit: lit }));
+    expect(rec.texts).toEqual([label('irritable')]);
     expect(sprited).toContain(label('provoked'));
-    expect(sprited).not.toContain(label('hostile'));
+    expect(sprited).not.toContain(label('irritable'));
   });
 
   test('forced colors draw labels with fillText, never from sprite bitmaps', () => {

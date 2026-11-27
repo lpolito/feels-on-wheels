@@ -87,7 +87,7 @@ describe('snapping', () => {
   });
 
   test('rotationToCenter picks the equivalent rotation nearest current', () => {
-    const s = layout.segments[layout.byPath.get('angry/aggressive/hostile')!]!;
+    const s = layout.segments[layout.byPath.get('angry/annoyed/irritable')!]!;
     const r = rotationToCenter(s, 40);
     expect(Math.abs(r - 40)).toBeLessThanOrEqual(Math.PI);
     const off = normAngle(s.mid + r);

@@ -25,26 +25,26 @@ describe('resolvePinch', () => {
   });
 
   test('pinch in on the opened word does nothing', () => {
-    for (const p of ['angry', 'angry/aggressive', 'angry/aggressive/hostile']) {
+    for (const p of ['angry', 'angry/annoyed', 'angry/annoyed/irritable']) {
       expect(resolvePinch(layout, opened(p), 1.4, idx(p)), p).toBeNull();
     }
   });
 
   test('pinch in on a child of the opened word opens that child', () => {
-    expect(resolvePinch(layout, opened('angry'), 1.4, idx('angry/aggressive'))).toEqual({ type: 'open', segment: idx('angry/aggressive') });
+    expect(resolvePinch(layout, opened('angry'), 1.4, idx('angry/annoyed'))).toEqual({ type: 'open', segment: idx('angry/annoyed') });
   });
 
   test('pinch in on another word while opened opens it', () => {
-    expect(resolvePinch(layout, opened('angry/aggressive'), 1.4, idx('angry/mad'))).toEqual({ type: 'open', segment: idx('angry/mad') });
+    expect(resolvePinch(layout, opened('angry/annoyed'), 1.4, idx('angry/furious'))).toEqual({ type: 'open', segment: idx('angry/furious') });
   });
 
   test('small pinch out while opened opens the parent', () => {
-    expect(resolvePinch(layout, opened('angry/aggressive'), 0.7, idx('sad'))).toEqual({ type: 'toParent' });
-    expect(resolvePinch(layout, opened('angry/aggressive'), 0.55, null)).toEqual({ type: 'toParent' });
+    expect(resolvePinch(layout, opened('angry/annoyed'), 0.7, idx('sad'))).toEqual({ type: 'toParent' });
+    expect(resolvePinch(layout, opened('angry/annoyed'), 0.55, null)).toEqual({ type: 'toParent' });
   });
 
   test('big pinch out while opened closes', () => {
-    expect(resolvePinch(layout, opened('angry/aggressive'), 0.54, null)).toEqual({ type: 'close' });
+    expect(resolvePinch(layout, opened('angry/annoyed'), 0.54, null)).toEqual({ type: 'close' });
   });
 
   test('pinch out on the whole wheel with a selection does nothing', () => {
@@ -66,7 +66,7 @@ describe('resolvePinch', () => {
 
   test('ratios between thresholds do nothing', () => {
     for (const r of [0.8, 0.95, 1, 1.2, 1.35]) {
-      expect(resolvePinch(layout, opened('angry/aggressive'), r, idx('angry/aggressive')), String(r)).toBeNull();
+      expect(resolvePinch(layout, opened('angry/annoyed'), r, idx('angry/annoyed')), String(r)).toBeNull();
       expect(resolvePinch(layout, initialState, r, idx('sad')), String(r)).toBeNull();
     }
   });

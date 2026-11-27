@@ -26,7 +26,7 @@ test('the message comes first, then the switch, the toolbar, the wheel', async (
 
 test('after selecting a word, the card comes right after the wheel', async ({ page }) => {
   await open(page);
-  await tapPath(page, 'sad');
+  await tapPath(page, 'angry');
   const stops = await tabStops(page);
   expect(stops[stops.indexOf('LI') + 1]).toBe('BUTTON.fw-card-toggle');
 });
@@ -47,7 +47,7 @@ test('the message sits where the card does', async ({ page }) => {
     expect(Math.abs(x - y)).toBeLessThanOrEqual(1);
   };
   const hintBox = await box('fw-hint');
-  await tapPath(page, 'sad');
+  await tapPath(page, 'angry');
   near(hintBox, await box('fw-card'));
   // Resized with the page loaded and a word selected: the card follows the new layout, and so does the hint after it.
   await page.setViewportSize({ width: 390, height: 844 });
@@ -65,11 +65,11 @@ test('the h1 follows the URL', async ({ page }) => {
   await open(page, '/plaful');
   await expect(h1).toHaveText('Feeling not found!');
   await open(page, '/');
-  await tapPath(page, 'sad');
+  await tapPath(page, 'angry');
   await expect(h1).toHaveCount(0);
-  await expect(page.getByRole('heading', { level: 2, name: 'Sad' })).toBeVisible();
-  await open(page, '/sad');
-  await expect(h1).toHaveText('Sad');
+  await expect(page.getByRole('heading', { level: 2, name: 'Angry' })).toBeVisible();
+  await open(page, '/angry');
+  await expect(h1).toHaveText('Angry');
   await expect(page.getByRole('heading', { level: 2, name: 'Narrow it down' })).toBeVisible();
 });
 
@@ -282,7 +282,7 @@ test('a click or tap on the wheel brings focus without a ring', async ({ page })
 
 test('tap a word, then Escape: the ring shows', async ({ page }) => {
   await open(page);
-  await tapPath(page, 'sad');
+  await tapPath(page, 'angry');
   expect(await ringShown(page)).toBe(false);
   await page.keyboard.press('Escape');
   await idle(page);
@@ -342,7 +342,7 @@ test('the card shows a focus ring while its toggle has keyboard focus, folded or
 
 test('no card ring after a tap or click on its toggle', async ({ page }) => {
   await open(page);
-  await tapPath(page, 'sad');
+  await tapPath(page, 'angry');
   await page.locator('fw-card .fw-card-toggle').click();
   await idle(page);
   expect(await outlineOf(page, 'fw-card')).toBe('none');
@@ -371,6 +371,6 @@ test('the selected word is outlined in the focus color only while the wheel has 
   expect((await state(page)).opened).toBe(true);
   expect(await outlined()).toBe(true);
   // A tap on another word: focus comes quietly, so the usual outline color.
-  await tapPath(page, 'sad');
+  await tapPath(page, 'angry');
   expect(await outlined()).toBe(false);
 });

@@ -25,7 +25,7 @@ describe('service worker navigation strategy', () => {
 
   test('every page navigation, About and unknown paths included, gets the shell (URL redesign spec §7, §8)', async () => {
     const network = vi.fn(async () => new Response('net'));
-    for (const page of ['https://x/', 'https://x/?ref=a', 'https://x/about?ref=a#b', 'https://x/happy/playful', 'https://x/body/chest', 'https://x/nope']) {
+    for (const page of ['https://x/', 'https://x/?ref=a', 'https://x/about?ref=a#b', 'https://x/happy/cheerful/playful', 'https://x/body/chest', 'https://x/nope']) {
       const urls = navigationUrls(page, 'https://x/');
       expect(urls[urls.length - 1]).toBe('https://x/');
       expect(await (await navigationResponse(site, urls, network)).text()).toBe('shell');

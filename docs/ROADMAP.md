@@ -31,6 +31,7 @@ Each change is used before the next one is designed. When Lucas picks an idea to
 | Known issues: card text that keeps its size when the phone turns, no double-tap zoom on labels, one rest view for both wheels, opened rings that fit the screen, opened labels that fit their cell, a wheel that keeps its axis while it turns, labels that never disappear, and an opened wedge centered below the controls | Shipped 2026-11-18 | [spec](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-design.md), [plan](superpowers/plans/2026-11-18-feels-on-wheels-known-issues.md), [round-two plan](superpowers/plans/2026-11-18-feels-on-wheels-known-issues-round-2.md), [round-three plan](superpowers/plans/2026-11-18-feels-on-wheels-known-issues-round-3.md), [changes](superpowers/specs/2026-11-18-feels-on-wheels-known-issues-changes.md) |
 | <a id="snapshots-across-devices-and-window-sizes"></a>Screenshots of every layout on real phones, tablets and computers, in Chromatic | Shipped 2026-11-18 | [spec](superpowers/specs/2026-11-18-feels-on-wheels-screenshots-design.md), [plan](superpowers/plans/2026-11-18-feels-on-wheels-screenshots.md), [changes](superpowers/specs/2026-11-18-feels-on-wheels-screenshots-changes.md) |
 | Sideways tablets and computers: the core word stays in view with a middle word open, and opening a core word zooms in a little more | Shipped 2026-11-19 | [spec](superpowers/specs/2026-11-18-feels-on-wheels-sideways-zoom-design.md), [plan](superpowers/plans/2026-11-19-feels-on-wheels-sideways-zoom.md), [changes](superpowers/specs/2026-11-18-feels-on-wheels-sideways-zoom-changes.md) |
+| <a id="an-opinionated-feelings-wheel"></a>An opinionated feelings wheel: six cores like a color wheel, 162 words chosen by rules and research, plain-language cards, the body wheel repaired to match, and the rules beside the data | Shipped 2026-11-26 | [spec](superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md), [plan](superpowers/plans/2026-11-26-feels-on-wheels-opinionated-wheel.md), [changes](superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-changes.md) |
 
 ## Ideas
 
@@ -43,7 +44,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Strength](#strength) | New ways to identify an emotion | Shelved (2026-11-08) |
 | [Wheels for kids](#wheels-for-kids) | New ways to identify an emotion | Idea |
 | [Search for a word](#search-for-a-word) | New ways to identify an emotion | Idea |
-| [An opinionated feelings wheel](#an-opinionated-feelings-wheel) | [The wheels' content](#the-wheels-content) | Idea |
+| [Open questions in the feelings wheel](#open-questions-in-the-feelings-wheel) | [The wheels' content](#the-wheels-content) | Idea |
 | [Narrower feelings on the body wheel's card](#narrower-feelings-on-the-body-wheels-card) | The wheels' content | Idea |
 | [Languages](#languages) | [URLs, routing and hosting](#urls-routing-and-hosting) | Planned |
 | ["Did you mean" on not found](#did-you-mean-on-not-found) | URLs, routing and hosting | Idea |
@@ -94,6 +95,7 @@ What Lucas first asked for:
   - their URLs, and whether a kids' word links to the same word on the grown-up wheel;
   - where the words come from, since any new source gets a [reference note](reference/README.md) and a credit.
 - Overlaps with the [emoji wheel](#emoji-wheel), which is also a simplified wheel; worth designing them together.
+- A check for which words fit each age, from the opinionated wheel's brainstorm (2026-11-19): a published study of which feeling words children know, by age band (Baron-Cohen et al. 2010, UK, about 336 words; it counts a word as known when 75% of the band knew it). Words off its list need another check. See [its note](reference/baron-cohen-emotion-vocabulary.md).
 
 #### Search for a word
 
@@ -107,19 +109,14 @@ What Lucas first asked for:
 
 What the wheels say: their words, definitions, and how feelings relate to sensations. Whatever is decided here gets written down as rules beside the data (`src/data/README.md`, with an `AGENTS.md` there that loads it), not only in a spec.
 
-#### An opinionated feelings wheel
+#### Open questions in the feelings wheel
 
-- Lucas, 2026-11-15: the feelings wheel should be opinionated about the words it uses, their definitions, and how feelings relate to sensations. Today it largely repeats other wheels (mostly [Roberts's seven-core wheel](reference/core-feelings-wheel.md)), which isn't necessary.
-- Its rules go in `src/data/README.md` next to the body wheel's, so every later edit follows them.
-- **A word for accepting your situation.** Lucas, 2026-11-16: not fighting reality, going with the flow. The wheel's Accepted means being welcomed by others, so the body wheel's Nothing much uses Content and Peaceful for now (rework [changes](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md#flat); [radical acceptance](reference/linehan-dbt-model-of-emotions.md), [equanimity](reference/desbordes-equanimity.md)).
-- **Words that sit oddly under their parent,** such as Hesitant under Repelled, Embarrassed under Disapproving, and Inferior under Depressed (Lucas, 2026-11-16). The body wheel's rule about a word and its parent depends on this nesting.
-- To decide when designing:
-  - what makes a word earn a place: common, plain, distinct from its neighbors, and useful for naming what you feel;
-  - whether the core feelings and their order stay, since the colors, link previews and URLs are built on them;
-  - what a good definition says, and how "You might notice" is chosen, likely drawing on the [bodily maps research](reference/nummenmaa-bodily-maps.md);
-  - what happens to links to words that are removed or moved;
-  - where the words come from, since any new source gets a [reference note](reference/README.md) and a credit.
-- Meets [Strength](#strength), [Wheels for kids](#wheels-for-kids), [Languages](#languages), and the [definitions and sensations review](#before-launching), which all depend on which words the wheel has. Builds on the rules the [body wheel rework](superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md) set in [src/data/README.md](../src/data/README.md).
+Left open when the [opinionated feelings wheel](superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md) shipped (its §6).
+
+- **"I feel bad for them."** Nearly half of "feel bad" is guilt or sympathy. Guilty is under Bad, but Sorry for someone is under Sad → Heartache, and nothing under Bad leads there; Bad's card can't point to it without a tacked-on clause (Lucas, 2026-11-25). The order helps a little: Sympathy sits beside Sorry for someone, where Love meets Sad. If people who feel bad for a friend don't find it, putting Sorry for someone in two places is the fix.
+- **Jealous and Envious.** Jealous is a middle word with Envious and Possessive, the two everyday kinds of jealousy. Lucas, 2026-11-22: "I just don't think it works very well", and he'd rather not have both Jealous and Envious, but Jealous has nowhere else to sit except a stretched Resentful.
+- **Check the whole wheel through a user's eyes,** as `src/data/README.md` describes, which would settle the first question. Lucas looked over the wheel himself on 2026-11-26 and saw nothing noteworthy.
+- Meets [Strength](#strength), [Wheels for kids](#wheels-for-kids), and [Languages](#languages), which all depend on which words the wheel has.
 
 #### Narrower feelings on the body wheel's card
 
@@ -131,7 +128,7 @@ What the wheels say: their words, definitions, and how feelings relate to sensat
   - for a core feeling, its middle-ring words only, or the outer words too;
   - whether each one links to its word on the feelings wheel, like the feelings they're nested under;
   - how long the card gets, since a core feeling can have several middle-ring words, and how the list reads to a screen reader.
-- Meets [An opinionated feelings wheel](#an-opinionated-feelings-wheel), which may change which words are nested under which, such as Hesitant under Repelled.
+- Example: on the body wheel, Overwhelmed (a middle word) is under several sensations; its card would also list Burned out and Pressured, the words under it on the feelings wheel.
 
 ### URLs, routing and hosting
 
@@ -210,12 +207,12 @@ Looked at on 2026-11-18 ([spec](superpowers/specs/2026-11-18-feels-on-wheels-kno
 
 The app is called **Feels on Wheels** (decided 2026-11-09). Going public happens in two steps: first shareable, then launched. Step 1 [shipped](#shipped) on 2026-11-09. Step 2 is what's left before announcing it and letting search engines index it. The host and the domain (2026-11-13) and the URL structure (2026-11-14) are done; the rest isn't started.
 
-- **Lucas reviews the definitions and sensations** in [content-review.md](content-review.md). This was moved out of v1.1. Since the body wheel rework, it also shows each card's "You might notice" phrases and the body wheel as it is, all rebuilt from the data, so the phrases drafted in the rework get reviewed here too.
+- **Lucas reviews the "You might notice" phrases** in [content-review.md](content-review.md), rebuilt from the data. He reviewed every definition twice for the [opinionated feelings wheel](superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md) (2026-11-25); the phrases for its new words were drafted and cold-reviewed, but not by him.
 - **Draft text for Lucas to edit:** the body wheel's preview description ("Start from what you notice in your body to find the word for what you feel.") is a draft, and it's shorter than the 100 to 160 characters the home description uses.
 - **Let search engines in:** set `indexable: true` in `site.config.ts` (removes `noindex`), deploy, and re-check the link previews.
   - Decide first whether the `workers.dev` address and the preview links should say `noindex` once the domain is indexable, since they serve the same pages.
 - **Optional, after letting search engines in:** add the site to Google Search Console and Bing Webmaster Tools and submit the sitemap.
-- **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, gray like the site's other icons; on hover it takes the wheel's seven colors and spins once, settling.
+- **Add the icon to lucaspolito.dev**, linking the domain, not github.io. Follow `docs/website-icon/README.md`. Chosen 2026-11-09: the app icon's silhouette, gray like the site's other icons; on hover it takes the wheel's six colors and spins once, settling.
 - **Known issues and ideas:** decide which to finish before announcing it. Help adding it to the home screen and a dark home-screen icon were dropped (2026-11-15).
 
 ## Content rules

@@ -18,5 +18,5 @@ Copyrighted handouts, widely used in therapy. We use the model, not its handouts
 
 1. **Sensations and urges are different parts of an emotion,** which backs keeping Urges as its own area instead of mixing urges in with the places.
 2. **Each emotion comes with its own urges,** including ones Frijda's list doesn't stress: guilt pulls toward making it right, sadness toward pulling back, shame toward hiding, jealousy toward controlling others, and anger toward attacking. The last two were confirmed in opposite-action handouts based on DBT, such as [Choosing Therapy's](https://www.choosingtherapy.com/wp-content/uploads/2025/10/Opposite-Action-Examples-Handout.pdf), read 2026-11-16, not in Linehan's own handout.
-3. **Accepting your situation is a recognized state,** not just giving up, which backs Content and Peaceful under the body wheel's Nothing much.
+3. **Accepting your situation is a recognized state,** not just giving up, which backs Content and At peace under the body wheel's Nothing much.
 4. **Naming an urge is a skill people are taught,** so an urge is a fair way into a feeling for someone who notices the pull first.

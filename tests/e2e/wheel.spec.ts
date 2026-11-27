@@ -638,7 +638,7 @@ test.describe('phone', () => {
   test('phone: turned sideways with a word selected, the half-wheel becomes the side view (spec v2.1 §6.2)', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await open(page);
-    await tapPath(page, 'sad');
+    await tapPath(page, 'angry');
     const rot = (await page.evaluate(() => window.__fw.camera())).rotation;
     await page.setViewportSize({ width: 667, height: 375 });
     await page.waitForTimeout(200);
@@ -649,7 +649,7 @@ test.describe('phone', () => {
     expect(cam.cx).toBeLessThan(vp.width / 2);
     expect(vp.width).toBeLessThan(667);
     expect(sameAngle(cam.rotation, rot)).toBeLessThan(1e-6);
-    expect(await selectedPath(page)).toBe('sad');
+    expect(await selectedPath(page)).toBe('angry');
     expect((await state(page)).opened).toBe(false);
   });
 
@@ -693,12 +693,12 @@ test.describe('phone', () => {
 
   test('phone: moving to a word with a different card height re-centers it', async ({ page }) => {
     // A middle word, then one of its outer words: their cards differ in height on every phone.
-    await open(page, '/scared/anxious');
+    await open(page, '/scared/vulnerable');
     await settled(page);
     const before = (await page.locator('fw-card').boundingBox())!;
     await page.locator('fw-card ul.fw-rows a').first().click();
     const path = (await selectedPath(page))!;
-    expect(path).toBe('scared/anxious/worried');
+    expect(path).toBe('scared/vulnerable/exposed');
     const { y, mid, cardTop } = await openedPlacement(page, path);
     expect(Math.abs(cardTop - before.y)).toBeGreaterThan(5);
     expect(Math.abs(y - mid)).toBeLessThanOrEqual(2);
@@ -776,14 +776,14 @@ test.describe('phone', () => {
 
   test('phone: Back from an opened word returns to the whole wheel with it selected', async ({ page }) => {
     await open(page);
-    await tapPath(page, 'sad');
-    await tapPath(page, 'sad');
-    expect(await page.evaluate(() => location.pathname)).toBe('/sad');
+    await tapPath(page, 'angry');
+    await tapPath(page, 'angry');
+    expect(await page.evaluate(() => location.pathname)).toBe('/angry');
     await page.goBack();
     await idle(page);
     expect(await page.evaluate(() => location.pathname)).toBe('/');
     const s = await state(page);
-    expect(await selectedPath(page)).toBe('sad');
+    expect(await selectedPath(page)).toBe('angry');
     expect(s.view).toEqual({ mode: 'wheel' });
     expect(s.opened).toBe(false);
   });
@@ -801,7 +801,7 @@ test('the message and the card never show together', async ({ page }) => {
   await open(page);
   await expect(hint(page)).toBeVisible();
   await expect(page.locator('fw-card')).toBeHidden();
-  await tapPath(page, 'sad');
+  await tapPath(page, 'angry');
   await expect(hint(page)).toBeHidden();
   await expect(page.locator('fw-card')).toBeVisible();
   await page.keyboard.press('Escape');

@@ -21,24 +21,24 @@
       "hue": "happy",
       "children": [
         {
-          "feeling": "joy",
+          "feeling": "amazed",
           "children": [
             {
-              "feeling": "delighted"
+              "feeling": "awe"
             },
             {
-              "feeling": "elated"
+              "feeling": "impressed"
             }
           ]
         },
         {
-          "feeling": "cheerful",
+          "feeling": "interested",
           "children": [
             {
-              "feeling": "amused"
+              "feeling": "fascinated"
             },
             {
-              "feeling": "playful"
+              "feeling": "curious"
             }
           ]
         },
@@ -54,30 +54,24 @@
           ]
         },
         {
-          "feeling": "proud",
+          "feeling": "joy",
           "children": [
             {
-              "feeling": "accomplished"
+              "feeling": "elated"
             },
             {
-              "feeling": "triumphant"
-            },
-            {
-              "feeling": "flattered"
+              "feeling": "delighted"
             }
           ]
         },
         {
-          "feeling": "confident",
+          "feeling": "cheerful",
           "children": [
             {
-              "feeling": "brave"
+              "feeling": "amused"
             },
             {
-              "feeling": "empowered"
-            },
-            {
-              "feeling": "powerful"
+              "feeling": "playful"
             }
           ]
         },
@@ -113,10 +107,21 @@
               "feeling": "reassured"
             },
             {
-              "feeling": "forgiven"
+              "feeling": "vindicated"
             },
             {
-              "feeling": "vindicated"
+              "feeling": "forgiven"
+            }
+          ]
+        },
+        {
+          "feeling": "grateful",
+          "children": [
+            {
+              "feeling": "blessed"
+            },
+            {
+              "feeling": "honored"
             }
           ]
         },
@@ -124,10 +129,10 @@
           "feeling": "hopeful",
           "children": [
             {
-              "feeling": "optimistic"
+              "feeling": "encouraged"
             },
             {
-              "feeling": "encouraged"
+              "feeling": "optimistic"
             }
           ]
         },
@@ -143,35 +148,30 @@
           ]
         },
         {
-          "feeling": "interested",
+          "feeling": "proud",
           "children": [
             {
-              "feeling": "curious"
+              "feeling": "accomplished"
             },
             {
-              "feeling": "fascinated"
+              "feeling": "flattered"
+            },
+            {
+              "feeling": "triumphant"
             }
           ]
         },
         {
-          "feeling": "amazed",
+          "feeling": "confident",
           "children": [
             {
-              "feeling": "awe"
+              "feeling": "brave"
             },
             {
-              "feeling": "impressed"
-            }
-          ]
-        },
-        {
-          "feeling": "grateful",
-          "children": [
-            {
-              "feeling": "honored"
+              "feeling": "empowered"
             },
             {
-              "feeling": "blessed"
+              "feeling": "powerful"
             }
           ]
         }
@@ -182,16 +182,27 @@
       "hue": "angry",
       "children": [
         {
+          "feeling": "offended",
+          "children": [
+            {
+              "feeling": "indignant"
+            },
+            {
+              "feeling": "insulted"
+            }
+          ]
+        },
+        {
           "feeling": "annoyed",
           "children": [
+            {
+              "feeling": "provoked"
+            },
             {
               "feeling": "irritable"
             },
             {
               "feeling": "impatient"
-            },
-            {
-              "feeling": "provoked"
             }
           ]
         },
@@ -199,10 +210,10 @@
           "feeling": "frustrated",
           "children": [
             {
-              "feeling": "trapped"
+              "feeling": "fed-up"
             },
             {
-              "feeling": "fed-up"
+              "feeling": "trapped"
             }
           ]
         },
@@ -210,49 +221,13 @@
           "feeling": "furious",
           "children": [
             {
-              "feeling": "outraged"
-            },
-            {
               "feeling": "rage"
             },
             {
               "feeling": "violated"
-            }
-          ]
-        },
-        {
-          "feeling": "resentful",
-          "children": [
-            {
-              "feeling": "cheated"
             },
             {
-              "feeling": "used"
-            },
-            {
-              "feeling": "betrayed"
-            }
-          ]
-        },
-        {
-          "feeling": "offended",
-          "children": [
-            {
-              "feeling": "insulted"
-            },
-            {
-              "feeling": "indignant"
-            }
-          ]
-        },
-        {
-          "feeling": "jealous",
-          "children": [
-            {
-              "feeling": "envious"
-            },
-            {
-              "feeling": "possessive"
+              "feeling": "outraged"
             }
           ]
         },
@@ -269,6 +244,31 @@
               "feeling": "hatred"
             }
           ]
+        },
+        {
+          "feeling": "resentful",
+          "children": [
+            {
+              "feeling": "betrayed"
+            },
+            {
+              "feeling": "used"
+            },
+            {
+              "feeling": "cheated"
+            }
+          ]
+        },
+        {
+          "feeling": "jealous",
+          "children": [
+            {
+              "feeling": "envious"
+            },
+            {
+              "feeling": "possessive"
+            }
+          ]
         }
       ]
     },
@@ -276,6 +276,17 @@
       "feeling": "love",
       "hue": "fearful",
       "children": [
+        {
+          "feeling": "attracted",
+          "children": [
+            {
+              "feeling": "desire"
+            },
+            {
+              "feeling": "aroused"
+            }
+          ]
+        },
         {
           "feeling": "affection",
           "children": [
@@ -291,38 +302,27 @@
           ]
         },
         {
-          "feeling": "compassion",
-          "children": [
-            {
-              "feeling": "sympathy"
-            },
-            {
-              "feeling": "moved"
-            }
-          ]
-        },
-        {
           "feeling": "connected",
           "children": [
-            {
-              "feeling": "understood"
-            },
             {
               "feeling": "valued"
             },
             {
               "feeling": "accepted"
+            },
+            {
+              "feeling": "understood"
             }
           ]
         },
         {
-          "feeling": "attracted",
+          "feeling": "compassion",
           "children": [
             {
-              "feeling": "desire"
+              "feeling": "moved"
             },
             {
-              "feeling": "aroused"
+              "feeling": "sympathy"
             }
           ]
         }
@@ -333,44 +333,16 @@
       "hue": "sad",
       "children": [
         {
-          "feeling": "lonely",
+          "feeling": "heartache",
           "children": [
             {
-              "feeling": "left-out"
+              "feeling": "sorry-for-someone"
             },
             {
-              "feeling": "misunderstood"
+              "feeling": "homesick"
             },
             {
-              "feeling": "abandoned"
-            }
-          ]
-        },
-        {
-          "feeling": "hurt",
-          "children": [
-            {
-              "feeling": "betrayed"
-            },
-            {
-              "feeling": "rejected"
-            },
-            {
-              "feeling": "unappreciated"
-            }
-          ]
-        },
-        {
-          "feeling": "disappointed",
-          "children": [
-            {
-              "feeling": "discouraged"
-            },
-            {
-              "feeling": "regret"
-            },
-            {
-              "feeling": "disillusioned"
+              "feeling": "nostalgic"
             }
           ]
         },
@@ -389,16 +361,44 @@
           ]
         },
         {
-          "feeling": "heartache",
+          "feeling": "lonely",
           "children": [
             {
-              "feeling": "homesick"
+              "feeling": "abandoned"
             },
             {
-              "feeling": "nostalgic"
+              "feeling": "misunderstood"
             },
             {
-              "feeling": "sorry-for-someone"
+              "feeling": "left-out"
+            }
+          ]
+        },
+        {
+          "feeling": "hurt",
+          "children": [
+            {
+              "feeling": "rejected"
+            },
+            {
+              "feeling": "unappreciated"
+            },
+            {
+              "feeling": "betrayed"
+            }
+          ]
+        },
+        {
+          "feeling": "disappointed",
+          "children": [
+            {
+              "feeling": "disillusioned"
+            },
+            {
+              "feeling": "regret"
+            },
+            {
+              "feeling": "discouraged"
             }
           ]
         },
@@ -417,24 +417,24 @@
           ]
         },
         {
-          "feeling": "ashamed",
+          "feeling": "inadequate",
           "children": [
             {
-              "feeling": "humiliated"
+              "feeling": "insignificant"
             },
             {
-              "feeling": "worthless"
+              "feeling": "inferior"
             }
           ]
         },
         {
-          "feeling": "inadequate",
+          "feeling": "ashamed",
           "children": [
             {
-              "feeling": "inferior"
+              "feeling": "worthless"
             },
             {
-              "feeling": "insignificant"
+              "feeling": "humiliated"
             }
           ]
         }
@@ -445,57 +445,13 @@
       "hue": "bad",
       "children": [
         {
-          "feeling": "bored",
+          "feeling": "guilty",
           "children": [
             {
-              "feeling": "restless"
+              "feeling": "remorse"
             },
             {
-              "feeling": "unmotivated"
-            }
-          ]
-        },
-        {
-          "feeling": "overwhelmed",
-          "children": [
-            {
-              "feeling": "pressured"
-            },
-            {
-              "feeling": "burned-out"
-            }
-          ]
-        },
-        {
-          "feeling": "confused",
-          "children": [
-            {
-              "feeling": "conflicted"
-            },
-            {
-              "feeling": "lost"
-            }
-          ]
-        },
-        {
-          "feeling": "numb",
-          "children": [
-            {
-              "feeling": "empty"
-            },
-            {
-              "feeling": "disconnected"
-            }
-          ]
-        },
-        {
-          "feeling": "uncomfortable",
-          "children": [
-            {
-              "feeling": "awkward"
-            },
-            {
-              "feeling": "out-of-place"
+              "feeling": "apologetic"
             }
           ]
         },
@@ -514,13 +470,13 @@
           ]
         },
         {
-          "feeling": "guilty",
+          "feeling": "uncomfortable",
           "children": [
             {
-              "feeling": "remorse"
+              "feeling": "awkward"
             },
             {
-              "feeling": "apologetic"
+              "feeling": "out-of-place"
             }
           ]
         },
@@ -528,10 +484,54 @@
           "feeling": "physically-disgusted",
           "children": [
             {
-              "feeling": "repulsed"
+              "feeling": "squeamish"
             },
             {
-              "feeling": "squeamish"
+              "feeling": "repulsed"
+            }
+          ]
+        },
+        {
+          "feeling": "bored",
+          "children": [
+            {
+              "feeling": "restless"
+            },
+            {
+              "feeling": "unmotivated"
+            }
+          ]
+        },
+        {
+          "feeling": "numb",
+          "children": [
+            {
+              "feeling": "empty"
+            },
+            {
+              "feeling": "disconnected"
+            }
+          ]
+        },
+        {
+          "feeling": "confused",
+          "children": [
+            {
+              "feeling": "lost"
+            },
+            {
+              "feeling": "conflicted"
+            }
+          ]
+        },
+        {
+          "feeling": "overwhelmed",
+          "children": [
+            {
+              "feeling": "burned-out"
+            },
+            {
+              "feeling": "pressured"
             }
           ]
         }
@@ -559,13 +559,27 @@
           "feeling": "nervous",
           "children": [
             {
+              "feeling": "uneasy"
+            },
+            {
               "feeling": "on-edge"
             },
             {
               "feeling": "insecure"
+            }
+          ]
+        },
+        {
+          "feeling": "vulnerable",
+          "children": [
+            {
+              "feeling": "exposed"
             },
             {
-              "feeling": "uneasy"
+              "feeling": "helpless"
+            },
+            {
+              "feeling": "threatened"
             }
           ]
         },
@@ -591,20 +605,6 @@
             },
             {
               "feeling": "stunned"
-            }
-          ]
-        },
-        {
-          "feeling": "vulnerable",
-          "children": [
-            {
-              "feeling": "helpless"
-            },
-            {
-              "feeling": "exposed"
-            },
-            {
-              "feeling": "threatened"
             }
           ]
         }

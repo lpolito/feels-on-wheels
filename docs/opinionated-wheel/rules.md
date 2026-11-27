@@ -139,6 +139,14 @@ Each core answers a question about what happened. These are guides for placing a
 - **A word in two places gets two definitions when it means something different in each:** Disgusted is physical under Bad and moral under Angry. **It gets one definition when it's the same feeling in both,** and that definition fits both: Betrayed, under Sad → Hurt and Angry → Resentful, is *Hurt and angry because someone you trusted broke that trust*, and Empty, under Sad → Grief and Bad → Numb, is *Hollow inside, as if something that should be there is missing.*
 - **A feeling you have now, not a trait or a diagnosis.** *Irritable* is being easily annoyed right now, not a kind of person. When lasting is part of the meaning, say so (Resentful, Burned out).
 
+**Order.** Words that sit side by side are related, so a near miss lands next to the word you meant. *Lucas, 2026-11-26:* "at least some semblance of conscious thought about order instead of it being random." It works the same at every level:
+
+- Within a core, similar middle words sit together: Happy runs from surprise and interest, through lively and settled, to hope, drive, and pride.
+- Where two cores meet, the words on each side lean toward each other, since that's where people waver between cores ([research/10](research/10-which-core-people-tap.md)): Shocked beside Amazed, Confident beside Offended, Jealous beside Attracted, Compassion beside Heartache, Ashamed beside Guilty, Overwhelmed beside Anxious.
+- The outer ring reads as one chain, across middle words too: Stunned beside Awe, Sympathy beside Sorry for someone, Pressured beside Worried.
+
+Not alphabetical: menu studies find alphabetical order helps only when you know the exact word, and here people are looking for a word they don't know yet. It would also differ in every language. Not mild to strong either (Considered and dropped). The body wheel follows its own order ([research/16](research/16-body-wheel-repair.md#the-order-around-the-ring)).
+
 **Situations.** A list of everyday situations, written without looking at the wheel. A list written one situation per word can't find a missing feeling. Published sets where real people described situations (EmpatheticDialogues, CC BY-NC 4.0; ISEAR, shared for non-commercial research) can be run as a local check after their licenses are confirmed. Both asked people to describe a time they felt one of a fixed list of feelings, so use their situations, not their labels.
 
 **The app stays non-commercial** (Lucas, 2026-11-21), so the non-commercial licenses fit. **Still open:** whether NRC's request for an About-page credit "in a product" covers a design-time check.

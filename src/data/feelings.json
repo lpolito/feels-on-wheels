@@ -6,42 +6,42 @@
       "relaxed"
     ]
   },
-  "joy": {
+  "amazed": {
     "sensations": [
-      "light-body",
-      "warm-chest",
-      "buzzing"
+      "heart-in-throat",
+      "chills"
     ]
   },
-  "delighted": {
+  "awe": {
     "sensations": [
-      "warm-chest",
+      "chills",
+      "heart-in-throat",
+      "relaxed",
       "light-body"
     ]
   },
-  "elated": {
+  "impressed": {
     "sensations": [
-      "light-body",
-      "buzzing",
-      "racing-heart"
-    ]
-  },
-  "cheerful": {
-    "sensations": [
-      "light-body",
+      "chills",
       "warm-chest"
     ]
   },
-  "amused": {
+  "interested": {
     "sensations": [
-      "light-body",
-      "relaxed"
+      "buzzing",
+      "restless"
     ]
   },
-  "playful": {
+  "fascinated": {
     "sensations": [
-      "light-body",
-      "buzzing"
+      "buzzing",
+      "chills"
+    ]
+  },
+  "curious": {
+    "sensations": [
+      "buzzing",
+      "restless"
     ]
   },
   "excited": {
@@ -67,57 +67,41 @@
       "light-body"
     ]
   },
-  "proud": {
+  "joy": {
     "sensations": [
+      "light-body",
       "warm-chest",
-      "feeling-tall"
+      "buzzing"
     ]
   },
-  "accomplished": {
+  "elated": {
     "sensations": [
-      "feeling-tall",
-      "warm-chest",
-      "relaxed"
-    ]
-  },
-  "triumphant": {
-    "sensations": [
-      "feeling-tall",
+      "light-body",
       "buzzing",
       "racing-heart"
     ]
   },
-  "flattered": {
+  "delighted": {
     "sensations": [
       "warm-chest",
-      "hot-face",
       "light-body"
     ]
   },
-  "confident": {
+  "cheerful": {
     "sensations": [
-      "feeling-tall",
+      "light-body",
+      "warm-chest"
+    ]
+  },
+  "amused": {
+    "sensations": [
+      "light-body",
       "relaxed"
     ]
   },
-  "brave": {
+  "playful": {
     "sensations": [
-      "feeling-tall",
-      "racing-heart",
-      "shaky-hands"
-    ]
-  },
-  "empowered": {
-    "sensations": [
-      "feeling-tall",
-      "buzzing",
-      "light-body"
-    ]
-  },
-  "powerful": {
-    "sensations": [
-      "feeling-tall",
-      "relaxed",
+      "light-body",
       "buzzing"
     ]
   },
@@ -178,6 +162,12 @@
       "warm-chest"
     ]
   },
+  "vindicated": {
+    "sensations": [
+      "feeling-tall",
+      "light-body"
+    ]
+  },
   "forgiven": {
     "sensations": [
       "light-body",
@@ -185,10 +175,24 @@
       "relaxed"
     ]
   },
-  "vindicated": {
+  "grateful": {
     "sensations": [
-      "feeling-tall",
+      "warm-chest",
+      "cry",
+      "relaxed"
+    ]
+  },
+  "blessed": {
+    "sensations": [
+      "warm-chest",
+      "relaxed",
       "light-body"
+    ]
+  },
+  "honored": {
+    "sensations": [
+      "warm-chest",
+      "feeling-tall"
     ]
   },
   "hopeful": {
@@ -198,18 +202,18 @@
       "relaxed"
     ]
   },
-  "optimistic": {
-    "sensations": [
-      "feeling-tall",
-      "light-body",
-      "relaxed"
-    ]
-  },
   "encouraged": {
     "sensations": [
       "feeling-tall",
       "light-body",
       "warm-chest"
+    ]
+  },
+  "optimistic": {
+    "sensations": [
+      "feeling-tall",
+      "light-body",
+      "relaxed"
     ]
   },
   "motivated": {
@@ -232,62 +236,58 @@
       "clenched-teeth"
     ]
   },
-  "interested": {
-    "sensations": [
-      "buzzing",
-      "restless"
-    ]
-  },
-  "curious": {
-    "sensations": [
-      "buzzing",
-      "restless"
-    ]
-  },
-  "fascinated": {
-    "sensations": [
-      "buzzing",
-      "chills"
-    ]
-  },
-  "amazed": {
-    "sensations": [
-      "heart-in-throat",
-      "chills"
-    ]
-  },
-  "awe": {
-    "sensations": [
-      "chills",
-      "heart-in-throat",
-      "relaxed",
-      "light-body"
-    ]
-  },
-  "impressed": {
-    "sensations": [
-      "chills",
-      "warm-chest"
-    ]
-  },
-  "grateful": {
-    "sensations": [
-      "warm-chest",
-      "cry",
-      "relaxed"
-    ]
-  },
-  "honored": {
+  "proud": {
     "sensations": [
       "warm-chest",
       "feeling-tall"
     ]
   },
-  "blessed": {
+  "accomplished": {
+    "sensations": [
+      "feeling-tall",
+      "warm-chest",
+      "relaxed"
+    ]
+  },
+  "flattered": {
     "sensations": [
       "warm-chest",
-      "relaxed",
+      "hot-face",
       "light-body"
+    ]
+  },
+  "triumphant": {
+    "sensations": [
+      "feeling-tall",
+      "buzzing",
+      "racing-heart"
+    ]
+  },
+  "confident": {
+    "sensations": [
+      "feeling-tall",
+      "relaxed"
+    ]
+  },
+  "brave": {
+    "sensations": [
+      "feeling-tall",
+      "racing-heart",
+      "shaky-hands"
+    ]
+  },
+  "empowered": {
+    "sensations": [
+      "feeling-tall",
+      "buzzing",
+      "light-body"
+    ]
+  },
+  "powerful": {
+    "sensations": [
+      "feeling-tall",
+      "relaxed",
+      "buzzing"
     ]
   },
   "angry": {
@@ -298,11 +298,40 @@
       "racing-heart"
     ]
   },
+  "offended": {
+    "sensations": [
+      "hot-face",
+      "clenched-teeth",
+      "tight-chest"
+    ]
+  },
+  "indignant": {
+    "sensations": [
+      "hot-face",
+      "tense-shoulders",
+      "clenched-teeth"
+    ]
+  },
+  "insulted": {
+    "sensations": [
+      "hot-face",
+      "clenched-teeth",
+      "lash-out"
+    ]
+  },
   "annoyed": {
     "sensations": [
       "tense-shoulders",
       "restless",
       "clenched-teeth"
+    ]
+  },
+  "provoked": {
+    "sensations": [
+      "lash-out",
+      "hot-face",
+      "clenched-teeth",
+      "racing-heart"
     ]
   },
   "irritable": {
@@ -318,27 +347,12 @@
       "tense-shoulders"
     ]
   },
-  "provoked": {
-    "sensations": [
-      "lash-out",
-      "hot-face",
-      "clenched-teeth",
-      "racing-heart"
-    ]
-  },
   "frustrated": {
     "sensations": [
       "headache",
       "tense-shoulders",
       "tight-fists",
       "cry"
-    ]
-  },
-  "trapped": {
-    "sensations": [
-      "tight-chest",
-      "run",
-      "short-breath"
     ]
   },
   "fed-up": {
@@ -349,19 +363,19 @@
       "give-up"
     ]
   },
+  "trapped": {
+    "sensations": [
+      "tight-chest",
+      "run",
+      "short-breath"
+    ]
+  },
   "furious": {
     "sensations": [
       "shaky-hands",
       "lash-out",
       "hot-face",
       "tight-fists"
-    ]
-  },
-  "outraged": {
-    "sensations": [
-      "hot-face",
-      "lash-out",
-      "racing-heart"
     ]
   },
   "rage": {
@@ -380,76 +394,11 @@
       "frozen"
     ]
   },
-  "resentful": {
+  "outraged": {
     "sensations": [
-      "clenched-teeth",
-      "tight-chest",
+      "hot-face",
       "lash-out",
-      "tense-shoulders"
-    ]
-  },
-  "cheated": {
-    "sensations": [
-      "knot-in-stomach",
-      "clenched-teeth",
-      "hot-face"
-    ]
-  },
-  "used": {
-    "sensations": [
-      "knot-in-stomach",
-      "clenched-teeth",
-      "hollow-chest"
-    ]
-  },
-  "betrayed": {
-    "sensations": [
-      "knot-in-stomach",
-      "lash-out",
-      "hollow-chest",
-      "lump-in-throat"
-    ]
-  },
-  "offended": {
-    "sensations": [
-      "hot-face",
-      "clenched-teeth",
-      "tight-chest"
-    ]
-  },
-  "insulted": {
-    "sensations": [
-      "hot-face",
-      "clenched-teeth",
-      "lash-out"
-    ]
-  },
-  "indignant": {
-    "sensations": [
-      "hot-face",
-      "tense-shoulders",
-      "clenched-teeth"
-    ]
-  },
-  "jealous": {
-    "sensations": [
-      "control-things",
-      "knot-in-stomach",
-      "tight-chest",
-      "hot-face"
-    ]
-  },
-  "envious": {
-    "sensations": [
-      "knot-in-stomach",
-      "tight-chest"
-    ]
-  },
-  "possessive": {
-    "sensations": [
-      "control-things",
-      "be-close",
-      "tense-shoulders"
+      "racing-heart"
     ]
   },
   "disgusted": {
@@ -478,11 +427,84 @@
       "lash-out"
     ]
   },
+  "resentful": {
+    "sensations": [
+      "clenched-teeth",
+      "tight-chest",
+      "lash-out",
+      "tense-shoulders"
+    ]
+  },
+  "betrayed": {
+    "sensations": [
+      "knot-in-stomach",
+      "lash-out",
+      "hollow-chest",
+      "lump-in-throat"
+    ]
+  },
+  "used": {
+    "sensations": [
+      "knot-in-stomach",
+      "clenched-teeth",
+      "hollow-chest"
+    ]
+  },
+  "cheated": {
+    "sensations": [
+      "knot-in-stomach",
+      "clenched-teeth",
+      "hot-face"
+    ]
+  },
+  "jealous": {
+    "sensations": [
+      "control-things",
+      "knot-in-stomach",
+      "tight-chest",
+      "hot-face"
+    ]
+  },
+  "envious": {
+    "sensations": [
+      "knot-in-stomach",
+      "tight-chest"
+    ]
+  },
+  "possessive": {
+    "sensations": [
+      "control-things",
+      "be-close",
+      "tense-shoulders"
+    ]
+  },
   "love": {
     "sensations": [
       "warm-chest",
       "be-close",
       "relaxed"
+    ]
+  },
+  "attracted": {
+    "sensations": [
+      "butterflies",
+      "racing-heart",
+      "hot-face"
+    ]
+  },
+  "desire": {
+    "sensations": [
+      "be-close",
+      "racing-heart",
+      "buzzing"
+    ]
+  },
+  "aroused": {
+    "sensations": [
+      "weak-knees",
+      "warm-chest",
+      "racing-heart",
+      "hot-face"
     ]
   },
   "affection": {
@@ -511,40 +533,11 @@
       "relaxed"
     ]
   },
-  "compassion": {
-    "sensations": [
-      "fix-things",
-      "warm-chest",
-      "be-close"
-    ]
-  },
-  "sympathy": {
-    "sensations": [
-      "be-close",
-      "heavy-heart",
-      "fix-things"
-    ]
-  },
-  "moved": {
-    "sensations": [
-      "cry",
-      "lump-in-throat",
-      "chills",
-      "warm-chest"
-    ]
-  },
   "connected": {
     "sensations": [
       "warm-chest",
       "relaxed",
       "be-close"
-    ]
-  },
-  "understood": {
-    "sensations": [
-      "warm-chest",
-      "relaxed",
-      "light-body"
     ]
   },
   "valued": {
@@ -559,26 +552,33 @@
       "warm-chest"
     ]
   },
-  "attracted": {
+  "understood": {
     "sensations": [
-      "butterflies",
-      "racing-heart",
-      "hot-face"
+      "warm-chest",
+      "relaxed",
+      "light-body"
     ]
   },
-  "desire": {
+  "compassion": {
+    "sensations": [
+      "fix-things",
+      "warm-chest",
+      "be-close"
+    ]
+  },
+  "moved": {
+    "sensations": [
+      "cry",
+      "lump-in-throat",
+      "chills",
+      "warm-chest"
+    ]
+  },
+  "sympathy": {
     "sensations": [
       "be-close",
-      "racing-heart",
-      "buzzing"
-    ]
-  },
-  "aroused": {
-    "sensations": [
-      "weak-knees",
-      "warm-chest",
-      "racing-heart",
-      "hot-face"
+      "heavy-heart",
+      "fix-things"
     ]
   },
   "sad": {
@@ -589,84 +589,31 @@
       "cry"
     ]
   },
-  "lonely": {
+  "heartache": {
     "sensations": [
       "hollow-chest",
-      "be-close",
-      "numb-out",
-      "heaviness"
+      "heavy-heart",
+      "lump-in-throat"
     ]
   },
-  "left-out": {
+  "sorry-for-someone": {
     "sensations": [
-      "hollow-chest",
+      "heavy-heart",
       "lump-in-throat",
-      "be-close"
+      "fix-things"
     ]
   },
-  "misunderstood": {
-    "sensations": [
-      "hollow-chest",
-      "lump-in-throat",
-      "be-alone"
-    ]
-  },
-  "abandoned": {
+  "homesick": {
     "sensations": [
       "hollow-chest",
       "lump-in-throat",
       "cry"
     ]
   },
-  "hurt": {
+  "nostalgic": {
     "sensations": [
-      "lump-in-throat",
-      "hollow-chest",
-      "cry",
-      "lash-out"
-    ]
-  },
-  "rejected": {
-    "sensations": [
-      "hollow-chest",
-      "lump-in-throat",
-      "sinking-feeling",
-      "hide"
-    ]
-  },
-  "unappreciated": {
-    "sensations": [
-      "hollow-chest",
-      "heavy-heart",
-      "tight-chest"
-    ]
-  },
-  "disappointed": {
-    "sensations": [
-      "sinking-feeling",
-      "heavy-heart",
-      "hollow-chest"
-    ]
-  },
-  "discouraged": {
-    "sensations": [
-      "heaviness",
-      "sinking-feeling",
-      "give-up"
-    ]
-  },
-  "regret": {
-    "sensations": [
-      "heavy-heart",
-      "sinking-feeling",
-      "knot-in-stomach"
-    ]
-  },
-  "disillusioned": {
-    "sensations": [
-      "heaviness",
-      "sinking-feeling",
-      "hollow-chest"
+      "warm-chest",
+      "lump-in-throat"
     ]
   },
   "grief": {
@@ -699,31 +646,84 @@
       "drained"
     ]
   },
-  "heartache": {
+  "lonely": {
     "sensations": [
       "hollow-chest",
-      "heavy-heart",
-      "lump-in-throat"
+      "be-close",
+      "numb-out",
+      "heaviness"
     ]
   },
-  "homesick": {
+  "abandoned": {
     "sensations": [
       "hollow-chest",
       "lump-in-throat",
       "cry"
     ]
   },
-  "nostalgic": {
+  "misunderstood": {
     "sensations": [
-      "warm-chest",
-      "lump-in-throat"
+      "hollow-chest",
+      "lump-in-throat",
+      "be-alone"
     ]
   },
-  "sorry-for-someone": {
+  "left-out": {
+    "sensations": [
+      "hollow-chest",
+      "lump-in-throat",
+      "be-close"
+    ]
+  },
+  "hurt": {
+    "sensations": [
+      "lump-in-throat",
+      "hollow-chest",
+      "cry",
+      "lash-out"
+    ]
+  },
+  "rejected": {
+    "sensations": [
+      "hollow-chest",
+      "lump-in-throat",
+      "sinking-feeling",
+      "hide"
+    ]
+  },
+  "unappreciated": {
+    "sensations": [
+      "hollow-chest",
+      "heavy-heart",
+      "tight-chest"
+    ]
+  },
+  "disappointed": {
+    "sensations": [
+      "sinking-feeling",
+      "heavy-heart",
+      "hollow-chest"
+    ]
+  },
+  "disillusioned": {
+    "sensations": [
+      "heaviness",
+      "sinking-feeling",
+      "hollow-chest"
+    ]
+  },
+  "regret": {
     "sensations": [
       "heavy-heart",
-      "lump-in-throat",
-      "fix-things"
+      "sinking-feeling",
+      "knot-in-stomach"
+    ]
+  },
+  "discouraged": {
+    "sensations": [
+      "heaviness",
+      "sinking-feeling",
+      "give-up"
     ]
   },
   "down": {
@@ -755,18 +755,30 @@
       "drained"
     ]
   },
+  "inadequate": {
+    "sensations": [
+      "heaviness",
+      "hide",
+      "give-up"
+    ]
+  },
+  "insignificant": {
+    "sensations": [
+      "hide",
+      "hollow-chest"
+    ]
+  },
+  "inferior": {
+    "sensations": [
+      "hide",
+      "hot-face"
+    ]
+  },
   "ashamed": {
     "sensations": [
       "hot-face",
       "hide",
       "numb-out"
-    ]
-  },
-  "humiliated": {
-    "sensations": [
-      "hot-face",
-      "hide",
-      "sinking-feeling"
     ]
   },
   "worthless": {
@@ -776,23 +788,11 @@
       "hide"
     ]
   },
-  "inadequate": {
+  "humiliated": {
     "sensations": [
-      "heaviness",
+      "hot-face",
       "hide",
-      "give-up"
-    ]
-  },
-  "inferior": {
-    "sensations": [
-      "hide",
-      "hot-face"
-    ]
-  },
-  "insignificant": {
-    "sensations": [
-      "hide",
-      "hollow-chest"
+      "sinking-feeling"
     ]
   },
   "bad": {
@@ -802,99 +802,25 @@
       "foggy-head"
     ]
   },
-  "bored": {
+  "guilty": {
     "sensations": [
-      "restless",
-      "drained",
-      "sleep"
-    ]
-  },
-  "restless": {
-    "sensations": [
-      "buzzing",
-      "tense-shoulders"
-    ]
-  },
-  "unmotivated": {
-    "sensations": [
-      "drained",
-      "nothing-much",
-      "sleep"
-    ]
-  },
-  "overwhelmed": {
-    "sensations": [
-      "headache",
-      "tense-shoulders",
-      "numb-out",
-      "cry"
-    ]
-  },
-  "pressured": {
-    "sensations": [
-      "weight-on-shoulders",
-      "tight-chest",
-      "tense-shoulders",
-      "headache"
-    ]
-  },
-  "burned-out": {
-    "sensations": [
-      "drained",
-      "foggy-head",
-      "sleep"
-    ]
-  },
-  "confused": {
-    "sensations": [
-      "foggy-head",
-      "lightheaded"
-    ]
-  },
-  "conflicted": {
-    "sensations": [
+      "lump-in-throat",
+      "heavy-heart",
       "knot-in-stomach",
-      "restless"
+      "fix-things"
     ]
   },
-  "lost": {
+  "remorse": {
     "sensations": [
-      "foggy-head",
-      "hollow-chest"
+      "lump-in-throat",
+      "heavy-heart",
+      "fix-things"
     ]
   },
-  "numb": {
+  "apologetic": {
     "sensations": [
-      "nothing-much",
-      "numb-empty",
-      "heaviness",
-      "foggy-head"
-    ]
-  },
-  "disconnected": {
-    "sensations": [
-      "numb-empty",
-      "foggy-head",
-      "be-alone"
-    ]
-  },
-  "uncomfortable": {
-    "sensations": [
-      "tense-shoulders",
-      "restless",
-      "knot-in-stomach"
-    ]
-  },
-  "awkward": {
-    "sensations": [
-      "hot-face",
-      "tense-shoulders"
-    ]
-  },
-  "out-of-place": {
-    "sensations": [
-      "hide",
-      "tense-shoulders"
+      "fix-things",
+      "heavy-heart"
     ]
   },
   "embarrassed": {
@@ -925,25 +851,23 @@
       "hide"
     ]
   },
-  "guilty": {
+  "uncomfortable": {
     "sensations": [
-      "lump-in-throat",
-      "heavy-heart",
-      "knot-in-stomach",
-      "fix-things"
+      "tense-shoulders",
+      "restless",
+      "knot-in-stomach"
     ]
   },
-  "remorse": {
+  "awkward": {
     "sensations": [
-      "lump-in-throat",
-      "heavy-heart",
-      "fix-things"
+      "hot-face",
+      "tense-shoulders"
     ]
   },
-  "apologetic": {
+  "out-of-place": {
     "sensations": [
-      "fix-things",
-      "heavy-heart"
+      "hide",
+      "tense-shoulders"
     ]
   },
   "physically-disgusted": {
@@ -954,6 +878,14 @@
       "back-away"
     ]
   },
+  "squeamish": {
+    "sensations": [
+      "queasy",
+      "lightheaded",
+      "weak-knees",
+      "skin-crawling"
+    ]
+  },
   "repulsed": {
     "sensations": [
       "back-away",
@@ -961,12 +893,80 @@
       "skin-crawling"
     ]
   },
-  "squeamish": {
+  "bored": {
     "sensations": [
-      "queasy",
-      "lightheaded",
-      "weak-knees",
-      "skin-crawling"
+      "restless",
+      "drained",
+      "sleep"
+    ]
+  },
+  "restless": {
+    "sensations": [
+      "buzzing",
+      "tense-shoulders"
+    ]
+  },
+  "unmotivated": {
+    "sensations": [
+      "drained",
+      "nothing-much",
+      "sleep"
+    ]
+  },
+  "numb": {
+    "sensations": [
+      "nothing-much",
+      "numb-empty",
+      "heaviness",
+      "foggy-head"
+    ]
+  },
+  "disconnected": {
+    "sensations": [
+      "numb-empty",
+      "foggy-head",
+      "be-alone"
+    ]
+  },
+  "confused": {
+    "sensations": [
+      "foggy-head",
+      "lightheaded"
+    ]
+  },
+  "lost": {
+    "sensations": [
+      "foggy-head",
+      "hollow-chest"
+    ]
+  },
+  "conflicted": {
+    "sensations": [
+      "knot-in-stomach",
+      "restless"
+    ]
+  },
+  "overwhelmed": {
+    "sensations": [
+      "headache",
+      "tense-shoulders",
+      "numb-out",
+      "cry"
+    ]
+  },
+  "burned-out": {
+    "sensations": [
+      "drained",
+      "foggy-head",
+      "sleep"
+    ]
+  },
+  "pressured": {
+    "sensations": [
+      "weight-on-shoulders",
+      "tight-chest",
+      "tense-shoulders",
+      "headache"
     ]
   },
   "scared": {
@@ -1014,6 +1014,13 @@
       "heart-in-throat"
     ]
   },
+  "uneasy": {
+    "sensations": [
+      "knot-in-stomach",
+      "restless",
+      "butterflies"
+    ]
+  },
   "on-edge": {
     "sensations": [
       "tense-shoulders",
@@ -1029,11 +1036,34 @@
       "be-close"
     ]
   },
-  "uneasy": {
+  "vulnerable": {
     "sensations": [
-      "knot-in-stomach",
-      "restless",
-      "butterflies"
+      "hide",
+      "tight-chest",
+      "shaky-hands",
+      "be-alone"
+    ]
+  },
+  "exposed": {
+    "sensations": [
+      "hide",
+      "hot-face"
+    ]
+  },
+  "helpless": {
+    "sensations": [
+      "heaviness",
+      "frozen",
+      "give-up",
+      "weight-on-shoulders"
+    ]
+  },
+  "threatened": {
+    "sensations": [
+      "run",
+      "racing-heart",
+      "tense-shoulders",
+      "heart-in-throat"
     ]
   },
   "terrified": {
@@ -1086,36 +1116,6 @@
       "frozen",
       "numb-empty",
       "lightheaded"
-    ]
-  },
-  "vulnerable": {
-    "sensations": [
-      "hide",
-      "tight-chest",
-      "shaky-hands",
-      "be-alone"
-    ]
-  },
-  "helpless": {
-    "sensations": [
-      "heaviness",
-      "frozen",
-      "give-up",
-      "weight-on-shoulders"
-    ]
-  },
-  "exposed": {
-    "sensations": [
-      "hide",
-      "hot-face"
-    ]
-  },
-  "threatened": {
-    "sensations": [
-      "run",
-      "racing-heart",
-      "tense-shoulders",
-      "heart-in-throat"
     ]
   }
 }

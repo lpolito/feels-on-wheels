@@ -4,17 +4,17 @@
       "label": "Happy",
       "middle": [
         {
-          "label": "Joy",
+          "label": "Amazed",
           "outer": [
-            "Delighted",
-            "Elated"
+            "Awe",
+            "Impressed"
           ]
         },
         {
-          "label": "Cheerful",
+          "label": "Interested",
           "outer": [
-            "Amused",
-            "Playful"
+            "Fascinated",
+            "Curious"
           ]
         },
         {
@@ -25,19 +25,17 @@
           ]
         },
         {
-          "label": "Proud",
+          "label": "Joy",
           "outer": [
-            "Accomplished",
-            "Triumphant",
-            "Flattered"
+            "Elated",
+            "Delighted"
           ]
         },
         {
-          "label": "Confident",
+          "label": "Cheerful",
           "outer": [
-            "Brave",
-            "Empowered",
-            "Powerful"
+            "Amused",
+            "Playful"
           ]
         },
         {
@@ -59,15 +57,22 @@
           "label": "Relieved",
           "outer": [
             "Reassured",
-            "Forgiven",
-            "Vindicated"
+            "Vindicated",
+            "Forgiven"
+          ]
+        },
+        {
+          "label": "Grateful",
+          "outer": [
+            "Blessed",
+            "Honored"
           ]
         },
         {
           "label": "Hopeful",
           "outer": [
-            "Optimistic",
-            "Encouraged"
+            "Encouraged",
+            "Optimistic"
           ]
         },
         {
@@ -78,24 +83,19 @@
           ]
         },
         {
-          "label": "Interested",
+          "label": "Proud",
           "outer": [
-            "Curious",
-            "Fascinated"
+            "Accomplished",
+            "Flattered",
+            "Triumphant"
           ]
         },
         {
-          "label": "Amazed",
+          "label": "Confident",
           "outer": [
-            "Awe",
-            "Impressed"
-          ]
-        },
-        {
-          "label": "Grateful",
-          "outer": [
-            "Honored",
-            "Blessed"
+            "Brave",
+            "Empowered",
+            "Powerful"
           ]
         }
       ]
@@ -104,48 +104,33 @@
       "label": "Angry",
       "middle": [
         {
+          "label": "Offended",
+          "outer": [
+            "Indignant",
+            "Insulted"
+          ]
+        },
+        {
           "label": "Annoyed",
           "outer": [
+            "Provoked",
             "Irritable",
-            "Impatient",
-            "Provoked"
+            "Impatient"
           ]
         },
         {
           "label": "Frustrated",
           "outer": [
-            "Trapped",
-            "Fed up"
+            "Fed up",
+            "Trapped"
           ]
         },
         {
           "label": "Furious",
           "outer": [
-            "Outraged",
             "Rage",
-            "Violated"
-          ]
-        },
-        {
-          "label": "Resentful",
-          "outer": [
-            "Cheated",
-            "Used",
-            "Betrayed"
-          ]
-        },
-        {
-          "label": "Offended",
-          "outer": [
-            "Insulted",
-            "Indignant"
-          ]
-        },
-        {
-          "label": "Jealous",
-          "outer": [
-            "Envious",
-            "Possessive"
+            "Violated",
+            "Outraged"
           ]
         },
         {
@@ -155,12 +140,34 @@
             "Contempt",
             "Hatred"
           ]
+        },
+        {
+          "label": "Resentful",
+          "outer": [
+            "Betrayed",
+            "Used",
+            "Cheated"
+          ]
+        },
+        {
+          "label": "Jealous",
+          "outer": [
+            "Envious",
+            "Possessive"
+          ]
         }
       ]
     },
     {
       "label": "Love",
       "middle": [
+        {
+          "label": "Attracted",
+          "outer": [
+            "Desire",
+            "Aroused"
+          ]
+        },
         {
           "label": "Affection",
           "outer": [
@@ -170,25 +177,18 @@
           ]
         },
         {
-          "label": "Compassion",
-          "outer": [
-            "Sympathy",
-            "Moved"
-          ]
-        },
-        {
           "label": "Connected",
           "outer": [
-            "Understood",
             "Valued",
-            "Accepted"
+            "Accepted",
+            "Understood"
           ]
         },
         {
-          "label": "Attracted",
+          "label": "Compassion",
           "outer": [
-            "Desire",
-            "Aroused"
+            "Moved",
+            "Sympathy"
           ]
         }
       ]
@@ -197,27 +197,11 @@
       "label": "Sad",
       "middle": [
         {
-          "label": "Lonely",
+          "label": "Heartache",
           "outer": [
-            "Left out",
-            "Misunderstood",
-            "Abandoned"
-          ]
-        },
-        {
-          "label": "Hurt",
-          "outer": [
-            "Betrayed",
-            "Rejected",
-            "Unappreciated"
-          ]
-        },
-        {
-          "label": "Disappointed",
-          "outer": [
-            "Discouraged",
-            "Regret",
-            "Disillusioned"
+            "Sorry for someone",
+            "Homesick",
+            "Nostalgic"
           ]
         },
         {
@@ -229,11 +213,27 @@
           ]
         },
         {
-          "label": "Heartache",
+          "label": "Lonely",
           "outer": [
-            "Homesick",
-            "Nostalgic",
-            "Sorry for someone"
+            "Abandoned",
+            "Misunderstood",
+            "Left out"
+          ]
+        },
+        {
+          "label": "Hurt",
+          "outer": [
+            "Rejected",
+            "Unappreciated",
+            "Betrayed"
+          ]
+        },
+        {
+          "label": "Disappointed",
+          "outer": [
+            "Disillusioned",
+            "Regret",
+            "Discouraged"
           ]
         },
         {
@@ -245,17 +245,17 @@
           ]
         },
         {
-          "label": "Ashamed",
+          "label": "Inadequate",
           "outer": [
-            "Humiliated",
-            "Worthless"
+            "Insignificant",
+            "Inferior"
           ]
         },
         {
-          "label": "Inadequate",
+          "label": "Ashamed",
           "outer": [
-            "Inferior",
-            "Insignificant"
+            "Worthless",
+            "Humiliated"
           ]
         }
       ]
@@ -264,38 +264,10 @@
       "label": "Bad",
       "middle": [
         {
-          "label": "Bored",
+          "label": "Guilty",
           "outer": [
-            "Restless",
-            "Unmotivated"
-          ]
-        },
-        {
-          "label": "Overwhelmed",
-          "outer": [
-            "Pressured",
-            "Burned out"
-          ]
-        },
-        {
-          "label": "Confused",
-          "outer": [
-            "Conflicted",
-            "Lost"
-          ]
-        },
-        {
-          "label": "Numb",
-          "outer": [
-            "Empty",
-            "Disconnected"
-          ]
-        },
-        {
-          "label": "Uncomfortable",
-          "outer": [
-            "Awkward",
-            "Out of place"
+            "Remorse",
+            "Apologetic"
           ]
         },
         {
@@ -307,17 +279,45 @@
           ]
         },
         {
-          "label": "Guilty",
+          "label": "Uncomfortable",
           "outer": [
-            "Remorse",
-            "Apologetic"
+            "Awkward",
+            "Out of place"
           ]
         },
         {
           "label": "Disgusted",
           "outer": [
-            "Repulsed",
-            "Squeamish"
+            "Squeamish",
+            "Repulsed"
+          ]
+        },
+        {
+          "label": "Bored",
+          "outer": [
+            "Restless",
+            "Unmotivated"
+          ]
+        },
+        {
+          "label": "Numb",
+          "outer": [
+            "Empty",
+            "Disconnected"
+          ]
+        },
+        {
+          "label": "Confused",
+          "outer": [
+            "Lost",
+            "Conflicted"
+          ]
+        },
+        {
+          "label": "Overwhelmed",
+          "outer": [
+            "Burned out",
+            "Pressured"
           ]
         }
       ]
@@ -336,9 +336,17 @@
         {
           "label": "Nervous",
           "outer": [
+            "Uneasy",
             "On edge",
-            "Insecure",
-            "Uneasy"
+            "Insecure"
+          ]
+        },
+        {
+          "label": "Vulnerable",
+          "outer": [
+            "Exposed",
+            "Helpless",
+            "Threatened"
           ]
         },
         {
@@ -354,14 +362,6 @@
           "outer": [
             "Startled",
             "Stunned"
-          ]
-        },
-        {
-          "label": "Vulnerable",
-          "outer": [
-            "Helpless",
-            "Exposed",
-            "Threatened"
           ]
         }
       ]

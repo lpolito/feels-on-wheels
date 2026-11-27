@@ -12,8 +12,8 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 # The datasets aren't in the repo (their licenses don't allow it). Download them
-# (see ../learnings.md, "Data") and set WHEEL_DATA to the folder that holds them.
-DATA = os.environ.get("WHEEL_DATA") or os.path.normpath(os.path.join(HERE, "..", "..", "data"))
+# (see README.md here) and set WHEEL_DATA to the folder that holds them.
+DATA = os.environ.get("WHEEL_DATA") or os.path.normpath(os.path.join(HERE, "..", "..", "..", "wheel-data"))
 
 NRC_PATH = os.path.join(DATA, "nrc-vad", "extracted", "NRC-VAD-Lexicon-v2.1", "NRC-VAD-Lexicon-v2.1.txt")
 WAR_PATH = os.path.join(DATA, "warriner2013", "springer", "BRM-emot-submit.csv")
@@ -21,9 +21,17 @@ BC_PATH = os.path.join(DATA, "paper-fulltext", "baron-cohen-2010.xml")
 BANDS = ["4-6", "7-8", "9-10", "11-12", "13-14", "15-16"]
 
 
+def need(path):
+    """The path, or a clear exit when a dataset hasn't been downloaded."""
+    if not os.path.isfile(path):
+        sys.exit(f"missing {path}: set WHEEL_DATA to the folder of downloaded datasets "
+                 "(see scripts/wheel-words/README.md)")
+    return path
+
+
 def load_nrc():
     out = {}
-    with open(NRC_PATH, encoding="utf-8") as f:
+    with open(need(NRC_PATH), encoding="utf-8") as f:
         next(f)
         for line in f:
             parts = line.rstrip("\n").split("\t")
@@ -34,14 +42,14 @@ def load_nrc():
 
 def load_warriner():
     out = {}
-    with open(WAR_PATH, encoding="utf-8", newline="") as f:
+    with open(need(WAR_PATH), encoding="utf-8", newline="") as f:
         for row in csv.DictReader(f):
             out[row["Word"].lower()] = (float(row["V.Mean.Sum"]), float(row["V.SD.Sum"]))
     return out
 
 
 def load_baron_cohen():
-    s = open(BC_PATH, encoding="utf-8").read()
+    s = open(need(BC_PATH), encoding="utf-8").read()
     i = s.find('<table-wrap id="T1"')
     j = s.find("</table-wrap>", i)
     body = s[i:j]

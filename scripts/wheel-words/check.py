@@ -1,7 +1,9 @@
-"""Checks and flags for docs/opinionated-wheel/derived-wheel.json, by rules.md.
+"""Checks and flags for the feelings wheel's words that need the word datasets, by src/data/README.md.
 
-Usage: WHEEL_DATA=/path/to/datasets python3 -I check.py
-Reads the wheel, situations.json, ngram-cache.json (fetching any phrase it
+Usage, from the repo root: WHEEL_DATA=/path/to/datasets python3 -I scripts/wheel-words/check.py
+See README.md here for the datasets. The checks that need only the wheel files run in CI
+(tests/unit/data.test.ts); once and layout run here too, beside the word table.
+Reads the app's wheel (src/data/wheels/core.json, labels from src/data/locales/en.json), ngram-cache.json (fetching any phrase it
 lacks through ngrams.py), and the datasets through lex.py's loaders. Prints a
 per-word table, then what's noted, flagged, and failed.
 
@@ -10,10 +12,9 @@ Failures (exit status 1), from "What the script checks":
                 (cleared by a reason in PLEASANTNESS_REASONS)
   once          a label twice, comparing base forms (Love and Loved), except SPLITS
   layout        a middle word with fewer than 2 or more than 3 outer words
-  situations    a situation whose word isn't on the wheel
 
 Flags, from "What the script flags, never decides" (each is answered by a line
-in the word's reason in derived-wheel.md, or by changing the word):
+of reason in the change that keeps the word, or by changing the word):
   pleasantness  unscored in both lists (with a base form's score as a hint), the
                 lists disagree, or near neutral (Warriner 4 to 6, NRC -0.2 to 0.2)
   rare          both counts under 15 per billion ("feel / feeling / felt ___" and
@@ -33,8 +34,7 @@ import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-REPO = os.path.normpath(os.path.join(ROOT, "..", ".."))
+REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
 
 spec = importlib.util.spec_from_file_location("lex", os.path.join(HERE, "lex.py"))
 lex = importlib.util.module_from_spec(spec)
@@ -45,7 +45,7 @@ ngrams = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ngrams)
 
 PLEASANT = {"Happy", "Love"}
-RARE = 15.0            # per billion: rare only when every count is under this (rules.md, "Usage")
+RARE = 15.0            # per billion: rare only when every count is under this (src/data/README.md, "Usage")
 SYNONYM_RATIO = 2.0    # Lucas, 2026-11-20: commonness decides a swap at twice as often
 SWOW_TOP = 10          # how many of a word's strongest associations to consider
 
@@ -60,19 +60,19 @@ MAX_OUTER = 3          # Lucas, 2026-11-20: never 4, and 3 only when the third w
 NOUNS = {"Love", "Joy", "Awe", "Affection", "Tenderness", "Compassion", "Sympathy", "Desire",
          "Grief", "Heartache", "Dread", "Rage", "Contempt", "Hatred", "Remorse", "Regret", "Cringe"}
 
-# Phrases that aren't the feeling, subtracted from a count (rules.md, "Usage"). Each is
-# named in the word's reason in derived-wheel.md. If they're most of a count, it's dropped.
+# Phrases that aren't the feeling, subtracted from a count (src/data/README.md, "Usage"). Each is
+# named in the reason the change gives for the word. If they're most of a count, it's dropped.
 NOT_FEELINGS = {
     "Used": ["I was used to"],
     "Exposed": ["I was exposed to"],
     "Accepted": ["I was accepted into", "I was accepted to", "I was accepted at", "I was accepted by"],
-    # Synonym candidates, keyed in lowercase (rules.md, "What the research supports"):
+    # Synonym candidates, keyed in lowercase (src/data/README.md, "What the research supports"):
     # "afraid that" is a hedge, and "feel sorry for" is 98% of "feel sorry" (pity, not regret).
     "afraid": ["I was afraid that"],
     "sorry": ["feel sorry for", "feeling sorry for", "felt sorry for", "I was sorry for"],
 }
 
-# A wrong-side pleasantness result cleared by a recorded reason (rules.md, "Pleasantness").
+# A wrong-side pleasantness result cleared by a recorded reason (src/data/README.md, "Pleasantness").
 PLEASANTNESS_REASONS = {}
 
 # For the unscored hint: a base form the lists may score.
@@ -80,7 +80,7 @@ BASE_FORMS = {"Cheated": "cheat", "Empowered": "empowerment", "Cared for": "care
               "Accepted": "acceptance", "Pressured": "pressure", "Conflicted": "conflict", "Insulted": "insult",
               "Disillusioned": "disillusionment", "Repulsed": "repulsive", "Possessive": "possession",
               "Out of place": "misplaced", "Burned out": "burnout", "Thrilled": "thrill"}
-# Words on the wheel twice on purpose (rules.md, Always 3): each meaning under the core its own users would tap.
+# Words on the wheel twice on purpose (src/data/README.md, Always 3): each meaning under the core its own users would tap.
 SPLITS = {"disgusted", "betrayed", "empty"}  # Lucas, 2026-11-22: Disgusted physical under Bad, moral under Angry; Betrayed under Sad and Angry, and Empty under Bad and Sad, as people split
 MIN_OUTER = 2
 
@@ -133,38 +133,56 @@ ALTERNATIVES = {
 }
 
 
-def feeling_vocabulary():
-    """Words that count as feeling words for the synonym flag: the app's wheel,
-    the synonym candidates, and the words derived-wheel.md considered and left out."""
-    vocab = set()
+# Feeling words considered for the wheel and left out (from the opinionated wheel's working notes, 2026-11-22),
+# so the synonym flag counts them as feeling words.
+CONSIDERED = {
+    "adoration", "affectionate", "alarmed", "alive", "apathetic", "appreciated", "appreciative",
+    "astonished", "at ease", "at home", "belittled", "bitter", "bittersweet", "blue", "busy", "capable",
+    "caring", "cherished", "close", "compassionate", "crushed", "desired", "despair", "desperate", "devoted",
+    "devotion", "dismayed", "disrespected", "distrustful", "eager", "empathy", "enraged", "enthusiastic",
+    "exasperated", "faithful", "fascinated", "fearful", "flat", "fondness", "frazzled", "giddy", "glad",
+    "gloomy", "grieving", "gross", "grossed out", "heartsick", "hostile", "ignored", "included", "indebted",
+    "infatuated", "inquisitive", "irritated", "isolated", "jittery", "joyful", "livid", "loathing", "lucky",
+    "mad", "neglected", "off", "overjoyed", "paralyzed", "passion", "peaceful", "petrified", "pity",
+    "pleased", "possessive", "powerless", "prepared", "regretful", "remorseful", "respected", "revolted",
+    "sad for", "secure", "self-conscious", "self-doubt", "sentimental", "serene", "shaken", "sick", "silly",
+    "skeptical", "smitten", "sorrow", "special", "spiteful", "stupid", "supported", "tender", "tense",
+    "thankful", "torn", "touched", "trusted", "trusting", "uncertain", "unloved", "unsafe", "unsettled",
+    "unsure", "unwanted", "upset", "useless", "vengeful", "wanted", "warm", "wary", "weak",
+}
 
-    def walk(node):
-        vocab.add(node["feeling"].replace("-", " "))
-        for child in node.get("children", []):
-            walk(child)
 
+def load_wheel():
+    """The app's feelings wheel as {"cores": [{"label", "middle": [{"label", "outer": [labels]}]}]}."""
     with open(os.path.join(REPO, "src", "data", "wheels", "core.json"), encoding="utf-8") as f:
-        for core in json.load(f)["children"]:
-            walk(core)
+        core = json.load(f)
+    with open(os.path.join(REPO, "src", "data", "locales", "en.json"), encoding="utf-8") as f:
+        labels = {k: v["label"] for k, v in json.load(f)["feelings"].items()}
+    return {"cores": [
+        {"label": labels[c["feeling"]], "middle": [
+            {"label": labels[m["feeling"]], "outer": [labels[o["feeling"]] for o in m.get("children", [])]}
+            for m in c["children"]]}
+        for c in core["children"]]}
+
+
+def feeling_vocabulary(wheel):
+    """Words that count as feeling words for the synonym flag: the wheel, the synonym
+    candidates, and the words considered and left out."""
+    vocab = set(CONSIDERED)
+    for core in wheel["cores"]:
+        vocab.add(core["label"].lower())
+        for mid in core["middle"]:
+            vocab.add(mid["label"].lower())
+            vocab.update(o.lower() for o in mid["outer"])
     for alts in ALTERNATIVES.values():
         vocab.update(a.lower() for a in alts)
-    md = open(os.path.join(ROOT, "derived-wheel.md"), encoding="utf-8").read()
-    left_out = md[md.index("## Considered and left out"):md.index("## What the rules couldn't decide")]
-    for line in left_out.splitlines():
-        if ":" not in line:
-            continue
-        text = re.sub(r"\([^)]*\)", "", line.split(":", 1)[1])
-        for w in re.split(r"[,.;]", text):
-            w = w.strip().lower()
-            if w and len(w.split()) <= 3 and re.fullmatch(r"[a-z][a-z \-]*", w):
-                vocab.add(w)
     return vocab
 
 
 def load_swow(cues):
     path = os.path.join(lex.DATA, "swow", "strength.SWOW-EN.R123.20180827.csv")
     out = {c: [] for c in cues}
-    with open(path, encoding="utf-8", newline="") as f:
+    with open(lex.need(path), encoding="utf-8", newline="") as f:
         next(f)
         for line in f:
             cue, resp, _, _, strength = line.rstrip("\n").split("\t")
@@ -174,7 +192,7 @@ def load_swow(cues):
 
 
 def base_key(label, labels):
-    """Love and Loved are the same word (rules.md, "Once")."""
+    """Love and Loved are the same word (src/data/README.md, "Once")."""
     w = label.lower()
     for suffix in ("d", "ed"):
         if w.endswith(suffix) and w[: -len(suffix)] in labels:
@@ -183,8 +201,7 @@ def base_key(label, labels):
 
 
 def main():
-    wheel = json.load(open(os.path.join(ROOT, "derived-wheel.json"), encoding="utf-8"))
-    situations = json.load(open(os.path.join(HERE, "situations.json"), encoding="utf-8"))
+    wheel = load_wheel()
     nrc, war, bc = lex.load_nrc(), lex.load_warriner(), lex.load_baron_cohen()
 
     entries = []  # (core, ring, parent, word)
@@ -196,7 +213,7 @@ def main():
                 entries.append((core["label"], "outer", mid["label"], out))
     on_wheel = {e[3].lower() for e in entries}
 
-    vocab = feeling_vocabulary() - on_wheel
+    vocab = feeling_vocabulary(wheel) - on_wheel
     swow = load_swow({e[3].lower() for e in entries} | vocab)
 
     def same_side(a, b):
@@ -343,22 +360,6 @@ def main():
         if len(where) > 1 and not (w in SPLITS and len(where) == 2):
             fails.append(f"once: {w} appears {len(where)} times: {where}")
 
-    # Each situation: [source, area, situation, feeling, covered-by?, reason?]
-    missing, mapped, gaps = [], [], []
-    covered = set()
-    for row in situations:
-        src, area, text, feeling = row[:4]
-        if feeling.lower() in on_wheel:
-            covered.add(feeling.lower())
-        elif len(row) > 4 and row[4] and row[4].lower() in on_wheel:
-            covered.add(row[4].lower())
-            mapped.append(f"{feeling} -> {row[4]} ({row[5]})")
-        elif len(row) > 4 and row[4] is None:
-            gaps.append(f"{feeling}: '{text}' ({row[5]})")
-        else:
-            missing.append(row)
-            fails.append(f"situations: '{text}' ({src}) needs {feeling}, which is not on the wheel")
-
     print("core|ring|parent|word|NRC|Warriner|feel|I was|feel / I was|notes|synonym candidates (feel/I was)")
     for r in rows:
         print("|".join(r))
@@ -372,17 +373,8 @@ def main():
         print(f"  ({alt}): {'/'.join(f'{x:g}' for x in b) if b else 'not listed'}")
     print()
     print(f"Words: {ring_counts}, total {sum(ring_counts.values())}")
-    by_src = {}
-    for row in situations:
-        by_src[row[0]] = by_src.get(row[0], 0) + 1
-    print(f"Situations: {len(situations)} {by_src}; unplaced {len(missing)}; named by another word {len(mapped)}; gaps the rules forbid filling {len(gaps)}")
-    for m in mapped:
-        print("  mapped: " + m)
-    for g in gaps:
-        print("  gap: " + g)
-    print(f"Wheel words no situation names: {sorted(on_wheel - covered)}")
     print()
-    print(f"Middle words with {MAX_OUTER} outer words ({len(three)}); each third word needs a reason in derived-wheel.md:")
+    print(f"Middle words with {MAX_OUTER} outer words ({len(three)}); each third word needs a reason:")
     for t in three:
         print("  " + t)
     for title, items in (("NOTED", noted), ("FLAGS", flags), ("FAILURES", fails)):

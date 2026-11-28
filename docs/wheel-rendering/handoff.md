@@ -2,6 +2,8 @@
 
 The prompt for the next session on [wheel rendering](../ROADMAP.md#a-wheel-thats-fast-in-every-browser). Paste everything below the line.
 
+**Parked on 2026-11-28** until Mozilla triages Lucas's Firefox bug ([roadmap](../ROADMAP.md#a-wheel-thats-fast-in-every-browser)). Only Firefox has a problem today, so nothing below is urgent. Read the roadmap entry before picking this up again.
+
 ---
 
 We're making the Feels on Wheels wheel fast in every browser. Desktop Firefox spun the wheel at about 20 fps. The fix on branch `ff-canvas-perf` (cells batched by color, labels kept as `ImageBitmap`s) brought it to 60 fps, but made every iPhone browser stutter when zooming or moving between rings, because WebKit copies the whole canvas each time a label becomes a bitmap. So that branch must not merge as it is. Four approaches were explored on 2026-11-24, then timed one at a time on a quiet machine. After trying the two best on my phone, I'm going with view-size label caching. WebGL looked bad without antialiasing and felt laggy with it.

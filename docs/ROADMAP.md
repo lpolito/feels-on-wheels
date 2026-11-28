@@ -52,7 +52,7 @@ Not in any order; none is chosen yet. They're grouped by what they touch, and id
 | [Start over on not found](#start-over-on-not-found) | URLs, routing and hosting | Idea |
 | [Show which word will open after a spin](#show-which-word-will-open-after-a-spin) | [Moving around the wheel](#moving-around-the-wheel) | Idea |
 | [Check every test is worth keeping](#check-every-test-is-worth-keeping) | [Tests](#tests) | Idea |
-| [A wheel that's fast in every browser](#a-wheel-thats-fast-in-every-browser) | [Performance](#performance) | Going with view-size label caching (2026-11-24) |
+| [A wheel that's fast in every browser](#a-wheel-thats-fast-in-every-browser) | [Performance](#performance) | Parked until Mozilla triages the Firefox bug (2026-11-28) |
 
 These are what Lucas asked for. Each idea's brainstorm starts here. The sources named below are described in [reference/](reference/README.md).
 
@@ -183,6 +183,7 @@ What's left after the [URL redesign](superpowers/specs/2026-11-13-feels-on-wheel
 - The fix on branch `ff-canvas-perf` (cells batched by color, labels kept as `ImageBitmap`s) brings Firefox to 60 fps, but made iPhone browsers stutter on zooms and ring changes: every iOS browser is WebKit, and WebKit copies the whole canvas each time a label becomes a bitmap. It must not merge as it is. Lucas wants one approach for every browser that keeps labels looking as they do today.
 - Explored and timed on 2026-11-24: P2 and P3 (scaling cached labels), a Gecko-only path, caching labels at the sizes they rest at, and a WebGL renderer. Lucas is going with **view-size label caching** in the 2D canvas. WebGL had visible artifacts without antialiasing and felt laggy with it.
 - Still to settle: whether to render the next views' labels ahead of time, which Lucas notices in practice and which assumes he'll go to the "next" view. The change he notices after the wheel stops is partly the opened word, which changes then on the live site too ([sharpening](wheel-rendering/explorations/sharpening.md), 2026-11-28).
+- **Parked, 2026-11-28, until Mozilla triages Lucas's Firefox bug.** Only Firefox has a problem today: the live site runs well in Safari, Chrome and every iPhone browser, and any workaround in our code adds a lot of machinery and risk there for one browser's bug. Come back if Mozilla declines it or people complain about Firefox. The branch and its findings stay as they are.
 - Everything is in [docs/wheel-rendering/](wheel-rendering/findings.md): findings, timings, each exploration's report and branch, and the open problems. The [handoff](wheel-rendering/handoff.md) is the prompt for the next session, with the decisions waiting on Lucas.
 
 ## Known issues

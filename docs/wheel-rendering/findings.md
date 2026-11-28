@@ -4,6 +4,7 @@ Everything learned while fixing the Firefox lag and then the iOS stutter the fix
 
 ## Status
 
+- **Parked on 2026-11-28** until Mozilla triages Lucas's Firefox bug. Only Firefox has a problem today, and a workaround adds a lot to the browsers that work. See the [roadmap](../ROADMAP.md#a-wheel-thats-fast-in-every-browser).
 - **`ff-canvas-perf` must not merge as it is.** Its fix (cells batched by color, labels kept as `ImageBitmap`s) makes desktop Firefox spin at 60 fps on the GPU, but makes iOS browsers stutter when zooming and moving between rings. Lucas, 2026-11-24: "the performance on iOS FF is noticeably degraded with these changes. Seems specific to zooming in/out. or selecting outer wheel words and going to the inner wheel in any way. This same interaction is snappy on main."
 - **Lucas wants one approach that works in every browser** that also keeps labels looking as they do today. He turned down a Gecko-only path (bitmaps only in Firefox's engine; [patch](patches/gecko-only-bitmaps.patch)).
 - **Lucas leans to view-size label caching** (2026-11-24, after trying both contenders on his phone): "option one is probably what we're going to go with". Still open: whether to render the next views' labels ahead of time at all ([handoff.md](handoff.md#decisions-waiting-on-me-lucas)).

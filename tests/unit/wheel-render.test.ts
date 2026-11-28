@@ -285,16 +285,16 @@ describe('wheel renderer', () => {
     const r = createWheelRenderer(canvas, layout, ctx);
     r.setColors(table, palette);
     r.resize(1000, 1000, 2);
-    const sel = layout.byPath.get('angry/aggressive')!;
+    const sel = layout.byPath.get('angry/annoyed')!;
     r.draw(frame(desk, { lit: litMask(layout, sel), prevLit: litMask(layout, null), fadeT: 0.5 }));
     const cellFills = rec.fillLog.filter((x) => x.arcs.length > 0);
     const colors = new Set(layout.segments.flatMap((s) => [table.fill(s.hue, s.ring, true), table.fill(s.hue, s.ring, false)]));
     // Mid-fade: every cell's old color, then the new color of each cell that changes.
     expect(cellFills.length).toBeLessThanOrEqual(colors.size * 2);
-    expect(cellFills.reduce((n, x) => n + x.arcs.length, 0)).toBe(2 * (130 + layout.segments.filter((s) => litMask(layout, sel)[s.index] !== 1).length));
+    expect(cellFills.reduce((n, x) => n + x.arcs.length, 0)).toBe(2 * (layout.segments.length + layout.segments.filter((s) => litMask(layout, sel)[s.index] !== 1).length));
     const gaps = rec.strokeLog.filter((x) => x.style === palette.gap);
     expect(gaps).toHaveLength(1);
-    expect(gaps[0]!.arcs).toHaveLength(2 * 130);
+    expect(gaps[0]!.arcs).toHaveLength(2 * layout.segments.length);
   });
 
   test('ring focus on the outer ring at 375×667 draws fewer than 40 segments', () => {

@@ -8,7 +8,7 @@ The rules came out of specs, which record why they were chosen: the [opinionated
 
 - `src/data/wheels/*.json`: the wheels' shapes.
 - `src/data/feelings.json`: each feeling's "You might notice".
-- In `src/data/locales/en.json`: `feelings`, `sensations`, `sensationPhrases`, `areas`, and `areaWheelLabels`.
+- In `src/data/locales/*.json`: `feelings`, `sensations`, `sensationPhrases`, `areas`, and `areaWheelLabels`.
 
 ## Both wheels
 
@@ -145,7 +145,7 @@ Someone asking "I have this sensation, or this urge: what could it be?" Use the 
 - An area is a place you could point to, in a body scan's order, head to toe: Head / face, Throat / mouth, Shoulders, Hands, Chest, Stomach, then Whole body. **Urges** comes last: the one area that isn't a place.
 - An area's label is one word, or "A / B" for two neighboring places you'd point at together ("Head / face"). Not a place with a process ("Breath / throat").
 - **Whole body** holds what you feel all over or can't place, and the parts of a body scan with no area of their own, such as the legs (weak knees) and the skin (chills). Every part of a body scan (head, face, throat, shoulders, chest, stomach, arms and hands, legs and feet, skin) is either an area or has its sensations under Whole body.
-- An area can be named differently on the drawn wheel only (`areaWheelLabels`). Urges is "The urge to…" on the wheel, so the ring reads "The urge to… run". Everywhere else, including breadcrumbs, cards, titles, link previews, and the screen reader's tree, it's "Urges".
+- An area can be named differently on the drawn wheel only (`areaWheelLabels`). Urges is "The urge to…" on the wheel, so the ring reads "The urge to… Run". Everywhere else, including breadcrumbs, cards, titles, link previews, and the screen reader's tree, it's "Urges".
 
 ### What counts as a sensation
 
@@ -189,7 +189,7 @@ Each sensation and urge rests on a source with a note in [docs/reference/](../..
 
 ### Ids
 
-An id follows the wheel's label (`hollow-chest`, `hide`). A sensation that stays the same with only a shorter label keeps its old id (`warm-chest` for "Warm / full chest"). A renamed or merged sensation gets an id from its new label. Old addresses aren't forwarded.
+An id follows the wheel's label (`hollow-chest`, `hide`). A sensation that stays the same and only gets a shorter label keeps its old id: "Warm / full chest" is still `warm-chest`. A renamed or merged sensation gets an id from its new label. Old addresses aren't forwarded.
 
 ### "You might notice"
 

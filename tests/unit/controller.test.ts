@@ -438,6 +438,39 @@ describe('spinning', () => {
     expect(offCenter(s.selected!)).toBeLessThan(1e-9);
   });
 
+  /** A point halfway between the wheel's center and the opened word, nudged up so it isn't on the center line. */
+  const insideGrab = (i: number): { x: number; y: number } => {
+    const p = screenOf(i);
+    const { cx, cy } = camera.current;
+    return { x: cx + (p.x - cx) / 2, y: cy + (p.y - cy) / 2 - 40 };
+  };
+  const angleAt = (p: { x: number; y: number }): number => Math.atan2(p.y - camera.current.cy, p.x - camera.current.cx);
+
+  test('with a word opened, the spot you grab stays under your finger, wherever you grab (even labels and drag spec §2)', () => {
+    setup(opened('angry/annoyed'));
+    step(1000);
+    const from = insideGrab(idx('angry/annoyed'));
+    const to = { x: from.x, y: from.y + 30 };
+    const before = camera.current.rotation;
+    const turn = angleAt(to) - angleAt(from);
+    ctl.handle([{ type: 'dragStart', ...from, axis: 'y' }, { type: 'drag', ...to, dx: 0, dy: 30 }]);
+    expect(camera.current.rotation - before).toBeCloseTo(turn, 9);
+  });
+
+  test('with a word opened, the same fling turns further when grabbed nearer the center (even labels and drag spec §2)', () => {
+    const flung = (grabAt: (i: number) => { x: number; y: number }): number => {
+      setup(opened('angry/annoyed'));
+      step(1000);
+      const from = grabAt(idx('angry/annoyed'));
+      const to = { x: from.x, y: from.y + 20 };
+      const before = camera.current.rotation;
+      ctl.handle([{ type: 'dragStart', ...from, axis: 'y' }, { type: 'drag', ...to, dx: 0, dy: 20 }, { type: 'dragEnd', vx: 0, vy: 900 }]);
+      return Math.abs(camera.target.rotation - before);
+    };
+    const onRing = (i: number) => { const p = screenOf(i); return { x: p.x, y: p.y - 40 }; };
+    expect(flung(insideGrab)).toBeGreaterThan(flung(onRing) + 1e-3);
+  });
+
   test('spinning the whole wheel only rotates; the selection does not change', () => {
     store.dispatch({ type: 'select', segment: idx('sad') });
     const top = { x: desk.width / 2, y: desk.height / 2 - 300 };

@@ -133,6 +133,76 @@ describe('label floors by ring (spec v2.1 §5)', () => {
     }
   });
 
+  /** Each ring's distinct label sizes in one draw: drawn 600-weight lines mapped to the ring of the label they're from. */
+  function sizesByRing(l: typeof layout, rec: Rec): Map<number, Set<number>> {
+    const ringsOf = new Map<string, Set<number>>();
+    for (const s of l.segments) {
+      const text = wheelCellLabel(s.node);
+      const words = text.split(' ');
+      const lines = [text, ...words.slice(1).map((_, k) => [words.slice(0, k + 1).join(' '), words.slice(k + 1).join(' ')]).flat()];
+      for (const t of lines) (ringsOf.get(t) ?? ringsOf.set(t, new Set()).get(t)!).add(s.ring);
+    }
+    const out = new Map<number, Set<number>>();
+    rec.texts.forEach((t, k) => {
+      const rings = ringsOf.get(t);
+      if (!rings || rings.size !== 1 || !rec.fonts[k]!.startsWith('600 ')) return;
+      const ring = [...rings][0]!;
+      (out.get(ring) ?? out.set(ring, new Set()).get(ring)!).add(pxOf(rec.fonts[k]!));
+    });
+    return out;
+  }
+
+  test('every label in a ring is drawn at one size, on both wheels (even labels and drag spec §1)', () => {
+    for (const [l, tbl, pal] of [[layout, table, palette], [body, bodyTable, bodyPalette]] as const) {
+      const { canvas, ctx, rec } = fakeCanvas();
+      const r = createWheelRenderer(canvas, l, ctx);
+      r.setColors(tbl, pal);
+      r.resize(phone.width, phone.height, 1);
+      const all = litMask(l, null);
+      r.draw({ ...frame(phone), lit: all, prevLit: all });
+      const sizes = sizesByRing(l, rec);
+      expect(sizes.size, l.wheelId).toBe(l.rings.length);
+      for (const [ring, px] of sizes) expect([...px], `${l.wheelId} ring ${ring}`).toHaveLength(1);
+    }
+  });
+
+  test('turning the wheel never changes a ring\'s label size (even labels and drag spec §1)', () => {
+    const vp: Viewport = { width: 393, height: 600, radius: 188.5 };
+    const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    const at = (path: string) => {
+      const { canvas, ctx, rec } = fakeCanvas();
+      const r = createWheelRenderer(canvas, layout, ctx);
+      r.setColors(table, palette);
+      r.resize(vp.width, vp.height, 1);
+      const i = layout.byPath.get(path)!;
+      const all = litMask(layout, null);
+      r.draw({ cam: ringFocusCamera(layout, 1, vp, -layout.segments[i]!.mid, o), vp, lit: all, prevLit: all, fadeT: 1, selected: null, opened: false, pulseT: 1, mode: 'ring', ring: 1, remPx: 16, keyboardFocus: false });
+      return new Map([...sizesByRing(layout, rec)].map(([ring, px]) => [ring, [...px].sort()]));
+    };
+    const a = at('scared/anxious');
+    const b = at('sad/hurt');
+    const both = [...a.keys()].filter((ring) => b.has(ring));
+    expect(both.length).toBeGreaterThanOrEqual(2);
+    for (const ring of both) expect(a.get(ring), `ring ${ring}`).toEqual(b.get(ring));
+  });
+
+  test('the opened word\'s label is sized to its own cell, not its ring (Lucas, 2026-11-27)', () => {
+    const vp: Viewport = { width: 393, height: 650, radius: 188.5 };
+    const o = { remPx: 16, portrait: true, rest: 'half' as const, openedY: null, sideCoreWidth: SHARED.coreWidth };
+    const { canvas, ctx, rec } = fakeCanvas();
+    const r = createWheelRenderer(canvas, body, ctx);
+    r.setColors(bodyTable, bodyPalette);
+    r.resize(vp.width, vp.height, 1);
+    const chest = body.byPath.get('chest')!;
+    const lit = litMask(body, chest);
+    r.draw({ cam: ringFocusCamera(body, 0, vp, -body.segments[chest]!.mid, o), vp, lit, prevLit: lit, fadeT: 1, selected: chest, opened: true, pulseT: 1, mode: 'ring', ring: 0, remPx: 16, keyboardFocus: false });
+    const opened = rec.texts.flatMap((t, k) => (t === 'Chest' && rec.fonts[k]!.startsWith('800 ') ? [pxOf(rec.fonts[k]!)] : []));
+    const areas = [...sizesByRing(body, rec).get(0)!];
+    expect(areas).toHaveLength(1);
+    expect(opened).toHaveLength(1);
+    expect(opened[0]!).toBeGreaterThan(1.5 * areas[0]!);
+  });
+
   test('a long core label wraps to two lines in a ring view, as before the floors went (known issues, round two)', () => {
     const vp: Viewport = { width: 393, height: 600, radius: 188.5 };
     const { canvas, ctx, rec } = fakeCanvas();

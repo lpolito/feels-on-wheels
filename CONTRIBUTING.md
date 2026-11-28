@@ -12,10 +12,12 @@ Every word the app shows lives in one file per language. English is `src/data/lo
 
 1. **Open a [New language issue](https://github.com/lpolito/feels-on-wheels/issues/new?template=language.yml) first** naming the language, so two people don't translate the same one.
 2. Copy `en.json` to the language's code (for example `es.json`) and translate every string:
+   - `meta`: the language's code and its writing direction (`ltr` or `rtl`);
    - `ui`: buttons, labels and messages;
    - `feelings`: every feeling's label and definition;
-   - `sensations` and `areas`: the body sensations wheel;
+   - `sensations`, `sensationPhrases`, `areas` and `areaWheelLabels`: the body sensations wheel's labels, how a feeling's card lists each sensation, and the areas' names;
    - `wheels`: each wheel's name and start message;
+   - `titles`: the page titles and descriptions for each address;
    - `page`: the page title, description and the About page.
 3. Keep `{placeholders}` such as `{label}` exactly as they are, and keep `[link text](target)` links' targets.
 4. Write plain, everyday language. A definition should read naturally in your language rather than follow the English word for word.

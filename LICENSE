@@ -7,13 +7,15 @@ it isn't allowed.
 
 This project uses two licenses:
 
-  Code: everything outside src/data/ and docs/
+  Code: all of the project's code, including the code files in src/data/
+  (load.ts, types.ts, node.ts and wheels/index.ts)
     PolyForm Noncommercial License 1.0.0
     See LICENSES/PolyForm-Noncommercial-1.0.0.md
     or https://polyformproject.org/licenses/noncommercial/1.0.0
 
-  Content: everything in src/data/ (wheel layouts, words, definitions,
-  sensations and translations) and in docs/
+  Content: the words in src/data/ (its .json files: wheel layouts, words,
+  definitions, sensations and translations), and the docs: everything in docs/
+  and the Markdown files (.md) anywhere in the project
     Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
     See LICENSES/CC-BY-NC-SA-4.0.txt
     or https://creativecommons.org/licenses/by-nc-sa/4.0/

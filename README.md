@@ -10,11 +10,11 @@ A free feelings wheel and body sensations wheel, to help you find the word for w
 
 It's meant to have everything you'd want from a modern web app, with accessibility and performance treated as features, not afterthoughts.
 
-- **Accessible.** The wheel is drawn on a canvas, but every word is also in a real tree that works with a keyboard and screen readers. It follows your light or dark mode, and respects reduced motion and forced colors (high contrast). Automated accessibility checks (axe) run in the tests.
-- **Fast.** Spinning stays smooth: in performance tests, 95% of frames come less than 20 ms apart, in Chromium and Firefox.
-- **Small.** No frameworks and no runtime dependencies. Everything a first visit downloads, including every word and definition, is about 41 KB gzipped, against a 60 KB budget that every pull request checks.
+- **Accessible.** The wheel is drawn on a canvas, but every word is also in a real tree, built for a keyboard and screen readers (with some [known limitations](ACCESSIBILITY.md#known-limitations)). It follows your light or dark mode, and respects reduced motion and forced colors (high contrast). Automated accessibility checks (axe) run in the tests.
+- **Fast.** Spinning stays smooth: in performance tests, 95% of frames come 20 ms apart or less, in Chromium and Firefox.
+- **Small.** No frameworks and no runtime dependencies. The page itself, its HTML, CSS and scripts with every word and definition, is about 41 KB gzipped, against a 60 KB budget that every pull request checks.
 - **Offline and installable.** After one visit it works with no connection. To keep it handy, install it from your browser's menu, or use Add to Home Screen on an iPhone or iPad.
-- **Any screen.** Layouts are tested from 280 px phones to 2560 px monitors, in Chromium, Firefox and WebKit, and on Android and iPhone.
+- **Any screen.** Layouts are tested from 280 px phones to 2560 px monitors, in Chromium, Firefox and WebKit, and at the sizes of a Pixel 7 and an iPhone 15.
 - **Private.** No accounts, no tracking, no analytics. Nothing you choose leaves your device.
 
 ## Research behind the feelings wheel
@@ -25,8 +25,8 @@ The feelings wheel starts from six core feelings in the middle and gets more spe
 
 - **Built around how people use it.** You start at the center, tap the core that matches what you feel, tap a narrower word, find your word, and read its card to check it fits. Every word sits where someone feeling it would look.
 - **Six cores:** Happy, Angry, Love, Sad, Bad, and Scared, arranged like a color wheel so opposites face each other. Each is all pleasant or all unpleasant. Bad is the door for when you can't tell what you feel, and everything inside it is specific.
-- **Words for what happened to you,** like Betrayed or Left out, are on the outer ring, under the feeling people who feel them would look for first. Their cards still describe a feeling.
-- **A few words are in two places,** where people really split between two cores: Betrayed is under both Sad and Angry. Disgusted is in two places because it means two things: physical disgust under Bad, and moral disgust under Angry.
+- **Words for what happened to you,** like Betrayed or Left out, are on the outer ring, under the feeling people would look for first. Their cards still describe a feeling.
+- **A few words are in two places,** where people really split between two cores: Betrayed is under both Sad and Angry, and Empty under both Sad and Bad. Disgusted is in two places because it means two things: physical disgust under Bad, and moral disgust under Angry.
 - **Words side by side are related,** so if you land one word off, the word you meant is next to it.
 - **Every card is plain language,** one sentence that reads after "I feel", for anyone, including someone learning English or too upset to puzzle over a sentence.
 
@@ -36,7 +36,7 @@ The feelings wheel starts from six core feelings in the middle and gets more spe
 - **The families have fuzzy edges,** so a word goes where it fits best, not where it fits perfectly. ([Russell and Fehr](docs/reference/russell-fehr-fuzzy-categories.md), [Cowen and Keltner](docs/reference/cowen-keltner-emotion-categories.md))
 - **Which core people would tap** comes from what people report feeling together through the day, and from which category raters pick for a word. That's why Guilty and Embarrassed are under Bad, and Grateful under Happy. ([Trampe and others](docs/reference/trampe-daily-emotions.md), [Zupan and others](docs/reference/zupan-categorising-emotion-words.md), [Algoe](docs/reference/algoe-gratitude.md))
 - **Some words name what happened, not a feeling:** "feeling abandoned" says what happened, which might bring hurt, fear, or anger. And tiredness is a body state, not a feeling. ([Ortony, Clore and Foss](docs/reference/ortony-clore-foss-affective-lexicon.md))
-- **Stress is an umbrella,** and boredom is a real emotion. ([Lazarus](docs/reference/lazarus-appraisal.md), [Danckert and others](docs/reference/danckert-boredom.md))
+- **Stress is an umbrella** for several feelings, so Stressed isn't on the wheel but its parts are, like Overwhelmed and Pressured. And boredom is a real emotion. ([Lazarus](docs/reference/lazarus-appraisal.md), [Danckert and others](docs/reference/danckert-boredom.md))
 - **Particular words:**
   - shame, guilt, and embarrassment are different feelings, and shame doesn't always make you hide ([Tangney](docs/reference/tangney-shame-guilt.md), [Leach and Cidam](docs/reference/leach-cidam-shame.md));
   - physical and moral disgust are different ([Rozin and others](docs/reference/rozin-disgust.md));
@@ -49,13 +49,13 @@ The feelings wheel starts from six core feelings in the middle and gets more spe
 ### What isn't research
 
 - **Bad as a core** is a design choice: no research list has a catch-all.
-- **Lucas's calls:** which close words to use (Resentful, not Bitter), the order of the cores, and every card's wording, which he reviewed twice.
+- **Lucas's calls:** which close words to use (Resentful, not Bitter), the order of the cores, and every card's wording.
 
 The decisions and close calls are in the [design spec](docs/superpowers/specs/2026-11-26-feels-on-wheels-opinionated-wheel-design.md#6-the-record-decisions-and-close-calls).
 
 ### How it was decided
 
-- **Lucas set the rules,** with the person at the center tapping in as the test for everything.
+- **Lucas set the rules,** with someone starting at the center and tapping outward as the test for everything.
 - **Claude did the research and drafting,** and separate AI agents that hadn't seen the reasoning checked each claim and each draft cold.
 - **Lucas made the calls,** reviewed every card twice, and rewrote freely.
 - **Lucas isn't a clinician or a researcher,** and doesn't claim to be.
@@ -96,7 +96,7 @@ The body sensations wheel starts from what you notice in your body and leads to 
 - **Common speech:** some words rest mainly on common speech for something people feel, such as Butterflies, Buzzing, Sinking feeling, Heavy heart, and Skin crawling.
 - **Lucas's own experience:** a few also rest on Lucas's experience: Heart in throat, Weight on shoulders, Numb / empty, and Nothing much.
 
-What backs each word is in the [design spec](docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md#3-the-wheel) and its [changes](docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md).
+What backs each sensation is in the [design spec](docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-design.md#3-the-wheel) and its [changes](docs/superpowers/specs/2026-11-15-feels-on-wheels-body-wheel-rework-changes.md). The feelings under each sensation have changed since; the current ones are in [docs/content-review.md](docs/content-review.md).
 
 ### How it was decided
 
@@ -137,6 +137,7 @@ npm ci              # install
 npm run dev         # run it locally, with hot reload
 npm test            # unit tests (Vitest)
 npm run test:e2e    # end-to-end tests (Playwright: Chromium, Firefox, WebKit, Pixel 7, iPhone 15)
+npm run test:perf   # performance tests (Playwright: Chromium and Firefox)
 npm run build       # build to dist/
 npm run size        # check the build against the size budget
 ```
@@ -157,8 +158,8 @@ What's built, what's next and what's still an idea are all in [docs/ROADMAP.md](
 
 Everything Feels on Wheels draws on, whether or not a license asks for credit. Each name links to a note on the source, and [docs/reference/](docs/reference/README.md) has the full citations.
 
-- **Feelings wheels:** [Gloria Willcox's Feeling Wheel](docs/reference/core-feelings-wheel.md) (1982), [Geoffrey Roberts's Feel Wheel](docs/reference/core-feelings-wheel.md) (2015), the source of the first version's words, [Lindsay Braman's Emotion-Sensation Wheel](docs/reference/braman-emotion-sensation-wheel.md) (2020), and [feelingswheel.com](docs/reference/core-feelings-wheel.md#the-reference-site), whose tap-to-trace idea inspired this one.
-- **Research behind the feelings wheel** ([what each found](#research-behind-the-feelings-wheel)):
+- **Feelings wheels:** [Gloria Willcox's Feeling Wheel](docs/reference/core-feelings-wheel.md) (1982), [Geoffrey Roberts's Feel Wheel](docs/reference/core-feelings-wheel.md) (2015, where the first version's words came from), [Lindsay Braman's Emotion-Sensation Wheel](docs/reference/braman-emotion-sensation-wheel.md) (2020), and [feelingswheel.com](docs/reference/core-feelings-wheel.md#the-reference-site), whose tap-to-trace idea inspired this one.
+- **Research behind the feelings wheel** ([what the research found](#research-behind-the-feelings-wheel)):
   - [Shaver and others](docs/reference/shaver-emotion-prototypes.md)
   - [Russell and Fehr](docs/reference/russell-fehr-fuzzy-categories.md)
   - [Cowen and Keltner](docs/reference/cowen-keltner-emotion-categories.md)
@@ -179,7 +180,7 @@ Everything Feels on Wheels draws on, whether or not a license asks for credit. E
   - [Rozin and others](docs/reference/rozin-disgust.md)
   - [Goetz and others](docs/reference/goetz-compassion.md)
 - **Word data used to check the feelings wheel's words:** [NRC VAD Lexicon](docs/reference/nrc-vad-lexicon.md) (Saif M. Mohammad), [Warriner, Kuperman and Brysbaert](docs/reference/warriner-affective-norms.md), [the Glasgow Norms](docs/reference/glasgow-norms.md), [Baron-Cohen and others](docs/reference/baron-cohen-emotion-vocabulary.md), [Small World of Words](docs/reference/small-world-of-words.md), and [Google Books Ngram](docs/reference/google-books-ngram.md).
-- **Research behind the body wheel** ([what each found](#research-behind-the-body-wheel)):
+- **Research behind the body wheel** ([what the research found](#research-behind-the-body-wheel)):
   - [Nummenmaa and others](docs/reference/nummenmaa-bodily-maps.md)
   - [A. D. Craig](docs/reference/craig-interoception.md)
   - [Nico Frijda](docs/reference/frijda-action-tendencies.md)
@@ -207,4 +208,4 @@ Made by [Lucas Polito](https://lucaspolito.dev/).
 
 Feels on Wheels is **source-available, not open source**. You're welcome to read, copy, change and translate it for any non-commercial purpose, as long as you give credit. Selling it, running ads on a copy, or making a paid app from it isn't allowed.
 
-The code is under the [PolyForm Noncommercial License 1.0.0](LICENSES/PolyForm-Noncommercial-1.0.0.md). The words (everything in `src/data/`: wheel layouts, definitions, sensations, translations) and the docs are under [CC BY-NC-SA 4.0](LICENSES/CC-BY-NC-SA-4.0.txt). See [LICENSE](LICENSE).
+The code is under the [PolyForm Noncommercial License 1.0.0](LICENSES/PolyForm-Noncommercial-1.0.0.md). The words (the `.json` files in `src/data/`: wheel layouts, definitions, sensations, translations) and the docs (`docs/` and the Markdown files) are under [CC BY-NC-SA 4.0](LICENSES/CC-BY-NC-SA-4.0.txt). See [LICENSE](LICENSE).

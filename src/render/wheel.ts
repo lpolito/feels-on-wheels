@@ -72,6 +72,8 @@ export function createWheelRenderer(
   const texts = layout.segments.map((s) => wheelCellLabel(s.node));
   const fonts = new Map<number, string>();
   const labelCache: (LabelCache | null)[] = layout.segments.map(() => null);
+  const ringCache: ({ R: number; floor: number; max: number; wrapAt: number; px: number } | null)[] =
+    layout.rings.map(() => null);
   const win: ViewWindow = { rMin: 0, rMax: 0, full: true, from: 0, to: 0 };
   let cssW = 0;
   let cssH = 0;
@@ -153,6 +155,29 @@ export function createWheelRenderer(
     const result = fitLabel(texts[i]!, measure, { width: w, height: h }, { min, max, wrapAt });
     labelCache[i] = { w, h, min, max, wrapAt, result };
     return result;
+  }
+
+  /**
+   * Even labels spec §1 (Lucas, 2026-11-27): every label in a ring is drawn at one size, the biggest that every label
+   * in the ring fits at, so no cell's text looks emphasized. Worked out over the whole ring, not just what's on screen,
+   * so turning the wheel never changes it; on the 0.5 px grid, so each label fits at exactly that size.
+   */
+  function ringSize(ringIndex: number, R: number, floor: number, max: number, wrapAt: number): number {
+    const c = ringCache[ringIndex];
+    // Reused only while the wheel is as big or a little bigger, so the label that set the size still fits at it.
+    if (c && R >= c.R && R - c.R <= FIT_TOLERANCE && c.floor === floor && c.max === max && c.wrapAt === wrapAt) return c.px;
+    const ring = layout.rings[ringIndex]!;
+    const rMid = ((ring.inner + ring.outer) / 2) * R;
+    const boxLen = (ring.outer - ring.inner) * R - 2 * LABEL_PAD;
+    let px = max;
+    for (const i of ring.segments) {
+      const s = layout.segments[i]!;
+      const fit = fitLabel(texts[i]!, measure, { width: boxLen, height: (s.end - s.start) * rMid }, { min: floor, max, wrapAt });
+      if (fit) px = Math.min(px, fit.px);
+    }
+    px = Math.max(Math.floor(px * 2) / 2, floor);
+    ringCache[ringIndex] = { R, floor, max, wrapAt, px };
+    return px;
   }
 
   /**
@@ -254,7 +279,7 @@ export function createWheelRenderer(
       // v2.1 §5's sizes (8 px in the whole-wheel view; in a ring view 12 px on the view ring and inside it, 10 px
       // outside) are now where a label wraps to two lines rather than shrink further; below them it shrinks as far as
       // its cell needs (the 1 px floor only lets the fitting loop end). They were readability choices, not
-      // accessibility ones: the canvas is hidden from screen readers.
+      // accessibility ones: the canvas is hidden from screen readers. Every label in a ring shares one size (ringSize).
       const wrapAt = (ring: number): number => (f.mode !== 'ring' ? 8 : f.ring !== null && ring > f.ring ? 10 : 12) * k;
       const floor = 1 * k;
       // Quantised so pinch frames keep reusing label fits.
@@ -304,7 +329,8 @@ export function createWheelRenderer(
         const y = cam.cy + rMid * Math.sin(angle);
         if (x < -rMid || y < -rMid || x > cssW + rMid || y > cssH + rMid) continue;
         const boxLen = (ring.outer - ring.inner) * R - 2 * LABEL_PAD;
-        const fit = fitted(s.index, boxLen, (s.end - s.start) * rMid, floor, maxPx, wrapAt(s.ring));
+        const size = ringSize(s.ring, R, floor, maxPx, wrapAt(s.ring));
+        const fit = fitted(s.index, boxLen, (s.end - s.start) * rMid, floor, size, wrapAt(s.ring));
         if (!fit) continue;
         const lit = f.fadeT >= 0.5 ? f.lit[s.index] === 1 : f.prevLit[s.index] === 1;
         drawLabel(fit.lines, fit.px, false, x, y, angle, 1, table.label(s.hue, s.ring, lit));
@@ -357,6 +383,8 @@ export function createWheelRenderer(
       g.shadowOffsetY = 0;
       g.shadowColor = 'transparent';
       outline(cam.cx, cam.cy, r0, r1, a0 - side, a1 + side, ink, palette.gap);
+      // The opened word is sized to its own cell, not its ring, so it stands out (Lucas, 2026-11-27): with an area
+      // opened, the ring's size is set by its tightest label ("Head / face"), half of what "Chest" fits.
       const fit = fitted(s.index, (ring.outer - ring.inner) * R - 2 * LABEL_PAD, (s.end - s.start) * rMid, floor, maxPx, wrapAt(s.ring));
       if (fit) {
         // Round two: as clear of the outline (its inner half is inside the cell) as an unopened label is of its cell.

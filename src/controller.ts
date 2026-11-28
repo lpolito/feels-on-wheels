@@ -233,23 +233,22 @@ export function createController(
         last = { x: i.x, y: i.y };
         return;
       case 'drag': {
-        if (ring === null) {
+        // The spot you grabbed stays under your finger, on the whole wheel and, for up/down drags, with a word opened
+        // (even labels and drag spec §2). Left/right drags with a word opened are swipes.
+        if (ring === null || dragAxis === 'y') {
           const a0 = Math.atan2(last.y - cam.cy, last.x - cam.cx);
           const a1 = Math.atan2(i.y - cam.cy, i.x - cam.cx);
           let d = a1 - a0;
           if (d > Math.PI) d -= TAU;
           if (d < -Math.PI) d += TAU;
           rotateBy(d);
-        } else if (dragAxis === 'y') {
-          rotateBy(i.dy / radiusPx(ring));
         }
         last = { x: i.x, y: i.y };
         return;
       }
       case 'dragEnd': {
         let v = 0;
-        if (ring === null) v = angularVelocity(i.vx, i.vy);
-        else if (dragAxis === 'y') v = i.vy / radiusPx(ring);
+        if (ring === null || dragAxis === 'y') v = angularVelocity(i.vx, i.vy);
         dragAxis = null;
         fling(v);
         return;

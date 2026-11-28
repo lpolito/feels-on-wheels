@@ -2,7 +2,7 @@ type AnyCanvas = HTMLCanvasElement | OffscreenCanvas;
 type Ctx2D = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 
 /** EXPLORATION: label-cache variants, picked at load from `globalThis.__lv` (bench builds only). */
-export type LabelVariant = 'fix' | 'v1' | 'v12' | 'v123' | 'v4' | 'v5' | 'v12f' | 'v123f';
+export type LabelVariant = 'fix' | 'v1' | 'v12' | 'v123' | 'v4' | 'v5' | 'v12f' | 'v123f' | 'v1s' | 'v12s' | 'v1e' | 'v12fe';
 export const labelVariant = (): LabelVariant =>
   (globalThis as { __lv?: LabelVariant }).__lv ?? (import.meta.env['VITE_LV'] as LabelVariant | undefined) ?? 'fix';
 
@@ -95,6 +95,8 @@ export function createSpriteCache(
 
   function render(text: string, px: number, color: string): Sprite {
     bench.__renders++;
+    const rl = globalThis as unknown as { __renderLog?: string[] };
+    rl.__renderLog?.push(`${text}|${px}|${color}`);
     const { canvas, g } = context();
     const { w, h } = measureBox(g, text, px);
     canvas.width = Math.max(1, Math.ceil(w * dpr));
@@ -267,6 +269,7 @@ export function createSpriteCache(
     },
     draw(g, text, px, color, x, y, rot) {
       const q = Math.round(px / STEP) * STEP;
+      (globalThis as unknown as { __drawLog?: string[] }).__drawLog?.push(`${text}|${px}|${color}|${x.toFixed(2)}|${y.toFixed(2)}|${rot.toFixed(4)}`);
       if (!sprites.has(keyOf(text, q, color))) {
         const b2 = bench as unknown as { __restMiss: number; __restNear: number };
         b2.__restMiss = (b2.__restMiss ?? 0) + 1;
@@ -297,6 +300,10 @@ export function createSpriteCache(
       }
       const q = up !== Infinity ? up : down;
       bench.__near++;
+      // EXPLORATION (sharpening): draws this frame from a size other than the one an exact frame would use.
+      const tr = globalThis as unknown as { __offDraws?: number; __offMax?: number };
+      tr.__offDraws = (tr.__offDraws ?? 0) + 1;
+      tr.__offMax = Math.max(tr.__offMax ?? 1, px / q, q / px);
       if (q < q0) {
         bench.__up++;
         bench.__upMax = Math.max(bench.__upMax, px / q);

@@ -160,7 +160,7 @@ export function createWheelRenderer(
   function fitted(i: number, w: number, h: number, min: number, max: number, wrapAt: number): LabelCache['result'] {
     const c = labelCache[i];
     // EXPLORATION (v12f, v123f): at rest, a fresh fit, so the size doesn't depend on the path the camera took.
-    const tol = exactFrame && variant.endsWith('f') ? 0 : FIT_TOLERANCE;
+    const tol = exactFrame && variant.includes('f') ? 0 : FIT_TOLERANCE;
     if (c && Math.abs(c.w - w) <= tol && Math.abs(c.h - h) <= tol && c.min === min && c.max === max
       && c.wrapAt === wrapAt) {
       return c.result;
@@ -178,8 +178,21 @@ export function createWheelRenderer(
    */
   function ringSize(ringIndex: number, R: number, floor: number, max: number, wrapAt: number): number {
     const c = ringCache[ringIndex];
+    // EXPLORATION (v12f): at rest, a fresh size, so it doesn't depend on the path the camera took.
+    const tol = exactFrame && variant.includes('f') ? 0 : FIT_TOLERANCE;
     // Reused only while the wheel is as big or a little bigger, so the label that set the size still fits at it.
-    if (c && R >= c.R && R - c.R <= FIT_TOLERANCE && c.floor === floor && c.max === max && c.wrapAt === wrapAt) return c.px;
+    if (c && R >= c.R && R - c.R <= tol && c.floor === floor && c.max === max && c.wrapAt === wrapAt) return c.px;
+    const px = freshRingSize(ringIndex, R, floor, max, wrapAt);
+    // EXPLORATION (sharpening): a fresh fit at rest that gave a size the tolerant reuse wouldn't have.
+    if (c && tol === 0 && R >= c.R && R - c.R <= FIT_TOLERANCE && c.floor === floor && c.max === max && c.wrapAt === wrapAt && c.px !== px) {
+      const tr = globalThis as unknown as { __freshRing?: number };
+      tr.__freshRing = (tr.__freshRing ?? 0) + 1;
+    }
+    ringCache[ringIndex] = { R, floor, max, wrapAt, px };
+    return px;
+  }
+
+  function freshRingSize(ringIndex: number, R: number, floor: number, max: number, wrapAt: number): number {
     const ring = layout.rings[ringIndex]!;
     const rMid = ((ring.inner + ring.outer) / 2) * R;
     const boxLen = (ring.outer - ring.inner) * R - 2 * LABEL_PAD;
@@ -189,9 +202,7 @@ export function createWheelRenderer(
       const fit = fitLabel(texts[i]!, measure, { width: boxLen, height: (s.end - s.start) * rMid }, { min: floor, max, wrapAt });
       if (fit) px = Math.min(px, fit.px);
     }
-    px = Math.max(Math.floor(px * 2) / 2, floor);
-    ringCache[ringIndex] = { R, floor, max, wrapAt, px };
-    return px;
+    return Math.max(Math.floor(px * 2) / 2, floor);
   }
 
   /**
@@ -224,7 +235,7 @@ export function createWheelRenderer(
         const lx = x + ux * dy;
         const ly = y + uy * dy;
         if (variant === 'v4') sprites.drawMip(g, lines[l]!, px, color, lx, ly, rot);
-        else if (!exactFrame && variant.startsWith('v1')) sprites.drawNear(g, lines[l]!, px, color, lx, ly, rot);
+        else if ((!exactFrame || variant.endsWith('s')) && variant.startsWith('v1')) sprites.drawNear(g, lines[l]!, px, color, lx, ly, rot);
         else sprites.draw(g, lines[l]!, px, color, lx, ly, rot);
       }
       stats.labelsDrawn++;
@@ -232,6 +243,7 @@ export function createWheelRenderer(
     }
     const cos = Math.cos(rot) * scale;
     const sin = Math.sin(rot) * scale;
+    (globalThis as unknown as { __boldLog?: string[] }).__boldLog?.push(JSON.stringify({ lines, px, x, y, rot, scale, bold }));
     g.setTransform(dpr * cos, dpr * sin, -dpr * sin, dpr * cos, dpr * x, dpr * y);
     g.fillStyle = color;
     g.font = font(px, bold);
@@ -302,7 +314,8 @@ export function createWheelRenderer(
         const y = cam.cy + rMid * Math.sin(angle);
         if (x < -rMid || y < -rMid || x > cssW + rMid || y > cssH + rMid) continue;
         const boxLen = (ring.outer - ring.inner) * R - 2 * LABEL_PAD;
-        const fit = fitLabel(texts[s.index]!, measure, { width: boxLen, height: (s.end - s.start) * rMid }, { min: floor, max: maxPx, wrapAt: wrapAt(s.ring) });
+        const size = freshRingSize(s.ring, R, floor, maxPx, wrapAt(s.ring));
+        const fit = fitLabel(texts[s.index]!, measure, { width: boxLen, height: (s.end - s.start) * rMid }, { min: floor, max: size, wrapAt: wrapAt(s.ring) });
         if (!fit) continue;
         const color = table.label(s.hue, s.ring, f.lit[s.index] === 1);
         for (const line of fit.lines) out.push({ text: line, px: fit.px, color, seg: s.index, lines: fit.lines.length });

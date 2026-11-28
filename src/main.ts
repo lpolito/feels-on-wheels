@@ -168,18 +168,81 @@ function frame(): void {
   const fadeT = reducedMotion.matches ? 1 : Math.min(1, (now - fadeStart) / FADE_MS);
   const pulseT = reducedMotion.matches ? 1 : Math.min(1, (now - pulseStart) / PULSE_MS);
   const t0 = TEST ? now : 0;
+  (globalThis as unknown as { __args?: unknown[] }).__args?.push(JSON.stringify({ vp, fadeT, pulseT, selected: s.selected, opened: s.opened, mode: s.view.mode, ring: s.view.mode === 'ring' ? s.view.ring : null, remPx: opts.remPx, kf: treeFocusVisible(), lit: Array.from(lit).join(''), prevLit: Array.from(prevLit).join(''), moving: camera.moving, zooming: controller.zooming }));
   renderer.draw({
     cam: camera.current, vp, lit, prevLit, fadeT, pulseT,
     selected: s.selected, opened: s.opened,
     mode: s.view.mode, ring: s.view.mode === 'ring' ? s.view.ring : null, remPx: opts.remPx, moreContrast: moreContrast.matches,
     keyboardFocus: treeFocusVisible(),
-    exact: !camera.moving && !controller.zooming,
+    exact: exactNow(),
   });
+  traceFrame(now, exactNow());
   if (TEST) {
     drawTimes.push(performance.now() - t0);
     if (drawTimes.length > 5000) drawTimes.splice(0, 2500);
   }
   if (fadeT < 1 || pulseT < 1) requestDraw();
+}
+
+/**
+ * EXPLORATION (sharpening): labels at their exact size once the wheel is still, or, for variants ending in `e`, once
+ * what's left of the move is under half a CSS px at the wheel's edge (the spring settles a few hundred ms later).
+ */
+function exactNow(): boolean {
+  if (controller.zooming) return false;
+  if (!camera.moving) return true;
+  if (!LV.endsWith('e')) return false;
+  const c = camera.current, t = camera.target;
+  const left = Math.abs(c.scale - t.scale) * vp.radius + Math.abs(c.rotation - t.rotation) * vp.radius * c.scale + Math.abs(c.cx - t.cx) + Math.abs(c.cy - t.cy);
+  return left < 0.5;
+}
+
+// ── EXPLORATION (sharpening): one record per frame, and what the settle frame changed on screen ──
+type TraceRec = { t: number; exact: boolean; moving: boolean; scale: number; rotation: number; cx: number; cy: number; off: number; offMax: number; renders: number; freshRing: number; changed?: number; changedHard?: number };
+const tr = globalThis as unknown as { __trace?: TraceRec[]; __offDraws?: number; __offMax?: number; __renders?: number; __freshRing?: number; __traceDiff?: boolean };
+let prevCopy: OffscreenCanvas | null = null;
+let lastRenders = 0;
+function traceFrame(t: number, exact: boolean): void {
+  if (!tr.__trace) return;
+  const c = camera.current;
+  const rec: TraceRec = { t, exact, moving: camera.moving, scale: c.scale, rotation: c.rotation, cx: c.cx, cy: c.cy, off: tr.__offDraws ?? 0, offMax: tr.__offMax ?? 1, renders: (tr.__renders ?? 0) - lastRenders, freshRing: tr.__freshRing ?? 0 };
+  lastRenders = tr.__renders ?? 0;
+  tr.__offDraws = 0; tr.__offMax = 1; tr.__freshRing = 0;
+  const prev = tr.__trace.at(-1);
+  if (tr.__traceDiff) {
+    const cv = document.getElementById('wheel') as HTMLCanvasElement;
+    if (exact && prev && !prev.exact && prevCopy) {
+      // Pixels that differ from the frame before: by more than 8 in any channel, and by more than 64.
+      const a = prevCopy.getContext('2d')!.getImageData(0, 0, cv.width, cv.height).data;
+      const g2 = new OffscreenCanvas(cv.width, cv.height).getContext('2d')!;
+      g2.drawImage(cv, 0, 0);
+      const b = g2.getImageData(0, 0, cv.width, cv.height).data;
+      let n = 0, hard = 0;
+      for (let i = 0; i < a.length; i += 4) {
+        const d = Math.max(Math.abs(a[i]! - b[i]!), Math.abs(a[i + 1]! - b[i + 1]!), Math.abs(a[i + 2]! - b[i + 2]!));
+        if (d > 8) n++;
+        if (d > 64) hard++;
+      }
+      rec.changed = n; rec.changedHard = hard;
+      // The two frames, for a look at what changed.
+      const g4 = new OffscreenCanvas(cv.width, cv.height);
+      g4.getContext('2d')!.drawImage(cv, 0, 0);
+      const before = prevCopy;
+      prevCopy = null;
+      (globalThis as unknown as { __settleImgs?: Promise<string[]> }).__settleImgs = Promise.all([before, g4].map(async (c) => {
+        const r = new FileReader();
+        const blob = await c.convertToBlob();
+        return new Promise<string>((ok) => { r.onload = () => ok(r.result as string); r.readAsDataURL(blob); });
+      }));
+    }
+    if (!exact) {
+      if (!prevCopy || prevCopy.width !== cv.width || prevCopy.height !== cv.height) prevCopy = new OffscreenCanvas(cv.width, cv.height);
+      const g3 = prevCopy.getContext('2d')!;
+      g3.clearRect(0, 0, cv.width, cv.height);
+      g3.drawImage(cv, 0, 0);
+    }
+  }
+  tr.__trace.push(rec);
 }
 
 // ── EXPLORATION: option 2, prewarm the views reachable next ─────────────

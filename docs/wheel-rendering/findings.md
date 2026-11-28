@@ -123,6 +123,19 @@ From [scripts/wheel-bench/matrix.sh](../../scripts/wheel-bench/matrix.sh), with 
 | WebGL | 13.2%, 59 ms | 7.1%, 47 ms | 2.5%, 33 ms | 0.8%, 21 ms | 5.8%, 83 ms | 21.5%, 51 ms | 36.1%, 76 ms | 8.3%, 120 ms |
 | WebGL, no antialiasing | 3.2%, 55 ms | 0.7%, 37 ms | 0.0%, 20 ms | 0.0%, 21 ms | 0.4%, 19 ms | 0.0%, 20 ms | 5.3%, 47 ms | 0.0%, 18 ms |
 
+What the live site runs at (Lucas asked, 2026-11-28). The benchmark doesn't record a frame rate, but each frame's draw time says it: 16.7 ms or less keeps up with a 60 Hz screen.
+
+| Browser and action | Draw time per frame (median, 90th percentile) | Frames over 25 ms | Slowest frame |
+|---|---|---|---|
+| WebKit phone, spin | 1 ms, 1 ms | 0% | 20 ms |
+| WebKit phone, pinch | 1 ms, 2 ms | 1.9% | 81 ms |
+| WebKit phone, ring changes | 1 ms, 4 ms | 14.7% | 91 ms |
+| WebKit desktop, ring changes | 1 ms, 2 ms | 7.9% | 92 ms |
+| Chromium phone, ring changes | 0.6 ms, 12 ms | 11.7% | 102 ms |
+| Firefox desktop, spin | 32 ms, 34 ms, software | 84.5% | 50 ms |
+
+So Chrome and Safari run at the screen's full rate, with one or two short hitches per ring change or zoom, which nobody has noticed. Firefox takes about 32 ms per frame and can't get above about 30 fps. These are Playwright's engines on Lucas's Mac, not real Safari or an iPhone. Chrome on a computer wasn't measured.
+
 What it shows:
 
 - **Every 2D variant fixes the original Firefox lag:** desktop spins stay on the GPU with nothing dropped, against 84.5% dropped on main.

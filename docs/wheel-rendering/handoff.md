@@ -15,6 +15,14 @@ Start by reading, in this order:
 
 Work on `ff-canvas-perf`, which carries the findings. The contenders' code is on their own pushed branches, listed in the findings' "Where the code is" table.
 
+## Since the explorations (2026-11-28)
+
+`ff-canvas-perf` was rebased onto the [opinionated wheel](../ROADMAP.md#an-opinionated-feelings-wheel) and even label sizes (#31). Its tests pass and its end-to-end tests pass in Chromium and Firefox. Three things changed under the explorations:
+
+- **The prototype branches still show the old wheel**, 130 cells with labels sized one by one. Their counts (labels rendered per step, 12–24 MB of bitmaps) were taken there. Today's wheel has 162 words, so rebase the winner before trusting its numbers or trying it.
+- **Every label in a ring now has one size** (`ringSize()` in `src/render/wheel.ts`), always on the 0.5 px grid the sprite cache is keyed on. A view has a few label sizes instead of one per label, which may make caching and prewarm cheaper, and may change the sharpening in decision 1. Look again before deciding.
+- **Decision 2 now has two places.** `ringSize()` also keeps a ring's size while the wheel grows by up to 1 px (`FIT_TOLERANCE`), so a resting size can still depend on the path there, as well as in `fitted()`. A fresh fit at rest would have to redo both.
+
 ## Decisions waiting on me (Lucas)
 
 Ask me these one at a time, the first one first.

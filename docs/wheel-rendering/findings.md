@@ -22,7 +22,7 @@ Every branch is pushed. None has a PR, so none runs CI.
 | P3: label sizes in geometric steps | `claude/explore-p3-coarse-sizes-de0771` | 73b7e8c | [p3-coarse-sizes.md](explorations/p3-coarse-sizes.md) |
 | View sizes: cache labels at the sizes they rest at, made ahead of time (options 1–5) | `claude/explore-view-size-labels-80d8e9` | 87e7593, 37f369b | [view-sizes.md](explorations/view-sizes.md) |
 | A WebGL2 renderer | `claude/explore-webgl-renderer-b1f5e2` | f92c921, 89c346e | [webgl.md](explorations/webgl.md) |
-| The change after the wheel stops: view sizes on today's wheel, with skip-at-rest and early-exact variants | `explore-sharpening` (not pushed yet) | 61c76b5 | [sharpening.md](explorations/sharpening.md) |
+| The change after the wheel stops: view sizes on today's wheel, with skip-at-rest and early-exact variants | `explore-sharpening` | 61c76b5 | [sharpening.md](explorations/sharpening.md) |
 
 All exploration branches start from `ff-canvas-perf` at eae7723. Each one's `.bench/` folder holds its scripts and raw counts (committed with `git add -f`, since `.bench/` is ignored locally). The reports in [explorations/](explorations/) are copies; their absolute paths point at worktrees under `.claude/worktrees/` on Lucas's Mac, which may be gone. Use the branch instead. Screenshots weren't committed.
 
